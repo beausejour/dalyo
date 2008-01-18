@@ -2,10 +2,6 @@ package com.penbase.dma.view;
 
 import com.penbase.dma.DmaHttpClient;
 import com.penbase.dma.R;
-import com.penbase.dma.R.id;
-import com.penbase.dma.R.layout;
-import com.penbase.dma.R.string;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
