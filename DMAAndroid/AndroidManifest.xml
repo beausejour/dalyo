@@ -14,5 +14,6 @@
 				<category android:value="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity class=".Dma" ></activity>
     </application>
 </manifest> 

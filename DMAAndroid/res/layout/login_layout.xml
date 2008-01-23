@@ -1,37 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
-	<TextView  id="@+id/label1"
-	    android:layout_width="fill_parent" 
-	    android:layout_height="wrap_content" 
-	    android:text="Login:"
-    />
-	<EditText id="@+id/textLogin"
-	    android:layout_width="fill_parent"   
-	    android:layout_height="wrap_content" 
-	    android:layout_below="@+id/label1"          
-	    >   
-      	<requestFocus />
-    </EditText>
-	<TextView  id="@+id/label2"
-	    android:layout_width="fill_parent" 
-	    android:layout_height="wrap_content" 
-	    android:layout_below="@+id/textLogin"          
-	    android:text="Password:"
-    />
-	<EditText id="@+id/textePasswd"
-	    android:layout_width="fill_parent"   
-	    android:layout_height="wrap_content" 
-	    android:password="true"
-	    android:layout_below="@+id/label2"          
-	    >   
-    </EditText>
-    <Button id="@+id/ok"
-        android:layout_width="wrap_content" 
-        android:layout_height="wrap_content" 
-        android:layout_gravity="right"
-        android:text="Run" />
+	android:orientation="vertical" android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+	<ImageView id="@+id/icon" android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:tint="#00000000"
+		android:src="@drawable/banniere_dalyo" />
+	<TextView id="@+id/label1" android:layout_width="fill_parent"
+		android:layout_height="wrap_content" android:text="Login" />
+	<EditText id="@+id/textLogin" android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_below="@+id/label1">
+		<requestFocus />
+	</EditText>
+	<TextView id="@+id/label2" android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_below="@+id/textLogin" android:text="Password:" />
+	<EditText id="@+id/textePasswd" android:layout_width="fill_parent"
+		android:layout_height="wrap_content" android:password="true"
+		android:layout_below="@+id/label2">
+	</EditText>
+	<CheckBox id="@+id/remember_me_cb" android:text="Remember me"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content" />
+	<Button id="@+id/ok" android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:layout_gravity="right"
+		android:text="Run" />
 </LinearLayout>
