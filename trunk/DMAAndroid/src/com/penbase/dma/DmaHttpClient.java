@@ -1,3 +1,17 @@
+/**
+ 	This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.penbase.dma;
 
 import java.io.IOException;
@@ -7,12 +21,15 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+
+import android.app.Activity;
+import android.view.Window;
 /**
  * 
  * @author Bort Jean
  *
  */
-public class DmaHttpClient {
+public class DmaHttpClient extends Activity {
 	private URL url;
 	private int lastError = 0;
 	/**
@@ -48,13 +65,12 @@ public class DmaHttpClient {
 	 */
 	private String SendPost(String parameters) {
 		String response = null;
-		try {			
+		try {
 			HttpURLConnection connection = (HttpURLConnection) url
 					.openConnection();
 			connection.setRequestMethod("POST");
 			connection.setDoOutput(true);
 			connection.setDoInput(true);
-
 			// Get the output stream and write the parameters
 			PrintStream out = new PrintStream(connection.getOutputStream());
 			out.print(parameters);
