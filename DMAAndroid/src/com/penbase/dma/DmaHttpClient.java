@@ -21,9 +21,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
-
 import android.app.Activity;
-import android.view.Window;
+
 /**
  * 
  * @author Bort Jean

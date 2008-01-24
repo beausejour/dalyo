@@ -33,10 +33,10 @@ public class Dma extends Activity {
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 		boolean b = settings.getBoolean("RememberMe", false);
 		Log.v("Dalyo", Boolean.toString(b));
-		/*if (!b) {			
+		if (!b) {			
 			startSubActivity(new Intent(this, LoginView.class), 0);
 		} else {
 			startSubActivity(new Intent(this, ApplicationListView.class), 0);			
-		}*/
+		}
 	}
 }
