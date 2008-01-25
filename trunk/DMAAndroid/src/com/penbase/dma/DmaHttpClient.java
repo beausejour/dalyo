@@ -92,7 +92,7 @@ public class DmaHttpClient extends Activity {
 		} catch (IOException ioe) {
 			System.err.println("HTTPExample: IOException; " + ioe.getMessage());
 		}
-		return response;
+		return response.substring(response.indexOf('\n') + 1, response.length());
 	}
 	private int GetResponseCode(String response) {
 		//Log.d("Dalyo", response);

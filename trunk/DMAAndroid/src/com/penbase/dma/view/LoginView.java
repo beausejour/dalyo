@@ -62,13 +62,14 @@ public class LoginView extends Activity implements OnClickListener {
 			showAlert("Alert", "Error : " + client.GetLastError(), "OK", false);
 		} else {
 			// save user info.
-			Log.v("Dalyo", Boolean.toString(cb_remember_me.isSelected()));
+			Log.v("Dalyo", Boolean.toString(cb_remember_me.isChecked()));
 			SharedPreferences settings = getSharedPreferences(Dma.PREFS_NAME,
 					MODE_PRIVATE);
 			SharedPreferences.Editor editor = settings.edit();
 			editor.putBoolean("RememberMe", cb_remember_me.isChecked());
-			// Don't forget to commit your edits!!!
+			editor.putString("ApplicationList", rep);
 			editor.commit();
+			Dma.GetListApplicationFromXml(rep);
 			startSubActivity(new Intent(this, ApplicationListView.class), 0);
 		}
 	}
