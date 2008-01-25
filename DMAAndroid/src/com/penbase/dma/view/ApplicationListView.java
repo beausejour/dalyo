@@ -14,23 +14,90 @@
  */
 package com.penbase.dma.view;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import com.penbase.dma.Dma;
 import com.penbase.dma.R;
+import com.penbase.dma.Dalyo.Application;
+
 import android.app.Activity;
+import android.app.ListActivity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.Menu.Item;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-public class ApplicationListView extends Activity {
+import android.widget.AdapterView.OnItemSelectedListener;
+
+public class ApplicationListView extends Activity implements
+		OnItemSelectedListener {
+
+	AppsAdapter mAdapter;
+	TextView mApplicationName;
+
 	@Override
-	public void onCreate(Bundle icicle) {
+	protected void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		setContentView(R.layout.applicationlist_layout);
-
+		GridView g = (GridView) findViewById(R.id.mlist);
+		mAdapter = new AppsAdapter(this);
+		g.setAdapter(mAdapter);
+		g.setOnItemSelectedListener(this);
+		mApplicationName = (TextView) findViewById(R.id.label2);
+		for (int i =0; i < Dma.applicationList.size(); i++)
+			mAdapter.addApplication(Dma.applicationList.get(i));
 	}
 
+	public class AppsAdapter extends BaseAdapter {
+		private Context mContext;
+		
+		private ArrayList<Integer> mApps = new ArrayList<Integer>();
+
+
+		public AppsAdapter(Context context) {
+			mContext = context;
+		}
+
+		public View getView(int position, View convertView, ViewGroup parent) {
+			// Make an ImageView to show a photo
+			ImageView i = new ImageView(mContext);
+			i.setImageResource(mApps.get(position));
+			i.setAdjustViewBounds(true);
+			i.setLayoutParams(new ViewGroup.MarginLayoutParams(
+					LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+			// Give it a nice background
+			i.setBackground(android.R.drawable.picture_frame);
+			return i;
+		}
+
+		public final int getCount() {
+			return mApps.size();
+		}
+
+		public final Object getItem(int position) {
+			return position;
+		}
+
+		public final long getItemId(int position) {
+			return position;
+		}
+
+		public void addApplication(Application app) {		
+			mApps.add(app.getMIconRes());
+			notifyChange();
+		}
+	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		boolean r = super.onCreateOptionsMenu(menu);
@@ -38,7 +105,7 @@ public class ApplicationListView extends Activity {
 		menu.add(0, 1, getResources().getString(R.string.menu_about));
 		return r;
 	}
-	
+
 	@Override
 	public boolean onMenuItemSelected(int featureId, Item item) {
 		switch (item.getId()) {
@@ -48,7 +115,7 @@ public class ApplicationListView extends Activity {
 					MODE_PRIVATE);
 			SharedPreferences.Editor editor = settings.edit();
 			editor.putBoolean("RememberMe", false);
-			editor.commit();			
+			editor.commit();
 			this.finish();
 			startSubActivity(new Intent(this, LoginView.class), 0);
 			return true;
@@ -56,5 +123,17 @@ public class ApplicationListView extends Activity {
 			return true;
 		}
 		return super.onMenuItemSelected(featureId, item);
+	}
+
+	@Override
+	public void onItemSelected(AdapterView parent, View v, int position, long id) {
+		// TODO Auto-generated method stub
+		mApplicationName.setText(Dma.applicationList.get(position).getMName());
+	}
+
+	@Override
+	public void onNothingSelected(AdapterView arg0) {
+		// TODO Auto-generated method stub
+
 	}
 }
