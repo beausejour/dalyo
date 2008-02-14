@@ -95,7 +95,7 @@ public class ApplicationListView extends Activity implements
 
 		public void addApplication(Application app) {		
 			mApps.add(app.getMIconRes());
-			notifyChange();
+			//notifyAll();
 		}
 	}
 	@Override

@@ -51,7 +51,7 @@ public class LoginView extends Activity implements OnClickListener {
 	public void onClick(View arg0) {
 		if ("".equals(tx_login.getText().toString())
 				|| "".equals(tx_password.getText().toString())) {
-			showAlert("Alert", "Your credential!", "OK", false);
+			showAlert("Alert", 1,"Your credential!", "OK", false);
 			return;
 		}
 		// showAlert("Alert", "let's go!", "OK", false);
@@ -59,7 +59,7 @@ public class LoginView extends Activity implements OnClickListener {
 		String rep = client.Authentication(tx_login.getText().toString(),
 				tx_password.getText().toString());
 		if (rep == null) {
-			showAlert("Alert", "Error : " + client.GetLastError(), "OK", false);
+			showAlert("Alert", 1,"Error : " + client.GetLastError(), "OK", false);
 		} else {
 			// save user info.
 			Log.v("Dalyo", Boolean.toString(cb_remember_me.isChecked()));
