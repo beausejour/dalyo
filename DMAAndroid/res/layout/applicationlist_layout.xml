@@ -15,16 +15,16 @@
 	*/-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical" android:layout_width="fill_parent"
-	android:layout_height="fill_parent">
-	<ImageView id="@+id/icon" android:layout_width="wrap_content"
+	android:layout_height="fill_parent" android:background="@drawable/white">
+	<ImageView android:id="@+id/icon" android:layout_width="wrap_content"
 		android:layout_height="wrap_content" android:tint="#00000000"
 		android:src="@drawable/banniere_dalyo" />
-	<TextView id="@+id/label1" android:layout_width="fill_parent"
+	<TextView android:id="@+id/label1" android:layout_width="fill_parent"
 		android:layout_height="wrap_content" android:text="Application list:" />
-	<TextView id="@+id/label2" android:layout_width="fill_parent"
+	<TextView android:id="@+id/label2" android:layout_width="fill_parent"
 		android:layout_height="wrap_content" android:text="Application name"
 		android:textAlign="center" android:textStyle="bold" />
-	<GridView id="@+id/mlist" android:layout_width="fill_parent"
+	<GridView android:id="@+id/mlist" android:layout_width="fill_parent"
 		android:layout_height="fill_parent" android:padding="10dip"
 		android:verticalSpacing="10" android:horizontalSpacing="10"
 		android:numColumns="auto_fit" android:columnWidth="60"
