@@ -363,7 +363,7 @@ public class Component{
 			@Override
 			public void onClick(View arg0) 
 			{
-				function.createFunction(funcName);
+				function.createFunction(funcName, null);
 			}			
 		});
 	}
