@@ -18,12 +18,14 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import com.penbase.dma.Dalyo.Application;
+import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
 import com.penbase.dma.view.ApplicationListView;
 import com.penbase.dma.xml.XmlTag;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.telephony.TelephonyProperties;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -46,9 +48,10 @@ public class Dma extends Activity implements OnClickListener{
 		super.onCreate(icicle);
 		setContentView(R.layout.login_layout);
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME,
-				MODE_PRIVATE);
+				MODE_PRIVATE);	
 		boolean b = settings.getBoolean("RememberMe", false);
-		Log.v("Dalyo", "start = " + Boolean.toString(b));
+		Log.v("Dalyo", "start = " + Boolean.toString(b));		
+		
 		if (!b) 
 		{
 			setContentView(R.layout.login_layout);		
@@ -97,7 +100,7 @@ public class Dma extends Activity implements OnClickListener{
 				{					
 					if (noeud.getNodeName().equals(XmlTag.TAG_LOGIN_ID))
 					{
-						app.setAppId(Integer.parseInt(noeud.getChildNodes().item(0).getNodeValue()));
+						app.setAppId(noeud.getChildNodes().item(0).getNodeValue());
 					}		
 					else if (noeud.getNodeName().equals(XmlTag.TAG_LOGIN_TIT))
 					{
@@ -105,19 +108,19 @@ public class Dma extends Activity implements OnClickListener{
 					}
 					else if (noeud.getNodeName().equals(XmlTag.TAG_LOGIN_BLD))
 					{
-						app.setAppBuild(Integer.parseInt(noeud.getChildNodes().item(0).getNodeValue()));
+						app.setAppBuild(noeud.getChildNodes().item(0).getNodeValue());
 					}
 					else if (noeud.getNodeName().equals(XmlTag.TAG_LOGIN_SUB))
 					{
-						app.setSubId(Integer.parseInt(noeud.getChildNodes().item(0).getNodeValue()));
+						app.setSubId(noeud.getChildNodes().item(0).getNodeValue());
 					}
 					else if (noeud.getNodeName().equals(XmlTag.TAG_LOGIN_DBID))
 					{
-						app.setDbId(Integer.parseInt(noeud.getChildNodes().item(0).getNodeValue()));
+						app.setDbId(noeud.getChildNodes().item(0).getNodeValue());
 					}
 					else if (noeud.getNodeName().equals(XmlTag.TAG_LOGIN_VER))
 					{
-						app.setAppVer(Integer.parseInt(noeud.getChildNodes().item(0).getNodeValue()));
+						app.setAppVer(noeud.getChildNodes().item(0).getNodeValue());
 					}
 				}
 			}
@@ -172,12 +175,28 @@ public class Dma extends Activity implements OnClickListener{
 
 	@Override
 	public boolean onMenuItemSelected(int featureId, Item item) {
-		switch (item.getId()) {
-		case Menu.FIRST:
-			return true;
-		case Menu.FIRST+1:
-			this.finish();
+		switch (item.getId())
+		{
+			case Menu.FIRST:
+				return true;
+			case Menu.FIRST+1:
+				this.finish();
 		}
 		return super.onMenuItemSelected(featureId, item);
+	}
+	
+	public static String getDeviceID()
+	{
+		String imei = android.os.SystemProperties.get(TelephonyProperties.PROPERTY_IMEI,
+		"-1"); 
+		
+		Log.i("info", "imei "+imei);
+		return imei;
+	}
+	
+	public static float getVersion()
+	{
+		float result = (float) 0.1;
+		return result;
 	}
 }

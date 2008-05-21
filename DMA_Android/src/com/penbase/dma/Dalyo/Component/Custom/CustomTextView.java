@@ -1,4 +1,4 @@
-package com.penbase.dma.Dalyo.Component;
+package com.penbase.dma.Dalyo.Component.Custom;
 
 import android.content.Context;
 import android.graphics.Canvas;

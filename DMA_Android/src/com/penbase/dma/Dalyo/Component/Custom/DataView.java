@@ -1,9 +1,10 @@
-package com.penbase.dma.Dalyo.Component;
+package com.penbase.dma.Dalyo.Component.Custom;
 
 import java.util.ArrayList;
 
 import com.penbase.dma.view.ApplicationView;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -17,15 +18,16 @@ import android.widget.ListView;
 
 public class DataView extends ListView{	
 	private Paint borderPaint;
-	private float fontSize;
-	private Typeface fontType;
+	private static float fontSize;
+	private static Typeface fontType;
 	private DataViewAdapter adapter;
 	private Context context;
 	private ArrayList<String> pwidthList;
 	private ArrayList<String> lwidthList;
 	private ArrayList<ArrayList<String>> columnInfos = new ArrayList<ArrayList<String>>();
+	private String tableId;
 	
-	public DataView(Context c) 
+	public DataView(Context c, String tid) 
 	{
 		super(c);		
 		borderPaint = new Paint();
@@ -33,7 +35,8 @@ public class DataView extends ListView{
 		borderPaint.setAntiAlias(true);
 		borderPaint.setStyle(Style.STROKE);
 		this.context = c;
-		adapter = new DataViewAdapter(context);
+		this.tableId = tid;
+		adapter = new DataViewAdapter(context, tid);
 		pwidthList = new ArrayList<String>();
 		lwidthList = new ArrayList<String>();		
 		
@@ -62,16 +65,16 @@ public class DataView extends ListView{
 	
 	public void setText(float fs, Typeface ft)
 	{
-		this.fontSize = fs;
-		this.fontType = ft;
+		fontSize = fs;
+		fontType = ft;
 	}
 	
-	public float getTextSize()
+	public static float getTextSize()
 	{
 		return fontSize;
 	}
 	
-	public Typeface getTextType()
+	public static Typeface getTextType()
 	{
 		return fontType;
 	}
@@ -104,9 +107,7 @@ public class DataView extends ListView{
 		        adapter.addItem(header);
 			}			
 			
-	        this.setAdapter(adapter);
-	        
-	        addData();
+	        this.setAdapter(adapter);	        
 		}
 	}
 	
@@ -128,5 +129,17 @@ public class DataView extends ListView{
         CustomLinearLayout layout4 = new CustomLinearLayout(context, data4, getPWidthList(), false);
         adapter.addItem(layout4);
         adapter.notifyDataSetChanged();
+	}
+	
+	public void refresh()
+	{
+		if (tableId.equals(""))
+		{
+			new AlertDialog.Builder(context).setMessage("Check your dataview setting").setTitle("Error").show();
+		}
+		else
+		{
+			
+		}
 	}
 }

@@ -2,6 +2,8 @@ package com.penbase.dma.Dalyo.Component;
 
 import java.util.*;
 
+import com.penbase.dma.Dalyo.Component.Custom.DataView;
+import com.penbase.dma.Dalyo.Component.Custom.NumberBox;
 import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.view.ApplicationView;
 import com.penbase.dma.xml.XmlTag;
@@ -172,8 +174,7 @@ public class Component{
 		else if(type.equals(XmlTag.TAG_COMPONENT_CHECKBOX))
 		{
 			Log.i("info", "CHECKBOX "+context);
-			CheckBox checkbox = new CheckBox(context);
-			Log.i("info", "create CHECKBOX");			
+			CheckBox checkbox = new CheckBox(context);			
 			checkbox.setText(name);
 			checkbox.setTypeface(setFontType(fontType));
 			checkbox.setTextSize(setFontSize(fontSize));
@@ -186,8 +187,7 @@ public class Component{
 		else if(type.equals(XmlTag.TAG_COMPONENT_COMBOBOX))
 		{
 			Log.i("info", "combobox");
-			Spinner combobox = new Spinner(context);
-			view = combobox;
+			Spinner combobox = new Spinner(context);			
 			/*int itemNb = itemList.size();
 			ArrayList<TextView> tvList = new ArrayList<TextView>();
 			for (int i=0; i<itemNb; i++)
@@ -204,15 +204,16 @@ public class Component{
 			ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(context,
 			        android.R.layout.simple_spinner_item, itemList);
 			combobox.setAdapter(spinnerArrayAdapter);
+			view = combobox;
 		}
 		else if(type.equals(XmlTag.TAG_COMPONENT_LABEL))
 		{
 			Log.i("info", "label");
-			TextView textview = new TextView(context);
-			view = textview;
+			TextView textview = new TextView(context);			
 			textview.setText(name);
 			textview.setTypeface(setFontType(fontType));
 			textview.setTextSize(setFontSize(fontSize));
+			view = textview;
 		}
 		else if(type.equals(XmlTag.TAG_COMPONENT_DATEFIELD))
 		{
@@ -283,18 +284,18 @@ public class Component{
 		else if(type.equals(XmlTag.TAG_COMPONENT_TEXTFIELD))
 		{
 			Log.i("info", "textfield");
-			AutoCompleteTextView actextview = new AutoCompleteTextView(context);			
-			view = actextview;
+			AutoCompleteTextView actextview = new AutoCompleteTextView(context);						
 			actextview.setTypeface(setFontType(fontType));
 			actextview.setTextSize(setFontSize(fontSize));
+			view = actextview;
 		}
 		else if(type.equals(XmlTag.TAG_COMPONENT_TEXTZONE))
 		{
 			Log.i("info", "textzone");
-			EditText edittext = new EditText(context);
-			view = edittext;
+			EditText edittext = new EditText(context);			
 			edittext.setTypeface(setFontType(fontType));
 			edittext.setTextSize(setFontSize(fontSize));
+			view = edittext;
 		}
 		else if(type.equals(XmlTag.TAG_COMPONENT_RADIOBUTTON))
 		{
@@ -341,19 +342,17 @@ public class Component{
 		else if(type.equals(XmlTag.TAG_COMPONENT_DATAVIEW))
 		{
 			Log.i("info", "dataview");
-			DataView dataview = new DataView(context);			
+			DataView dataview = new DataView(context, tableID);			
 			dataview.setText(setFontSize(fontSize), setFontType(fontType));
 			dataview.setColumnInfo(columnInfos);
 			view = dataview;
 		}
 		else
-		{
-			Log.i("info", "else");
-			Button button = new Button(context);
+		{			
+			Button button = new Button(context);			
+			button.setText("else");
 			view = button;
-			button.setText(name);
-			button.setTypeface(setFontType(fontType));
-			button.setTextSize(setFontSize(fontSize));
+			Log.i("info", "else in component");
 		}
 	}
 	
@@ -406,5 +405,17 @@ public class Component{
 			fontType = Typeface.DEFAULT_BOLD_ITALIC;	
 		}
 		return fontType;
+	}
+	
+	public void refreshComponentContent()
+	{
+		if (getView() instanceof DataView)
+		{
+			Log.i("info", "instance of DataView");
+		}
+		else if (getView() instanceof Spinner)
+		{
+			Log.i("info", "instance of ComboBox");
+		}
 	}
 }

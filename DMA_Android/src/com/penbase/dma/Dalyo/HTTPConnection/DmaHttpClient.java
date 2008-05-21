@@ -12,10 +12,11 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.penbase.dma;
+package com.penbase.dma.Dalyo.HTTPConnection;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,6 +29,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -36,10 +38,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
+import com.penbase.dma.Dma;
+import com.penbase.dma.Binary.Binary;
+import com.penbase.dma.Dalyo.Database;
 import com.penbase.dma.xml.XmlTag;
-
 import android.app.Activity;
+import android.security.MessageDigest;
 import android.util.Log;
 
 public class DmaHttpClient extends Activity {
@@ -49,6 +53,7 @@ public class DmaHttpClient extends Activity {
 	
 	private static final String STRING="string";
 	private static final String BYTE="byte";
+	private static final String IMAGE="image";
 	
 	//Booleans of sending requests	
 	private boolean sendBehavior = true;
@@ -63,6 +68,9 @@ public class DmaHttpClient extends Activity {
 	
 	//Image file's path
 	private static final String imageFilePath = "/data/misc/location/";
+	
+	private static byte[] importresult = null;
+	private byte[] exportresult = null;
 	
 	public DmaHttpClient() 
 	{
@@ -90,16 +98,17 @@ public class DmaHttpClient extends Activity {
 		StringBuilder response = null;
 		try 
 		{
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			HttpURLConnection connection = null;			
+			connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestMethod("POST");
 			connection.setDoOutput(true);
 			connection.setDoInput(true);
-			// Get the output stream and write the parameters
 			PrintStream out = new PrintStream(connection.getOutputStream());
 			out.print(parameters);
-			out.close();									
+			out.close();
+			
 			// Get the input stream and read response
-			InputStream in =  connection.getInputStream();	
+			InputStream in =  connection.getInputStream();				
 			
 			if (type.equals(STRING))
 			{
@@ -109,7 +118,6 @@ public class DmaHttpClient extends Activity {
 	        	int lineNumber = 1;
 	            while ((line = reader.readLine()) != null) 
 	            {
-	            	//Error code is in the first line
 	            	if (lineNumber == 1)
 	            	{
 	            		errorCode = Integer.valueOf(line);
@@ -123,8 +131,9 @@ public class DmaHttpClient extends Activity {
 	            in.close();
 	            result = response.toString();
 			}
-			else if (type.equals(BYTE))
+			else if (type.equals(IMAGE))
 			{
+				Log.i("info", "length "+in.available());
 				StringBuffer buf = new StringBuffer();
 				int c;
 			    while ((c = in.read()) != -1)
@@ -136,12 +145,13 @@ public class DmaHttpClient extends Activity {
 			    errorCode = Integer.parseInt(result.substring(0, result.indexOf('\n')));
 			    result = result.substring(result.indexOf('\n') + 1, result.length());
 			}
-			
 		}
 		catch (ProtocolException pe) 
 		{System.err.println("HTTPExample: ProtocolException; " + pe.getMessage());}
 		catch (IOException ioe) 
 		{System.err.println("HTTPExample: IOException; " + ioe.getMessage());}
+		
+		Log.i("info", "Server returned: " + errorCode);
 
 		if (errorCode != 200)
 		{
@@ -235,24 +245,24 @@ public class DmaHttpClient extends Activity {
 			}
 		}
 		Log.i("info", "before if");
-		if ((AppId == Dma.applicationList.get(position).getAppId()) && 
-				(SubId == Dma.applicationList.get(position).getSubId()) &&
+		if ((AppId == Integer.valueOf(Dma.applicationList.get(position).getAppId())) && 
+				(SubId == Integer.valueOf(Dma.applicationList.get(position).getSubId())) &&
 				(checkFileExist(db_XML)) &&	(AppId == getIdDb(new File(db_XML))))
 		{
-			if (AppVer == Dma.applicationList.get(position).getAppVer())
+			if (AppVer == Integer.valueOf(Dma.applicationList.get(position).getAppVer()))
 			{
 				/*this.sendDesign = false;
 				Log.i("info", "don't send design request");*/
 			}
-			if ((AppBuild == Dma.applicationList.get(position).getAppBuild()) &&
-					(AppVer == Dma.applicationList.get(position).getAppVer()))
+			if ((AppBuild == Integer.valueOf(Dma.applicationList.get(position).getAppBuild())) &&
+					(AppVer == Integer.valueOf(Dma.applicationList.get(position).getAppVer())))
 			{
 				this.sendDesign = false;
 				Log.i("info", "don't send design request");
 				this.sendBehavior = false;
 				Log.i("info", "don't send behavior request");
 			}
-			if (DbId == Dma.applicationList.get(position).getDbId())
+			if (DbId == Integer.valueOf(Dma.applicationList.get(position).getDbId()))
 			{
 				this.sendDb = false;
 				Log.i("info", "don't send database request");
@@ -269,7 +279,7 @@ public class DmaHttpClient extends Activity {
 	}
 	
 	//Get the design of an application
-	public Document getDesign(int AppId, int AppVer, int AppBuild, int SubId, String login, String pwd)
+	public Document getDesign(String AppId, String AppVer, String AppBuild, String SubId, String login, String pwd)
 	{		
 		if (sendDesign)
 		{
@@ -323,14 +333,12 @@ public class DmaHttpClient extends Activity {
 	}
 	
 	//Get the resources of an application
-	public void getResources(int AppId, int AppVer, int AppBuild, int SubId, int DbId, String login, String pwd)
+	public void getResources(String AppId, String AppVer, String AppBuild, String SubId, String login, String pwd)
 	{
-		HashMap<String, String> resourceMapFile = getResourceMap("hashcode");
-		
-		Log.i("info", "resourceMap size "+resourceMapFile.size());
+		HashMap<String, String> resourceMapFile = getResourceMap("hashcode");		
 		
 		String getResources = "act=getresources&from=runtime&appid="+AppId+"&appversion="+AppVer+
-		"&appbuild="+AppBuild+"&subid="+SubId+"&did="+DbId+"&login="+login+"&passwd="+
+		"&appbuild="+AppBuild+"&subid="+SubId+"&did="+Dma.getDeviceID()+"&login="+login+"&passwd="+
 		pwd+"&useragent=ANDROID";
 		String resourcesStream = SendPost(getResources, STRING);		
 		Document resourceDocument = CreateParseDocument(resourcesStream);
@@ -347,7 +355,7 @@ public class DmaHttpClient extends Activity {
 				String fileName = imageFilePath+resource.getAttribute(XmlTag.TAG_RESOURCES_R_ID)+"."+
 				resource.getAttribute(XmlTag.TAG_RESOURCES_R_EXT);
 				String getResource = "act=getresource&from=runtime&appid="+AppId+"&appversion="+AppVer+
-				"&appbuild="+AppBuild+"&subid="+SubId+"&did="+DbId+"&resourceid="+
+				"&appbuild="+AppBuild+"&subid="+SubId+"&did="+Dma.getDeviceID()+"&resourceid="+
 				resource.getAttribute(XmlTag.TAG_RESOURCES_R_ID)+"&login="+login+"&passwd="+pwd+"&useragent=ANDROID";
 				
 				Log.i("info", "resourceId "+resourceId);
@@ -361,14 +369,14 @@ public class DmaHttpClient extends Activity {
 
 						new File(fileName).delete();
 	
-						String resourceStream = SendPost(getResource, BYTE);
+						String resourceStream = SendPost(getResource, IMAGE);
 						StreamToFile(resourceStream, fileName);
 					}
 				}
 				else
 				{
 					Log.i("info", "download image");
-					String resourceStream = SendPost(getResource, BYTE);
+					String resourceStream = SendPost(getResource, IMAGE);
 					StreamToFile(resourceStream, fileName);
 				}
 			}
@@ -378,7 +386,7 @@ public class DmaHttpClient extends Activity {
 	}
 	
 	//Get the DB of an application
-	public Document getDB(int AppId, int AppVer, int AppBuild, int SubId, String login, String pwd)
+	public Document getDB(String AppId, String AppVer, String AppBuild, String SubId, String login, String pwd)
 	{
 		if (sendDb)
 		{
@@ -396,12 +404,12 @@ public class DmaHttpClient extends Activity {
 	}
 	
 	//Get the behavior of an application	
-	public Document getBehavior(int AppId, int AppVer, int AppBuild, int SubId, int DbId, String login, String pwd)
+	public Document getBehavior(String AppId, String AppVer, String AppBuild, String SubId, String login, String pwd)
 	{	
 		if (sendBehavior)
 		{					
 			String getBehavior = "act=getbehavior&from=runtime&appid="+AppId+"&appversion="+AppVer+
-			"&appbuild="+AppBuild+"&subid="+SubId+"&did="+DbId+"&login="+login+"&passwd="+pwd+"&useragent=ANDROID";
+			"&appbuild="+AppBuild+"&subid="+SubId+"&did="+Dma.getDeviceID()+"&login="+login+"&passwd="+pwd+"&useragent=ANDROID";
 			
 			Log.i("info", "getbehavior "+getBehavior);
 			
@@ -417,6 +425,43 @@ public class DmaHttpClient extends Activity {
 		{
 			return CreateParseDocument(new File(behavior_XML));
 		}
+	}
+	
+	//Import server data
+	public byte[] launchImport(String AppId, String DbId, String login, String pwd) throws IOException, InterruptedException
+	{
+		String ask = "act=ask&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd="+pwd+
+		"&stream=1&useragent=ANDROID&did="+Dma.getDeviceID();
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		bos.write(Binary.intToByteArray(Database.getTableNb()));
+		for (String s : Database.getTableIds())
+		{
+			bos.write(Binary.intToByteArray(Integer.valueOf(s)));
+		}
+		byte[] inputbytes = bos.toByteArray();
+		DmaHttpBinarySync dhb = new DmaHttpBinarySync(DmaHttpClient.this, ask, inputbytes);
+		dhb.start();
+		dhb.join();
+		return getImportResult();
+	}
+	
+	//// interface
+	public void fireImportEnded(int code, byte [] bytes) 
+	{
+		if (code == 200)
+		{
+			setImportResult(bytes);
+		}
+	}
+	
+	public static byte[] getImportResult()
+	{
+		return importresult;
+	}
+	
+	private void setImportResult(byte[] ir)
+	{
+		this.importresult = ir;
 	}
 	
 	//Save the download xml stream to file
@@ -444,12 +489,38 @@ public class DmaHttpClient extends Activity {
 		boolean result = false;
 		if (new File(fileName).exists())
 		{
-			Log.i("info", "if file exists and its length is "+new File(fileName).length());
 			if (new File(fileName).length() > 0)
 			{
 				result = true;
 			}			
 		}
 		return result;
+	}
+	
+	//Get errorcode
+	public int getErrorCode()
+	{
+		return errorCode;
+	}
+	
+	public static String getBoundary()
+	{
+		String result = "";
+	    try 
+	    {
+			MessageDigest digest = android.security.MessageDigest.getInstance("MD5");
+			String hex = Long.toHexString(System.currentTimeMillis());			
+			digest.update(hex.getBytes());
+			
+			byte[] hash = digest.digest();
+			
+			//result = hash.toString();
+			result = hex;
+		}
+	    catch (NoSuchAlgorithmException e) 
+	    {
+			e.printStackTrace();
+		}
+		return result;		
 	}
 }
