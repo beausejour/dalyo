@@ -3,12 +3,17 @@ package com.penbase.dma.view;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.w3c.dom.*;
-import com.penbase.dma.DmaHttpClient;
+
+import com.penbase.dma.Dma;
 import com.penbase.dma.R;
 import com.penbase.dma.Dalyo.Database;
 import com.penbase.dma.Dalyo.Component.Component;
+import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
 import com.penbase.dma.xml.XmlTag;
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.DeadObjectException;
 import android.util.Log;
@@ -23,7 +28,8 @@ public class ApplicationView extends Activity {
 	public static ApplicationView applicationView;
 	
 	private static DmaHttpClient client;
-	public static ArrayList<AbsoluteLayout> layoutList;
+//	public static ArrayList<AbsoluteLayout> layoutList;
+	private static HashMap<String, AbsoluteLayout> layoutsMap;
 	public static final int BACK_ID = Menu.FIRST;
 	public static final int NEXT_ID = Menu.FIRST+1;
 	
@@ -32,78 +38,103 @@ public class ApplicationView extends Activity {
 	public static Document behaviorDocument = null;
 	public static Document dbDoc = null;	
 	
-	private HashMap<String, String> resourcesFileMap;
+	private static HashMap<String, String> resourcesFileMap;
+	private static HashMap<String, Component> componentsMap;
 	
 	public static final android.view.IWindowManager windowService = android.view.IWindowManager.Stub.asInterface(
 			android.os.ServiceManager.getService("window"));
+	
+	private static Database database;
+	//ProgressDialog progressDialog;
 	
 	@Override
 	protected void onCreate(Bundle icicle) {	
 		super.onCreate(icicle);
 		ApplicationView.applicationView = this;
 		NodeList generalInfo = designDoc.getElementsByTagName(XmlTag.TAG_DESIGN_S_G);
-		String startFormId = ((Element) generalInfo.item(0)).getAttribute(XmlTag.TAG_DESIGN_S_G_FID);
+		final String startFormId = ((Element) generalInfo.item(0)).getAttribute(XmlTag.TAG_DESIGN_S_G_FID);
 		
 		Log.i("info", "startid "+startFormId);		
 		
-		Database database = new Database(this, dbDoc);
+		database = new Database(this, dbDoc);
 		resourcesFileMap = client.getResourceMap("ext");
 		
+		componentsMap = new HashMap<String, Component>();
+
+		
+		/*progressDialog = ProgressDialog.show(this, "Please wait...", "preparing application...", true, true);
+
+		new Thread(){
+			public void run(){
+				try
+				{
+					createView();
+				}
+				catch(Exception e)
+				{e.printStackTrace();}
+				
+				progressDialog.dismiss();
+				setContentView(layoutsMap.get(startFormId));			
+				setTitle(ApplicationListView.applicationName);
+			}
+		}.start();	
+		
+		Log.i("info", "size of layoutsMap "+layoutsMap.size());*/
 		createView();
-		//Get the first form
-		setContentView(layoutList.get(Integer.valueOf(startFormId)-1));				
-		setTitle(ApplicationListView.applicationName);				
+		setContentView(layoutsMap.get(startFormId));			
+		setTitle(ApplicationListView.applicationName);
 	}	
 	
 	public static void prepareData(int position, String login, String pwd)
 	{
-		client = new DmaHttpClient();
-		
+		Log.i("info", "prepare data");
+		client = new DmaHttpClient();		
 		client.checkDownloadFile(position, login, pwd);
-		Log.i("info", "after check");
-		behaviorDocument = client.getBehavior(ApplicationListView.applicationInfos.get("AppId"),
-				ApplicationListView.applicationInfos.get("AppVer"),
-				ApplicationListView.applicationInfos.get("AppBuild"),
-				ApplicationListView.applicationInfos.get("SubId"), 
-				ApplicationListView.applicationInfos.get("DbId"),login, pwd);
+
+		behaviorDocument = client.getBehavior(ApplicationListView.getApplicationsInfo().get("AppId"),
+				ApplicationListView.getApplicationsInfo().get("AppVer"),
+				ApplicationListView.getApplicationsInfo().get("AppBuild"),
+				ApplicationListView.getApplicationsInfo().get("SubId"), login, pwd);
 		
-		designDoc = client.getDesign(ApplicationListView.applicationInfos.get("AppId"),
-				ApplicationListView.applicationInfos.get("AppVer"),
-				ApplicationListView.applicationInfos.get("AppBuild"),
-				ApplicationListView.applicationInfos.get("SubId"), login, pwd);
+		designDoc = client.getDesign(ApplicationListView.getApplicationsInfo().get("AppId"),
+				ApplicationListView.getApplicationsInfo().get("AppVer"),
+				ApplicationListView.getApplicationsInfo().get("AppBuild"),
+				ApplicationListView.getApplicationsInfo().get("SubId"), login, pwd);
 		
-		client.getResources(ApplicationListView.applicationInfos.get("AppId"),
-				ApplicationListView.applicationInfos.get("AppVer"),
-				ApplicationListView.applicationInfos.get("AppBuild"),
-				ApplicationListView.applicationInfos.get("SubId"), 
-				ApplicationListView.applicationInfos.get("DbId"),login, pwd);
+		client.getResources(ApplicationListView.getApplicationsInfo().get("AppId"),
+				ApplicationListView.getApplicationsInfo().get("AppVer"),
+				ApplicationListView.getApplicationsInfo().get("AppBuild"),
+				ApplicationListView.getApplicationsInfo().get("SubId"),login, pwd);
 		
-		dbDoc = client.getDB(ApplicationListView.applicationInfos.get("AppId"),
-				ApplicationListView.applicationInfos.get("AppVer"),
-				ApplicationListView.applicationInfos.get("AppBuild"),
-				ApplicationListView.applicationInfos.get("SubId"), login, pwd);
+		dbDoc = client.getDB(ApplicationListView.getApplicationsInfo().get("AppId"),
+				ApplicationListView.getApplicationsInfo().get("AppVer"),
+				ApplicationListView.getApplicationsInfo().get("AppBuild"),
+				ApplicationListView.getApplicationsInfo().get("SubId"), login, pwd);
 		Log.i("info", "prepare done");
 	}
 	
 	public void createView()
 	{
-		layoutList = new ArrayList<AbsoluteLayout>();
+		layoutsMap = new HashMap<String, AbsoluteLayout>();
 		NodeList formsList = designDoc.getElementsByTagName(XmlTag.TAG_DESIGN_F);
 		int formsListLen = formsList.getLength();
+
 		for (int i=0; i<formsListLen; i++)
 		{
 			Log.i("info", "Form "+i);
 			AbsoluteLayout absLayout = new AbsoluteLayout(this);
 			absLayout.setLayoutParams(new AbsoluteLayout.LayoutParams(LayoutParams.FILL_PARENT, 
 					LayoutParams.FILL_PARENT, 0, 0));
-
+			
 			Element form = (Element) formsList.item(i);
+			String formId = form.getAttribute(XmlTag.TAG_DESIGN_F_ID);
+			Log.i("info", "formid "+formId);
 			
 			if (form.hasAttribute(XmlTag.TAG_DESIGN_F_BC))
 			{
 				String backgourndColor = "#"+form.getAttribute(XmlTag.TAG_DESIGN_F_BC);
 				absLayout.setBackgroundColor(Color.parseColor(backgourndColor));
-			}
+			}			
 			
 			NodeList formEltList = form.getChildNodes();
 			Log.i("info", "childnode size "+formEltList.getLength());						
@@ -176,7 +207,8 @@ public class ApplicationView extends Activity {
 					else if (element.getNodeName().equals(XmlTag.TAG_COMPONENT_COMBOBOX))
 					{					
 						ArrayList<String> itemList = new ArrayList<String>();
-						NodeList nodeItemList = element.getChildNodes(); 
+						NodeList nodeItemList = element.getChildNodes();
+						Log.i("info", "item size "+nodeItemList.getLength());
 						if (nodeItemList.getLength() > 0)
 						{
 							int itemLen = nodeItemList.getLength();
@@ -235,6 +267,7 @@ public class ApplicationView extends Activity {
 						Log.i("info", "else");
 						component = new Component(this, element.getNodeName(), 
 								element.getAttribute(XmlTag.TAG_COMPONENT_COMMON_ID),"", "normal", "normal");
+						Log.i("info", "create else ok");
 					}
 					
 					if (element.hasAttribute(XmlTag.TAG_EVENT_ONCLICK))
@@ -246,8 +279,8 @@ public class ApplicationView extends Activity {
 					//windowService.setOrientation(0);
 					if (getOrientation() == 0)		//Orientation vertical
 					{							
-						Log.i("info", "orientation 1 "+getOrientation());
-						Log.i("info", "pheight "+element.getAttribute(XmlTag.TAG_COMPONENT_COMMON_PHEIGHT));
+						//Log.i("info", "orientation 1 "+getOrientation());
+						//Log.i("info", "pheight "+element.getAttribute(XmlTag.TAG_COMPONENT_COMMON_PHEIGHT));
 						component.getView().setLayoutParams(new AbsoluteLayout.LayoutParams(
 								Integer.valueOf(element.getAttribute(XmlTag.TAG_COMPONENT_COMMON_PWIDTH)),
 								Integer.valueOf(element.getAttribute(XmlTag.TAG_COMPONENT_COMMON_PHEIGHT)),
@@ -261,14 +294,19 @@ public class ApplicationView extends Activity {
 								Integer.valueOf(element.getAttribute(XmlTag.TAG_COMPONENT_COMMON_LHEIGHT)),
 								Integer.valueOf(element.getAttribute(XmlTag.TAG_COMPONENT_COMMON_LCOORDX)),
 								Integer.valueOf(element.getAttribute(XmlTag.TAG_COMPONENT_COMMON_LCOORDY))));
-						Log.i("info", "orientation 0 "+getOrientation());
+						//Log.i("info", "orientation 0 "+getOrientation());
 					}					
-										
+					componentsMap.put(element.getAttribute(XmlTag.TAG_COMPONENT_COMMON_ID), component);
 					absLayout.addView(component.getView());
+					Log.i("info", "after put");
 				}
 			}
-			layoutList.add(absLayout);
-		}		
+			Log.i("info", "afrer loop "+formId);
+			//layoutList.add(absLayout);
+			
+			layoutsMap.put(formId, absLayout);
+			Log.i("info", "add layout ok");
+		}
 	}
 	
     @Override
@@ -284,10 +322,10 @@ public class ApplicationView extends Activity {
         switch (item.getId()) 
         {
         	case BACK_ID:
-        		setContentView(layoutList.get(0));
+        		//setContentView(layoutList.get(0));
 	            return true;
         	case NEXT_ID:
-        		setContentView(layoutList.get(1));
+        		//setContentView(layoutList.get(1));
 	            return true;        
         }       
         return super.onOptionsItemSelected(item);
@@ -312,5 +350,35 @@ public class ApplicationView extends Activity {
 			e.printStackTrace();
 		}
 		return orientation;    	
+    }
+    
+    public static HashMap<String, Component> getComponents()
+    {
+    	return componentsMap;
+    }
+    
+    public static HashMap<String, AbsoluteLayout> getLayoutsMap()
+    {
+    	return layoutsMap;
+    }
+    
+    public static Database getDataBase()
+    {
+    	return database;
+    }
+    
+    public static DmaHttpClient getCurrentClient()
+    {
+    	return client;
+    }
+    
+    public static void refreshComponent()
+    {
+    	int size = componentsMap.size();
+    	Log.i("info", "sizeof "+size);
+    	for (String s : componentsMap.keySet())
+    	{
+    		componentsMap.get(s).refreshComponentContent();
+    	}
     }
 }

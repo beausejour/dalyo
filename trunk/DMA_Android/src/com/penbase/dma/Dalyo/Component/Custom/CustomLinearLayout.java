@@ -1,4 +1,4 @@
-package com.penbase.dma.Dalyo.Component;
+package com.penbase.dma.Dalyo.Component.Custom;
 
 import java.util.ArrayList;
 
@@ -12,7 +12,6 @@ public class CustomLinearLayout extends LinearLayout {
 	private ArrayList<String> dataList = new ArrayList<String>();
 	private ArrayList<String> widthList = new ArrayList<String>();
 	private boolean isHeader;
-	private DataView dataView;
 	
 	public CustomLinearLayout(Context c, ArrayList<String> dl, ArrayList<String> wl, boolean ish) 
 	{
@@ -21,9 +20,7 @@ public class CustomLinearLayout extends LinearLayout {
 		this.setOrientation(LinearLayout.HORIZONTAL);
 		this.dataList = dl;
 		this.isHeader = ish;
-		this.widthList = wl;
-		
-		dataView = new DataView(context);
+		this.widthList = wl;		
 		
 		if (isHeader)
 		{
@@ -48,8 +45,8 @@ public class CustomLinearLayout extends LinearLayout {
 			{				
 				CustomTextView ctv = new CustomTextView(context);
 				ctv.setText(dataList.get(i));				
-				ctv.setTextSize(dataView.getTextSize());				
-				ctv.setTypeface(dataView.getTextType());
+				ctv.setTextSize(DataView.getTextSize());				
+				ctv.setTypeface(DataView.getTextType());
 				int width = Integer.valueOf(widthList.get(i));				
 				this.addView(ctv, new LinearLayout.LayoutParams(width, LayoutParams.WRAP_CONTENT));
 			}

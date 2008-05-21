@@ -1,4 +1,4 @@
-package com.penbase.dma.Dalyo.Component;
+package com.penbase.dma.Dalyo.Component.Custom;
 
 import java.util.ArrayList;
 import android.content.Context;
@@ -8,12 +8,14 @@ import android.widget.BaseAdapter;
 
 public class DataViewAdapter extends BaseAdapter{
 	private Context context;
+	private String tableId;
 	private ArrayList<CustomLinearLayout> items = new ArrayList<CustomLinearLayout>();
 	private ArrayList<ArrayList<String>> dataList = new ArrayList<ArrayList<String>>();
 	
-	public DataViewAdapter(Context c) 
+	public DataViewAdapter(Context c, String tid) 
 	{
 		this.context = c;
+		this.tableId = tid;
 	}
 
 	@Override

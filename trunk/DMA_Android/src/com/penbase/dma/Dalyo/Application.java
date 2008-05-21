@@ -3,11 +3,11 @@ package com.penbase.dma.Dalyo;
 public class Application {	
 	private int IconRes;
 	private String Name;	
-	private int AppId;
-	private int AppVer;
-	private int AppBuild;
-	private int SubId;
-	private int DbId;
+	private String AppId;
+	private String AppVer;
+	private String AppBuild;
+	private String SubId;
+	private String DbId;
 
 	public Application() {		
 	}
@@ -17,12 +17,12 @@ public class Application {
 		IconRes = iconRes;
 		Name = name;
 	}*/
-	public int getAppId() 
+	public String getAppId() 
 	{
 		return AppId;
 	}
 	
-	public void setAppId(int dalyoId) 
+	public void setAppId(String dalyoId) 
 	{
 		AppId = dalyoId;
 	}
@@ -47,42 +47,42 @@ public class Application {
 		Name = name;
 	}
 	
-	public int getAppVer()
+	public String getAppVer()
 	{
 		return AppVer;
 	}
 	
-	public void setAppVer(int appver)
+	public void setAppVer(String appver)
 	{
 		this.AppVer = appver;
 	}
 	
-	public int getAppBuild()
+	public String getAppBuild()
 	{
 		return AppBuild;
 	}
 	
-	public void setAppBuild(int appbuild)
+	public void setAppBuild(String appbuild)
 	{
 		this.AppBuild = appbuild;
 	}
 	
-	public int getSubId()
+	public String getSubId()
 	{
 		return SubId;
 	}
 	
-	public void setSubId(int subid)
+	public void setSubId(String subid)
 	{
 		this.SubId = subid;
 	}
 	
-	public int getDbId()
+	public String getDbId()
 	{
 		return DbId;
 	}
 	
-	public void setDbId(int dbid)
+	public void setDbId(String dbid)
 	{
 		this.DbId = dbid;
 	}

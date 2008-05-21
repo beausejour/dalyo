@@ -1,4 +1,4 @@
-package com.penbase.dma.Dalyo.Component;
+package com.penbase.dma.Dalyo.Component.Custom;
 
 import com.penbase.dma.R;
 import android.content.Context;

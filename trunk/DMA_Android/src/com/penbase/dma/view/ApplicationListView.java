@@ -18,9 +18,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import com.penbase.dma.Dma;
-import com.penbase.dma.DmaHttpClient;
 import com.penbase.dma.R;
 import com.penbase.dma.Dalyo.Application;
+import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -45,9 +46,10 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 
 	AppsAdapter mAdapter;
 	TextView mApplicationName;
-	private static ProgressDialog progressDialog = null;
+	private static ProgressDialog loadProgressDialog = null;
+	private static ProgressDialog updateProgressDialog = null;
 	private Intent i = null;
-	public static HashMap<String, Integer> applicationInfos = new HashMap<String, Integer>();
+	private static HashMap<String, String> applicationInfos = new HashMap<String, String>();
 	private DmaHttpClient dmahttpclient = new DmaHttpClient();
 	public static String applicationName;
 	public static String PREFS_APP = "AppPrefsFile";
@@ -119,15 +121,16 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 
 	@Override
 	public boolean onMenuItemSelected(int featureId, Item item) {
-		switch (item.getId()) {
-		case 0:
-			logout();
-			return true;
-		case 1:
-			return true;
-		case 2:
-			update();
-			return true;
+		switch (item.getId()) 
+		{
+			case 0:
+				logout();
+				return true;
+			case 1:
+				return true;
+			case 2:
+				update();			
+				return true;
 		}
 		return super.onMenuItemSelected(featureId, item);
 	}
@@ -146,19 +149,32 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	//Using the preference data to rebuild application list
 	public void update()
 	{
-		SharedPreferences prefs = getSharedPreferences(Dma.PREFS_NAME, MODE_PRIVATE);
-		String appsList = dmahttpclient.Authentication(prefs.getString("Username", ""),
-				prefs.getString("Userpassword", ""));
-		Dma.GetListApplicationFromXml(appsList);
-		
-		SharedPreferences.Editor editorPrefs = getSharedPreferences(Dma.PREFS_NAME,
-				MODE_PRIVATE).edit();
-		editorPrefs.remove("ApplicationList");
-		editorPrefs.putString("ApplicationList", appsList);
-		editorPrefs.commit();
-		new File(DmaHttpClient.db_XML).delete();
-		this.finish();
-		startSubActivity(new Intent(this, ApplicationListView.class), 0);	
+		updateProgressDialog = ProgressDialog.show(this, "Please wait...", "Updaing application list...", true, true);
+		new Thread(){
+			public void run(){
+				try
+				{
+					SharedPreferences prefs = getSharedPreferences(Dma.PREFS_NAME, MODE_PRIVATE);
+					String appsList = dmahttpclient.Authentication(prefs.getString("Username", ""),
+							prefs.getString("Userpassword", ""));
+					Dma.GetListApplicationFromXml(appsList);
+					
+					SharedPreferences.Editor editorPrefs = getSharedPreferences(Dma.PREFS_NAME,
+							MODE_PRIVATE).edit();
+					editorPrefs.remove("ApplicationList");
+					editorPrefs.putString("ApplicationList", appsList);
+					editorPrefs.commit();
+					new File(DmaHttpClient.db_XML).delete();
+					Log.i("info", "end of try");
+				}
+				catch(Exception e)
+				{e.printStackTrace();}
+				
+				updateProgressDialog.dismiss();
+				ApplicationListView.this.finish();
+				startSubActivity(new Intent(ApplicationListView.this, ApplicationListView.class), 0);
+			}
+		}.start();
 	}
 	
 	@Override
@@ -174,32 +190,38 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	public void onItemClick(AdapterView parent, View v, final int position, long id) 
 	{
 		Log.i("info", "item clicked "+position);
-		
+		SharedPreferences prefs = getSharedPreferences(Dma.PREFS_NAME, MODE_PRIVATE);
 		applicationName = Dma.applicationList.get(position).getName();
+		applicationInfos.put("Username", prefs.getString("Username", ""));
+		applicationInfos.put("Userpassword", prefs.getString("Userpassword", ""));		
 		applicationInfos.put("AppId", Dma.applicationList.get(position).getAppId());
 		applicationInfos.put("AppVer", Dma.applicationList.get(position).getAppVer());
 		applicationInfos.put("AppBuild", Dma.applicationList.get(position).getAppBuild());
 		applicationInfos.put("SubId", Dma.applicationList.get(position).getSubId());
 		applicationInfos.put("DbId", Dma.applicationList.get(position).getDbId());							
-		
-		progressDialog = ProgressDialog.show(this, "Please wait...", "Loading application...", true, true);
-		i = new Intent(this, ApplicationView.class);	     
+		Log.i("info", "before dialog");
+		loadProgressDialog = ProgressDialog.show(this, "Please wait...", "Loading application...", true, true);
+		i = new Intent(this, ApplicationView.class);
 
 		new Thread(){
 			public void run(){
 				try
 				{
-					SharedPreferences prefs = getSharedPreferences(Dma.PREFS_NAME, MODE_PRIVATE);
-					ApplicationView.prepareData(position, prefs.getString("Username", ""), 
-							prefs.getString("Userpassword", ""));	    
+					ApplicationView.prepareData(position, applicationInfos.get("Username"),
+							applicationInfos.get("Userpassword"));
 				}
 				catch(Exception e)
 				{e.printStackTrace();}
 				
-				progressDialog.dismiss();
+				loadProgressDialog.dismiss();
 				//ApplicationListView.this.finish();
 				startSubActivity(i, 0);
 			}
 		}.start();	    
+	}
+	
+	public static HashMap<String, String> getApplicationsInfo()
+	{
+		return applicationInfos;
 	}
 }
