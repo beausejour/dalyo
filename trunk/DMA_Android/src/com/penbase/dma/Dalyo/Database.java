@@ -1,28 +1,20 @@
 package com.penbase.dma.Dalyo;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-
 import com.penbase.dma.Binary.Binary;
-import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpBinarySync;
-import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
-import com.penbase.dma.xml.XmlTag;
+import com.penbase.dma.XmlElement.XmlTag;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.util.Log;
 
 public class Database {
@@ -40,6 +32,7 @@ public class Database {
 	private static final int ADDVALUE = 1;
 	private static final int UPDATEVALUE = 2;
 	private static final int DELETEVALUE = 3;
+	private static ArrayList<ArrayList<String>> foreignKeyList;
 	
 	public Database(Context c, Document d)
 	{
@@ -47,6 +40,7 @@ public class Database {
 		this.dbDocument = d;
 		tablesMap = new HashMap<String, String>();
 		fieldsMap = new HashMap<String, String>();
+		foreignKeyList = new ArrayList<ArrayList<String>>();
 		createDatabase();
 	}	
 	
@@ -94,10 +88,10 @@ public class Database {
 		    NodeList fieldList = table.getChildNodes();
 		    int fieldLen = fieldList.getLength();
 		    
-		    ArrayList<String> fieldHasFk = new ArrayList<String>();
-		    ArrayList<String> fkTableList = new ArrayList<String>();
-		    ArrayList<String> fkFieldList = new ArrayList<String>();
+		    //foreignKey has 4 elements (tid, fid, ftid, ffid)
+		    ArrayList<String> foreignKey = new ArrayList<String>();		    
 		    
+		    ArrayList<ArrayList<String>> foreignKeyTable = new ArrayList<ArrayList<String>>();
 		    if (fieldLen > 0)
 		    {		    	
 		    	for (int j=0; j<fieldLen; j++)
@@ -132,15 +126,17 @@ public class Database {
 		    				&& (field.hasAttribute(XmlTag.TAG_FIELD_FORIEIGNFIELD)))
 		    		{		    			
 		    			String foreignTableId = field.getAttribute(XmlTag.TAG_FIELD_FORIEIGNTABLE);
-		    			String foreignFieldId = field.getAttribute(XmlTag.TAG_FIELD_FORIEIGNFIELD); 
-		    			String foreignTableName = "Table_"+foreignTableId;
-		    			String foreignFieldName = "Field_"+foreignFieldId;
+		    			String foreignFieldId = field.getAttribute(XmlTag.TAG_FIELD_FORIEIGNFIELD); 		    			
 		    			
 		    			createquery += fieldName+" "+fieldType+", ";
 		    			
-		    			fieldHasFk.add(fieldName);
-		    			fkTableList.add(foreignTableName);
-		    			fkFieldList.add(foreignFieldName);		    					    			
+		    			foreignKey.add(tableId);
+		    			foreignKey.add(fieldId);
+		    			foreignKey.add(foreignTableId);
+		    			foreignKey.add(foreignFieldId);
+		    			foreignKeyList.add(foreignKey);	
+		    			
+		    			foreignKeyTable.add(foreignKey);
 		    		}
 		    		else
 		    		{
@@ -149,13 +145,13 @@ public class Database {
 		    	}
 		    }
 		    
-		    if (fieldHasFk.size() > 0)
-		    {
-		    	int listSize = fieldHasFk.size();
-		    	
-		    	for (int k=0; k<listSize; k++)
-		    	{
-		    		createquery += " FOREIGN KEY ("+fieldHasFk.get(k)+") REFERENCES "+fkTableList.get(k)+"("+fkFieldList.get(k)+"), ";		    		
+		    int fksSize = foreignKeyTable.size();
+		    if (fksSize > 0)
+		    {		    	
+		    	for (int k=0; k<fksSize; k++)
+		    	{		    				    	
+		    		createquery += " FOREIGN KEY ("+fieldPre+foreignKeyTable.get(k).get(1)+") REFERENCES "+
+		    		tablePre+foreignKeyTable.get(k).get(2)+"("+fieldPre+foreignKeyTable.get(k).get(3)+"), ";
 		    	}
 		    }
 		    
@@ -334,10 +330,10 @@ public class Database {
 	
 	public void deleteTable()
 	{
-		sqlite.execSQL("DROP TABLE IF EXISTS CommandeProduit");
+		/*sqlite.execSQL("DROP TABLE IF EXISTS CommandeProduit");
 		sqlite.execSQL("DROP TABLE IF EXISTS PRODUIT");
 		sqlite.execSQL("DROP TABLE IF EXISTS COMMANDE");
-		sqlite.execSQL("DROP TABLE IF EXISTS CLIENT");
+		sqlite.execSQL("DROP TABLE IF EXISTS CLIENT");*/
 		sqlite.execSQL("DROP TABLE IF EXISTS Table_2");
 		sqlite.execSQL("DROP TABLE IF EXISTS Table_3");
 		sqlite.execSQL("DROP TABLE IF EXISTS Table_0");
@@ -349,11 +345,80 @@ public class Database {
 		
 	}
 	
-	public static Cursor selectQuery(String table, String field)
+	public static Cursor selectQuery(ArrayList<String> tables, ArrayList<ArrayList<String>> columns)
 	{
-		Cursor result = sqlite.query(true, table, new String[] {field}, null, null, null, null, null);
+    	//String table = "COMMANDE, CLIENT";
+    	//String[] projectionIn = new String[]{"CLIENT.nom", "COMMANDE.ID", "COMMANDE.date"};
+    	//String selection = "COMMANDE.ID = CLIENT.ID AND COMMANDE.date = CLIENT.nom";    	
+		
+		Cursor result = null;
+		String table = createTableString(tables);
+		Log.i("info", "table "+table);
+		String[] projectionIn = createProjectionStrings(columns);
+		Log.i("info", "projectionIn size "+projectionIn.length);
+		String selection = createSelectionString(tables);
+		Log.i("info", "selection "+selection);
+		result = sqlite.query(table, projectionIn, selection, null, null, null, null);
 		return result;
 	}
+	
+	public static String createTableString(ArrayList<String> tables)
+	{
+		String result = "";
+		int size = tables.size();
+		for (int i=0; i<size; i++)
+		{
+			if (i != size-1)
+			{
+				result += tablePre+tables.get(i)+", ";
+			}
+			else
+			{
+				result += tablePre+tables.get(i);
+			}
+		}
+		return result;
+	}
+	
+	public static String[] createProjectionStrings(ArrayList<ArrayList<String>> columns)
+	{
+		int size = columns.size();
+		String[] result = new String[size];
+		Log.i("info", "columns size "+size);
+		for (int i=0; i<size; i++)
+		{
+			ArrayList<String> column = columns.get(i);
+			result[i] = tablePre+column.get(0)+"."+fieldPre+column.get(1);
+		}
+		return result;
+	}
+	
+	public static String createSelectionString(ArrayList<String> tables)
+	{
+		String result = "";
+		int size = foreignKeyList.size();
+		Log.i("info", "foreignkeylist size "+size);
+		for (int i=0; i<size; i++)
+		{
+			ArrayList<String> foreignKey = foreignKeyList.get(i);
+			if ((tables.contains(foreignKey.get(0))) && (tables.contains(foreignKey.get(2))))
+			{
+				if (i != size-1)
+				{
+					result += tablePre+foreignKey.get(0)+"."+fieldPre+foreignKey.get(1)+" = "+
+					tablePre+foreignKey.get(2)+"."+fieldPre+foreignKey.get(3)+" AND "; 
+				}
+				else
+				{
+					result += tablePre+foreignKey.get(0)+"."+fieldPre+foreignKey.get(1)+" = "+
+					tablePre+foreignKey.get(2)+"."+fieldPre+foreignKey.get(3);
+				}
+				Log.i("info", "result "+i+" "+result);
+			}
+		}
+		return result;
+	}
+	
 	
 	public static int getTableNb()
 	{		
@@ -363,5 +428,41 @@ public class Database {
 	public static Set<String> getTableIds()
 	{
 		return tablesMap.keySet();
+	}
+	
+	public boolean hasForeignKey(String fid)
+	{
+		boolean result = false;
+		int size = foreignKeyList.size();
+		int i=0;
+		while (i<size)
+		{
+			if (fid.equals(foreignKeyList.get(i).get(0)))
+			{
+				result = true;
+				i = size;
+			}
+			i++;
+		}
+		
+		return result;
+	}
+	
+	public ArrayList<String> getForeignKey(String fid)
+	{
+		ArrayList<String> result = new ArrayList<String>();
+		int size = foreignKeyList.size();
+		int i=0;
+		while (i<size)
+		{
+			if (fid.equals(foreignKeyList.get(i).get(0)))
+			{
+				result.add(foreignKeyList.get(i).get(1));
+				result.add(foreignKeyList.get(i).get(2));
+				i = size;
+			}
+			i++;
+		}
+		return result;
 	}
 }

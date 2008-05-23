@@ -1,15 +1,14 @@
 package com.penbase.dma.Dalyo.Component;
 
 import java.util.*;
-
+import com.penbase.dma.Dalyo.Component.Custom.ComboBox;
 import com.penbase.dma.Dalyo.Component.Custom.DataView;
+import com.penbase.dma.Dalyo.Component.Custom.DateField;
 import com.penbase.dma.Dalyo.Component.Custom.NumberBox;
+import com.penbase.dma.Dalyo.Component.Custom.TimeField;
 import com.penbase.dma.Dalyo.Function.Function;
-import com.penbase.dma.view.ApplicationView;
-import com.penbase.dma.xml.XmlTag;
-import android.app.AlertDialog;
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
+import com.penbase.dma.XmlElement.XmlTag;
+
 import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -17,8 +16,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.*;
-import android.widget.DatePicker.OnDateSetListener;
-import android.widget.TimePicker.OnTimeSetListener;
 
 
 public class Component{
@@ -34,18 +31,7 @@ public class Component{
 	//Variables for checkbox
 	private ArrayList<String> itemList = null;
 	private String checked;	
-	
-	//Variables for DateField 
-	private int year;
-	private int month;
-	private int day;
-	private Button dateButton;
-	
-	//Variables for TimeField
-	private int hour;
-	private int minute;
-	private Button timeButton;
-	
+
 	//Variable for image
 	private int background;
 	private String extension;
@@ -149,10 +135,10 @@ public class Component{
 		return id;
 	}
 	
-	public String getType()
+	/*public String getType()
 	{
 		return type;
-	}
+	}*/
 	
 	private void setView()
 	{
@@ -187,23 +173,7 @@ public class Component{
 		else if(type.equals(XmlTag.TAG_COMPONENT_COMBOBOX))
 		{
 			Log.i("info", "combobox");
-			Spinner combobox = new Spinner(context);			
-			/*int itemNb = itemList.size();
-			ArrayList<TextView> tvList = new ArrayList<TextView>();
-			for (int i=0; i<itemNb; i++)
-			{
-				TextView textview = new TextView(context);
-				textview.setText(itemList.get(i));
-				Log.i("info", "combo item "+itemList.get(i));
-				textview.setTypeface(setFontType(fontType));
-				textview.setTextSize(setFontSize(fontSize));
-				tvList.add(textview);
-			}
-			ArrayAdapter<TextView> spinnerArrayAdapter = new ArrayAdapter<TextView>(context,
-			        android.R.layout.simple_spinner_item, tvList);*/
-			ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(context,
-			        android.R.layout.simple_spinner_item, itemList);
-			combobox.setAdapter(spinnerArrayAdapter);
+			ComboBox combobox = new ComboBox(context, itemList);
 			view = combobox;
 		}
 		else if(type.equals(XmlTag.TAG_COMPONENT_LABEL))
@@ -218,68 +188,18 @@ public class Component{
 		else if(type.equals(XmlTag.TAG_COMPONENT_DATEFIELD))
 		{
 			Log.i("info", "datefield");
-			
-			dateButton = new Button(context);
-	        Calendar calendar = Calendar.getInstance();
-	        year = calendar.get(Calendar.YEAR);
-	        month = calendar.get(Calendar.MONTH);
-	        day = calendar.get(Calendar.DAY_OF_MONTH);
-	        String currentDate = day+"/"+month+"/"+year;
-	        dateButton.setText(currentDate);
-	        dateButton.setTypeface(setFontType(fontType));
-	        dateButton.setTextSize(setFontSize(fontSize));
-	        dateButton.setOnClickListener(new OnClickListener()
-	        {
-				@Override
-				public void onClick(View arg0) 
-				{
-					 new DatePickerDialog(context, new OnDateSetListener()
-					 {
-						@Override
-						public void dateSet(DatePicker arg0, int arg1, int arg2, int arg3) 
-						{
-							year = arg1;
-							month = arg2;
-							day = arg3;
-							String newDate = day+"/"+month+"/"+year;
-							dateButton.setText(newDate);
-						}						 
-					 }, year, month, day, Calendar.MONDAY).show();
-				}	        	
-	        });
-			view = dateButton;
+			DateField datefield = new DateField(context);
+			datefield.setTypeface(setFontType(fontType));
+			datefield.setTextSize(setFontSize(fontSize));
+			view = datefield;
 		}
 		else if(type.equals(XmlTag.TAG_COMPONENT_TIMEFIELD))
 		{
 			Log.i("info", "timefield");
-			
-			timeButton = new Button(context);
-			Calendar calendar = Calendar.getInstance();
-			hour = calendar.get(Calendar.HOUR);
-	        minute = calendar.get(Calendar.MINUTE);
-	        String currentTime = hour+":"+minute;
-	        timeButton.setText(currentTime);
-	        timeButton.setTypeface(setFontType(fontType));
-	        timeButton.setTextSize(setFontSize(fontSize));
-	        timeButton.setOnClickListener(new OnClickListener()
-	        {
-				@Override
-				public void onClick(View arg0) 
-				{
-					new TimePickerDialog(context, new OnTimeSetListener()
-					{
-						@Override
-						public void timeSet(TimePicker arg0, int arg1, int arg2) 
-						{
-							hour = arg1;
-							minute = arg2;
-							String newTime = hour+":"+minute;
-							timeButton.setText(newTime);
-						}					
-					}, "Set the time", hour, minute, false).show();
-				}	        	
-	        });
-			view = timeButton;
+			TimeField timefield = new TimeField(context);
+			timefield.setTypeface(setFontType(fontType));
+			timefield.setTextSize(setFontSize(fontSize));
+			view = timefield;
 		}
 		else if(type.equals(XmlTag.TAG_COMPONENT_TEXTFIELD))
 		{
@@ -358,7 +278,8 @@ public class Component{
 	
 	public void setOnclickFunction(final String funcName, View view)
 	{
-		view.setOnClickListener(new OnClickListener(){
+		view.setOnClickListener(new OnClickListener()
+		{
 			@Override
 			public void onClick(View arg0) 
 			{
@@ -412,6 +333,7 @@ public class Component{
 		if (getView() instanceof DataView)
 		{
 			Log.i("info", "instance of DataView");
+			((DataView)getView()).refresh();
 		}
 		else if (getView() instanceof Spinner)
 		{

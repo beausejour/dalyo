@@ -41,7 +41,8 @@ import org.xml.sax.SAXException;
 import com.penbase.dma.Dma;
 import com.penbase.dma.Binary.Binary;
 import com.penbase.dma.Dalyo.Database;
-import com.penbase.dma.xml.XmlTag;
+import com.penbase.dma.XmlElement.XmlTag;
+
 import android.app.Activity;
 import android.security.MessageDigest;
 import android.util.Log;
@@ -155,6 +156,7 @@ public class DmaHttpClient extends Activity {
 
 		if (errorCode != 200)
 		{
+			new Dma().errorDialog("Connection failed");
 			return null;
 		}
 		else

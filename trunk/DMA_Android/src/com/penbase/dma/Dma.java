@@ -19,9 +19,11 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import com.penbase.dma.Dalyo.Application;
 import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
-import com.penbase.dma.view.ApplicationListView;
-import com.penbase.dma.xml.XmlTag;
+import com.penbase.dma.View.ApplicationListView;
+import com.penbase.dma.XmlElement.XmlTag;
+
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -145,7 +147,7 @@ public class Dma extends Activity implements OnClickListener{
 		
 		if (rep == null) 
 		{
-			showAlert("Alert", 1,"Error : " + client.GetLastError(), "OK", false);
+			showAlert("Alert", 1,"Error : " + client.GetLastError()+" check your username or password", "OK", false);
 		}
 		else 
 		{								
@@ -198,5 +200,10 @@ public class Dma extends Activity implements OnClickListener{
 	{
 		float result = (float) 0.1;
 		return result;
+	}
+	
+	public void errorDialog(String message)
+	{
+		new AlertDialog.Builder(this).setMessage(message).setTitle("Error").show();
 	}
 }

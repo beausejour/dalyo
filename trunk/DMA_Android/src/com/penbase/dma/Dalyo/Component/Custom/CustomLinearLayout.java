@@ -31,7 +31,7 @@ public class CustomLinearLayout extends LinearLayout {
 				ctv.setText(dataList.get(i));
 				ctv.setTypeface(Typeface.DEFAULT_BOLD);
 				int width = Integer.valueOf(widthList.get(i));				
-				this.addView(ctv, new LinearLayout.LayoutParams(width, LayoutParams.WRAP_CONTENT));
+				this.addView(ctv, new LinearLayout.LayoutParams(width, LayoutParams.WRAP_CONTENT));				
 			}			
 			setFocusable(false);
 	        setFocusableInTouchMode(false);
@@ -48,7 +48,8 @@ public class CustomLinearLayout extends LinearLayout {
 				ctv.setTextSize(DataView.getTextSize());				
 				ctv.setTypeface(DataView.getTextType());
 				int width = Integer.valueOf(widthList.get(i));				
-				this.addView(ctv, new LinearLayout.LayoutParams(width, LayoutParams.WRAP_CONTENT));
+				//this.addView(ctv, new LinearLayout.LayoutParams(width, LayoutParams.WRAP_CONTENT));
+				this.addView(ctv, new LinearLayout.LayoutParams(width, 50));
 			}
 			setFocusable(true);
 	        setFocusableInTouchMode(true);
