@@ -1,11 +1,11 @@
 package com.penbase.dma.Dalyo.Component.Custom;
 
 import java.util.ArrayList;
-
-import com.penbase.dma.view.ApplicationView;
-
-import android.app.AlertDialog;
+import com.penbase.dma.Dma;
+import com.penbase.dma.Dalyo.Database;
+import com.penbase.dma.View.ApplicationView;
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
@@ -24,7 +24,7 @@ public class DataView extends ListView{
 	private Context context;
 	private ArrayList<String> pwidthList;
 	private ArrayList<String> lwidthList;
-	private ArrayList<ArrayList<String>> columnInfos = new ArrayList<ArrayList<String>>();
+	private ArrayList<ArrayList<String>> columns = new ArrayList<ArrayList<String>>();
 	private String tableId;
 	
 	public DataView(Context c, String tid) 
@@ -36,7 +36,7 @@ public class DataView extends ListView{
 		borderPaint.setStyle(Style.STROKE);
 		this.context = c;
 		this.tableId = tid;
-		adapter = new DataViewAdapter(context, tid);
+		adapter = new DataViewAdapter(context);
 		pwidthList = new ArrayList<String>();
 		lwidthList = new ArrayList<String>();		
 		
@@ -83,19 +83,21 @@ public class DataView extends ListView{
 	{
 		if (list.size() > 0)
 		{
-			this.columnInfos = list;
 			Log.i("info", "size "+list.size());
 			int listSize = list.size();
-			ArrayList<String> headerList = new ArrayList<String>();
-			
+			ArrayList<String> headerList = new ArrayList<String>();			
 			for (int i=0; i<listSize; i++)
 			{
+				ArrayList<String> column = new ArrayList<String>();
+				column.add(list.get(i).get(0));		//tid
+				column.add(list.get(i).get(1));		//fid
 				headerList.add(list.get(i).get(2));
 				pwidthList.add(list.get(i).get(3));
 				lwidthList.add(list.get(i).get(4));
 				Log.i("info", "header "+list.get(i).get(2)+" pwidth "+list.get(i).get(3)+" lwidth "+list.get(i).get(4));
+				columns.add(column);
 			}
-	        
+			
 			if (ApplicationView.getOrientation() == 0)
 			{
 				CustomLinearLayout header = new CustomLinearLayout(context, headerList, pwidthList, true);
@@ -119,27 +121,43 @@ public class DataView extends ListView{
 	public ArrayList<String> getLWidthList()
 	{
 		return lwidthList;
-	}
-	
-	public void addData()
-	{
-		ArrayList<String> data4 = new ArrayList<String>();
-        data4.add("data9");
-        data4.add("data10");
-        CustomLinearLayout layout4 = new CustomLinearLayout(context, data4, getPWidthList(), false);
-        adapter.addItem(layout4);
-        adapter.notifyDataSetChanged();
-	}
+	}	
 	
 	public void refresh()
 	{
 		if (tableId.equals(""))
 		{
-			new AlertDialog.Builder(context).setMessage("Check your dataview setting").setTitle("Error").show();
+			new Dma().errorDialog("Check your dataview setting");
 		}
 		else
 		{
-			
+			int columnNb = columns.size();
+			ArrayList<String> tables = new ArrayList<String>();
+			tables.add(tableId);
+			for (int i=0; i<columnNb; i++)
+			{
+				ArrayList<String> column = columns.get(i);
+				
+				if (!tables.contains(column.get(0)))
+				{
+					tables.add(column.get(0));
+				}
+			}
+			Cursor cursor = Database.selectQuery(tables, columns);
+			cursor.first();
+	    	for (int i=0; i<cursor.count(); i++)
+	    	{
+	    		ArrayList<String> data = new ArrayList<String>();
+	    		for (int j=0; j<columns.size(); j++)
+	    		{	    			
+	    			data.add(cursor.getString(j));
+	    			Log.i("info", "value in row "+i+" column "+j+" "+cursor.getString(j));
+	    		}
+	    		CustomLinearLayout layout = new CustomLinearLayout(context, data, getPWidthList(), false);
+	            adapter.addItem(layout);
+	            adapter.notifyDataSetChanged();
+	    		cursor.next();
+	    	}
 		}
 	}
 }

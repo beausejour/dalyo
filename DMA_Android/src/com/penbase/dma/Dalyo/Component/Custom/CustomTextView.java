@@ -16,7 +16,7 @@ public class CustomTextView extends TextView{
 		 borderPaint = new Paint();
          borderPaint.setARGB(255, 255, 255, 255);
          borderPaint.setAntiAlias(true);
-         borderPaint.setStyle(Style.STROKE);
+         borderPaint.setStyle(Style.STROKE);         
 	}
 
 	@Override

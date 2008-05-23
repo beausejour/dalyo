@@ -8,14 +8,11 @@ import android.widget.BaseAdapter;
 
 public class DataViewAdapter extends BaseAdapter{
 	private Context context;
-	private String tableId;
 	private ArrayList<CustomLinearLayout> items = new ArrayList<CustomLinearLayout>();
-	private ArrayList<ArrayList<String>> dataList = new ArrayList<ArrayList<String>>();
 	
-	public DataViewAdapter(Context c, String tid) 
+	public DataViewAdapter(Context c) 
 	{
 		this.context = c;
-		this.tableId = tid;
 	}
 
 	@Override
