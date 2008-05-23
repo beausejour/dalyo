@@ -58,11 +58,14 @@ public class XmlTag {
     public static final String TAG_COMPONENT_PICTUREBOX = "pb";
     public static final String TAG_COMPONENT_RADIOBUTTON = "rb";
     public static final String TAG_COMPONENT_TEXTFIELD = "t";
+    public static final String TAG_COMPONENT_TEXTFIELD_MULTI = "ml";
+    public static final String TAG_COMPONENT_TEXTFIELD_EDIT = "ed";
     public static final String TAG_COMPONENT_TEXTZONE = "tz";
     public static final String TAG_COMPONENT_TIMEFIELD = "tf";                      
     public static final String TAG_COMPONENT_VIDEOBOX = "vd";               
     
     //Common component attributes
+    public static final String TAG_COMPONENT_COMMON_ALIGN = "a";
     public static final String TAG_COMPONENT_COMMON_BACKGROUND = "bg";
     public static final String TAG_COMPONENT_COMMON_FONTSIZE = "fs";
     public static final String TAG_COMPONENT_COMMON_FONTTYPE = "ft";                

@@ -3,6 +3,7 @@ package com.penbase.dma.Dalyo.Component.Custom;
 import java.util.Calendar;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -14,7 +15,7 @@ public class TimeField extends Button implements OnClickListener{
 	private int minute;
 	private Context context;
 	
-	public TimeField(Context context) 
+	public TimeField(Context context, Typeface tf, float fs) 
 	{
 		super(context);
 		this.context = context;
@@ -24,6 +25,8 @@ public class TimeField extends Button implements OnClickListener{
         String currentTime = hour+":"+minute;
         this.setText(currentTime);
 		this.setOnClickListener(this);
+		this.setTypeface(tf);
+		this.setTextSize(fs);
 	}
 
 	@Override

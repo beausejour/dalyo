@@ -8,11 +8,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
-import com.penbase.dma.Dma;
 import com.penbase.dma.View.ApplicationListView;
 import com.penbase.dma.View.ApplicationView;
 import com.penbase.dma.XmlElement.XmlScriptAttribute;
@@ -23,7 +20,6 @@ public class Function {
 	private Context context;
 	private HashMap<String, ArrayList<String>> varMap;
 	private HashMap<String, Integer> funcMap;
-	private ProgressDialog syncProgressDialog;
 	
 	public Function(Context c)
 	{

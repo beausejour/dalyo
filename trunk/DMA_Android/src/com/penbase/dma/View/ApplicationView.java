@@ -3,18 +3,12 @@ package com.penbase.dma.View;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.w3c.dom.*;
-
-import com.penbase.dma.Dma;
 import com.penbase.dma.R;
 import com.penbase.dma.Dalyo.Database;
 import com.penbase.dma.Dalyo.Component.Component;
 import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
 import com.penbase.dma.XmlElement.XmlTag;
-
 import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.DeadObjectException;
 import android.util.Log;
@@ -29,7 +23,6 @@ public class ApplicationView extends Activity {
 	public static ApplicationView applicationView;
 	
 	private static DmaHttpClient client;
-//	public static ArrayList<AbsoluteLayout> layoutList;
 	private static HashMap<String, AbsoluteLayout> layoutsMap;
 	public static final int BACK_ID = Menu.FIRST;
 	public static final int NEXT_ID = Menu.FIRST+1;
@@ -154,13 +147,37 @@ public class ApplicationView extends Activity {
 							(!element.getNodeName().equals(XmlTag.TAG_COMPONENT_COMBOBOX)) &&
 							(!element.getNodeName().equals(XmlTag.TAG_COMPONENT_CHECKBOX)) &&
 							(!element.getNodeName().equals(XmlTag.TAG_COMPONENT_DATAVIEW)) &&
-							(!element.getNodeName().equals(XmlTag.TAG_COMPONENT_BUTTON)))
+							(!element.getNodeName().equals(XmlTag.TAG_COMPONENT_BUTTON)) &&
+							(!element.getNodeName().equals(XmlTag.TAG_COMPONENT_LABEL)) &&
+							(!element.getNodeName().equals(XmlTag.TAG_COMPONENT_TEXTFIELD)))
 					{
 						component = new Component(this, element.getNodeName(),
 								element.getAttribute(XmlTag.TAG_COMPONENT_COMMON_ID),
 								element.getAttribute(XmlTag.TAG_COMPONENT_COMMON_LABEL),
 								element.getAttribute(XmlTag.TAG_COMPONENT_COMMON_FONTSIZE), 
 								element.getAttribute(XmlTag.TAG_COMPONENT_COMMON_FONTTYPE));
+					}
+					else if (element.getNodeName().equals(XmlTag.TAG_COMPONENT_LABEL))
+					{
+						component = new Component(this, element.getNodeName(),
+								element.getAttribute(XmlTag.TAG_COMPONENT_COMMON_ID),
+								element.getAttribute(XmlTag.TAG_COMPONENT_COMMON_LABEL),
+								element.getAttribute(XmlTag.TAG_COMPONENT_COMMON_FONTSIZE), 
+								element.getAttribute(XmlTag.TAG_COMPONENT_COMMON_FONTTYPE),
+								element.getAttribute(XmlTag.TAG_COMPONENT_COMMON_ALIGN), 
+								element.hasAttribute(XmlTag.TAG_COMPONENT_COMMON_ALIGN));
+					}
+					else if (element.getNodeName().equals(XmlTag.TAG_COMPONENT_TEXTFIELD))
+					{
+						Log.i("info", "editable "+element.hasAttribute(XmlTag.TAG_COMPONENT_TEXTFIELD_EDIT));
+						component = new Component(this, element.getNodeName(),
+								element.getAttribute(XmlTag.TAG_COMPONENT_COMMON_ID),
+								element.getAttribute(XmlTag.TAG_COMPONENT_COMMON_FONTSIZE), 
+								element.getAttribute(XmlTag.TAG_COMPONENT_COMMON_FONTTYPE),
+								element.getAttribute(XmlTag.TAG_COMPONENT_COMMON_ALIGN), 
+								element.hasAttribute(XmlTag.TAG_COMPONENT_COMMON_ALIGN),
+								element.getAttribute(XmlTag.TAG_COMPONENT_TEXTFIELD_MULTI),
+								element.hasAttribute(XmlTag.TAG_COMPONENT_TEXTFIELD_EDIT));
 					}
 					else if (element.getNodeName().equals(XmlTag.TAG_COMPONENT_CHECKBOX))
 					{
