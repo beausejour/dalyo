@@ -1,4 +1,4 @@
-package com.penbase.dma.Dalyo.Component.Custom;
+package com.penbase.dma.Dalyo.Component.Custom.Dataview;
 
 import java.util.ArrayList;
 import com.penbase.dma.Dma;

@@ -3,6 +3,7 @@ package com.penbase.dma.Dalyo.Component.Custom;
 import java.util.Calendar;
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -16,7 +17,7 @@ public class DateField extends Button implements OnClickListener{
 	private int day;
 	private Context context;
 	
-	public DateField(Context c) 
+	public DateField(Context c, Typeface tf, float fs) 
 	{
 		super(c);
 		this.context = c;
@@ -26,7 +27,8 @@ public class DateField extends Button implements OnClickListener{
         day = calendar.get(Calendar.DAY_OF_MONTH);
         String currentDate = day+"/"+month+"/"+year;
         this.setText(currentDate);
-
+        this.setTypeface(tf);
+		this.setTextSize(fs);
         this.setOnClickListener(this);
 	}
 
