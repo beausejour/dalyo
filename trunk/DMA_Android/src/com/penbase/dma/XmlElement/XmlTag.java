@@ -16,8 +16,8 @@ public class XmlTag {
     //Design
     public static final String TAG_DESIGN_S = "s";
     public static final String TAG_DESIGN_S_G = "g";
+    public static final String TAG_DESIGN_S_G_SM = "sm";
     public static final String TAG_DESIGN_S_G_FID = "fid";
-    public static final String TAG_DESIGN_S_G_SM = "sm";    
     public static final String TAG_DESIGN_S_MM = "mm";
     public static final String TAG_DESIGN_S_MM_E = "e";             
 
@@ -28,9 +28,7 @@ public class XmlTag {
     public static final String TAG_DESIGN_F_FS = "fs";
     public static final String TAG_DESIGN_F_H = "h";
     public static final String TAG_DESIGN_F_ID = "id";
-    public static final String TAG_DESIGN_F_M = "m";
-    public static final String TAG_DESIGN_F_ONL = "onl";
-    public static final String TAG_DESIGN_F_TID = "tid";            
+    public static final String TAG_DESIGN_F_M = "m";                
     public static final String TAG_DESIGN_F_W = "w";
     
     //Component elements
@@ -41,13 +39,15 @@ public class XmlTag {
     public static final String TAG_COMPONENT_COMBOBOX = "cb";
     public static final String TAG_COMPONENT_COMBOBOX_ITEM = "icb";
     public static final String TAG_COMPONENT_COMBOBOX_ITEM_VALUE = "v";
+    public static final String TAG_COMPONENT_COMBOBOX_LABELTABLE = "lst";
+    public static final String TAG_COMPONENT_COMBOBOX_LABELFIELD = "lsf";
+    public static final String TAG_COMPONENT_COMBOBOX_VALUETABLE = "vst";
+    public static final String TAG_COMPONENT_COMBOBOX_VALUEFIELD = "vsf";
     public static final String TAG_COMPONENT_DATAVIEW = "dv";
     public static final String TAG_COMPONENT_DATAVIEW_COLUMN = "dvc";
     public static final String TAG_COMPONENT_DATAVIEW_COLUMN_HEADER = "hdr";
     public static final String TAG_COMPONENT_DATAVIEW_COLUMN_CALC = "calc";
-    public static final String TAG_COMPONENT_DATAVIEW_FIELDID = "fid";
-    public static final String TAG_COMPONENT_DATAVIEW_PAGESIZE = "dvps";
-    public static final String TAG_COMPONENT_DATAVIEW_TABLEID = "tid";      
+    public static final String TAG_COMPONENT_DATAVIEW_PAGESIZE = "dvps";   
     public static final String TAG_COMPONENT_DATEFIELD = "df";
     public static final String TAG_COMPONENT_GAUGE = "g";
     public static final String TAG_COMPONENT_IMAGE = "i";   
@@ -79,6 +79,8 @@ public class XmlTag {
     public static final String TAG_COMPONENT_COMMON_PCOORDY = "y";
     public static final String TAG_COMPONENT_COMMON_PHEIGHT = "h";
     public static final String TAG_COMPONENT_COMMON_PWIDTH = "w";
+    public static final String TAG_COMPONENT_COMMON_TABLEID = "tid";
+    public static final String TAG_COMPONENT_COMMON_FIELDID = "fid";
 
     //Database element
     public static final String TAG_DB = "db";
@@ -112,6 +114,8 @@ public class XmlTag {
 
     //Events
     public static final String TAG_EVENT_ONCLICK = "onc";
+    public static final String TAG_EVENT_ONLOAD = "onl";
+    public static final String TAG_EVENT_ONCHANGE = "ong";
     
     //Behaviors
     public static final String TAG_SCRIPT = "s";
@@ -125,6 +129,13 @@ public class XmlTag {
     public static final String TAG_SCRIPT_KEYWOED = "kw";
     public static final String TAG_SCRIPT_SET = "set";
     public static final String TAG_SCRIPT_VAR = "v";
+    public static final String TAG_SCRIPT_OPERATOR = "o";
+    public static final String TAG_SCRIPT_RIGHT = "r";
+    public static final String TAG_SCRIPT_LEFT = "l";
+    public static final String TAG_SCRIPT_IF = "i";
+    public static final String TAG_SCRIPT_THEN = "t";
+    public static final String TAG_SCRIPT_CONDITIONS = "cds";
+    public static final String TAG_SCRIPT_CONDITION = "cd";
     
     //Common behavior attributes
     public static final String TAG_SCRIPT_NAME = "n";

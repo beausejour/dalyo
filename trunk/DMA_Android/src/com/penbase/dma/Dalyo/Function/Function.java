@@ -1,16 +1,22 @@
 package com.penbase.dma.Dalyo.Function;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.util.Log;
-import com.penbase.dma.View.ApplicationListView;
+
+import com.penbase.dma.Dalyo.Record;
+import com.penbase.dma.Dalyo.Function.Custom.Clear;
+import com.penbase.dma.Dalyo.Function.Custom.DisplayForm;
+import com.penbase.dma.Dalyo.Function.Custom.GetSelectedRecord;
+import com.penbase.dma.Dalyo.Function.Custom.Refresh;
+import com.penbase.dma.Dalyo.Function.Custom.SetCurrentRecord;
+import com.penbase.dma.Dalyo.Function.Custom.ShowMessage;
+import com.penbase.dma.Dalyo.Function.Custom.Synchronize;
 import com.penbase.dma.View.ApplicationView;
 import com.penbase.dma.XmlElement.XmlScriptAttribute;
 import com.penbase.dma.XmlElement.XmlTag;
@@ -18,8 +24,9 @@ import com.penbase.dma.XmlElement.XmlTag;
 public class Function {
 	private Document behaviorDocument = ApplicationView.behaviorDocument;
 	private Context context;
-	private HashMap<String, ArrayList<String>> varMap;
+	private static HashMap<String, ArrayList<String>> varMap;
 	private HashMap<String, Integer> funcMap;
+	private Record record;
 	
 	public Function(Context c)
 	{
@@ -71,26 +78,27 @@ public class Function {
 				int itemLen = nodesList.getLength();
 				Log.i("info", "itemlen "+nodesList.getLength());
 
-				for (int j=0; j<itemLen; j++)
+				for (int i=0; i<itemLen; i++)
 				{
-					Element element = (Element) nodesList.item(j);
+					Element element = (Element) nodesList.item(i);
 					Log.i("info", "element name "+element.getNodeName()+" paramater number "+
 							element.getElementsByTagName(XmlTag.TAG_SCRIPT_PARAMETER).getLength());
 					if ((element.getNodeName().equals(XmlTag.TAG_SCRIPT_CALL)) && 
 							(element.hasAttribute(XmlTag.TAG_SCRIPT_CALL_FUNCTION)))
 					{
-						Log.i("info", "if loop");
+						Log.i("info", "if loop function "+element.getAttribute(XmlTag.TAG_SCRIPT_CALL_FUNCTION)+
+								" namespace "+element.getAttribute(XmlTag.TAG_SCRIPT_CALL_NAMESPACE));
 						if ((element.getAttribute(XmlTag.TAG_SCRIPT_CALL_FUNCTION).equals(XmlScriptAttribute.FUNCTION_ALERT)) ||
 								(element.getAttribute(XmlTag.TAG_SCRIPT_CALL_FUNCTION).equals(XmlScriptAttribute.FUNCTION_ERROR)) &&
 								(element.getAttribute(XmlTag.TAG_SCRIPT_CALL_NAMESPACE).equals(XmlScriptAttribute.NAMESPACE_RUNTIME)))
 						{
 							Log.i("info", "call showalertdialog");
-							ShowAlertDialog(element.getElementsByTagName(XmlTag.TAG_SCRIPT_PARAMETER), params);
+							new ShowMessage(context, element.getElementsByTagName(XmlTag.TAG_SCRIPT_PARAMETER), params);
 						}
 						else if ((element.getAttribute(XmlTag.TAG_SCRIPT_CALL_FUNCTION).equals(XmlScriptAttribute.FUNCTION_NAVIGATE)) &&
 								(element.getAttribute(XmlTag.TAG_SCRIPT_CALL_NAMESPACE).equals(XmlScriptAttribute.NAMESPACE_FORM)))
 						{
-							ChangeContentView(element.getElementsByTagName(XmlTag.TAG_SCRIPT_PARAMETER), params);
+							new DisplayForm(element.getElementsByTagName(XmlTag.TAG_SCRIPT_PARAMETER), params);
 						}
 						else if ((element.getAttribute(XmlTag.TAG_SCRIPT_CALL_NAMESPACE).equals(XmlScriptAttribute.NAMESPACE_USER)) &&
 								(element.getElementsByTagName(XmlTag.TAG_SCRIPT_PARAMETER).getLength() > 0))
@@ -102,8 +110,48 @@ public class Function {
 								(element.getAttribute(XmlTag.TAG_SCRIPT_CALL_FUNCTION).equals(XmlScriptAttribute.FUNCTION_SYNC)))
 						{
 							Log.i("info", "call sync function");
-							Synchronize(element.getElementsByTagName(XmlTag.TAG_SCRIPT_PARAMETER), params);
+							new Synchronize(element.getElementsByTagName(XmlTag.TAG_SCRIPT_PARAMETER), params);
 						}
+						else if ((element.getAttribute(XmlTag.TAG_SCRIPT_CALL_NAMESPACE).equals(XmlScriptAttribute.NAMESPACE_COMPONENT_DV)) &&
+								(element.getAttribute(XmlTag.TAG_SCRIPT_CALL_FUNCTION).equals(XmlScriptAttribute.FUNCTION_REFRESH)))
+						{
+							Log.i("info", "call refresh function");
+							new Refresh(XmlScriptAttribute.NAMESPACE_COMPONENT_DV, element.getElementsByTagName(XmlTag.TAG_SCRIPT_PARAMETER));
+						}
+						else if ((element.getAttribute(XmlTag.TAG_SCRIPT_CALL_NAMESPACE).equals(XmlScriptAttribute.NAMESPACE_DB_TABLE)) &&
+								(element.getAttribute(XmlTag.TAG_SCRIPT_CALL_FUNCTION).equals(XmlScriptAttribute.FUNCTION_CLEAR)))
+						{
+							Log.i("info", "call clear function");
+							new Clear(element.getElementsByTagName(XmlTag.TAG_SCRIPT_PARAMETER));
+						}
+						else if ((element.getAttribute(XmlTag.TAG_SCRIPT_CALL_NAMESPACE).equals(XmlScriptAttribute.NAMESPACE_DB_TABLE)) &&
+								(element.getAttribute(XmlTag.TAG_SCRIPT_CALL_FUNCTION).equals(XmlScriptAttribute.FUNCTION_STARTNRECORD)))
+						{
+							Log.i("info", "call startnewrecord function");
+							record = new Record();
+						}
+						else if ((element.getAttribute(XmlTag.TAG_SCRIPT_CALL_NAMESPACE).equals(XmlScriptAttribute.NAMESPACE_DB_TABLE)) &&
+								(element.getAttribute(XmlTag.TAG_SCRIPT_CALL_FUNCTION).equals(XmlScriptAttribute.FUNCTION_CANCELNRECORD)))
+						{
+							Log.i("info", "call cancelnewrecord function");
+							
+						}
+						else if ((element.getAttribute(XmlTag.TAG_SCRIPT_CALL_NAMESPACE).equals(XmlScriptAttribute.NAMESPACE_FORM)) &&
+								(element.getAttribute(XmlTag.TAG_SCRIPT_CALL_FUNCTION).equals(XmlScriptAttribute.FUNCTION_SETCURRENTRECORD)))
+						{
+							Log.i("info", "call setcurrentrecord function");
+							new SetCurrentRecord(element.getElementsByTagName(XmlTag.TAG_SCRIPT_PARAMETER));
+						}
+						else if ((element.getAttribute(XmlTag.TAG_SCRIPT_CALL_NAMESPACE).equals(XmlScriptAttribute.NAMESPACE_COMPONENT_CB)) &&
+								(element.getAttribute(XmlTag.TAG_SCRIPT_CALL_FUNCTION).equals(XmlScriptAttribute.FUNCTION_GETSELECTEDRECORD)))
+						{
+							Log.i("info", "call getSelectedRecord function");
+							new GetSelectedRecord(element.getElementsByTagName(XmlTag.TAG_SCRIPT_PARAMETER), null);
+						}
+					}
+					else if (element.getNodeName().equals(XmlTag.TAG_SCRIPT_IF))
+					{
+						
 					}
 					/*
 					 *	All the variables are global variables, if we need to set all the variable to be local, uncomment
@@ -124,7 +172,7 @@ public class Function {
 		}
 	}
 	
-	public Object getVariableValue(String name)
+	public static Object getVariableValue(String name)
 	{
 		Object result = null;
 		if (varMap.containsKey(name))
@@ -142,111 +190,9 @@ public class Function {
 		array.add(type);
 		array.add(value);
 		return array;
-	}
+	}		
 	
-	public void ChangeContentView(NodeList items, NodeList params)
-	{		
-		int itemsLen = items.getLength();
-		
-		for (int i=0; i<itemsLen; i++)
-		{
-			Element element = (Element) items.item(i);
-			if ((element.getNodeName().equals(XmlTag.TAG_SCRIPT_PARAMETER)) &&
-					(element.hasAttribute(XmlTag.TAG_SCRIPT_NAME)) &&
-					(element.getAttribute(XmlTag.TAG_SCRIPT_NAME).equals(XmlScriptAttribute.PARAMETER_FORM)))
-			{
-				NodeList elements = element.getChildNodes();
-				int eleLen = elements.getLength();
-				for (int j=0; j<eleLen; j++)
-				{
-					Element elt = (Element) elements.item(j);
-					if ((elt.getNodeName().equals(XmlTag.TAG_SCRIPT_ELEMENT)) &&
-							elt.hasAttribute(XmlTag.TAG_SCRIPT_ELEMENT_ID))
-					{
-						//int id = Integer.valueOf(elt.getAttribute(XmlTag.TAG_SCRIPT_ELEMENT_ID));
-						String id = elt.getAttribute(XmlTag.TAG_SCRIPT_ELEMENT_ID);
-						ApplicationView.applicationView.setContentView(ApplicationView.getLayoutsMap().get(id));
-					}
-				}
-			}
-		}
-	}
-	
-	public String getDialogValue(Element element, String name, NodeList newParams)
-	{
-		String result = "";
-		String type = element.getAttribute(XmlTag.TAG_SCRIPT_TYPE);
-		if (element.getAttribute(XmlTag.TAG_SCRIPT_NAME).equals(name))
-		{
-			NodeList params = element.getChildNodes();
-			int paramsLen = params.getLength();	
-			for (int j=0; j<paramsLen; j++)
-			{
-				if (params.item(j).getNodeType() == Node.ELEMENT_NODE)
-				{
-					Element param = (Element)params.item(j);
-					
-					if (param.getNodeName().equals(XmlTag.TAG_SCRIPT_VAR))
-					{
-						if (getVariableValue(param.getAttribute(XmlTag.TAG_SCRIPT_NAME)) != null)
-						{
-							result = (String) getVariableValue(param.getAttribute(XmlTag.TAG_SCRIPT_NAME));						
-						}
-						else if (getParamValue(newParams, param.getAttribute(XmlTag.TAG_SCRIPT_NAME), type) != null)
-						{
-							result = (String) getParamValue(newParams, param.getAttribute(XmlTag.TAG_SCRIPT_NAME), type);
-						}
-						else if (param.getNodeName().equals(XmlTag.TAG_SCRIPT_KEYWOED))
-						{
-							//check keyword
-							result = param.getChildNodes().item(0).getNodeValue();
-						}
-					}	
-				}						
-				else if (params.item(j).getNodeType() == Node.TEXT_NODE)
-				{
-					result = params.item(j).getNodeValue();
-				}				
-			}
-		}
-
-		return result;
-	}
-	
-	public void ShowAlertDialog(NodeList items, NodeList newParams)
-	{
-		int itemsLen = items.getLength();
-		String message = "";
-		String title = "";
-		
-		for (int i=0; i<itemsLen; i++)
-		{
-			Element element = (Element)items.item(i);
-			if ((element.getNodeName().equals(XmlTag.TAG_SCRIPT_PARAMETER)) &&
-					(element.hasAttribute(XmlTag.TAG_SCRIPT_NAME)))
-			{
-				if (element.getAttribute(XmlTag.TAG_SCRIPT_NAME).equals(XmlScriptAttribute.PARAMETER_TEXT))
-				{
-					message = getDialogValue(element, XmlScriptAttribute.PARAMETER_TEXT, newParams);
-				}
-				else if (element.getAttribute(XmlTag.TAG_SCRIPT_NAME).equals(XmlScriptAttribute.PARAMETER_CAPTION))
-				{
-					title = getDialogValue(element, XmlScriptAttribute.PARAMETER_CAPTION, newParams);
-				}
-			}
-		}
-		
-		if (!title.equals(XmlScriptAttribute.CONST_NULL))
-		{
-			new AlertDialog.Builder(context).setMessage(message).setTitle(title).show();
-		}
-		else
-		{
-			new AlertDialog.Builder(context).setMessage(message).show();			
-		}
-	}
-	
-	public Object getParamValue(NodeList params, String name, String type)
+	public static Object getParamValue(NodeList params, String name, String type)
 	{		
 		Object result = null;
 		int paramLen = params.getLength();
@@ -264,53 +210,5 @@ public class Function {
 			}
 		}
 		return result;
-	}
-	
-	public void Synchronize(NodeList items, NodeList globalParams)
-	{
-		int itemLen = items.getLength();
-		for (int i=0; i<itemLen; i++)
-		{
-			Element element = (Element)items.item(i);
-			if ((element.getNodeName().equals(XmlTag.TAG_SCRIPT_PARAMETER)) &&
-					(element.hasAttribute(XmlTag.TAG_SCRIPT_NAME)))
-			{
-				if (element.getAttribute(XmlTag.TAG_SCRIPT_NAME).equals(XmlScriptAttribute.PARAMETER_FACELESS))
-				{
-					NodeList params = element.getChildNodes();
-					int paramsLen = params.getLength();
-					for (int j=0; j<paramsLen; j++)
-					{
-						Element keyword = (Element) params.item(j);
-						if (keyword.getNodeName().equals(XmlTag.TAG_SCRIPT_KEYWOED))
-						{
-							Log.i("info", "call sync function");
-							Synchronize(keyword.getChildNodes().item(0).getNodeValue());
-						}
-					}
-				}
-			}
-		}
-	}
-	
-	public void Synchronize(String type)
-	{
-		if (!type.equals(XmlScriptAttribute.CONST_FALSE))
-		{
-			try 
-			{
-				byte[] result = ApplicationView.getCurrentClient().launchImport(
-						ApplicationListView.getApplicationsInfo().get("AppId"),
-						ApplicationListView.getApplicationsInfo().get("DbId"), 
-						ApplicationListView.getApplicationsInfo().get("Username"),
-						ApplicationListView.getApplicationsInfo().get("Userpassword"));
-				ApplicationView.getDataBase().syncTable(result);
-				ApplicationView.refreshComponent();
-			}
-			catch (IOException e) 
-			{e.printStackTrace();}
-			catch (InterruptedException e) 
-			{e.printStackTrace();}
-		}
 	}
 }
