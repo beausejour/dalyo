@@ -22,6 +22,7 @@ import com.penbase.dma.R;
 import com.penbase.dma.Dalyo.Application;
 import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
 import android.app.Activity;
+import android.app.Instrumentation;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -119,7 +120,8 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	}
 
 	@Override
-	public boolean onMenuItemSelected(int featureId, Item item) {
+	public boolean onMenuItemSelected(int featureId, Item item) 
+	{
 		switch (item.getId()) 
 		{
 			case 0:
@@ -199,19 +201,23 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		applicationInfos.put("SubId", Dma.applicationList.get(position).getSubId());
 		applicationInfos.put("DbId", Dma.applicationList.get(position).getDbId());							
 		Log.i("info", "before dialog");
-		loadProgressDialog = ProgressDialog.show(this, "Please wait...", "Loading application...", true, true);
+		loadProgressDialog = ProgressDialog.show(this, "Please wait...", "Downloading application...", true, true);
 		i = new Intent(this, ApplicationView.class);
-
+		
 		new Thread(){
-			public void run(){
+			public void run()
+			{
 				try
 				{
 					ApplicationView.prepareData(position, applicationInfos.get("Username"),
 							applicationInfos.get("Userpassword"));
+					Log.i("info", "end of prepare data ");
+					//Log.i("info", "check applicationview context "+ApplicationView.this.);
 				}
 				catch(Exception e)
 				{e.printStackTrace();}
 				
+				Log.i("info", "prepare to call dismiss");
 				loadProgressDialog.dismiss();
 				//ApplicationListView.this.finish();
 				startSubActivity(i, 0);

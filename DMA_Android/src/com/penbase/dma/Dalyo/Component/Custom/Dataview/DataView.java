@@ -125,7 +125,7 @@ public class DataView extends ListView{
 	
 	public void refresh()
 	{
-		if (tableId.equals(""))
+		if (tableId == null)
 		{
 			new Dma().errorDialog("Check your dataview setting");
 		}

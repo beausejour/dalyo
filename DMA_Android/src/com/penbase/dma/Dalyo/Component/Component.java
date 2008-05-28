@@ -31,18 +31,23 @@ public class Component{
 	private String fontType;
 	private View view = null;
 	private Function function;
+	private String tableID = null;
+	private String fieldID = null;
 	
-	//Variables for checkbox
-	private ArrayList<String> itemList = null;
+	//Variables for checkbox	
 	private String checked;	
 
+	//Variables for combobox
+	private ArrayList<String> itemList = null;
+	private ArrayList<String> labelList = null;
+	private ArrayList<String> valueList = null;
+	
 	//Variable for image
 	private int background;
 	private String extension;
 	
 	//Variable for dataview
-	private ArrayList<ArrayList<String>> columnInfos = new ArrayList<ArrayList<String>>();
-	private String tableID;
+	private ArrayList<ArrayList<String>> columnInfos = new ArrayList<ArrayList<String>>();	
 	
 	//Variable for Label
 	private boolean hasAlign;
@@ -62,6 +67,7 @@ public class Component{
 		this.fontType = ft;
 		setView();
 		function = new Function(context);
+		Log.i("info", "function in component "+context);
 	}
 	
 	//Constructor for button
@@ -79,13 +85,27 @@ public class Component{
 		function = new Function(context);
 	}
 	
-	//Constructor for combobox
+	//Constructor for combobox with a list of items
 	public Component(Context c, String t, String i, ArrayList<String> l, String fs, String ft)
 	{
 		this.context = c;
 		this.id = i;
 		this.type = t;
 		this.itemList = l;
+		this.fontSize = fs;
+		this.fontType = ft;
+		setView();
+		function = new Function(context);
+	}
+	
+	//Constructor for combobox with 2 list of table id
+	public Component(Context c, String t, String i, ArrayList<String> l, ArrayList<String> v, String fs, String ft)
+	{
+		this.context = c;
+		this.id = i;
+		this.type = t;
+		this.labelList = l;
+		this.valueList = v;
 		this.fontSize = fs;
 		this.fontType = ft;
 		setView();
@@ -109,7 +129,7 @@ public class Component{
 	
 	//Constructor for textfield
 	public Component(Context c, String t, String i, String fs, String ft, String align, boolean hasalign,
-			String ml, boolean editable)
+			String ml, boolean editable, String tid, String fid)
 	{
 		this.context = c;
 		this.id = i;
@@ -120,6 +140,8 @@ public class Component{
 		this.hasAlign = hasalign;
 		this.multiLine = ml;
 		this.editable = editable;
+		this.tableID = tid;
+		this.fieldID = fid;
 		setView();
 		function = new Function(context);
 	}
@@ -210,8 +232,16 @@ public class Component{
 		}
 		else if(type.equals(XmlTag.TAG_COMPONENT_COMBOBOX))
 		{
-			Log.i("info", "combobox");
-			ComboBox combobox = new ComboBox(context, itemList);
+			Log.i("info", "combobox valuelist "+valueList+" labellist "+labelList);
+			ComboBox combobox;
+			if ((valueList != null) && (labelList != null))
+			{
+				combobox = new ComboBox(context, labelList, valueList);
+			}
+			else
+			{	
+				combobox = new ComboBox(context, itemList);
+			}			
 			view = combobox;
 		}
 		else if(type.equals(XmlTag.TAG_COMPONENT_LABEL))
@@ -241,13 +271,23 @@ public class Component{
 		{
 			Log.i("info", "textfield "+multiLine);
 			if (multiLine.equals("true"))
-			{
+			{				
 				TextZone textzone = new TextZone(context, setFontType(fontType), setFontSize(fontSize));
+				if ((tableID != null) && (fieldID != null))
+				{
+					textzone.setTableId(tableID);
+					textzone.setFieldId(fieldID);
+				}
 				view = textzone;
 			}
 			else
 			{
 				TextField textfield = new TextField(context, setFontType(fontType), setFontSize(fontSize));
+				if ((tableID != null) && (fieldID != null))
+				{
+					textfield.setTableId(tableID);
+					textfield.setFieldId(fieldID);
+				}
 				view = textfield;
 			}			
 			if (hasAlign)
@@ -335,6 +375,12 @@ public class Component{
 		});
 	}
 	
+	public void setOnchangeFunction(String funcName, View view)
+	{
+		Log.i("info", "change event");
+		function.createFunction(funcName, null);
+	}
+	
 	private Alignment setAlign(String align)
 	{
 		Alignment alignment = null;
@@ -400,9 +446,20 @@ public class Component{
 			Log.i("info", "instance of DataView");
 			((DataView)getView()).refresh();
 		}
-		else if (getView() instanceof Spinner)
+		else if (getView() instanceof ComboBox)
 		{
 			Log.i("info", "instance of ComboBox");
+			((ComboBox)getView()).getData();
+		}
+	}
+	
+	public void getRecord(String formId)
+	{
+		Log.i("info", "in componenttttttttttttttttttttttt");
+		if (getView() instanceof ComboBox)
+		{
+			((ComboBox)getView()).setCurrentValue(formId);
+			Log.i("info", "here");
 		}
 	}
 }

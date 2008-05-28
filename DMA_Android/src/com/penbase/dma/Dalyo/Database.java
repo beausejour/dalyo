@@ -9,12 +9,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import com.penbase.dma.Binary.Binary;
 import com.penbase.dma.XmlElement.XmlTag;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteQueryBuilder;
 import android.util.Log;
 
 public class Database {
@@ -221,7 +219,8 @@ public class Database {
 				//Get local id
 				byte[] localId = Binary.byteArrayForInt(tables);
 				int localIdInt = Binary.byteArrayToInt(localId);
-				valueList.add(String.valueOf(localIdInt));
+				//valueList.add(String.valueOf(localIdInt));
+				valueList.add(String.valueOf(k));
 				Log.i("info", "localId "+k+" "+localIdInt);
 				tables = Binary.cutByteArray(tables, Binary.INTBYTE);
 				
@@ -328,12 +327,14 @@ public class Database {
 		sqlite.execSQL(delete);
 	}
 	
+	public static void clearTable(String tableId)
+	{
+		sqlite.execSQL("DELETE FROM "+tablePre+tableId);
+		Log.i("info", "clear table "+tableId);
+	}	
+	
 	public void deleteTable()
 	{
-		/*sqlite.execSQL("DROP TABLE IF EXISTS CommandeProduit");
-		sqlite.execSQL("DROP TABLE IF EXISTS PRODUIT");
-		sqlite.execSQL("DROP TABLE IF EXISTS COMMANDE");
-		sqlite.execSQL("DROP TABLE IF EXISTS CLIENT");*/
 		sqlite.execSQL("DROP TABLE IF EXISTS Table_2");
 		sqlite.execSQL("DROP TABLE IF EXISTS Table_3");
 		sqlite.execSQL("DROP TABLE IF EXISTS Table_0");
@@ -356,7 +357,43 @@ public class Database {
 		Log.i("info", "table "+table);
 		String[] projectionIn = createProjectionStrings(columns);
 		Log.i("info", "projectionIn size "+projectionIn.length);
-		String selection = createSelectionString(tables);
+		String selection = createSelectionFKString(tables);
+		Log.i("info", "selection "+selection);
+		result = sqlite.query(table, projectionIn, selection, null, null, null, null);
+		return result;
+	}
+	
+	//public static Cursor selectQuery(ArrayList<String> tables, ArrayList<ArrayList<String>> columns, ArrayList<ArrayList<String>> selections)
+	public static Cursor selectQuery(ArrayList<String> tables, ArrayList<ArrayList<String>> columns, ArrayList<String> selections)
+	{
+		Cursor result = null;
+		String table = createTableString(tables);
+		Log.i("info", "table "+table);
+		String[] projectionIn = createProjectionStrings(columns);
+		Log.i("info", "projectionIn size "+projectionIn.length);
+		String selection = createSelectionFKString(tables);
+		selection += tablePre+selections.get(0)+"."+fieldPre+selections.get(1)+" = \'"+selections.get(2)+"\'";
+		
+		/*
+		 * For more than 1 selection
+		 * */
+		/*int selectionSize = selections.size();
+		if (selectionSize > 0)
+		{
+			for (int i=0; i<selectionSize; i++)
+			{
+				ArrayList<String> condition = selections.get(i);
+				if (i == selectionSize-1)
+				{
+					selection += tablePre+condition.get(0)+"."+fieldPre+condition.get(1)+" = "+condition.get(2);
+				}
+				else
+				{
+					selection += tablePre+condition.get(0)+"."+fieldPre+condition.get(1)+" = "+condition.get(2)+" AND ";
+				}
+			}
+		}*/
+		
 		Log.i("info", "selection "+selection);
 		result = sqlite.query(table, projectionIn, selection, null, null, null, null);
 		return result;
@@ -393,29 +430,32 @@ public class Database {
 		return result;
 	}
 	
-	public static String createSelectionString(ArrayList<String> tables)
+	public static String createSelectionFKString(ArrayList<String> tables)
 	{
 		String result = "";
 		int size = foreignKeyList.size();
 		Log.i("info", "foreignkeylist size "+size);
-		for (int i=0; i<size; i++)
+		if (tables.size() > 1)
 		{
-			ArrayList<String> foreignKey = foreignKeyList.get(i);
-			if ((tables.contains(foreignKey.get(0))) && (tables.contains(foreignKey.get(2))))
+			for (int i=0; i<size; i++)
 			{
-				if (i != size-1)
+				ArrayList<String> foreignKey = foreignKeyList.get(i);
+				if ((tables.contains(foreignKey.get(0))) && (tables.contains(foreignKey.get(2))))
 				{
-					result += tablePre+foreignKey.get(0)+"."+fieldPre+foreignKey.get(1)+" = "+
-					tablePre+foreignKey.get(2)+"."+fieldPre+foreignKey.get(3)+" AND "; 
+					if (i != size-1)
+					{
+						result += tablePre+foreignKey.get(0)+"."+fieldPre+foreignKey.get(1)+" = "+
+						tablePre+foreignKey.get(2)+"."+fieldPre+foreignKey.get(3)+" AND "; 
+					}
+					else
+					{
+						result += tablePre+foreignKey.get(0)+"."+fieldPre+foreignKey.get(1)+" = "+
+						tablePre+foreignKey.get(2)+"."+fieldPre+foreignKey.get(3);
+					}
+					Log.i("info", "result "+i+" "+result);
 				}
-				else
-				{
-					result += tablePre+foreignKey.get(0)+"."+fieldPre+foreignKey.get(1)+" = "+
-					tablePre+foreignKey.get(2)+"."+fieldPre+foreignKey.get(3);
-				}
-				Log.i("info", "result "+i+" "+result);
 			}
-		}
+		}		
 		return result;
 	}
 	
