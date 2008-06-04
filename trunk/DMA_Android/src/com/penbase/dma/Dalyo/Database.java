@@ -8,6 +8,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import com.penbase.dma.Binary.Binary;
+import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.XmlElement.XmlTag;
 import android.content.Context;
 import android.database.Cursor;
@@ -22,11 +23,10 @@ public class Database {
 	private static final String DATABASE_NAME = "data";	
 	private int DbId;
 	
-	private static HashMap<String, String> tablesMap;
-	private HashMap<String, String> fieldsMap;
-	
-	private static final String tablePre = "Table_";
-	private static final String fieldPre = "Field_";
+	private static HashMap<String, ArrayList<String>> tablesMap;
+	private HashMap<String, String> fieldsMap;	
+	public static final String TABLE = "Table_";
+	public static final String FIELD = "Field_";
 	private static final int ADDVALUE = 1;
 	private static final int UPDATEVALUE = 2;
 	private static final int DELETEVALUE = 3;
@@ -36,7 +36,7 @@ public class Database {
 	{
 		this.context = c;
 		this.dbDocument = d;
-		tablesMap = new HashMap<String, String>();
+		tablesMap = new HashMap<String, ArrayList<String>>();		//{tid, [tablename, fieldnames...]}
 		fieldsMap = new HashMap<String, String>();
 		foreignKeyList = new ArrayList<ArrayList<String>>();
 		createDatabase();
@@ -78,9 +78,11 @@ public class Database {
 		    String typeSync = table.getAttribute(XmlTag.TAG_TABLE_SYNC);
 		    
 		    String tableId = table.getAttribute(XmlTag.TAG_TABLE_ID);
-		    String tableName = tablePre+tableId;
+		    String tableName = TABLE+tableId;
 		    Log.i("info", "value of i "+i+" element name "+tableName);
-		    tablesMap.put(tableId, tableName);
+		    ArrayList<String> tableElements = new ArrayList<String>();
+		    tableElements.add(tableName);
+		    //tablesMap.put(tableId, tableName);		    
 		    createquery += tableName+" (ID VARCHAR(255), ";
 		    
 		    NodeList fieldList = table.getChildNodes();
@@ -96,10 +98,11 @@ public class Database {
 		    	{
 		    		Element field = (Element) fieldList.item(j);
 		    		String fieldId = field.getAttribute(XmlTag.TAG_FIELD_ID);
-		    		String fieldName = "Field_"+fieldId;
-		    		fieldsMap.put(fieldId, fieldName);
+		    		String fieldName = "Field_"+fieldId;		    		
+		    		tableElements.add(fieldName);
 		    		String fieldType = field.getAttribute(XmlTag.TAG_FIELD_TYPE);
 		    		String fieldSize = field.getAttribute(XmlTag.TAG_FIELD_SIZE);
+		    		fieldsMap.put(fieldId, fieldType);
 		    		
 		    		if (fieldType.equals("VARCHAR"))
 		    		{
@@ -143,13 +146,15 @@ public class Database {
 		    	}
 		    }
 		    
+		    tablesMap.put(tableId, tableElements);
+		    
 		    int fksSize = foreignKeyTable.size();
 		    if (fksSize > 0)
 		    {		    	
 		    	for (int k=0; k<fksSize; k++)
 		    	{		    				    	
-		    		createquery += " FOREIGN KEY ("+fieldPre+foreignKeyTable.get(k).get(1)+") REFERENCES "+
-		    		tablePre+foreignKeyTable.get(k).get(2)+"("+fieldPre+foreignKeyTable.get(k).get(3)+"), ";
+		    		createquery += " FOREIGN KEY ("+FIELD+foreignKeyTable.get(k).get(1)+") REFERENCES "+
+		    		TABLE+foreignKeyTable.get(k).get(2)+"("+FIELD+foreignKeyTable.get(k).get(3)+"), ";
 		    	}
 		    }
 		    
@@ -203,12 +208,13 @@ public class Database {
 			int recordsNbInt = Binary.byteArrayToInt(recordsNb);
 			Log.i("info", "recordNb "+recordsNbInt);
 			tables = Binary.cutByteArray(tables, Binary.INTBYTE);
-			ArrayList<ArrayList<String>> recordsList = new ArrayList<ArrayList<String>>();
+			ArrayList<ArrayList<Object>> recordsList = new ArrayList<ArrayList<Object>>();
 			ArrayList<Integer> syncTypeList = new ArrayList<Integer>();
 			Log.i("info", "create recordslist");
 			for (int k=0; k<recordsNbInt; k++)
-			{	
-				ArrayList<String> valueList = new ArrayList<String>();
+			{
+				//ArrayList<Object> valueList = new ArrayList<String>();
+				ArrayList<Object> valueList = new ArrayList<Object>();
 				//Get type of synchronization
 				byte[] syncType = Binary.byteArrayForType(tables);
 				int syncTypeInt = Binary.byteArrayToType(syncType);
@@ -241,9 +247,8 @@ public class Database {
 					
 					//Get value
 					byte[] value = Binary.byteArrayForValue(tables, valueLengthInt);
-					String valueString = Binary.byteArrayToString(value);
-					Log.i("info", "value "+l+" "+valueString);
-					valueList.add(valueString);
+					Object valueObject = Binary.byteArrayToObject(value, fieldsMap.get(String.valueOf(fieldList.get(l))));					
+					valueList.add(valueObject);
 					tables = Binary.cutByteArray(tables, valueLengthInt);
 				}
 				recordsList.add(valueList);
@@ -253,7 +258,7 @@ public class Database {
 	}		
 	
 	public void updateTable(int tableId, ArrayList<Integer> fields, ArrayList<Integer> syncTypeList, 
-			ArrayList<ArrayList<String>> records)
+			ArrayList<ArrayList<Object>> records)
 	{
 		int syncTypeListSize = syncTypeList.size();
 		for (int i=0; i<syncTypeListSize; i++)
@@ -275,9 +280,9 @@ public class Database {
 		sqlite.execSQL(insert);*/
 	}
 	
-	public void addValues(int tableId, ArrayList<Integer> fieldsList, ArrayList<String> record)
+	public void addValues(int tableId, ArrayList<Integer> fieldsList, ArrayList<Object> record)
 	{
-		Log.i("info", "add table value "+tablesMap.get(String.valueOf(tableId)));
+		Log.i("info", "add table value "+tablesMap.get(String.valueOf(tableId)).get(0));
 		int fieldsNb = fieldsList.size();
 		
 		Log.i("info", "fields size "+fieldsList.size()+" record size "+record.size());
@@ -289,47 +294,47 @@ public class Database {
 		{
 			if (i == fieldsNb-1)
 			{
-				fields += fieldsMap.get(String.valueOf(fieldsList.get(i)));
+				fields += FIELD+fieldsList.get(i);
 				values += "\'"+record.get(i+1)+"\'";
 				Log.i("info", "last fields "+fields+" values "+values);
 			}
 			else
 			{
-				fields += fieldsMap.get(String.valueOf(fieldsList.get(i)))+", ";
+				fields += FIELD+fieldsList.get(i)+", ";
 				values += "\'"+record.get(i+1)+"\'"+", ";
 				Log.i("info", "else fields "+fields+" values "+values);
 			}
 		}
 		fields += ")";
 		values += ")";		
-		String insert = "insert into "+tablesMap.get(String.valueOf(tableId))+" "+fields+" values"+values+";";
+		String insert = "insert into "+tablesMap.get(String.valueOf(tableId)).get(0)+" "+fields+" values"+values+";";
 		Log.i("info", "query "+insert);
 		sqlite.execSQL(insert);
 	}
 	
-	public void updateValues(int tableId, ArrayList<Integer> fieldsList, ArrayList<String> record)
+	public void updateValues(int tableId, ArrayList<Integer> fieldsList, ArrayList<Object> record)
 	{	
-		Log.i("info", "update table value "+tablesMap.get(String.valueOf(tableId)));
+		Log.i("info", "update table value "+tablesMap.get(String.valueOf(tableId)).get(0));
 		int fieldsNb = fieldsList.size();							
 		
 		for (int i=0; i<fieldsNb; i++)
 		{
-			String update = "update "+tablesMap.get(String.valueOf(tableId))+"set "+
-			fieldsMap.get(String.valueOf(fieldsList.get(i)))+"=\'"+record.get(i+1)+"\'"+
+			String update = "update "+tablesMap.get(String.valueOf(tableId)).get(0)+"set "+
+			FIELD+fieldsList.get(i)+"=\'"+record.get(i+1)+"\'"+
 			" where ID=\'"+record.get(0)+"\';";
 			sqlite.execSQL(update);
 		}
 	}
 	
-	public void deleteValues(int tableId, ArrayList<Integer> fieldsList, ArrayList<String> record)
+	public void deleteValues(int tableId, ArrayList<Integer> fieldsList, ArrayList<Object> record)
 	{
-		String delete = "delete from "+tablesMap.get(String.valueOf(tableId))+" where ID=\'"+record.get(0)+"\';";
+		String delete = "delete from "+tablesMap.get(String.valueOf(tableId)).get(0)+" where ID=\'"+record.get(0)+"\';";
 		sqlite.execSQL(delete);
 	}
 	
 	public static void clearTable(String tableId)
 	{
-		sqlite.execSQL("DELETE FROM "+tablePre+tableId);
+		sqlite.execSQL("DELETE FROM "+TABLE+tableId);
 		Log.i("info", "clear table "+tableId);
 	}	
 	
@@ -346,7 +351,18 @@ public class Database {
 		
 	}
 	
-	public static Cursor selectQuery(ArrayList<String> tables, ArrayList<ArrayList<String>> columns)
+	/*public static Cursor selectAllQuery(ArrayList<String> tables)
+	{
+		Cursor result = null;
+		String table = createTableString(tables);
+		Log.i("info", "table "+table);
+		String selection = createSelectionFKString(tables);
+		Log.i("info", "selection "+selection);
+		result = sqlite.query(table, null, null, null, null, null, null);
+		return result;
+	}*/
+	
+	public static Cursor selectQuery(ArrayList<String> tables, ArrayList<ArrayList<String>> columns, Object filter)
 	{
     	//String table = "COMMANDE, CLIENT";
     	//String[] projectionIn = new String[]{"CLIENT.nom", "COMMANDE.ID", "COMMANDE.date"};
@@ -356,44 +372,9 @@ public class Database {
 		String table = createTableString(tables);
 		Log.i("info", "table "+table);
 		String[] projectionIn = createProjectionStrings(columns);
-		Log.i("info", "projectionIn size "+projectionIn.length);
-		String selection = createSelectionFKString(tables);
-		Log.i("info", "selection "+selection);
-		result = sqlite.query(table, projectionIn, selection, null, null, null, null);
-		return result;
-	}
-	
-	//public static Cursor selectQuery(ArrayList<String> tables, ArrayList<ArrayList<String>> columns, ArrayList<ArrayList<String>> selections)
-	public static Cursor selectQuery(ArrayList<String> tables, ArrayList<ArrayList<String>> columns, ArrayList<String> selections)
-	{
-		Cursor result = null;
-		String table = createTableString(tables);
-		Log.i("info", "table "+table);
-		String[] projectionIn = createProjectionStrings(columns);
-		Log.i("info", "projectionIn size "+projectionIn.length);
-		String selection = createSelectionFKString(tables);
-		selection += tablePre+selections.get(0)+"."+fieldPre+selections.get(1)+" = \'"+selections.get(2)+"\'";
-		
-		/*
-		 * For more than 1 selection
-		 * */
-		/*int selectionSize = selections.size();
-		if (selectionSize > 0)
-		{
-			for (int i=0; i<selectionSize; i++)
-			{
-				ArrayList<String> condition = selections.get(i);
-				if (i == selectionSize-1)
-				{
-					selection += tablePre+condition.get(0)+"."+fieldPre+condition.get(1)+" = "+condition.get(2);
-				}
-				else
-				{
-					selection += tablePre+condition.get(0)+"."+fieldPre+condition.get(1)+" = "+condition.get(2)+" AND ";
-				}
-			}
-		}*/
-		
+		Log.i("info", "projectionIn "+projectionIn);
+		String selection = createSelectionString(filter);
+		/*String selection = createSelectionFKString(tables);*/
 		Log.i("info", "selection "+selection);
 		result = sqlite.query(table, projectionIn, selection, null, null, null, null);
 		return result;
@@ -407,11 +388,11 @@ public class Database {
 		{
 			if (i != size-1)
 			{
-				result += tablePre+tables.get(i)+", ";
+				result += TABLE+tables.get(i)+", ";
 			}
 			else
 			{
-				result += tablePre+tables.get(i);
+				result += TABLE+tables.get(i);
 			}
 		}
 		return result;
@@ -419,18 +400,58 @@ public class Database {
 	
 	public static String[] createProjectionStrings(ArrayList<ArrayList<String>> columns)
 	{
-		int size = columns.size();
-		String[] result = new String[size];
-		Log.i("info", "columns size "+size);
-		for (int i=0; i<size; i++)
+		Log.i("info","createprojectionstrings "+columns);
+		if (columns == null)
 		{
-			ArrayList<String> column = columns.get(i);
-			result[i] = tablePre+column.get(0)+"."+fieldPre+column.get(1);
+			Log.i("info", "it seems that never pass here");
+			return null;
 		}
-		return result;
+		else
+		{
+			int size = columns.size();
+			String[] result = new String[size];
+			Log.i("info", "columns size "+size);
+			for (int i=0; i<size; i++)
+			{
+				ArrayList<String> column = columns.get(i);
+				result[i] = TABLE+column.get(0)+"."+FIELD+column.get(1);
+			}
+			return result;
+		}
 	}
 	
-	public static String createSelectionFKString(ArrayList<String> tables)
+	public static String createSelectionString(Object filter)
+	{
+		if (filter == null)
+		{
+			return null;
+		}
+		else
+		{
+			String result = "";
+			int filterSize = ((ArrayList)filter).size();
+			if (filterSize > 2)
+			{
+				String field = (String) FIELD+((ArrayList)filter).get(2);
+				Set<String> keySet = tablesMap.keySet();
+				for (String s : keySet)
+				{
+					if (tablesMap.get(s).contains(field))
+					{
+						result += tablesMap.get(s).get(0)+"."+field;
+					}
+				}
+				Object operator = Function.getOperator(((ArrayList)filter).get(3));
+				Log.i("info", "operator "+operator);
+				result += " "+operator+" ";
+				Object value = ((ArrayList)filter).get(4);
+				result += value;
+			}
+			return result;	
+		}		
+	}
+	
+	/*public static String createSelectionFKString(ArrayList<String> tables)
 	{
 		String result = "";
 		int size = foreignKeyList.size();
@@ -444,20 +465,20 @@ public class Database {
 				{
 					if (i != size-1)
 					{
-						result += tablePre+foreignKey.get(0)+"."+fieldPre+foreignKey.get(1)+" = "+
-						tablePre+foreignKey.get(2)+"."+fieldPre+foreignKey.get(3)+" AND "; 
+						result += TABLE+foreignKey.get(0)+"."+FIELD+foreignKey.get(1)+" = "+
+						TABLE+foreignKey.get(2)+"."+FIELD+foreignKey.get(3)+" AND "; 
 					}
 					else
 					{
-						result += tablePre+foreignKey.get(0)+"."+fieldPre+foreignKey.get(1)+" = "+
-						tablePre+foreignKey.get(2)+"."+fieldPre+foreignKey.get(3);
+						result += TABLE+foreignKey.get(0)+"."+FIELD+foreignKey.get(1)+" = "+
+						TABLE+foreignKey.get(2)+"."+FIELD+foreignKey.get(3);
 					}
 					Log.i("info", "result "+i+" "+result);
 				}
 			}
 		}		
 		return result;
-	}
+	}*/
 	
 	
 	public static int getTableNb()

@@ -71,7 +71,7 @@ public class DmaHttpBinarySync extends Thread {
 			dos.close();					
 		}
 		catch (IOException ioe) 
-		{System.err.println("HTTPExample: IOException; " + ioe.getMessage());}
+		{Log.i("info", "HTTPExample: IOException; " + ioe.getMessage());}
 	}
 	
 	public void run()
@@ -107,7 +107,7 @@ public class DmaHttpBinarySync extends Thread {
 			    System.arraycopy(data, codeStr.length()+1, result, 0, result.length);			    	 
 		    }
 		    		    
-		    client.fireImportEnded(code, result);
+		    client.importEnded(code, result);
 		}
 		catch (IOException ioe) 
 		{System.err.println("HTTPExample: IOException; " + ioe.getMessage());}		

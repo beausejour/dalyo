@@ -123,14 +123,15 @@ public class DataView extends ListView{
 		return lwidthList;
 	}	
 	
-	public void refresh()
+	public void refresh(Object filter)
 	{
+		Log.i("info", "refresh in dataview "+filter);
 		if (tableId == null)
 		{
 			new Dma().errorDialog("Check your dataview setting");
 		}
 		else
-		{
+		{			
 			int columnNb = columns.size();
 			ArrayList<String> tables = new ArrayList<String>();
 			tables.add(tableId);
@@ -143,7 +144,8 @@ public class DataView extends ListView{
 					tables.add(column.get(0));
 				}
 			}
-			Cursor cursor = Database.selectQuery(tables, columns);
+			Cursor cursor = Database.selectQuery(tables, columns, filter);
+			Log.i("info", "cursor length "+cursor.count()+" columns size "+columns.size());
 			cursor.first();
 	    	for (int i=0; i<cursor.count(); i++)
 	    	{
@@ -154,6 +156,7 @@ public class DataView extends ListView{
 	    			Log.i("info", "value in row "+i+" column "+j+" "+cursor.getString(j));
 	    		}
 	    		CustomLinearLayout layout = new CustomLinearLayout(context, data, getPWidthList(), false);
+	    		Log.i("info", "add layout in dataview");
 	            adapter.addItem(layout);
 	            adapter.notifyDataSetChanged();
 	    		cursor.next();

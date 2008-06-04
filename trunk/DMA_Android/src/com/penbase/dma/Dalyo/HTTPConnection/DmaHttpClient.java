@@ -329,8 +329,7 @@ public class DmaHttpClient extends Activity {
 					}
 				}
 			}
-		}
-		
+		}		
 		return resourceMapFile;
 	}
 	
@@ -448,7 +447,7 @@ public class DmaHttpClient extends Activity {
 	}
 	
 	//// interface
-	public void fireImportEnded(int code, byte [] bytes) 
+	public void importEnded(int code, byte [] bytes) 
 	{
 		if (code == 200)
 		{
@@ -463,7 +462,7 @@ public class DmaHttpClient extends Activity {
 	
 	private void setImportResult(byte[] ir)
 	{
-		this.importresult = ir;
+		importresult = ir;
 	}
 	
 	//Save the download xml stream to file

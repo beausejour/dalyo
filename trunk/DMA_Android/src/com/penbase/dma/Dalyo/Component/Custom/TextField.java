@@ -1,13 +1,9 @@
 package com.penbase.dma.Dalyo.Component.Custom;
 
-import java.util.ArrayList;
-
+import java.util.HashMap;
 import com.penbase.dma.Dalyo.Database;
-
 import android.content.Context;
-import android.database.Cursor;
 import android.graphics.Typeface;
-import android.util.Log;
 import android.widget.AutoCompleteTextView;
 
 public class TextField extends AutoCompleteTextView{	
@@ -41,32 +37,8 @@ public class TextField extends AutoCompleteTextView{
 		return fieldId;
 	}
 	
-	public void refresh(ArrayList<String> itemInfo)
+	public void refresh(HashMap<String, Object> record)
 	{
-		ArrayList<String> tables = new ArrayList<String>();		
-		if (itemInfo.get(0).equals(getTableId()))
-		{
-			tables.add(itemInfo.get(0));
-		}
-		else
-		{
-			tables.add(itemInfo.get(0));
-			tables.add(getTableId());
-		}
-		
-		ArrayList<ArrayList<String>> columns = new ArrayList<ArrayList<String>>();
-		ArrayList<String> column = new ArrayList<String>();
-		column.add(getTableId());
-		column.add(getFieldId());
-		columns.add(column);
-				
-		Cursor cursor = Database.selectQuery(tables, columns, itemInfo);
-		cursor.first();
-    	for (int i=0; i<cursor.count(); i++)
-    	{
-    		Log.i("info", "refresh in textfield");
-    		TextField.this.setText(cursor.getString(0));
-    		cursor.next();
-    	} 
+		TextField.this.setText((String)record.get(Database.FIELD+getFieldId()));
 	}
 }

@@ -9,14 +9,8 @@ public class Application {
 	private String SubId;
 	private String DbId;
 
-	public Application() {		
-	}
-	
-	/*public Application(int dalyoId, int iconRes, String name) {
-		DalyoId = dalyoId;
-		IconRes = iconRes;
-		Name = name;
-	}*/
+	public Application() {}
+
 	public String getAppId() 
 	{
 		return AppId;

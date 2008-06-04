@@ -117,30 +117,6 @@ public class XmlTag {
     public static final String TAG_EVENT_ONLOAD = "onl";
     public static final String TAG_EVENT_ONCHANGE = "ong";
     
-    //Behaviors
-    public static final String TAG_SCRIPT = "s";
-    public static final String TAG_SCRIPT_FUNCTION = "f";   
-    public static final String TAG_SCRIPT_CALL = "c";
-    public static final String TAG_SCRIPT_CALL_FUNCTION = "f";
-    public static final String TAG_SCRIPT_CALL_NAMESPACE = "ns";
-    public static final String TAG_SCRIPT_PARAMETER = "p";  
-    public static final String TAG_SCRIPT_ELEMENT = "elt";
-    public static final String TAG_SCRIPT_ELEMENT_ID = "id";
-    public static final String TAG_SCRIPT_KEYWOED = "kw";
-    public static final String TAG_SCRIPT_SET = "set";
-    public static final String TAG_SCRIPT_VAR = "v";
-    public static final String TAG_SCRIPT_OPERATOR = "o";
-    public static final String TAG_SCRIPT_RIGHT = "r";
-    public static final String TAG_SCRIPT_LEFT = "l";
-    public static final String TAG_SCRIPT_IF = "i";
-    public static final String TAG_SCRIPT_THEN = "t";
-    public static final String TAG_SCRIPT_CONDITIONS = "cds";
-    public static final String TAG_SCRIPT_CONDITION = "cd";
-    
-    //Common behavior attributes
-    public static final String TAG_SCRIPT_NAME = "n";
-    public static final String TAG_SCRIPT_TYPE = "t";
-    
     
     public static final String IMPORT = "import";
     public static final String EXPORT = "export";

@@ -1,11 +1,8 @@
 package com.penbase.dma.Dalyo.Component.Custom;
 
-import java.util.ArrayList;
-
+import java.util.HashMap;
 import com.penbase.dma.Dalyo.Database;
-
 import android.content.Context;
-import android.database.Cursor;
 import android.graphics.Typeface;
 import android.widget.EditText;
 
@@ -40,31 +37,8 @@ public class TextZone extends EditText{
 		return fieldId;
 	}
 	
-	public void refresh(ArrayList<String> itemInfo)
+	public void refresh(HashMap<String, Object> record)
 	{
-		ArrayList<String> tables = new ArrayList<String>();		
-		if (itemInfo.get(0).equals(getTableId()))
-		{
-			tables.add(itemInfo.get(0));
-		}
-		else
-		{
-			tables.add(itemInfo.get(0));
-			tables.add(getTableId());
-		}
-		
-		ArrayList<ArrayList<String>> columns = new ArrayList<ArrayList<String>>();
-		ArrayList<String> column = new ArrayList<String>();
-		column.add(getTableId());
-		column.add(getFieldId());
-		columns.add(column);
-				
-		Cursor cursor = Database.selectQuery(tables, columns, itemInfo);
-		cursor.first();
-    	for (int i=0; i<cursor.count(); i++)
-    	{
-    		TextZone.this.setText(cursor.getString(0));
-    		cursor.next();
-    	} 
+		TextZone.this.setText((String)record.get(Database.FIELD+getFieldId()));
 	}
 }

@@ -1,11 +1,9 @@
 package com.penbase.dma.Dalyo.Component;
 
-import java.util.ArrayList;
-
+import java.util.HashMap;
 import android.content.Context;
 import android.util.Log;
 import android.widget.AbsoluteLayout;
-
 import com.penbase.dma.Dalyo.Component.Custom.TextField;
 import com.penbase.dma.Dalyo.Component.Custom.TextZone;
 import com.penbase.dma.Dalyo.Function.Function;
@@ -16,12 +14,11 @@ public class Form extends AbsoluteLayout{
 	private static String currentItem;
 	
 	public Form(Context context) 
-	{
+	{		
 		super(context);
 		this.setLayoutParams(new AbsoluteLayout.LayoutParams(LayoutParams.FILL_PARENT, 
 				LayoutParams.FILL_PARENT, 0, 0));
 		function = new Function(context);
-		Log.i("info", "function in form "+context);
 	}
 	
 	public void onLoad(String name)
@@ -49,9 +46,9 @@ public class Form extends AbsoluteLayout{
 		return currentItem;
 	}
 	
-	public void refresh(ArrayList<String> itemInfos)
+	//public void refresh(ArrayList<String> itemInfos)
+	public void refresh(HashMap<String, Object> record)
 	{
-		Log.i("info", "form refresh value "+itemInfos.get(2));
 		int viewLen = this.getChildCount();
 		Log.i("info", "viewlen "+viewLen);
 		
@@ -59,11 +56,11 @@ public class Form extends AbsoluteLayout{
 		{
 			if (this.getChildAt(i) instanceof TextField)
 			{
-				((TextField)this.getChildAt(i)).refresh(itemInfos);
+				((TextField)this.getChildAt(i)).refresh(record);
 			}
 			else if (this.getChildAt(i) instanceof TextZone)
 			{
-				((TextZone)this.getChildAt(i)).refresh(itemInfos);
+				((TextZone)this.getChildAt(i)).refresh(record);
 			}
 		}
 	}
