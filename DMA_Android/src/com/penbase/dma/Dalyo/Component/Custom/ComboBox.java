@@ -1,6 +1,8 @@
 package com.penbase.dma.Dalyo.Component.Custom;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+
 import com.penbase.dma.Dalyo.Database;
 import com.penbase.dma.View.ApplicationView;
 import android.content.Context;
@@ -10,17 +12,18 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.AdapterView.OnItemSelectedListener;
 
-public class ComboBox extends Spinner{
+public class ComboBox extends Spinner implements OnItemSelectedListener{
 	private ArrayAdapter<String> spinnerArrayAdapter;
-	private String currentItem;
+	private String currentValue = null;
+	private int currentPosition = -1;
 	private ArrayList<String> labelList;
 	private ArrayList<String> valueList;
-	private boolean hasData = false;
 	private ArrayList<String> itemsList;
-	private ArrayList<String> keysList;
 	private Context context;
-	private ArrayList<String> itemInfos = new ArrayList<String>();		//tid, fid, value
+	private String formId;
+	private HashMap<Integer, HashMap<String, Object>> records = new HashMap<Integer, HashMap<String, Object>>();
 	
 	public ComboBox(Context context, ArrayList<String> labelList, ArrayList<String> valueList)
 	{
@@ -28,47 +31,27 @@ public class ComboBox extends Spinner{
 		this.context = context;
 		this.labelList = labelList;
 		this.valueList = valueList;
-		this.hasData = true;
-		itemsList = new ArrayList<String>();
-		keysList = new ArrayList<String>();
-		getData();		
+		this.setOnItemSelectedListener(this);
 	}
 	
 	public ComboBox(Context context, ArrayList<String> il)
-	{		
+	{
 		super(context);
 		spinnerArrayAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, il);
 		this.setAdapter(spinnerArrayAdapter);	
 	}	
 	
-	public void setCurrentValue(final String formId)
+	public void setCurrentValue(String formId)
 	{
-		Log.i("info", "setcurrentvalue");		
-		itemInfos = valueList;
-		this.setOnItemSelectedListener(new OnItemSelectedListener()
+		this.formId = formId;
+		Log.i("info", "setcurrentvalue "+formId+" records size "+records.size());		
+		if ((formId != null) && (records.size() > 0))
 		{
-			@Override
-			public void onItemSelected(AdapterView parent, View v,
-					int position, long id) 
-			{
-				currentItem = spinnerArrayAdapter.getItem(position).toString();
-				if (formId != null)
-				{
-					if ((itemInfos.size() == 3) && (itemInfos.get(2) != null))
-					{
-						itemInfos.remove(2);
-					}
-					itemInfos.add(keysList.get(position));
-					ApplicationView.getLayoutsMap().get(formId).refresh(itemInfos);
-				}
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView arg0) {}			
-		});	
+			ApplicationView.getLayoutsMap().get(formId).refresh(records.get(currentPosition));
+		}
 	}
 	
-	public void getData()
+	public void getData(Object filter)
 	{
 		Log.i("info", "combobox getdata");
 		ArrayList<String> tables = new ArrayList<String>();
@@ -78,20 +61,58 @@ public class ComboBox extends Spinner{
 			tables.add(valueList.get(0));
 		}
 		
-		ArrayList<ArrayList<String>> columns = new ArrayList<ArrayList<String>>();
-		columns.add(labelList);
-		columns.add(valueList);
-		
-		//<Label, Value>
-		Cursor cursor = Database.selectQuery(tables, columns);		
+		Log.i("info", "call selectQuery");
+		itemsList = new ArrayList<String>();
+		Cursor cursor = Database.selectQuery(tables, null, filter);
 		cursor.first();
     	for (int i=0; i<cursor.count(); i++)
     	{
-    		itemsList.add(cursor.getString(0));
-    		keysList.add(cursor.getString(1));
+    		String[] columnNames = cursor.getColumnNames();
+    		HashMap<String, Object> record = new HashMap<String, Object>();
+    		int mapSize = columnNames.length;
+    		for (int j=0; j<mapSize; j++)
+    		{
+    			if (columnNames[j].equals(Database.FIELD+labelList.get(1)))
+    			{
+    				itemsList.add(cursor.getString(j));
+    			}
+    			record.put(columnNames[j], cursor.getString(j));
+    		}
+    		records.put(i, record);    		
     		cursor.next();
     	}
 		spinnerArrayAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, itemsList);
 		this.setAdapter(spinnerArrayAdapter);
+	}
+
+	@Override
+	public void onItemSelected(AdapterView parent, View v, int position, long id) 
+	{
+		currentValue = spinnerArrayAdapter.getItem(position).toString();		
+		currentPosition = position;		
+		if (formId != null)
+		{
+			setCurrentValue(formId);
+		}
+	}
+
+	@Override
+	public void onNothingSelected(AdapterView arg0) {}
+	
+	public Object getCurrentValue()
+	{
+		return currentValue;
+	}
+	
+	public HashMap<String, Object> getCurrentRecord()
+	{
+		if (currentPosition == -1)
+		{
+			return null;
+		}
+		else
+		{
+			return records.get(currentPosition);
+		}		
 	}
 }

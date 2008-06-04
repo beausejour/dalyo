@@ -1,6 +1,7 @@
 package com.penbase.dma.Dalyo;
 
 import android.os.Handler;
+import android.util.Log;
 
 public class LoadingThread implements Runnable{
     Thread m_thread = null;
@@ -26,6 +27,7 @@ public class LoadingThread implements Runnable{
 
 	    if (handler != null) 
 	    {
+	    	Log.i("info", "handler "+handler);
 	    	handler.sendEmptyMessage(0);
 	    }
     }
@@ -40,5 +42,4 @@ public class LoadingThread implements Runnable{
         }
         m_thread = null;
     }
-
 }

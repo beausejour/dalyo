@@ -61,7 +61,7 @@ public class NumberBox extends LinearLayout{
 		return act.getText().toString();
 	}
 	
-	public void setValue(int v)
+	public void setValue(Object v)
 	{
 		act.setText(String.valueOf(v));
 	}

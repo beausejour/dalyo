@@ -11,6 +11,7 @@ import com.penbase.dma.Dalyo.Component.Form;
 import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
 import com.penbase.dma.XmlElement.XmlTag;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.os.DeadObjectException;
 import android.os.Handler;
@@ -22,11 +23,11 @@ import android.widget.*;
 import android.graphics.Color;
 
 
-public class ApplicationView extends Activity {		
-    public static Activity me = null; 		
+public class ApplicationView extends Activity { 		
 	private static ApplicationView applicationView;	
 	private static DmaHttpClient client;
 	private static HashMap<String, Form> layoutsMap;
+	private static HashMap<String, String> onLoadFuncMap;
 	public static final int BACK_ID = Menu.FIRST;
 	public static final int NEXT_ID = Menu.FIRST+1;	
 	public static Document designDoc = null;
@@ -38,7 +39,8 @@ public class ApplicationView extends Activity {
 	public static final android.view.IWindowManager windowService = android.view.IWindowManager.Stub.asInterface(
 			android.os.ServiceManager.getService("window"));	
 	private static Database database;
-	private LoadingThread loadingThread = null;	
+	private LoadingThread loadingThread = null;		
+	private ProgressDialog loadingbar;
 	
 	private Handler handler = new Handler()
 	{
@@ -49,7 +51,8 @@ public class ApplicationView extends Activity {
             {
                  default:
                 	 createView();
-                     start();
+                	 loadingbar.dismiss();
+                	 display();
                      break;
             }
         }
@@ -64,24 +67,22 @@ public class ApplicationView extends Activity {
 		database = new Database(this, dbDoc);
 		resourcesFileMap = client.getResourceMap("ext");		
 		componentsMap = new HashMap<String, Component>();
-		
+		setTitle(ApplicationListView.applicationName);
         setContentView(R.layout.loading);	
-        
+        loadingbar = ProgressDialog.show(this, "Please wait...", "Building application ...", true, true);
         loadingThread = new LoadingThread(handler);
         loadingThread.Start();
 	}
 	
-	public void start()
+	public void display()
 	{
 		NodeList generalInfo = designDoc.getElementsByTagName(XmlTag.TAG_DESIGN_S_G);
 		final String startFormId = ((Element) generalInfo.item(0)).getAttribute(XmlTag.TAG_DESIGN_S_G_FID);
-		setContentView(layoutsMap.get(startFormId));			
-		setTitle(ApplicationListView.applicationName);
+		setContentView(layoutsMap.get(startFormId));		
 	}
 	
 	public static void prepareData(int position, String login, String pwd)
-	{		
-		Log.i("info", "prepare data");
+	{
 		client = new DmaHttpClient();		
 		client.checkDownloadFile(position, login, pwd);
 
@@ -104,23 +105,20 @@ public class ApplicationView extends Activity {
 				ApplicationListView.getApplicationsInfo().get("AppVer"),
 				ApplicationListView.getApplicationsInfo().get("AppBuild"),
 				ApplicationListView.getApplicationsInfo().get("SubId"), login, pwd);
-		Log.i("info", "prepare done");
 	}
 	
 	public void createView()
 	{		
 		layoutsMap = new HashMap<String, Form>();
+		onLoadFuncMap = new HashMap<String, String>();
 		NodeList formsList = designDoc.getElementsByTagName(XmlTag.TAG_DESIGN_F);
 		int formsListLen = formsList.getLength();
-
 		for (int i=0; i<formsListLen; i++)
 		{
-			Log.i("info", "Form "+i);
 			Form form = new Form(this);
-			
 			Element formElt = (Element) formsList.item(i);
 			String formId = formElt.getAttribute(XmlTag.TAG_DESIGN_F_ID);
-			Log.i("info", "formid "+formId);
+			Log.i("info", "Form "+i+" formid "+formId);
 			
 			if (!formElt.getAttribute(XmlTag.TAG_COMPONENT_COMMON_TABLEID).equals(""))
 			{
@@ -134,13 +132,11 @@ public class ApplicationView extends Activity {
 				form.setBackgroundColor(Color.parseColor(backgourndColor));
 			}			
 			
-			NodeList formEltList = formElt.getChildNodes();
-			Log.i("info", "childnode size "+formEltList.getLength());						
-			
+			NodeList formEltList = formElt.getChildNodes();					
 			int formEltListLen = formEltList.getLength();
 			for (int j=0; j<formEltListLen; j++)
 			{
-				Log.i("info", "Form "+i+" element "+j);
+				//Log.i("info", "Form "+i+" element "+j);
 				Element element = (Element) formEltList.item(j);
 				
 				if ((!element.getNodeName().equals(XmlTag.TAG_COMPONENT_MENUBAR)) &&
@@ -339,12 +335,14 @@ public class ApplicationView extends Activity {
 					//Add onclick event
 					if (element.hasAttribute(XmlTag.TAG_EVENT_ONCLICK))
 					{
+						Log.i("info", "click event");
 						component.setOnclickFunction(element.getAttribute(XmlTag.TAG_EVENT_ONCLICK), component.getView());
 					}
 					
 					//Add onchange event
 					if (element.hasAttribute(XmlTag.TAG_EVENT_ONCHANGE))
 					{
+						Log.i("info", "onchange event");
 						component.setOnchangeFunction(element.getAttribute(XmlTag.TAG_EVENT_ONCHANGE), component.getView());
 					}
 					
@@ -370,14 +368,8 @@ public class ApplicationView extends Activity {
 					Log.i("info", "after put");
 				}
 			}			
-			//Add onload event
-			if (formElt.hasAttribute(XmlTag.TAG_EVENT_ONLOAD))
-			{
-				form.onLoad(formElt.getAttribute(XmlTag.TAG_EVENT_ONLOAD));
-			}
-			
-			Log.i("info", "form length "+form.getChildCount());
-			
+			//Add onload event in a hashmap for calling this function by changing form 
+			onLoadFuncMap.put(formId, formElt.getAttribute(XmlTag.TAG_EVENT_ONLOAD));			
 			layoutsMap.put(formId, form);
 			Log.i("info", "add layout ok");
 		}
@@ -446,18 +438,23 @@ public class ApplicationView extends Activity {
     	return client;
     }
     
-    public static void refreshComponent(String componentId)
+    public static void refreshComponent(String componentId, Object filter)
     {
     	int size = componentsMap.size();
     	Log.i("info", "sizeof "+size);
     	if (componentsMap.containsKey(componentId))
     	{
-    		componentsMap.get(componentId).refreshComponentContent();		
+    		componentsMap.get(componentId).refreshComponentContent(filter);
     	}
     }
     
     public static ApplicationView getCurrentView()
     {
     	return applicationView;
+    }
+    
+    public static HashMap<String, String> getOnLoadFuncMap()
+    {
+    	return onLoadFuncMap;
     }
 }

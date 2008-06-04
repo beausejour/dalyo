@@ -1,6 +1,7 @@
 package com.penbase.dma.Dalyo.Component;
 
 import java.util.*;
+
 import com.penbase.dma.Dalyo.Component.Custom.ComboBox;
 import com.penbase.dma.Dalyo.Component.Custom.DateField;
 import com.penbase.dma.Dalyo.Component.Custom.Label;
@@ -439,27 +440,47 @@ public class Component{
 		return fontType;
 	}
 	
-	public void refreshComponentContent()
+	public void refreshComponentContent(Object filter)
 	{
 		if (getView() instanceof DataView)
 		{
-			Log.i("info", "instance of DataView");
-			((DataView)getView()).refresh();
+			Log.i("info", "instance of DataView "+filter);
+			((DataView)getView()).refresh(filter);
 		}
 		else if (getView() instanceof ComboBox)
 		{
 			Log.i("info", "instance of ComboBox");
-			((ComboBox)getView()).getData();
+			((ComboBox)getView()).getData(filter);
 		}
 	}
 	
-	public void getRecord(String formId)
+	public void setRecord(String formId)
 	{
 		Log.i("info", "in componenttttttttttttttttttttttt");
 		if (getView() instanceof ComboBox)
 		{
 			((ComboBox)getView()).setCurrentValue(formId);
 			Log.i("info", "here");
+		}
+	}
+	
+	public HashMap<String, Object> getRecord()
+	{
+		Log.i("info", "getRecord");
+		HashMap<String, Object> result = null;
+		if (getView() instanceof ComboBox)
+		{
+			result = ((ComboBox)getView()).getCurrentRecord();
+			Log.i("info", "result in component "+result);
+		}
+		return result;
+	}
+	
+	public void setValue(Object value)
+	{
+		if (getView() instanceof NumberBox)
+		{
+			((NumberBox)getView()).setValue(value);
 		}
 	}
 }
