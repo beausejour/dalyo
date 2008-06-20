@@ -13,7 +13,7 @@ public class CustomTextView extends TextView{
 	public CustomTextView(Context context) {
 		super(context);
 		borderPaint = new Paint();
-		borderPaint.setARGB(255, 255, 255, 255);
+		borderPaint.setARGB(255, 223, 217, 217);
 		borderPaint.setAntiAlias(true);
 		borderPaint.setStyle(Style.STROKE);
 	}

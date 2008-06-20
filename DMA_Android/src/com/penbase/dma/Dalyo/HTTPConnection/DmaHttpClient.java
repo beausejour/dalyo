@@ -57,10 +57,11 @@ public class DmaHttpClient{
 	
 	//Booleans of sending requests
 	private boolean sendBehavior = true;
-	private boolean sendDb = true;
+	private static boolean sendDb = true;
 	private boolean sendDesign = true;
 	
 	//XML files
+	public static final String login_XML = "/data/misc/location/login.xml";
 	public static final String db_XML = "/data/misc/location/db.xml";
 	public static final String design_XML = "/data/misc/location/design.xml";
 	public static final String behavior_XML = "/data/misc/location/behavior.xml";
@@ -173,6 +174,7 @@ public class DmaHttpClient{
 	//Check if we need to download all xml files
 	public void checkDownloadFile(int position, String login, String pwd){
 		String loginStream = SendPost("act=login&login="+login+"&passwd="+pwd+"&useragent=ANDROID", STRING);
+		Log.i("info", "loginStream "+loginStream);
 		Document parserLogin = CreateParseDocument(loginStream, null);
 		NodeList list = parserLogin.getElementsByTagName("a");
 		Element element = (Element) list.item(position);
@@ -215,8 +217,9 @@ public class DmaHttpClient{
 				this.sendBehavior = false;
 				Log.i("info", "don't send behavior request");
 			}
+			Log.i("info", "DbId "+DbId+" application dbid "+Integer.valueOf(Dma.applicationList.get(position).getDbId()));
 			if (DbId == Integer.valueOf(Dma.applicationList.get(position).getDbId())){
-				this.sendDb = false;
+				sendDb = false;
 				Log.i("info", "don't send database request");
 			}
 		}
@@ -315,6 +318,7 @@ public class DmaHttpClient{
 			String getDB = "act=getdb&from=runtime&appid="+AppId+"&appversion="+AppVer+"&appbuild="+
 			AppBuild+"&subid="+SubId+"&login="+login+"&passwd="+pwd+"&useragent=ANDROID";
 			String dbStream = SendPost(getDB, STRING);
+			Log.i("info", "dbstream "+dbStream);
 			StreamToFile(dbStream, db_XML);
 			return CreateParseDocument(dbStream, null);
 		}
@@ -420,5 +424,9 @@ public class DmaHttpClient{
 			e.printStackTrace();
 		}
 		return result;
+	}
+	
+	public static boolean getSendDb(){
+		return sendDb;
 	}
 }

@@ -48,8 +48,7 @@ public class Dma extends Activity implements OnClickListener{
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		setContentView(R.layout.login_layout);
-		SharedPreferences settings = getSharedPreferences(PREFS_NAME,
-				MODE_PRIVATE);	
+		SharedPreferences settings = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);	
 		boolean rememberMe = settings.getBoolean("RememberMe", false);
 		Log.v("Dalyo", "start = " + Boolean.toString(rememberMe));
 		
@@ -63,6 +62,7 @@ public class Dma extends Activity implements OnClickListener{
 		}
 		else{
 			String xml = settings.getString("ApplicationList", null);
+			Log.i("info", "remember me");
 			GetListApplicationFromXml(xml);
 			//this.finish();
 			startSubActivity(new Intent(this, ApplicationListView.class), 0);
@@ -76,11 +76,12 @@ public class Dma extends Activity implements OnClickListener{
 		else{
 			applicationList.clear();
 		}
-		
+		Log.i("info", "xml in getlistapplication "+xml);
 		Document doc = DmaHttpClient.CreateParseDocument(xml, null);
 		NodeList root = doc.getElementsByTagName(XmlTag.ROOT);
 		NodeList apps = root.item(0).getChildNodes();
-		for (int s = 0; s < apps.getLength(); s++){
+		int appsLen = apps.getLength();
+		for (int s = 0; s < appsLen; s++){
 			NodeList els = apps.item(s).getChildNodes();
 			Application app = new Application();
 			for (int t = 0; t < els.getLength(); t++){
@@ -90,6 +91,7 @@ public class Dma extends Activity implements OnClickListener{
 						app.setAppId(noeud.getChildNodes().item(0).getNodeValue());
 					}		
 					else if (noeud.getNodeName().equals(XmlTag.LOGIN_TIT)){
+						Log.i("info", "application name "+noeud.getChildNodes().item(0).getNodeValue());
 						app.setName(noeud.getChildNodes().item(0).getNodeValue());
 					}
 					else if (noeud.getNodeName().equals(XmlTag.LOGIN_BLD)){
@@ -125,9 +127,9 @@ public class Dma extends Activity implements OnClickListener{
 			showAlert("Alert", 1,"Error : " + client.GetLastError()+" check your username or password", "OK", false);
 		}
 		else{
+			Log.i("info", "rewrite pref file");
 			// save user info.
-			SharedPreferences.Editor editorPrefs = getSharedPreferences(Dma.PREFS_NAME,
-					MODE_PRIVATE).edit();
+			SharedPreferences.Editor editorPrefs = getSharedPreferences(Dma.PREFS_NAME, MODE_PRIVATE).edit();
 			editorPrefs.putBoolean("RememberMe", cb_remember_me.isChecked());
 			editorPrefs.putString("Username", tx_login.getText().toString());
 			editorPrefs.putString("Userpassword", tx_password.getText().toString());
