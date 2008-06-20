@@ -2,6 +2,7 @@ package com.penbase.dma.Dalyo.Component.Custom.Dataview;
 
 import java.util.ArrayList;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.util.Log;
 import android.widget.LinearLayout;
@@ -26,6 +27,8 @@ public class CustomLinearLayout extends LinearLayout {
 				CustomTextView ctv = new CustomTextView(context);
 				ctv.setText(dataList.get(i));
 				ctv.setTypeface(Typeface.DEFAULT_BOLD);
+				String fond = "#8F3600";
+				ctv.setBackgroundColor(Color.parseColor(fond));
 				int width = Integer.valueOf(widthList.get(i));
 				this.addView(ctv, new LinearLayout.LayoutParams(width, LayoutParams.WRAP_CONTENT));
 			}

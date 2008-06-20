@@ -18,6 +18,7 @@ import com.penbase.dma.Constant.XmlTag;
 import com.penbase.dma.Dalyo.Function.Function;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -42,11 +43,15 @@ public class DatabaseAdapter {
 	private ArrayList<Integer> globalIds;
 	private static HashMap<Integer, ArrayList<HashMap<Integer, HashMap<String, Object>>>> recordsOperated;
 	private String dbName = null;
+	private String TABLEPREF = "TablePrefFile";
+	private String FIELDPREF = "FieldPrefFile";
 	
 	public DatabaseAdapter(Context c, Document d, String database){
 		this.context = c;
 		this.dbDocument = d;
 		this.dbName = database;
+		this.TABLEPREF = dbName+"_"+TABLEPREF;
+		this.FIELDPREF = dbName+"_"+FIELDPREF;
 		tablesMap = new HashMap<String, ArrayList<String>>();		//{tid, [tablename, fieldnames...]}
 		fieldsMap = new HashMap<String, String>();
 		fieldsPKMap = new HashMap<String, String>();
@@ -60,12 +65,23 @@ public class DatabaseAdapter {
 	private void createDatabase(String database) throws SQLException{
 		try{
 			if (!databaseExists(database)){
-				Log.i("info", "create database");
+				Log.i("info", "the database doesn't exist");
 				context.createDatabase(database, 1, 0, null);
+				sqlite = context.openDatabase(database, null);
+				createTable();
 			}
-			sqlite = context.openDatabase(database, null);
-			//deleteTable();
-			createTable();
+			else if (!checkDatabaseExists()){
+				Log.i("info", "the database isn't the same");
+				deleteDatabase(database);
+				context.createDatabase(database, 1, 0, null);
+				sqlite = context.openDatabase(database, null);
+				createTable();
+			}
+			else{
+				Log.i("info", "the database have nothing to change");
+				context.createDatabase(database, 1, 0, null);
+				sqlite = context.openDatabase(database, null);
+			}
 		}
 		catch (FileNotFoundException e){
 			e.printStackTrace();}
@@ -76,7 +92,72 @@ public class DatabaseAdapter {
 		return dbFile.exists();
 	}
 	
+	private boolean checkDatabaseExists(){
+		boolean result = true;
+		SharedPreferences tablePref = context.getSharedPreferences(TABLEPREF, Context.MODE_PRIVATE);
+		SharedPreferences fieldPref = context.getSharedPreferences(FIELDPREF, Context.MODE_PRIVATE);
+		NodeList tableList = dbDocument.getElementsByTagName(XmlTag.TABLE);
+		int tableLen = tableList.getLength();
+		int i = 0;
+		while (i < tableLen){
+			Element table = (Element) tableList.item(i);
+			String tableId = table.getAttribute(XmlTag.TABLE_ID);
+			Log.i("info", "tablepref "+tablePref.getString(tableId, "null"));
+			if (!tablePref.getString(tableId, "null").equals("")){
+				Log.i("info", "table not ok");
+				result = false;
+				i = tableLen;
+			}
+			else{
+				NodeList fieldList = table.getChildNodes();
+				int fieldLen = fieldList.getLength();
+				if (fieldLen > 0){
+					int j = 0;
+					while (j < fieldLen){
+						Element field = (Element) fieldList.item(j);
+						String fieldId = field.getAttribute(XmlTag.FIELD_ID);
+						String fieldType = field.getAttribute(XmlTag.FIELD_TYPE);
+						String fieldSize = field.getAttribute(XmlTag.FIELD_SIZE);
+						if (fieldType.equals("VARCHAR")){
+							fieldType = fieldType+"("+fieldSize+")";
+						}
+						String fieldTypeValue = fieldType;
+						if (field.hasAttribute(XmlTag.FIELD_PK)){
+							if (field.hasAttribute(XmlTag.FIELD_PK_AUTO)){
+								fieldTypeValue += " PRIMARY KEY AUTOINCREMENT, ";
+							}
+							else{
+								fieldTypeValue += " PRIMARY KEY, ";
+							}
+						}
+						
+						else if ((field.hasAttribute(XmlTag.FIELD_FORIEIGNTABLE)) 
+								&& (field.hasAttribute(XmlTag.FIELD_FORIEIGNFIELD))){
+							String foreignTableId = field.getAttribute(XmlTag.FIELD_FORIEIGNTABLE);
+							String foreignFieldId = field.getAttribute(XmlTag.FIELD_FORIEIGNFIELD);
+							fieldTypeValue += foreignTableId+" "+foreignFieldId;
+						}
+						Log.i("info", "field "+fieldId+" "+fieldPref.getString(fieldId, "null")+" actual "+fieldTypeValue);
+						if (!fieldPref.getString(fieldId, "null").equals(fieldTypeValue)){
+							Log.i("info", "field not ok");
+							result = false;
+							j = fieldLen;
+							i = tableLen;
+						}
+						else{
+							j++;
+						}
+					}
+				}
+				i++;
+			}
+		}
+		return result;
+	}
+	
 	private void createTable(){
+		SharedPreferences.Editor editorTablePref = context.getSharedPreferences(TABLEPREF, Context.MODE_PRIVATE).edit();
+		SharedPreferences.Editor editorFieldPref = context.getSharedPreferences(FIELDPREF, Context.MODE_PRIVATE).edit();
 		Element tagID = (Element)dbDocument.getElementsByTagName(XmlTag.DB).item(0);
 		DbId = Integer.valueOf(tagID.getAttribute(XmlTag.DB_ID));
 		NodeList tableList = dbDocument.getElementsByTagName(XmlTag.TABLE);
@@ -86,6 +167,7 @@ public class DatabaseAdapter {
 			Element table = (Element) tableList.item(i);
 			String typeSync = table.getAttribute(XmlTag.TABLE_SYNC);
 			String tableId = table.getAttribute(XmlTag.TABLE_ID);
+			editorTablePref.putString(tableId, "");
 			String tableName = TABLE+tableId;
 			Log.i("info", "value of i "+i+" element name "+tableName);
 			ArrayList<String> tableElements = new ArrayList<String>();
@@ -93,7 +175,6 @@ public class DatabaseAdapter {
 			createquery += tableName+" ("+id+" VARCHAR(255), ";
 			NodeList fieldList = table.getChildNodes();
 			int fieldLen = fieldList.getLength();
-			
 			ArrayList<ArrayList<String>> foreignKeyTable = new ArrayList<ArrayList<String>>();
 			if (fieldLen > 0){
 				for (int j=0; j<fieldLen; j++){
@@ -106,20 +187,20 @@ public class DatabaseAdapter {
 					String fieldType = field.getAttribute(XmlTag.FIELD_TYPE);
 					String fieldSize = field.getAttribute(XmlTag.FIELD_SIZE);
 					fieldsMap.put(fieldId, fieldType);
-					
 					if (fieldType.equals("VARCHAR")){
 						fieldType = fieldType+"("+fieldSize+")";
 					}
-					
 					String fieldSync = field.getAttribute(XmlTag.FIELD_SYNC);
-					
+					String fieldTypeValue = fieldType;
 					if (field.hasAttribute(XmlTag.FIELD_PK)){
 						fieldsPKMap.put(tableId, fieldId);
 						if (field.hasAttribute(XmlTag.FIELD_PK_AUTO)){
 							createquery += fieldName+" "+fieldType+" PRIMARY KEY AUTOINCREMENT, ";
+							fieldTypeValue += " PRIMARY KEY AUTOINCREMENT, ";
 						}
 						else{
-							createquery += fieldName+" "+fieldType+" PRIMARY KEY,";
+							createquery += fieldName+" "+fieldType+" PRIMARY KEY, ";
+							fieldTypeValue += " PRIMARY KEY, ";
 						}
 					}
 					
@@ -127,21 +208,20 @@ public class DatabaseAdapter {
 							&& (field.hasAttribute(XmlTag.FIELD_FORIEIGNFIELD))){
 						String foreignTableId = field.getAttribute(XmlTag.FIELD_FORIEIGNTABLE);
 						String foreignFieldId = field.getAttribute(XmlTag.FIELD_FORIEIGNFIELD);
-						
+						fieldTypeValue += foreignTableId+" "+foreignFieldId;
 						createquery += fieldName+" "+fieldType+", ";
-						
 						foreignKey.add(tableId);
 						foreignKey.add(fieldId);
 						foreignKey.add(foreignTableId);
 						foreignKey.add(foreignFieldId);
 						Log.i("info", "foreignKeyList add "+foreignKey);
 						foreignKeyList.add(foreignKey);	
-						
 						foreignKeyTable.add(foreignKey);
 					}
 					else{
 						createquery += fieldName+" "+fieldType+", ";
 					}
+					editorFieldPref.putString(fieldId, fieldTypeValue);
 				}
 			}
 			
@@ -160,6 +240,8 @@ public class DatabaseAdapter {
 			Log.i("info", "query "+createquery);
 			sqlite.execSQL(createquery);
 		}
+		editorTablePref.commit();
+		editorFieldPref.commit();
 	}
 	
 	private void deleteDatabase(String database){

@@ -50,7 +50,6 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	private static HashMap<String, String> applicationInfos = new HashMap<String, String>();
 	private DmaHttpClient dmahttpclient = new DmaHttpClient();
 	public static String applicationName;
-	public static String PREFS_APP = "AppPrefsFile";
 
 	@Override
 	protected void onCreate(Bundle icicle) {
@@ -127,8 +126,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 
 	//Logout delete the preference data
 	public void logout() {
-		SharedPreferences.Editor editor = getSharedPreferences(Dma.PREFS_NAME,
-				MODE_PRIVATE).edit();
+		SharedPreferences.Editor editor = getSharedPreferences(Dma.PREFS_NAME, MODE_PRIVATE).edit();
 		editor.clear();
 		editor.commit();
 		this.finish();
@@ -146,8 +144,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 							prefs.getString("Userpassword", ""));
 					Dma.GetListApplicationFromXml(appsList);
 					
-					SharedPreferences.Editor editorPrefs = getSharedPreferences(Dma.PREFS_NAME,
-							MODE_PRIVATE).edit();
+					SharedPreferences.Editor editorPrefs = getSharedPreferences(Dma.PREFS_NAME, MODE_PRIVATE).edit();
 					editorPrefs.remove("ApplicationList");
 					editorPrefs.putString("ApplicationList", appsList);
 					editorPrefs.commit();
