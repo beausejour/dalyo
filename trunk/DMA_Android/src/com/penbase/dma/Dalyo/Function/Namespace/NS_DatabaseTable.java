@@ -90,8 +90,8 @@ public class NS_DatabaseTable {
 				Log.i("info", "each record "+columnNames[j]+" "+cursor.getString(j));
 			}
 			records.add(record);
+			cursor.next();
 		}
-		cursor.next();
 		return records; 
 	}
 	
