@@ -40,6 +40,7 @@ public class ApplicationView extends Activity {
 	private static DatabaseAdapter database;
 	private LoadingThread loadingThread = null;
 	private ProgressDialog loadingbar;
+	private static String clientLogin;
 	private Handler handler = new Handler(){
 		@Override
 		public void handleMessage(Message msg){
@@ -57,7 +58,7 @@ public class ApplicationView extends Activity {
 	protected void onCreate(Bundle icicle){	
 		super.onCreate(icicle);
 		ApplicationView.applicationView = this;
-		database = new DatabaseAdapter(this, dbDoc, ApplicationListView.applicationName);
+		database = new DatabaseAdapter(this, dbDoc, clientLogin+"_"+ApplicationListView.applicationName);
 		resourcesFileMap = client.getResourceMap("ext");
 		componentsMap = new HashMap<String, Component>();
 		setTitle(ApplicationListView.applicationName);
@@ -70,13 +71,16 @@ public class ApplicationView extends Activity {
 	public void display(){
 		NodeList generalInfo = designDoc.getElementsByTagName(XmlTag.DESIGN_S_G);
 		final String startFormId = ((Element) generalInfo.item(0)).getAttribute(XmlTag.DESIGN_S_G_FID);
+		if (onLoadFuncMap.containsKey(startFormId)){
+			layoutsMap.get(startFormId).onLoad(onLoadFuncMap.get(startFormId));
+		}
 		setContentView(layoutsMap.get(startFormId));
 	}
 
 	public static void prepareData(int position, String login, String pwd){
 		client = new DmaHttpClient();
 		client.checkDownloadFile(position, login, pwd);
-
+		clientLogin = login;
 		behaviorDocument = client.getBehavior(ApplicationListView.getApplicationsInfo().get("AppId"),
 				ApplicationListView.getApplicationsInfo().get("AppVer"),
 				ApplicationListView.getApplicationsInfo().get("AppBuild"),
@@ -322,5 +326,12 @@ public class ApplicationView extends Activity {
 
 	public static HashMap<String, String> getOnLoadFuncMap(){
 		return onLoadFuncMap;
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		//save operated records
+		Log.i("info", "ondestroy");
 	}
 }

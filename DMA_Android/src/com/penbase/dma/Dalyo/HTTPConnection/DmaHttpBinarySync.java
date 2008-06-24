@@ -47,6 +47,7 @@ public class DmaHttpBinarySync {
 			bos.write("\r\n".getBytes());
 			if (bytes != null){
 				bos.write(bytes);
+				Log.i("info", "bytes length "+bytes.length);
 			}
 			bos.write("\r\n".getBytes());
 			bos.write("--".getBytes());
@@ -79,17 +80,20 @@ public class DmaHttpBinarySync {
 	private void run(){
 		byte[] data = createConnection(requestAction, inputbytes);
 		String codeStr = getErrorCode(data);
-		int code = Integer.valueOf(codeStr);
-		Log.i("info", "code of action "+requestAction+" : "+code);
-		if (code == ErrorCode.OK){
-			DatabaseAdapter.startTransaction();
+		Log.i("info", "code of action "+requestAction+" : "+Integer.valueOf(codeStr));
+		if (Integer.valueOf(codeStr) == ErrorCode.OK){
+			int newLength = data.length - codeStr.length() - 1;
+			byte[] result = new byte[newLength];
+			System.arraycopy(data, codeStr.length()+1, result, 0, result.length);
+			Log.i("info", "result size "+result.length);
 			if (syncType.equals("Import")){
-				int newLength = data.length-codeStr.length()-1;
-				byte[] result = new byte[newLength];
-				System.arraycopy(data, codeStr.length()+1, result, 0, result.length);
+				DatabaseAdapter.startTransaction();
 				byte[] returnByte = ApplicationView.getDataBase().syncImportTable(result);
+				Log.i("info", "returnByte size "+returnByte.length);
 				byte[] responsedata = createConnection(responseAction, returnByte);
+				Log.i("info", "responsedata size "+responsedata.length);
 				String codeReportStr = getErrorCode(responsedata);
+				Log.i("info", "report code "+Integer.valueOf(codeReportStr));
 				if (Integer.valueOf(codeReportStr) == ErrorCode.OK){
 					Log.i("info", "report "+Integer.valueOf(codeReportStr));
 					DatabaseAdapter.validateTransaction();
@@ -99,10 +103,13 @@ public class DmaHttpBinarySync {
 				}
 			}
 			else if (syncType.equals("Export")){
+				DatabaseAdapter.updateIds(result);
 				byte[] responsedata = createConnection(responseAction, null);
 				String codeResponseStr = getErrorCode(responsedata);
+				Log.i("info", "responsea "+responseAction+" code "+codeResponseStr);
 				if (Integer.valueOf(codeResponseStr) == ErrorCode.OK){
-					DatabaseAdapter.clearRecordsOperated();
+					DatabaseAdapter.cleanTables();
+					//DatabaseAdapter.clearRecordsOperated();
 				}
 			}
 		}

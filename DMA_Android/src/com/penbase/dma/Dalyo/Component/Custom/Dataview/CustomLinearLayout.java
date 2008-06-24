@@ -23,7 +23,6 @@ public class CustomLinearLayout extends LinearLayout {
 		
 		if (isHeader){
 			for (int i=0; i<dataList.size(); i++){
-				Log.i("info", "dataList.get(i) "+dataList.get(i));
 				CustomTextView ctv = new CustomTextView(context);
 				ctv.setText(dataList.get(i));
 				ctv.setTypeface(Typeface.DEFAULT_BOLD);

@@ -76,7 +76,6 @@ public class Dma extends Activity implements OnClickListener{
 		else{
 			applicationList.clear();
 		}
-		Log.i("info", "xml in getlistapplication "+xml);
 		Document doc = DmaHttpClient.CreateParseDocument(xml, null);
 		NodeList root = doc.getElementsByTagName(XmlTag.ROOT);
 		NodeList apps = root.item(0).getChildNodes();
@@ -91,7 +90,6 @@ public class Dma extends Activity implements OnClickListener{
 						app.setAppId(noeud.getChildNodes().item(0).getNodeValue());
 					}		
 					else if (noeud.getNodeName().equals(XmlTag.LOGIN_TIT)){
-						Log.i("info", "application name "+noeud.getChildNodes().item(0).getNodeValue());
 						app.setName(noeud.getChildNodes().item(0).getNodeValue());
 					}
 					else if (noeud.getNodeName().equals(XmlTag.LOGIN_BLD)){
@@ -164,7 +162,8 @@ public class Dma extends Activity implements OnClickListener{
 	public static String getDeviceID(){
 		String imei = android.os.SystemProperties.get(TelephonyProperties.PROPERTY_IMEI,
 		"-1");
-		return imei;
+		return "159159";
+		//return imei;
 	}
 	
 	public static float getVersion(){

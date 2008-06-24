@@ -2,6 +2,7 @@ package com.penbase.dma.Dalyo.Component;
 
 import java.util.HashMap;
 import android.content.Context;
+import android.util.Log;
 import android.widget.AbsoluteLayout;
 import com.penbase.dma.Dalyo.Component.Custom.ComboBox;
 import com.penbase.dma.Dalyo.Component.Custom.TextField;
@@ -20,6 +21,7 @@ public class Form extends AbsoluteLayout{
 	}
 	
 	public void onLoad(String name){
+		Log.i("info", "call onload function "+name);
 		function.createFunction(name, null);
 	}
 	

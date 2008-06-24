@@ -32,8 +32,8 @@ public class Record {
 				for (int j=0; j<columnsRecordSize; j++){
 					currentRecord.put(columnNames[j], cursor.getString(j));
 				}
+				cursor.next();
 			}
-			cursor.next();
 		}
 	}
 	

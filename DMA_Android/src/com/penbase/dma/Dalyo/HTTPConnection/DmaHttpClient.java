@@ -174,7 +174,7 @@ public class DmaHttpClient{
 	//Check if we need to download all xml files
 	public void checkDownloadFile(int position, String login, String pwd){
 		String loginStream = SendPost("act=login&login="+login+"&passwd="+pwd+"&useragent=ANDROID", STRING);
-		Log.i("info", "loginStream "+loginStream);
+		StreamToFile(loginStream, login_XML);
 		Document parserLogin = CreateParseDocument(loginStream, null);
 		NodeList list = parserLogin.getElementsByTagName("a");
 		Element element = (Element) list.item(position);
@@ -226,7 +226,6 @@ public class DmaHttpClient{
 	}
 	
 	public int getIdDb(File dbXml){
-		Log.i("info", "getiddb");
 		Document dbDoc = CreateParseDocument(null, dbXml);
 		Element tagID = (Element)dbDoc.getElementsByTagName(XmlTag.DB).item(0);
 		return Integer.valueOf(tagID.getAttribute(XmlTag.DB_ID));
@@ -238,7 +237,7 @@ public class DmaHttpClient{
 			String getDesign = "act=getdesign&from=runtime&appid="+AppId+"&appversion="+AppVer+"&appbuild="+
 			AppBuild+"&subid="+SubId+"&login="+login+"&passwd="+pwd+"&useragent=ANDROID";
 			String designStream = SendPost(getDesign, STRING);
-			Log.i("info", "design "+designStream);
+			Log.i("info", "get design ");
 			StreamToFile(designStream, design_XML);
 			return CreateParseDocument(designStream, null);
 		}
@@ -314,11 +313,12 @@ public class DmaHttpClient{
 	
 	//Get the DB of an application
 	public Document getDB(String AppId, String AppVer, String AppBuild, String SubId, String login, String pwd){
+		Log.i("info", "sendDb "+sendDb);
 		if (sendDb){
 			String getDB = "act=getdb&from=runtime&appid="+AppId+"&appversion="+AppVer+"&appbuild="+
 			AppBuild+"&subid="+SubId+"&login="+login+"&passwd="+pwd+"&useragent=ANDROID";
 			String dbStream = SendPost(getDB, STRING);
-			Log.i("info", "dbstream "+dbStream);
+			Log.i("info", "dbstream ");
 			StreamToFile(dbStream, db_XML);
 			return CreateParseDocument(dbStream, null);
 		}
@@ -332,7 +332,7 @@ public class DmaHttpClient{
 		if (sendBehavior){
 			String getBehavior = "act=getbehavior&from=runtime&appid="+AppId+"&appversion="+AppVer+
 			"&appbuild="+AppBuild+"&subid="+SubId+"&did="+Dma.getDeviceID()+"&login="+login+"&passwd="+pwd+"&useragent=ANDROID";
-			Log.i("info", "getbehavior "+getBehavior);
+			Log.i("info", "getbehavior ");
 			String behaviorStream = SendPost(getBehavior, STRING);
 			StreamToFile(behaviorStream, behavior_XML);
 			return CreateParseDocument(behaviorStream, null);
@@ -348,7 +348,6 @@ public class DmaHttpClient{
 		"&stream=1&useragent=ANDROID&did="+Dma.getDeviceID();
 		String report = "act=rep&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd="+pwd+
 		"&stream=1&useragent=ANDROID&did="+Dma.getDeviceID();
-		
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		try {
 			bos.write(Binary.intToByteArray(DatabaseAdapter.getTableNb()));
@@ -372,13 +371,10 @@ public class DmaHttpClient{
 		"&stream=1&useragent=ANDROID&did="+Dma.getDeviceID();
 		String commit = "act=commit&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd="+pwd+
 		"&stream=1&useragent=ANDROID&did="+Dma.getDeviceID();
-		if (DatabaseAdapter.getRecordsOperated().size() > 0){
-			byte[] exportData = ApplicationView.getDataBase().syncExportTable();
-			new DmaHttpBinarySync(url, sync, commit, exportData, "Export");
-		}
-		else{
-			Log.i("info", "nothing to export");
-		}
+		
+		byte[] exportData = ApplicationView.getDataBase().syncExportTable();
+		Log.i("info", "exportData "+exportData.length);
+		new DmaHttpBinarySync(url, sync, commit, exportData, "Export");
 	}
 	
 	//Save the download xml stream to file
@@ -399,13 +395,11 @@ public class DmaHttpClient{
 	
 	//Check if file exists and its length is great than 0
 	private boolean checkFileExist(String fileName){
-		Log.i("info", "check file exists "+fileName);
 		boolean result = false;
-		if (new File(fileName).exists()){
-			if (new File(fileName).length() > 0){
-				result = true;
-			}
+		if ((new File(fileName).exists()) && (new File(fileName).length() > 0)){
+			result = true;
 		}
+		Log.i("info", "check file exists "+fileName+" "+result);
 		return result;
 	}
 	

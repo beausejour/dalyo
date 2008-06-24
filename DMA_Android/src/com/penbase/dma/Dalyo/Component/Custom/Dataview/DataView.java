@@ -8,7 +8,6 @@ import com.penbase.dma.View.ApplicationView;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Typeface;

@@ -27,6 +27,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
@@ -187,7 +188,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 				try {
 					ApplicationView.prepareData(position, applicationInfos.get("Username"),
 							applicationInfos.get("Userpassword"));
-				}
+				}	
 				catch(Exception e)
 				{e.printStackTrace();}
 				
@@ -196,6 +197,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 				startSubActivity(i, 0);
 			}
 		}.start();
+		Log.i("info", "applicationInfos "+applicationInfos+" position "+position);
 	}
 	
 	public static HashMap<String, String> getApplicationsInfo() {

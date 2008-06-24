@@ -63,7 +63,7 @@ public class NS_List {
 						(element.getAttribute(ScriptTag.TYPE).equals(type))){
 					if (element.getChildNodes().getLength() == 1){
 						if (element.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE){
-							value = Integer.valueOf(element.getChildNodes().item(0).getNodeValue());
+							value = element.getChildNodes().item(0).getNodeValue();
 							Log.i("info", "index in listitem "+value);
 						}
 						else if (element.getChildNodes().item(0).getNodeType() == Node.ELEMENT_NODE){
