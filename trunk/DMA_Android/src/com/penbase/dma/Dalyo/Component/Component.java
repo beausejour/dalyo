@@ -5,6 +5,8 @@ import java.util.HashMap;
 import com.penbase.dma.Constant.XmlTag;
 import com.penbase.dma.Dalyo.Component.Custom.*;
 import com.penbase.dma.Dalyo.Component.Custom.Dataview.DataView;
+import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
+
 import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -138,8 +140,7 @@ public class Component{
 			button.setTypeface(getFontType(fontType));
 			button.setTextSize(getFontSize(fontSize));
 			if (background != 0) {
-				Drawable d = Drawable.createFromPath("data/misc/location/"+background+"."+extension);
-				Log.i("info", "button background "+"data/misc/location/"+background+"."+extension);
+				Drawable d = Drawable.createFromPath(DmaHttpClient.getFilesPath()+background+"."+extension);
 				button.setBackground(d);
 			}
 			view = button;
@@ -227,7 +228,7 @@ public class Component{
 		else if(type.equals(XmlTag.COMPONENT_IMAGE)) {
 			ImageView imageview = new ImageView(context);
 			if (background != 0) {
-				Drawable d = Drawable.createFromPath("data/misc/location/"+background+"."+extension);
+				Drawable d = Drawable.createFromPath(DmaHttpClient.getFilesPath()+background+"."+extension);
 				imageview.setBackground(d);
 			}
 			view = imageview;
