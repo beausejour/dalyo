@@ -43,14 +43,14 @@ import android.widget.AdapterView.OnItemSelectedListener;
 
 public class ApplicationListView extends Activity implements OnItemSelectedListener, OnItemClickListener {
 
-	AppsAdapter mAdapter;
-	TextView mApplicationName;
+	private AppsAdapter mAdapter;
+	private TextView mApplicationName;
 	private static ProgressDialog loadProgressDialog = null;
 	private static ProgressDialog updateProgressDialog = null;
 	private Intent i = null;
 	private static HashMap<String, String> applicationInfos = new HashMap<String, String>();
 	private DmaHttpClient dmahttpclient = new DmaHttpClient();
-	public static String applicationName;
+	private static String applicationName;
 
 	@Override
 	protected void onCreate(Bundle icicle) {
@@ -149,7 +149,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 					editorPrefs.remove("ApplicationList");
 					editorPrefs.putString("ApplicationList", appsList);
 					editorPrefs.commit();
-					new File(DmaHttpClient.db_XML).delete();
+					//new File(DmaHttpClient.db_XML).delete();
 				}
 				catch(Exception e)
 				{e.printStackTrace();}
@@ -202,5 +202,9 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	
 	public static HashMap<String, String> getApplicationsInfo() {
 		return applicationInfos;
+	}
+	
+	public static String getApplicationName(){
+		return applicationName;
 	}
 }

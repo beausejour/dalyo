@@ -43,6 +43,7 @@ import com.penbase.dma.Binary.Binary;
 import com.penbase.dma.Constant.ErrorCode;
 import com.penbase.dma.Constant.XmlTag;
 import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
+import com.penbase.dma.View.ApplicationListView;
 import com.penbase.dma.View.ApplicationView;
 
 import android.security.MessageDigest;
@@ -57,20 +58,22 @@ public class DmaHttpClient{
 	
 	//Booleans of sending requests
 	private boolean sendBehavior = true;
-	private static boolean sendDb = true;
+	private boolean sendDb = true;
 	private boolean sendDesign = true;
 	
 	//XML files
-	public static final String login_XML = "/data/misc/location/login.xml";
-	public static final String db_XML = "/data/misc/location/db.xml";
-	public static final String design_XML = "/data/misc/location/design.xml";
-	public static final String behavior_XML = "/data/misc/location/behavior.xml";
-	public static final String resources_XML = "/data/misc/location/resources.xml";
+	private static String directory;
+	private String login_XML;
+	private String db_XML;
+	private String design_XML;
+	private String behavior_XML;
+	private String resources_XML;
 	
 	//Image file's path
-	private static final String imageFilePath = "/data/misc/location/";
+	private String imageFilePath;
 	
 	public DmaHttpClient(){
+		createFilesPath();
 		try{
 			url = new URL("http://192.168.0.1/server/com.penbase.arbiter.Arbiter");
 			//url = new URL("http://www.dalyo.com/server/com.penbase.arbiter.Arbiter");
@@ -79,12 +82,45 @@ public class DmaHttpClient{
 		{e.printStackTrace();}
 	}
 
+	private void createFilesPath(){
+		if (ApplicationListView.getApplicationName() != null){
+			String applicationName = ApplicationListView.getApplicationName();
+			if (applicationName.indexOf("(") != -1){
+				applicationName = applicationName.replace("(", "");
+			}
+			if (applicationName.indexOf(")") != -1){
+				applicationName = applicationName.replace(")", "");
+			}
+			if (applicationName.indexOf("<") != -1){
+				applicationName = applicationName.replace("<", "");
+			}
+			if (applicationName.indexOf(">") != -1){
+				applicationName = applicationName.replace(">", "");
+			}
+			directory = "/data/data/com.penbase.dma/"+applicationName+"/";
+			if (!new File(directory).exists()){
+				Log.i("info", "doesn't exists");
+				new File(directory).mkdir();
+			}
+			login_XML = directory+"login.xml";
+			db_XML = directory+"db.xml";
+			design_XML = directory+"design.xml";
+			behavior_XML = directory+"behavior.xml";
+			resources_XML = directory+"resources.xml";
+			imageFilePath = directory;
+		}
+	}
+	
 	public int GetLastError() {
 		return lastError;
 	}
 
 	public String Authentication(String login, String password){
 		return SendPost("act=login&login="+login+"&passwd="+password+"&useragent=ANDROID", STRING);
+	}
+	
+	public static String getFilesPath(){
+		return directory;
 	}
 	
 	private String SendPost(String parameters, String type){
@@ -420,7 +456,7 @@ public class DmaHttpClient{
 		return result;
 	}
 	
-	public static boolean getSendDb(){
+	/*public static boolean getSendDb(){
 		return sendDb;
-	}
+	}*/
 }

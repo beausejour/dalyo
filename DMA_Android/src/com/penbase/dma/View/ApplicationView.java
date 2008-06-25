@@ -58,10 +58,10 @@ public class ApplicationView extends Activity {
 	protected void onCreate(Bundle icicle){	
 		super.onCreate(icicle);
 		ApplicationView.applicationView = this;
-		database = new DatabaseAdapter(this, dbDoc, clientLogin+"_"+ApplicationListView.applicationName);
+		database = new DatabaseAdapter(this, dbDoc, clientLogin+"_"+ApplicationListView.getApplicationName());
 		resourcesFileMap = client.getResourceMap("ext");
 		componentsMap = new HashMap<String, Component>();
-		setTitle(ApplicationListView.applicationName);
+		setTitle(ApplicationListView.getApplicationName());
 		setContentView(R.layout.loading);
 		loadingbar = ProgressDialog.show(this, "Please wait...", "Building application ...", true, false);
 		loadingThread = new LoadingThread(handler);
