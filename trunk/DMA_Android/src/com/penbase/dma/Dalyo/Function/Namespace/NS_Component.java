@@ -3,6 +3,7 @@ package com.penbase.dma.Dalyo.Function.Namespace;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import android.util.Log;
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Function.Function;
@@ -30,6 +31,12 @@ public class NS_Component {
 		}
 	}
 	
+	public static void SetEnabled(NodeList params){
+		String componentId = String.valueOf(getValue(params, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT));
+		Object state =  getValue(params, ScriptAttribute.PARAMETER_NAME_ENABLE, ScriptAttribute.PARAMETER_TYPE_BOOLEAN);
+		ApplicationView.getComponents().get(componentId).setEnabled(((Boolean)state).booleanValue());
+	}
+	
 	private static Object getValue(NodeList params, String name, String type){
 		Object value = null;
 		int paramsLen = params.getLength();
@@ -49,6 +56,9 @@ public class NS_Component {
 								if ((text != null) && (!text.equals("null"))){
 									value = Function.returnTypeFunction(child);
 								}
+							}
+							else if (child.getNodeName().equals(ScriptTag.KEYWOED)){
+								value = Function.getKeyWord(child);
 							}
 						}
 						else if (element.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE){

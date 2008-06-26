@@ -17,12 +17,10 @@ public class Form extends AbsoluteLayout{
 		super(context);
 		this.setLayoutParams(new AbsoluteLayout.LayoutParams(LayoutParams.FILL_PARENT, 
 				LayoutParams.FILL_PARENT, 0, 0));
-		function = new Function(context);
 	}
 	
 	public void onLoad(String name){
-		Log.i("info", "call onload function "+name);
-		function.createFunction(name, null);
+		Function.createFunction(name, null);
 	}
 	
 	public void setTableId(String tableId){

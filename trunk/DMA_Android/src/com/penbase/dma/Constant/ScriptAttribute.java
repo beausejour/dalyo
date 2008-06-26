@@ -5,6 +5,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_ADD = "add";
 	public static final String FUNCTION_ADDCRITERIA = "addCriteria";
 	public static final String FUNCTION_ALERT = "alert";
+	public static final String FUNCTION_CANCEL = "cancel";
 	public static final String FUNCTION_CANCELNRECORD = "cancelNewRecord";
 	public static final String FUNCTION_CANCELTRANSACTION = "cancelTransaction";
 	public static final String FUNCTION_CLEAR = "clear";
@@ -15,19 +16,27 @@ public class ScriptAttribute {
 	public static final String FUNCTION_GET = "get";
 	public static final String FUNCTION_GETFIELDVALUE = "getFieldValue";
 	public static final String FUNCTION_GETFILTEREDRECORDS = "getFilteredRecords";
+	public static final String FUNCTION_GETLATITUDE = "getLatitude";
+	public static final String FUNCTION_GETLOCATION = "getLocation";
+	public static final String FUNCTION_GETLONGITUDE = "getLongitude";
 	public static final String FUNCTION_GETSELECTEDRECORD = "getSelectedRecord";
 	public static final String FUNCTION_GETSIZE = "size";
+	public static final String FUNCTION_GETSTATUS = "getStatus";
 	public static final String FUNCTION_GETVALUE = "getValue";
+	public static final String FUNCTION_INIT = "init";
 	public static final String FUNCTION_NAVIGATE = "navigate";
 	public static final String FUNCTION_NEWRECORD = "newRecord";
 	public static final String FUNCTION_NOW = "now";
 	public static final String FUNCTION_REFRESH = "refresh";
 	public static final String FUNCTION_SETCURRENTRECORD = "setCurrentRecord";
+	public static final String FUNCTION_SETENABLED = "setEnabled";
 	public static final String FUNCTION_SETTEXT = "setText";
 	public static final String FUNCTION_SETVALUE = "setValue";
 	public static final String FUNCTION_SIZE = "size";
+	public static final String FUNCTION_START = "start";
 	public static final String FUNCTION_STARTNEWRECORD = "startNewRecord";
 	public static final String FUNCTION_STARTTRANSACTION = "startTransaction";
+	public static final String FUNCTION_STOP = "stop";
 	public static final String FUNCTION_SUB = "sub";
 	public static final String FUNCTION_SYNC = "sync";
 	public static final String FUNCTION_TOINT = "toInt";
@@ -43,20 +52,27 @@ public class ScriptAttribute {
 	public static final String NAMESPACE_DB = "database";
 	public static final String NAMESPACE_DB_TABLE = "database.table";
 	public static final String NAMESPACE_MATH = "math";
+	public static final String NAMESPACE_GPS = "gps";
 	public static final String NAMESPACE_RUNTIME = "runtime";
+	public static final String NAMESPACE_TIMER = "timer";
 	public static final String NAMESPACE_USER = "user";
 	
 	//Parameters name
 	public static final String PARAMETER_NAME_A = "a";
 	public static final String PARAMETER_NAME_B = "b";
+	public static final String PARAMETER_NAME_CALLBACK = "callback";
 	public static final String PARAMETER_NAME_CAPTION = "caption";
+	public static final String PARAMETER_NAME_DELAYED = "delayed";
 	public static final String PARAMETER_NAME_DISTINCT = "distinct";
 	public static final String PARAMETER_NAME_ELEMENT = "element";
+	public static final String PARAMETER_NAME_ENABLE = "enable";
 	public static final String PARAMETER_NAME_FACELESS = "faceless";
 	public static final String PARAMETER_NAME_FIELDS = "fields";
 	public static final String PARAMETER_NAME_INDEX = "index";
+	public static final String PARAMETER_NAME_INTERVAL = "interval";
 	public static final String PARAMETER_NAME_LINK = "link";		//link the last condition 
 	public static final String PARAMETER_NAME_TEXT = "text";
+	public static final String PARAMETER_NAME_TIMERID = "timer_id";
 	public static final String PARAMETER_NAME_VALUE = "value";
 	public static final String PARAMETER_NAME_VALUES = "values";
 	
@@ -71,6 +87,7 @@ public class ScriptAttribute {
 	public static final String FILTER = "filter";
 	public static final String FORM = "form";
 	public static final String LIST = "list";
+	public static final String LOCATION = "location";
 	public static final String OBJECT = "object";
 	public static final String OPERATOR = "operator"; 
 	public static final String ORDER = "order";
@@ -82,6 +99,7 @@ public class ScriptAttribute {
 	public static final String CONST_FALSE = "FALSE";
 	public static final String CONST_NULL = "NULL";
 	public static final String CONST_TRUE = "TRUE";
+	public static final String CONST_GPS_SIGNAL_OK = "GPS_SIGNAL_OK";
 	
 	//Operators
 	public static final int AND = 29;

@@ -26,7 +26,6 @@ public class DmaHttpBinarySync {
 		this.inputbytes = inputbytes;
 		this.urlString = url.toString();
 		this.syncType = syncType;
-		run();
 	}
 	
 	private byte[] createConnection(String action, byte[] bytes){
@@ -77,7 +76,8 @@ public class DmaHttpBinarySync {
 		return result;
 	}
 	
-	private void run(){
+	public boolean run(){
+		boolean wellDone = false;
 		byte[] data = createConnection(requestAction, inputbytes);
 		String codeStr = getErrorCode(data);
 		Log.i("info", "code of action "+requestAction+" : "+Integer.valueOf(codeStr));
@@ -85,18 +85,15 @@ public class DmaHttpBinarySync {
 			int newLength = data.length - codeStr.length() - 1;
 			byte[] result = new byte[newLength];
 			System.arraycopy(data, codeStr.length()+1, result, 0, result.length);
-			Log.i("info", "result size "+result.length);
 			if (syncType.equals("Import")){
 				DatabaseAdapter.startTransaction();
 				byte[] returnByte = ApplicationView.getDataBase().syncImportTable(result);
-				Log.i("info", "returnByte size "+returnByte.length);
 				byte[] responsedata = createConnection(responseAction, returnByte);
-				Log.i("info", "responsedata size "+responsedata.length);
 				String codeReportStr = getErrorCode(responsedata);
 				Log.i("info", "report code "+Integer.valueOf(codeReportStr));
 				if (Integer.valueOf(codeReportStr) == ErrorCode.OK){
-					Log.i("info", "report "+Integer.valueOf(codeReportStr));
 					DatabaseAdapter.validateTransaction();
+					wellDone = true;
 				}
 				else{
 					DatabaseAdapter.cancelTransaction();
@@ -109,10 +106,11 @@ public class DmaHttpBinarySync {
 				Log.i("info", "responsea "+responseAction+" code "+codeResponseStr);
 				if (Integer.valueOf(codeResponseStr) == ErrorCode.OK){
 					DatabaseAdapter.cleanTables();
-					//DatabaseAdapter.clearRecordsOperated();
+					wellDone = true;
 				}
 			}
 		}
+		return wellDone;
 	}
 	
 	private byte[] getData(HttpURLConnection connection) {

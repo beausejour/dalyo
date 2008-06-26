@@ -3,12 +3,14 @@ package com.penbase.dma.View;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.w3c.dom.*;
+
 import com.penbase.dma.R;
 import com.penbase.dma.Constant.XmlTag;
 import com.penbase.dma.Dalyo.LoadingThread;
 import com.penbase.dma.Dalyo.Component.Component;
 import com.penbase.dma.Dalyo.Component.Form;
 import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
+import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -27,12 +29,12 @@ public class ApplicationView extends Activity {
 	private static DmaHttpClient client;
 	private static HashMap<String, Form> layoutsMap;
 	private static HashMap<String, String> onLoadFuncMap;
-	public static final int BACK_ID = Menu.FIRST;
-	public static final int NEXT_ID = Menu.FIRST+1;	
-	public static Document designDoc = null;
-	public static Component component = null;
-	public static Document behaviorDocument = null;
-	public static Document dbDoc = null;
+	private static final int BACK_ID = Menu.FIRST;
+	private static final int NEXT_ID = Menu.FIRST+1;	
+	private static Document designDoc = null;
+	private Component component;
+	private static Document behaviorDocument = null;
+	private static Document dbDoc = null;
 	private static HashMap<String, String> resourcesFileMap;
 	private static HashMap<String, Component> componentsMap;
 	public static final android.view.IWindowManager windowService = android.view.IWindowManager.Stub.asInterface(
@@ -55,12 +57,13 @@ public class ApplicationView extends Activity {
 	};
 
 	@Override
-	protected void onCreate(Bundle icicle){	
+	public void onCreate(Bundle icicle){	
 		super.onCreate(icicle);
 		ApplicationView.applicationView = this;
 		database = new DatabaseAdapter(this, dbDoc, clientLogin+"_"+ApplicationListView.getApplicationName());
 		resourcesFileMap = client.getResourceMap("ext");
 		componentsMap = new HashMap<String, Component>();
+		new Function(this, behaviorDocument);
 		setTitle(ApplicationListView.getApplicationName());
 		setContentView(R.layout.loading);
 		loadingbar = ProgressDialog.show(this, "Please wait...", "Building application ...", true, false);
@@ -68,7 +71,7 @@ public class ApplicationView extends Activity {
 		loadingThread.Start();
 	}
 
-	public void display(){
+	private void display(){
 		NodeList generalInfo = designDoc.getElementsByTagName(XmlTag.DESIGN_S_G);
 		final String startFormId = ((Element) generalInfo.item(0)).getAttribute(XmlTag.DESIGN_S_G_FID);
 		if (onLoadFuncMap.containsKey(startFormId)){
@@ -102,7 +105,22 @@ public class ApplicationView extends Activity {
 				ApplicationListView.getApplicationsInfo().get("SubId"), login, pwd);
 	}
 
-	public void createView(){
+	private void generalSetup(){
+		Node system = designDoc.getElementsByTagName(XmlTag.DESIGN_S).item(0);
+		int childrenLen = system.getChildNodes().getLength();
+		for (int i=0; i<childrenLen; i++){
+			Element child = (Element) system.getChildNodes().item(i);
+			if (child.getNodeName().equals(XmlTag.DESIGN_S_G)){
+				if (child.hasAttribute(XmlTag.DESIGN_S_G_OS)){
+					String name = child.getAttribute(XmlTag.DESIGN_S_G_OS);
+					Function.createFunction(name, null);
+				}
+			}
+		}
+	}
+	
+	private void createView(){
+		generalSetup();
 		layoutsMap = new HashMap<String, Form>();
 		onLoadFuncMap = new HashMap<String, String>();
 		NodeList formsList = designDoc.getElementsByTagName(XmlTag.DESIGN_F);
@@ -331,7 +349,6 @@ public class ApplicationView extends Activity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		//save operated records
 		Log.i("info", "ondestroy");
 	}
 }

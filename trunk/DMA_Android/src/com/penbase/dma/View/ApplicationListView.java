@@ -149,7 +149,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 					editorPrefs.remove("ApplicationList");
 					editorPrefs.putString("ApplicationList", appsList);
 					editorPrefs.commit();
-					//new File(DmaHttpClient.db_XML).delete();
+					DmaHttpClient.update();
 				}
 				catch(Exception e)
 				{e.printStackTrace();}
