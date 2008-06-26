@@ -353,4 +353,11 @@ public class Component{
 	public void setText(String text) {
 		((TextView)getView()).setText(text);
 	}
+	
+	public void setEnabled(boolean state) {
+		if (getView() instanceof Button){
+			Log.i("info", "button setenabled "+state);
+			((Button)getView()).setEnabled(state);
+		}
+	}
 }

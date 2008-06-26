@@ -13,8 +13,8 @@ import android.content.Context;
 
 public class NS_Runtime {
 	public static void Alert(Context context, NodeList params, NodeList newParams){
-		String message = getValue(params, ScriptAttribute.PARAMETER_NAME_TEXT, ScriptAttribute.STRING, newParams);
-		String title = getValue(params, ScriptAttribute.PARAMETER_NAME_CAPTION, ScriptAttribute.STRING, newParams);
+		String message = String.valueOf(getValue(params, ScriptAttribute.PARAMETER_NAME_TEXT, ScriptAttribute.STRING, newParams));
+		String title = String.valueOf(getValue(params, ScriptAttribute.PARAMETER_NAME_CAPTION, ScriptAttribute.STRING, newParams));
 		if (!title.equals(ScriptAttribute.CONST_NULL)){
 			new AlertDialog.Builder(context).setMessage(message).setTitle(title).show();
 		}
@@ -23,19 +23,23 @@ public class NS_Runtime {
 		}
 	}
 	
-	public static void Synchronize(NodeList items, NodeList globalParams){
-		String type = getValue(items, ScriptAttribute.PARAMETER_NAME_FACELESS, ScriptAttribute.PARAMETER_TYPE_BOOLEAN, globalParams);
-		if (!type.equals(ScriptAttribute.CONST_FALSE)){
-			ApplicationView.getCurrentClient().launchImport(
-					ApplicationListView.getApplicationsInfo().get("AppId"),
-					ApplicationListView.getApplicationsInfo().get("DbId"), 
-					ApplicationListView.getApplicationsInfo().get("Username"),
-					ApplicationListView.getApplicationsInfo().get("Userpassword"));
+	public static boolean Synchronize(NodeList items){
+		Object type = getValue(items, ScriptAttribute.PARAMETER_NAME_FACELESS, ScriptAttribute.PARAMETER_TYPE_BOOLEAN, null);
+		if ((type == null) || (!((Boolean)type).booleanValue())){
+			//don't display progress
 		}
+		else{
+			//display progress
+		}
+		return ApplicationView.getCurrentClient().launchImport(
+				ApplicationListView.getApplicationsInfo().get("AppId"),
+				ApplicationListView.getApplicationsInfo().get("DbId"), 
+				ApplicationListView.getApplicationsInfo().get("Username"),
+				ApplicationListView.getApplicationsInfo().get("Userpassword"));
 	}
 	
-	private static String getValue(NodeList items, String name, String type, NodeList newParams){
-		String value = null;
+	private static Object getValue(NodeList items, String name, String type, NodeList newParams){
+		Object value = null;
 		int itemsLen = items.getLength();
 		for (int i=0; i<itemsLen; i++){
 			Element element = (Element) items.item(i);
@@ -47,7 +51,7 @@ public class NS_Runtime {
 					if (element.getChildNodes().item(0).getNodeType() == Node.ELEMENT_NODE){
 						Element elt = (Element) elements.item(0);
 						if (elt.getNodeName().equals(ScriptTag.KEYWOED)){
-							value = elt.getChildNodes().item(0).getNodeValue();
+							value = Function.getKeyWord(elt);
 						}
 						else if (elt.getNodeName().equals(ScriptTag.VAR)){
 							if (Function.getVariableValue(elt.getAttribute(ScriptTag.NAME)) != null){
@@ -57,7 +61,7 @@ public class NS_Runtime {
 								value = (String) Function.getParamValue(newParams, elt.getAttribute(ScriptTag.NAME), type);
 							}
 							else if (elt.getNodeName().equals(ScriptTag.KEYWOED)){
-								value = elt.getChildNodes().item(0).getNodeValue();
+								value = Function.getKeyWord(elt);
 							}
 						}
 					}

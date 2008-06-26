@@ -55,6 +55,7 @@ public class DmaHttpClient{
 	private int errorCode = 0;
 	private static final String STRING="string";
 	private static final String IMAGE="image";
+	private static boolean updated = false;
 	
 	//Booleans of sending requests
 	private boolean sendBehavior = true;
@@ -64,13 +65,14 @@ public class DmaHttpClient{
 	//XML files
 	private static String directory;
 	private String login_XML;
-	private String db_XML;
+	private static String db_XML;
 	private String design_XML;
 	private String behavior_XML;
 	private String resources_XML;
 	
 	//Image file's path
 	private String imageFilePath;
+	
 	
 	public DmaHttpClient(){
 		createFilesPath();
@@ -241,7 +243,7 @@ public class DmaHttpClient{
 		}
 		if ((AppId == Integer.valueOf(Dma.applicationList.get(position).getAppId())) &&
 				(SubId == Integer.valueOf(Dma.applicationList.get(position).getSubId())) &&
-				(checkFileExist(db_XML)) &&	(AppId == getIdDb(new File(db_XML)))){
+				(!updated) && (AppId == getIdDb(new File(db_XML)))){
 			if (AppVer == Integer.valueOf(Dma.applicationList.get(position).getAppVer())){
 				/*this.sendDesign = false;
 				Log.i("info", "don't send design request");*/
@@ -259,6 +261,10 @@ public class DmaHttpClient{
 				Log.i("info", "don't send database request");
 			}
 		}
+	}
+	
+	public static boolean update(){
+		return updated = true;
 	}
 	
 	public int getIdDb(File dbXml){
@@ -379,28 +385,33 @@ public class DmaHttpClient{
 	}
 	
 	//Import server data
-	public void launchImport(String AppId, String DbId, String login, String pwd) {
+	public boolean launchImport(String AppId, String DbId, String login, String pwd) {
+		boolean result = false;
 		String ask = "act=ask&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd="+pwd+
 		"&stream=1&useragent=ANDROID&did="+Dma.getDeviceID();
 		String report = "act=rep&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd="+pwd+
 		"&stream=1&useragent=ANDROID&did="+Dma.getDeviceID();
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		DmaHttpBinarySync importSync = null;
 		try {
 			bos.write(Binary.intToByteArray(DatabaseAdapter.getTableNb()));
 			for (String s : DatabaseAdapter.getTableIds()){
 				bos.write(Binary.intToByteArray(Integer.valueOf(s)));
 			}
 			byte[] inputbytes = bos.toByteArray();
-			new DmaHttpBinarySync(url, ask, report, inputbytes, "Import");
+			importSync = new DmaHttpBinarySync(url, ask, report, inputbytes, "Import");
+			if (importSync.run()){
+				result = launchExport(AppId, DbId, login, pwd);
+			}
 		}
 		catch (IOException e) {
 			e.printStackTrace();
 		}
-		launchExport(AppId, DbId, login, pwd);
+		return result;
 	}
 	
 	//Export local data to server
-	private void launchExport(String AppId, String DbId, String login, String pwd) {
+	private boolean launchExport(String AppId, String DbId, String login, String pwd) {
 		String sync = "act=sync&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd="+pwd+
 		"&stream=1&useragent=ANDROID&did="+Dma.getDeviceID();
 		String send = "act=send&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd="+pwd+
@@ -410,7 +421,8 @@ public class DmaHttpClient{
 		
 		byte[] exportData = ApplicationView.getDataBase().syncExportTable();
 		Log.i("info", "exportData "+exportData.length);
-		new DmaHttpBinarySync(url, sync, commit, exportData, "Export");
+		DmaHttpBinarySync exportSync = new DmaHttpBinarySync(url, sync, commit, exportData, "Export");
+		return exportSync.run();
 	}
 	
 	//Save the download xml stream to file

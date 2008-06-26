@@ -354,7 +354,19 @@ public class DatabaseAdapter {
 					String[] columns = cursor.getColumnNames();
 					int columnsNb = columns.length;
 					for (int column=0; column<columnsNb; column++){
-						record.put(columns[column], cursor.getString(cursor.getColumnIndex(columns[column])));
+						if (columns[column].indexOf(FIELD) != -1){
+							if (fieldsMap.get(columns[column].split("_")[1]).equals(DatabaseFieldType.INTEGER)){
+								record.put(columns[column], cursor.getInt(cursor.getColumnIndex(columns[column])));
+							}
+							else if (fieldsMap.get(columns[column].split("_")[1]).equals(DatabaseFieldType.DOUBLE)){
+								record.put(columns[column], cursor.getDouble(cursor.getColumnIndex(columns[column])));
+							}
+							else{
+								record.put(columns[column], cursor.getString(cursor.getColumnIndex(columns[column])));							}
+						}
+						else{
+							record.put(columns[column], cursor.getString(cursor.getColumnIndex(columns[column])));
+						}
 					}
 					records.add(record);
 					cursor.next();

@@ -8,23 +8,25 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import android.content.Context;
 import android.util.Log;
+
+import com.penbase.dma.Constant.GpsStatus;
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
 import com.penbase.dma.Dalyo.Function.Namespace.*;
-import com.penbase.dma.View.ApplicationView;
 
 public class Function {
-	private Document behaviorDocument = ApplicationView.behaviorDocument;
+	private static Document behaviorDocument;
 	private static Context context;
 	private static HashMap<String, ArrayList<Object>> varMap;
-	private HashMap<String, Integer> funcMap;
-	static Object test = null;
+	private static HashMap<String, Integer> funcMap;
+	private static boolean first = true;
 	
-	public Function(Context c){
+	public Function(Context c, Document document){
 		context = c;
 		varMap = new HashMap<String, ArrayList<Object>>();
 		funcMap = new HashMap<String, Integer>();
+		behaviorDocument = document;
 		createMaps();
 	}
 	
@@ -47,9 +49,10 @@ public class Function {
 				}
 			}
 		}
+		first = false;
 	}	
 	
-	private boolean checkConditions(boolean[] boolList){
+	private static boolean checkConditions(boolean[] boolList){
 		boolean result = false;
 		int size = boolList.length;
 		int i = 0;
@@ -76,7 +79,7 @@ public class Function {
 		return result;
 	}
 	
-	private boolean checkCondition(Object left, String operator, Object right){
+	private static boolean checkCondition(Object left, String operator, Object right){
 		boolean result = false;
 		switch (Integer.valueOf(operator)){
 			case ScriptAttribute.EQUALS:
@@ -98,15 +101,20 @@ public class Function {
 		return result;
 	}
 	
-	private ArrayList<Object> setVariable(String type, Object value){
+	private static ArrayList<Object> addVariable(String type, Object value){
 		ArrayList<Object> array = new ArrayList<Object>();
 		array.add(type);
 		array.add(value);
 		return array;
 	}
 	
-	private void voidTypeFunction(Element element, NodeList params){
-		if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ALERT)) ||
+	private static void voidTypeFunction(Element element, NodeList params){
+		if ((element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_USER)) &&
+				(element.getElementsByTagName(ScriptTag.PARAMETER).getLength() == 0)){
+			Log.i("info", "call user defined function"+element.getAttribute(ScriptTag.FUNCTION));
+			createFunction(element.getAttribute(ScriptTag.FUNCTION), null);
+		}
+		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ALERT)) ||
 				(element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ERROR)) &&
 				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_RUNTIME))){
 			Log.i("info", "call showalertdialog");
@@ -115,7 +123,7 @@ public class Function {
 		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SYNC)) &&
 				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_RUNTIME))){
 			Log.i("info", "call sync function");
-			NS_Runtime.Synchronize(element.getElementsByTagName(ScriptTag.PARAMETER), params);
+			NS_Runtime.Synchronize(element.getElementsByTagName(ScriptTag.PARAMETER));
 		}
 		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_REFRESH)) &&
 				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_COMPONENT_DV))){
@@ -141,6 +149,23 @@ public class Function {
 				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB_TABLE))){
 			Log.i("info", "call cancelnewrecord function");
 			
+		}
+		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_EDITRECORD)) &&
+				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB_TABLE))){
+			Log.i("info", "call edit record function");
+			NS_DatabaseTable.EditRecord(element.getElementsByTagName(ScriptTag.PARAMETER));
+		}
+		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_DELETERECORD)) &&
+				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB_TABLE))){
+			Log.i("info", "call delete record function");
+			NS_DatabaseTable.DeleteRecord(element.getElementsByTagName(ScriptTag.PARAMETER));
+		}
+		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NEWRECORD)) &&
+				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB_TABLE))){
+			Log.i("info", "call newrecord function");
+			if (!first){
+				NS_DatabaseTable.CreateNewRecord(element.getElementsByTagName(ScriptTag.PARAMETER));
+			}
 		}
 		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NAVIGATE)) &&
 				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.FORM))){
@@ -181,34 +206,34 @@ public class Function {
 			Log.i("info", "call set value function");
 			NS_Component.SetValue(element.getElementsByTagName(ScriptTag.PARAMETER));
 		}
-		else if ((element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_USER)) &&
-				(element.getElementsByTagName(ScriptTag.PARAMETER).getLength() == 0)){
-			Log.i("info", "call user defined function"+element.getAttribute(ScriptTag.FUNCTION));
-			createFunction(element.getAttribute(ScriptTag.FUNCTION), null);
-		}
-		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_EDITRECORD)) &&
-				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB_TABLE))){
-			Log.i("info", "call edit record function");
-			NS_DatabaseTable.EditRecord(element.getElementsByTagName(ScriptTag.PARAMETER));
-		}
-		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_DELETERECORD)) &&
-				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB_TABLE))){
-			Log.i("info", "call delete record function");
-			NS_DatabaseTable.DeleteRecord(element.getElementsByTagName(ScriptTag.PARAMETER));
-		}
 		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETTEXT)) &&
 				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.COMPONENT))){
 			Log.i("info", "call SETTEXT function");
 			NS_Component.SetText(element.getElementsByTagName(ScriptTag.PARAMETER));
 		}
-		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NEWRECORD)) &&
-				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB_TABLE))){
-			Log.i("info", "call newrecord function");
-			NS_DatabaseTable.CreateNewRecord(element.getElementsByTagName(ScriptTag.PARAMETER));
+		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETENABLED)) &&
+				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.COMPONENT))){
+			Log.i("info", "call setenable function");
+			NS_Component.SetEnabled(element.getElementsByTagName(ScriptTag.PARAMETER));
+		}
+		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CANCEL)) &&
+				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_TIMER))){
+			Log.i("info", "call cancel timer fucntion");
+			NS_Timer.Cancel(element.getElementsByTagName(ScriptTag.PARAMETER));
+		}
+		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_INIT)) &&
+				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_GPS))){
+			Log.i("info", "call gps init fucntion");
+			NS_Gps.Init(context);
+		}
+		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_STOP)) &&
+				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_GPS))){
+			Log.i("info", "call gps stop fucntion");
+			NS_Gps.Stop();
 		}
 	}
 	
-	private void ifCondition(Element element){
+	private static void ifCondition(Element element){
 		Log.i("info", "if called");
 		int elementLen = element.getChildNodes().getLength();
 		boolean conditionCheck = false;
@@ -328,7 +353,7 @@ public class Function {
 		}
 	}
 	
-	public void createFunction(String name, NodeList params){
+	public static void createFunction(String name, NodeList params){
 		NodeList funcList = behaviorDocument.getElementsByTagName(ScriptTag.FUNCTION);
 		if (funcMap.containsKey(name)){
 			Element funcElement = (Element) funcList.item(funcMap.get(name));
@@ -393,15 +418,21 @@ public class Function {
 			Log.i("info", "call getfieldvalue function");
 			result = NS_DatabaseTable.GetFieldValue(element.getElementsByTagName(ScriptTag.PARAMETER));
 		}
-		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NOW)) &&
-				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DATE))){
-			Log.i("info", "call getcurrentdate function");
-			result = NS_Date.GetCurrentDate();
+		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETFILTEREDRECORDS)) &&
+				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB_TABLE))){
+			Log.i("info", "call getfilteredrecords function");
+			result = NS_DatabaseTable.GetFilteredRecords(element.getElementsByTagName(ScriptTag.PARAMETER));
+			Log.i("info", "getfilteredrecords "+result);
 		}
 		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NEWRECORD)) &&
 				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB_TABLE))){
 			Log.i("info", "call newrecord function");
 			result = NS_DatabaseTable.CreateNewRecord(element.getElementsByTagName(ScriptTag.PARAMETER));
+		}
+		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NOW)) &&
+				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DATE))){
+			Log.i("info", "call getcurrentdate function");
+			result = NS_Date.GetCurrentDate();
 		}
 		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CONFIRM)) &&
 				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_RUNTIME))){
@@ -417,35 +448,47 @@ public class Function {
 			result = confirmDialog.getValue();
 			confirmDialog = null;	//Cancel the thread, because the stop() method is deprecated
 		}
+		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SYNC)) &&
+				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_RUNTIME))){
+			Log.i("info", "call sync function");
+			if (!first){
+				result = NS_Runtime.Synchronize(element.getElementsByTagName(ScriptTag.PARAMETER));
+			}
+		}
 		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TONUMERIC)) &&
 				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.OBJECT))){
 			Log.i("info", "call tonumeric fucntion");
 			result = NS_Object.ToNumeric(element.getElementsByTagName(ScriptTag.PARAMETER));
 		}
-		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETVALUE)) &&
-				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.COMPONENT))){
-			Log.i("info", "call getvalue fucntion");
-			result = NS_Component.GetValue(element.getElementsByTagName(ScriptTag.PARAMETER));
+		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TOSTRING)) &&
+				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.OBJECT))){
+			Log.i("info", "call TOSTRING fucntion");
+			result = NS_Object.ToString(element.getElementsByTagName(ScriptTag.PARAMETER));
 		}
 		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TOINT)) &&
 				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.OBJECT))){
 			Log.i("info", "call toint fucntion");
 			result = NS_Object.ToInt(element.getElementsByTagName(ScriptTag.PARAMETER));
 		}
-		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSIZE)) &&
-				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.LIST))){
-			Log.i("info", "call list size fucntion");
-			result = NS_List.GetSize(element.getElementsByTagName(ScriptTag.PARAMETER));
-		}
 		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TORECORD)) &&
 				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.OBJECT))){
 			Log.i("info", "call torecord fucntion");
 			result = NS_Object.ToRecord(element.getElementsByTagName(ScriptTag.PARAMETER));
 		}
+		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSIZE)) &&
+				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.LIST))){
+			Log.i("info", "call list size fucntion");
+			result = NS_List.GetSize(element.getElementsByTagName(ScriptTag.PARAMETER));
+		}
 		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GET)) &&
 				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.LIST))){
 			Log.i("info", "call get list item fucntion");
 			result = NS_List.GetListItem(element.getElementsByTagName(ScriptTag.PARAMETER));
+		}
+		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETVALUE)) &&
+				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.COMPONENT))){
+			Log.i("info", "call getvalue fucntion");
+			result = NS_Component.GetValue(element.getElementsByTagName(ScriptTag.PARAMETER));
 		}
 		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ADD)) &&
 				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_MATH))){
@@ -457,16 +500,32 @@ public class Function {
 			Log.i("info", "call sub function");
 			result = NS_Math.Subtract(element.getElementsByTagName(ScriptTag.PARAMETER));
 		}
-		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETFILTEREDRECORDS)) &&
-				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB_TABLE))){
-			Log.i("info", "call getfilteredrecords function");
-			result = NS_DatabaseTable.GetFilteredRecords(element.getElementsByTagName(ScriptTag.PARAMETER));
-			Log.i("info", "getfilteredrecords "+result);
-		}		
-		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TOSTRING)) &&
-				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.OBJECT))){
-			Log.i("info", "call TOSTRING fucntion");
-			result = NS_Object.ToString(element.getElementsByTagName(ScriptTag.PARAMETER));
+		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_START)) &&
+				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_TIMER))){
+			Log.i("info", "call start timer fucntion");
+			if (!first){
+				result = NS_Timer.Start(element.getElementsByTagName(ScriptTag.PARAMETER));
+			}
+		}
+		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETLOCATION)) &&
+				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_GPS))){
+			Log.i("info", "call getlocation fucntion");
+			result = NS_Gps.getLocation();
+		}
+		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETLATITUDE)) &&
+				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_GPS))){
+			Log.i("info", "call getlatitude fucntion");
+			result = NS_Gps.GetLatitude(element.getElementsByTagName(ScriptTag.PARAMETER));
+		}
+		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETLONGITUDE)) &&
+				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_GPS))){
+			Log.i("info", "call get logitude fucntion");
+			result = NS_Gps.GetLogitude(element.getElementsByTagName(ScriptTag.PARAMETER));
+		}
+		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSTATUS)) &&
+				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_GPS))){
+			Log.i("info", "call get status fucntion");
+			result = NS_Gps.GetStatus();
 		}
 		return result;
 	}
@@ -502,7 +561,7 @@ public class Function {
 		return varMap;
 	}
 	
-	private void setVariable(Element element){
+	private static void setVariable(Element element){
 		/*
 		 * Each varable has a list of value, the two first values are its type and its default value,
 		 * for the list, its added values are start with the third position
@@ -512,19 +571,19 @@ public class Function {
 		}
 		if (!element.hasChildNodes()){
 			varMap.put(element.getAttribute(ScriptTag.NAME), 
-					setVariable(element.getAttribute(ScriptTag.TYPE), null));
+					addVariable(element.getAttribute(ScriptTag.TYPE), null));
 		}
 		else if ((element.getChildNodes().getLength() == 1) && (element.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE)){
 			varMap.put(element.getAttribute(ScriptTag.NAME), 
-					setVariable(element.getAttribute(ScriptTag.TYPE),
+					addVariable(element.getAttribute(ScriptTag.TYPE),
 							element.getChildNodes().item(0).getNodeValue()));
 		}
 		else{
 			Object value = null;
 			NodeList children = element.getChildNodes();
 			int childrenLen = children.getLength();
-			for (int i=0; i<childrenLen; i++){
-				Element child = (Element) children.item(i);
+			if (childrenLen == 1){
+				Element child = (Element) children.item(0);
 				if (child.getNodeName().equals(ScriptTag.CALL)){
 					Log.i("info", "call function "+child.getAttribute(ScriptTag.FUNCTION));
 					value = returnTypeFunction(child);
@@ -532,7 +591,7 @@ public class Function {
 			}
 			Log.i("info", "prepare to add "+element.getAttribute(ScriptTag.NAME)+" in the var list its value is "+value);
 			varMap.put(element.getAttribute(ScriptTag.NAME), 
-					setVariable(element.getAttribute(ScriptTag.TYPE), value));
+					addVariable(element.getAttribute(ScriptTag.TYPE), value));
 		}
 	}
 
@@ -548,6 +607,9 @@ public class Function {
 			}
 			else if (element.getChildNodes().item(0).getNodeValue().equals(ScriptAttribute.CONST_FALSE)){
 				result = false;
+			}
+			else if (element.getChildNodes().item(0).getNodeValue().equals(ScriptAttribute.CONST_GPS_SIGNAL_OK)){
+				result = GpsStatus.GPS_SIGNAL_OK;
 			}
 		}
 		return result;
