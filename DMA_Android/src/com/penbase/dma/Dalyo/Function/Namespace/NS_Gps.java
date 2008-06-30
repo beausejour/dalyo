@@ -3,16 +3,12 @@ package com.penbase.dma.Dalyo.Function.Namespace;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Gps;
 import com.penbase.dma.Dalyo.Function.Function;
-
 import android.content.Context;
 import android.location.Location;
-import android.util.Log;
-
 
 public class NS_Gps {
 	private static Gps gps;
@@ -56,7 +52,6 @@ public class NS_Gps {
 							Element child = (Element)element.getChildNodes().item(0);
 							if (child.getNodeName().equals(ScriptTag.VAR)){
 								value = Function.getVariablesMap().get(child.getAttribute(ScriptTag.NAME)).get(1);
-								Log.i("info", "get variable value in NS_Gps "+value);
 							}
 						}
 					}

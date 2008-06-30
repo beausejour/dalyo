@@ -164,6 +164,7 @@ public class Function {
 				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB_TABLE))){
 			Log.i("info", "call newrecord function");
 			if (!first){
+				Log.i("info", "not the first time");
 				NS_DatabaseTable.CreateNewRecord(element.getElementsByTagName(ScriptTag.PARAMETER));
 			}
 		}
@@ -446,12 +447,14 @@ public class Function {
 				e.printStackTrace();
 			}
 			result = confirmDialog.getValue();
-			confirmDialog = null;	//Cancel the thread, because the stop() method is deprecated
+			//Cancel the thread, because the stop() method is deprecated
+			confirmDialog = null;
 		}
 		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SYNC)) &&
 				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_RUNTIME))){
 			Log.i("info", "call sync function");
 			if (!first){
+				Log.i("info", "not the first time");
 				result = NS_Runtime.Synchronize(element.getElementsByTagName(ScriptTag.PARAMETER));
 			}
 		}
@@ -504,6 +507,7 @@ public class Function {
 				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_TIMER))){
 			Log.i("info", "call start timer fucntion");
 			if (!first){
+				Log.i("info", "not the first time");
 				result = NS_Timer.Start(element.getElementsByTagName(ScriptTag.PARAMETER));
 			}
 		}
@@ -626,5 +630,9 @@ public class Function {
 				break;
 		}
 		return result;
+	}
+	
+	public static Context getContext(){
+		return context;
 	}
 }

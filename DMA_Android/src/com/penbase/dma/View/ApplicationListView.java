@@ -144,7 +144,6 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 					String appsList = dmahttpclient.Authentication(prefs.getString("Username", ""),
 							prefs.getString("Userpassword", ""));
 					Dma.GetListApplicationFromXml(appsList);
-					
 					SharedPreferences.Editor editorPrefs = getSharedPreferences(Dma.PREFS_NAME, MODE_PRIVATE).edit();
 					editorPrefs.remove("ApplicationList");
 					editorPrefs.putString("ApplicationList", appsList);

@@ -14,6 +14,7 @@ public class NS_Form {
 		if (ApplicationView.getOnLoadFuncMap().containsKey(formId)){
 			ApplicationView.getLayoutsMap().get(formId).onLoad(ApplicationView.getOnLoadFuncMap().get(formId));
 		}
+		ApplicationView.setCurrentFormI(formId);
 		ApplicationView.getCurrentView().setContentView(ApplicationView.getLayoutsMap().get(formId));
 	}
 	
