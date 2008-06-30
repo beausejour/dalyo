@@ -2,6 +2,7 @@ package com.penbase.dma.Dalyo.Component.Custom;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import com.penbase.dma.Constant.DatabaseField;
 import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
 import com.penbase.dma.View.ApplicationView;
 import android.content.Context;
@@ -59,7 +60,7 @@ public class ComboBox extends Spinner implements OnItemSelectedListener{
 			HashMap<Object, Object> record = new HashMap<Object, Object>();
 			int columnsSize = columnNames.length;
 			for (int j=0; j<columnsSize; j++){
-				if (columnNames[j].equals(DatabaseAdapter.FIELD+labelList.get(1))){
+				if (columnNames[j].equals(DatabaseField.FIELD+labelList.get(1))){
 					itemsList.add(cursor.getString(j));
 				}
 				record.put(columnNames[j], cursor.getString(j));

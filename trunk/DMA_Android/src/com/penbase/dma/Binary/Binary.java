@@ -32,7 +32,6 @@ public class Binary {
 		}
 		catch (UnsupportedEncodingException e) 
 		{e.printStackTrace();}
-		Log.i("info", "type string "+result);
 		return result;
 	}
 	
@@ -87,36 +86,28 @@ public class Binary {
 		Object result = null;
 		if ((type.equals("VARCHAR")) || (type.equals("KEY")) || (type.equals("CHAR")) || (type.equals("TEXT"))){
 			result = byteArrayToString(bytes);
-			Log.i("info", "type "+type+" result "+result);
 		}
 		else if (type.equals("BOOLEAN")){
 			result = String.valueOf(byteArrayToBool(bytes));
-			Log.i("info", "type "+type+" result "+result);
 		}
 		else if (type.equals("INTEGER")){
 			result = String.valueOf(byteArrayToInt(bytes));	
-			Log.i("info", "type "+type+" result "+result);
 		}
 		else if (type.equals("TIME")){
 			result = byteArrayToTime(bytes);
-			Log.i("info", "type "+type+" result "+result);
 		}
 		else if (type.equals("DATE")){
 			result = byteArrayToDate(bytes);
-			Log.i("info", "type "+type+" result "+result);
 		}
 		else if (type.equals("DATETIME")){
 			result = byteArrayToDateTime(bytes);
-			Log.i("info", "type "+type+" result "+result);
 		}		
 		else if (type.equals("DOUBLE")){
 			result = String.valueOf(byteArrayToDouble(bytes));
-			Log.i("info", "type "+type+" result "+result);
 		}
 		else if (type.equals("BLOB")){
 			result = new byte[bytes.length];
 			System.arraycopy(bytes, 0, result, 0, bytes.length);
-			Log.i("info", "type "+type+" result "+bytes.length);
 		}
 		return result;
 	}
@@ -144,7 +135,7 @@ public class Binary {
 		return bytes;
 	}
 	
-	private static byte[] stringToByteArray (String s){
+	public static byte[] stringToByteArray (String s){
 		return s.getBytes();
 	}
 	
@@ -194,11 +185,9 @@ public class Binary {
 			else{
 				result = stringToByteArray(String.valueOf(value));
 			}
-			Log.i("info", "type "+type+" result "+result);
 		}
 		else if (type.equals("BOOLEAN")){
 			result = boolToByteArray(Integer.valueOf(String.valueOf(value)));
-			Log.i("info", "type "+type+" result "+result);
 		}
 		else if (type.equals("INTEGER")){
 			if (value == null){
@@ -207,19 +196,15 @@ public class Binary {
 			else{
 				result = intToByteArray(Integer.valueOf(String.valueOf(value)));
 			}
-			Log.i("info", "type "+type+" result "+result);
 		}
 		else if (type.equals("TIME")){
 			result = timeToByteArray(String.valueOf(value));
-			Log.i("info", "type "+type+" result "+result);
 		}
 		else if (type.equals("DATE")){
 			result = dateToByteArray(String.valueOf(value));
-			Log.i("info", "type "+type+" result "+result);
 		}
 		else if (type.equals("DATETIME")){
 			result = dateToByteArray(String.valueOf(value));
-			Log.i("info", "type "+type+" result "+result);
 		}		
 		else if (type.equals("DOUBLE")){
 			if (value == null){
@@ -227,14 +212,12 @@ public class Binary {
 			}
 			else{
 				result = doubleToByteArray(Double.valueOf(String.valueOf(value)));
-				Log.i("info", "type "+type+" result "+result);
 			}
 		}
 		else if (type.equals("BLOB")){
 			if (value == null){
 				result = stringToByteArray("");	
 			}
-			Log.i("info", "type "+type+" result ");
 		}
 		return result;
 	}

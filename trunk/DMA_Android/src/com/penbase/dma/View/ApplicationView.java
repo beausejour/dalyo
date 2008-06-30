@@ -43,6 +43,7 @@ public class ApplicationView extends Activity {
 	private LoadingThread loadingThread = null;
 	private ProgressDialog loadingbar;
 	private static String clientLogin;
+	private static String currentFormId;
 	private Handler handler = new Handler(){
 		@Override
 		public void handleMessage(Message msg){
@@ -77,12 +78,15 @@ public class ApplicationView extends Activity {
 		if (onLoadFuncMap.containsKey(startFormId)){
 			layoutsMap.get(startFormId).onLoad(onLoadFuncMap.get(startFormId));
 		}
+		setCurrentFormI(startFormId);
 		setContentView(layoutsMap.get(startFormId));
 	}
 
 	public static void prepareData(int position, String login, String pwd){
 		client = new DmaHttpClient();
+		Log.i("info", "client create");
 		client.checkDownloadFile(position, login, pwd);
+		Log.i("info", "client check files");
 		clientLogin = login;
 		behaviorDocument = client.getBehavior(ApplicationListView.getApplicationsInfo().get("AppId"),
 				ApplicationListView.getApplicationsInfo().get("AppVer"),
@@ -346,6 +350,14 @@ public class ApplicationView extends Activity {
 		return onLoadFuncMap;
 	}
 
+	public static String getCurrentFormId(){
+		return currentFormId;
+	}
+	
+	public static void setCurrentFormI(String id){
+		currentFormId = id;
+	}
+	
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();

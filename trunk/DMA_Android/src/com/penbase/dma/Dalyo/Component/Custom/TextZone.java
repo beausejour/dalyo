@@ -1,7 +1,8 @@
 package com.penbase.dma.Dalyo.Component.Custom;
 
 import java.util.HashMap;
-import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
+
+import com.penbase.dma.Constant.DatabaseField;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.widget.EditText;
@@ -34,7 +35,7 @@ public class TextZone extends EditText{
 	
 	public void refresh(HashMap<Object, Object> record){
 		if (!getFieldId().equals("")){
-			TextZone.this.setText((String)record.get(DatabaseAdapter.FIELD+getFieldId()));
+			TextZone.this.setText((String)record.get(DatabaseField.FIELD+getFieldId()));
 		}
 	}
 	

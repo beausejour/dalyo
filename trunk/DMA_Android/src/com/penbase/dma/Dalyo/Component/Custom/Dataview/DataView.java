@@ -3,6 +3,7 @@ package com.penbase.dma.Dalyo.Component.Custom.Dataview;
 import java.util.ArrayList;
 import java.util.HashMap;
 import com.penbase.dma.Dma;
+import com.penbase.dma.Constant.DatabaseField;
 import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
 import com.penbase.dma.View.ApplicationView;
 import android.content.Context;
@@ -145,7 +146,7 @@ public class DataView extends ListView{
 					int columnsSize = columns.size();
 					for (int k=0; k<columnsSize; k++){
 						for (int j=0; j<columnsRecordSize; j++){
-							if (columnNames[j].equals(DatabaseAdapter.FIELD+columns.get(k).get(1))){
+							if (columnNames[j].equals(DatabaseField.FIELD+columns.get(k).get(1))){
 								Log.i("info", "add data in customlinearlayout "+cursor.getString(j));
 								data.add(cursor.getString(j));
 							}

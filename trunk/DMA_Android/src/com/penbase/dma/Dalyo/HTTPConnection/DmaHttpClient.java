@@ -243,11 +243,7 @@ public class DmaHttpClient{
 		}
 		if ((AppId == Integer.valueOf(Dma.applicationList.get(position).getAppId())) &&
 				(SubId == Integer.valueOf(Dma.applicationList.get(position).getSubId())) &&
-				(!updated) && (AppId == getIdDb(new File(db_XML)))){
-			if (AppVer == Integer.valueOf(Dma.applicationList.get(position).getAppVer())){
-				/*this.sendDesign = false;
-				Log.i("info", "don't send design request");*/
-			}
+				(!updated) && (new File(db_XML).exists()) && (AppId == getIdDb(new File(db_XML)))){
 			if ((AppBuild == Integer.valueOf(Dma.applicationList.get(position).getAppBuild())) &&
 					(AppVer == Integer.valueOf(Dma.applicationList.get(position).getAppVer()))){
 				this.sendDesign = false;
@@ -255,7 +251,6 @@ public class DmaHttpClient{
 				this.sendBehavior = false;
 				Log.i("info", "don't send behavior request");
 			}
-			Log.i("info", "DbId "+DbId+" application dbid "+Integer.valueOf(Dma.applicationList.get(position).getDbId()));
 			if (DbId == Integer.valueOf(Dma.applicationList.get(position).getDbId())){
 				sendDb = false;
 				Log.i("info", "don't send database request");
@@ -268,6 +263,7 @@ public class DmaHttpClient{
 	}
 	
 	public int getIdDb(File dbXml){
+		Log.i("info", "getiddb");
 		Document dbDoc = CreateParseDocument(null, dbXml);
 		Element tagID = (Element)dbDoc.getElementsByTagName(XmlTag.DB).item(0);
 		return Integer.valueOf(tagID.getAttribute(XmlTag.DB_ID));
@@ -400,7 +396,8 @@ public class DmaHttpClient{
 			}
 			byte[] inputbytes = bos.toByteArray();
 			importSync = new DmaHttpBinarySync(url, ask, report, inputbytes, "Import");
-			if (importSync.run()){
+			boolean importResult = importSync.run();
+			if (importResult){
 				result = launchExport(AppId, DbId, login, pwd);
 			}
 		}
@@ -468,7 +465,8 @@ public class DmaHttpClient{
 		return result;
 	}
 	
-	/*public static boolean getSendDb(){
-		return sendDb;
-	}*/
+	public static int getServerInfo(){
+		//Modify this method when the server has immigrate to spv2
+		return 1;
+	}
 }
