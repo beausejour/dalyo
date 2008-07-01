@@ -57,7 +57,7 @@ public class NS_Component {
 									value = Function.returnTypeFunction(child);
 								}
 							}
-							else if (child.getNodeName().equals(ScriptTag.KEYWOED)){
+							else if (child.getNodeName().equals(ScriptTag.KEYWORD)){
 								value = Function.getKeyWord(child);
 							}
 						}

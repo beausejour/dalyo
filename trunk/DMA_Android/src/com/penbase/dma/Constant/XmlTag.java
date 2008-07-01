@@ -114,6 +114,7 @@ public class XmlTag {
 	
 	//Events
 	public static final String EVENT_ONCLICK = "onc";
+	public static final String EVENT_ONCALCULATE = "oncalc";
 	public static final String EVENT_ONLOAD = "onl";
 	public static final String EVENT_ONCHANGE = "ong";
 	

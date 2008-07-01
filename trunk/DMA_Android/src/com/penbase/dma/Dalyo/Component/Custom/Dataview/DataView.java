@@ -5,6 +5,7 @@ import java.util.HashMap;
 import com.penbase.dma.Dma;
 import com.penbase.dma.Constant.DatabaseField;
 import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
+import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.View.ApplicationView;
 import android.content.Context;
 import android.database.Cursor;
@@ -31,6 +32,7 @@ public class DataView extends ListView{
 	private int currentPosition = -1;
 	private HashMap<Integer, HashMap<Object, Object>> records;
 	private boolean adapterChanged = false;
+	private HashMap<Integer, String> onCalculateMap = new HashMap<Integer, String>();
 	
 	public DataView(Context c, String tid){
 		super(c);
@@ -83,7 +85,7 @@ public class DataView extends ListView{
 			for (int i=0; i<listSize; i++){
 				ArrayList<String> column = new ArrayList<String>();
 				column.add(list.get(i).get(0));		//tid
-				column.add(list.get(i).get(1));		//fid
+				column.add(list.get(i).get(1));		//fid	
 				headerList.add(list.get(i).get(2));
 				pwidthList.add(list.get(i).get(3));
 				lwidthList.add(list.get(i).get(4));
@@ -100,6 +102,10 @@ public class DataView extends ListView{
 			}
 			this.setAdapter(adapter);
 		}
+	}
+	
+	public void setOncalculate(HashMap<Integer, String> onc){
+		this.onCalculateMap = onc;
 	}
 	
 	private ArrayList<String> getPWidthList(){
@@ -128,8 +134,7 @@ public class DataView extends ListView{
 			tables.add(tableId);
 			for (int i=0; i<columnNb; i++){
 				ArrayList<String> column = columns.get(i);
-				
-				if (!tables.contains(column.get(0))){
+				if ((!tables.contains(column.get(0))) && ((!column.get(0).equals("")) && (!column.get(1).equals("")))){
 					tables.add(column.get(0));
 				}
 			}
@@ -144,15 +149,29 @@ public class DataView extends ListView{
 					HashMap<Object, Object> record = new HashMap<Object, Object>();
 					int columnsRecordSize = columnNames.length;
 					int columnsSize = columns.size();
+					int calculateColumn = -1;
 					for (int k=0; k<columnsSize; k++){
-						for (int j=0; j<columnsRecordSize; j++){
-							if (columnNames[j].equals(DatabaseField.FIELD+columns.get(k).get(1))){
-								Log.i("info", "add data in customlinearlayout "+cursor.getString(j));
-								data.add(cursor.getString(j));
-							}
-							record.put(columnNames[j], cursor.getString(j));
+						if (onCalculateMap.containsKey(k)){
+							calculateColumn = k;
+							data.add("");
+						}
+						else{
+							for (int j=0; j<columnsRecordSize; j++){
+								String field = DatabaseField.FIELD+columns.get(k).get(1);
+								if (columnNames[j].equals(field)){
+									data.add(String.valueOf(DatabaseAdapter.getCursorValue(cursor, field)));
+									Log.i("info", "add data in customlinearlayout "+String.valueOf(DatabaseAdapter.getCursorValue(cursor, field)));
+								}
+								record.put(columnNames[j], cursor.getString(j));
+							}	
 						}
 					}
+					if (calculateColumn != -1){
+						String value = String.valueOf(Function.createCalculateFunction(onCalculateMap.get(calculateColumn), record));
+						data.remove(calculateColumn);
+						data.add(calculateColumn, value);
+					}
+					
 					CustomLinearLayout layout = new CustomLinearLayout(context, data, getPWidthList(), false);
 					adapter.addItem(layout);
 					adapter.notifyDataSetChanged();

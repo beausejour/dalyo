@@ -345,19 +345,7 @@ public class DatabaseAdapter {
 					String[] columns = cursor.getColumnNames();
 					int columnsNb = columns.length;
 					for (int column=0; column<columnsNb; column++){
-						if (columns[column].indexOf(DatabaseField.FIELD) != -1){
-							if (fieldsMap.get(columns[column].split("_")[1]).equals(DatabaseField.INTEGER)){
-								record.put(columns[column], cursor.getInt(cursor.getColumnIndex(columns[column])));
-							}
-							else if (fieldsMap.get(columns[column].split("_")[1]).equals(DatabaseField.DOUBLE)){
-								record.put(columns[column], cursor.getDouble(cursor.getColumnIndex(columns[column])));
-							}
-							else{
-								record.put(columns[column], cursor.getString(cursor.getColumnIndex(columns[column])));							}
-						}
-						else{
-							record.put(columns[column], cursor.getString(cursor.getColumnIndex(columns[column])));
-						}
+						record.put(columns[column], getCursorValue(cursor, columns[column]));
 					}
 					records.add(record);
 					cursor.next();
@@ -739,6 +727,24 @@ public class DatabaseAdapter {
 		}
 	}
 	
+	public static Object getCursorValue(Cursor cursor, String field){
+		if (field.indexOf(DatabaseField.FIELD) != -1){
+			String fieldId = field.split("_")[1];
+			if (fieldsMap.get(fieldId).equals(DatabaseField.INTEGER)){
+				return cursor.getInt(cursor.getColumnIndex(field));
+			}
+			else if (fieldsMap.get(fieldId).equals(DatabaseField.DOUBLE)){
+				return cursor.getDouble(cursor.getColumnIndex(field));
+			}
+			else{
+				return cursor.getString(cursor.getColumnIndex(field));
+			}
+		}
+		else{
+			return cursor.getString(cursor.getColumnIndex(field));
+		}
+	}
+	
 	private static String createWhereClause(String tableId, HashMap<Object, Object> record){
 		String result = "";
 		if (record.containsKey(DatabaseField.ID+tableId)){
@@ -748,6 +754,7 @@ public class DatabaseAdapter {
 	}
 	
 	private static String createTableString(ArrayList<String> tables){
+		Log.i("info", "tables "+tables);
 		String result = "";
 		int size = tables.size();
 		for (int i=0; i<size; i++){
@@ -756,7 +763,7 @@ public class DatabaseAdapter {
 			}
 			else{
 				result += DatabaseField.TABLE+tables.get(i);
-			}
+			}	
 		}
 		return result;
 	}
@@ -790,7 +797,15 @@ public class DatabaseAdapter {
 				}
 			}
 			else{
-				result +=  "STATE != "+DatabaseField.DELETEVALUE;
+				int tablesSize = tables.size();
+				for (int i=0; i<tablesSize; i++){
+					if (i == 0){
+						result +=  DatabaseField.TABLE+tables.get(i)+".STATE != "+DatabaseField.DELETEVALUE;
+					}
+					else{
+						result +=  " AND "+DatabaseField.TABLE+tables.get(i)+".STATE != "+DatabaseField.DELETEVALUE;
+					}
+				}
 			}
 			return result;
 		}

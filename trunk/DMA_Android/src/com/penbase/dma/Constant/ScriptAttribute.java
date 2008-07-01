@@ -19,6 +19,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_GETLATITUDE = "getLatitude";
 	public static final String FUNCTION_GETLOCATION = "getLocation";
 	public static final String FUNCTION_GETLONGITUDE = "getLongitude";
+	public static final String FUNCTION_GETRECORDS = "getRecords";
 	public static final String FUNCTION_GETSELECTEDRECORD = "getSelectedRecord";
 	public static final String FUNCTION_GETSIZE = "size";
 	public static final String FUNCTION_GETSTATUS = "getStatus";

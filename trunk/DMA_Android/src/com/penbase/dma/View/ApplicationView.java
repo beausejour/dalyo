@@ -219,8 +219,8 @@ public class ApplicationView extends Activity {
 					}
 					else if (element.getNodeName().equals(XmlTag.COMPONENT_DATAVIEW)){
 						ArrayList<ArrayList<String>> columnInfos = new ArrayList<ArrayList<String>>();
+						HashMap<Integer, String> onCalculateMap = new HashMap<Integer, String>();
 						NodeList nodeItemList = element.getChildNodes();
-						
 						if (nodeItemList.getLength() > 0){
 							int nbColumn = nodeItemList.getLength();
 							for (int k=0; k<nbColumn; k++){
@@ -232,12 +232,21 @@ public class ApplicationView extends Activity {
 									acolumn.add(column.getAttribute(XmlTag.COMPONENT_DATAVIEW_COLUMN_HEADER));
 									acolumn.add(column.getAttribute(XmlTag.COMPONENT_COMMON_PWIDTH));
 									acolumn.add(column.getAttribute(XmlTag.COMPONENT_COMMON_LWIDTH));
-									acolumn.add(column.getAttribute(XmlTag.COMPONENT_DATAVIEW_COLUMN_CALC));
+									Log.i("info", "column.getAttribute(XmlTag.COMPONENT_DATAVIEW_COLUMN_CALC) "+column.getAttribute(XmlTag.COMPONENT_DATAVIEW_COLUMN_CALC));
+									if (column.getAttribute(XmlTag.COMPONENT_DATAVIEW_COLUMN_CALC).equals("true")){
+										if (column.hasAttribute(XmlTag.EVENT_ONCALCULATE)){
+											onCalculateMap.put(k, column.getAttribute(XmlTag.EVENT_ONCALCULATE));
+										}
+										else{
+											onCalculateMap.put(k, "");
+										}
+									}
 									columnInfos.add(acolumn);
 								}
 							}
 						}
 						component.setDataviewColumns(columnInfos);
+						component.setDataviewOncalculate(onCalculateMap);
 					}
 					else if ((element.getNodeName().equals(XmlTag.COMPONENT_DATEFIELD)) ||
 							(element.getNodeName().equals(XmlTag.COMPONENT_TIMEFIELD))){

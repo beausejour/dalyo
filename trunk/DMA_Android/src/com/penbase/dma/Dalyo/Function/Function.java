@@ -19,13 +19,15 @@ public class Function {
 	private static Document behaviorDocument;
 	private static Context context;
 	private static HashMap<String, ArrayList<Object>> varMap;
-	private static HashMap<String, Integer> funcMap;
+	//private static HashMap<String, Integer> funcMap;
+	private static HashMap<String, ArrayList<String>> funcMap;
 	private static boolean first = true;
 	
 	public Function(Context c, Document document){
 		context = c;
 		varMap = new HashMap<String, ArrayList<Object>>();
-		funcMap = new HashMap<String, Integer>();
+	//	funcMap = new HashMap<String, Integer>();
+		funcMap = new HashMap<String, ArrayList<String>>();
 		behaviorDocument = document;
 		createMaps();
 	}
@@ -39,7 +41,11 @@ public class Function {
 		int functionSize = funcList.getLength();
 		for (int i=0; i<functionSize; i++){
 			Element funcElement = (Element) funcList.item(i);
-			funcMap.put(funcElement.getAttribute(ScriptTag.NAME), i);
+			ArrayList<String> funcParams = new ArrayList<String>();
+			funcParams.add(String.valueOf(i));
+			funcParams.add(funcElement.getAttribute(ScriptTag.OUTPUT));
+			//funcMap.put(funcElement.getAttribute(ScriptTag.NAME), i);
+			funcMap.put(funcElement.getAttribute(ScriptTag.NAME), funcParams);
 			NodeList nodesList = funcElement.getChildNodes();
 			int itemLen = nodesList.getLength();
 			for (int j=0; j<itemLen; j++){
@@ -84,10 +90,15 @@ public class Function {
 		switch (Integer.valueOf(operator)){
 			case ScriptAttribute.EQUALS:
 				if ((left instanceof Integer) || (right instanceof Integer)){
+					Log.i("info", "integer");
 					result = (Integer.valueOf(String.valueOf(left)) == (Integer.valueOf(String.valueOf(right))));
 				}
-				else{
+				else if ((left == null) || (right == null)){
 					result = (left == right);
+				}
+				else{
+					Log.i("info", "string");
+					result = (left.equals(right));
 				}
 				break;
 			case ScriptAttribute.NOTEQUALS:
@@ -234,7 +245,8 @@ public class Function {
 		}
 	}
 	
-	private static void ifCondition(Element element){
+	private static Object ifCondition(Element element){
+		Object result = "";
 		Log.i("info", "if called");
 		int elementLen = element.getChildNodes().getLength();
 		boolean conditionCheck = false;
@@ -283,7 +295,7 @@ public class Function {
 										Element rightChild = (Element) rightchildren.item(m);
 										Log.i("info", "rightchild node type "+rightChild.getNodeType()+" it has child "+
 												rightChild.getChildNodes().getLength());
-										if (rightChild.getNodeName().equals(ScriptTag.KEYWOED)){
+										if (rightChild.getNodeName().equals(ScriptTag.KEYWORD)){
 											right = getKeyWord(rightChild);
 											Log.i("info", "right has keyword "+right);
 										}
@@ -322,6 +334,10 @@ public class Function {
 							Log.i("info", "there is if condition in then");
 							ifCondition(thenChild);
 						}
+						else if (thenChild.getNodeName().equals(ScriptTag.RETURN)){
+							Log.i("info", "return value");
+							result = getReturnValue(thenChild);
+						}
 					} 
 				}
 			}
@@ -348,16 +364,50 @@ public class Function {
 						else if (elseChild.getNodeName().equals(ScriptTag.IF)){
 							ifCondition(elseChild);
 						}
+						else if (elseChild.getNodeName().equals(ScriptTag.RETURN)){
+							Log.i("info", "return value");
+							result = getReturnValue(elseChild);
+						}
 					}
 				}
 			}
 		}
+		return result;
+	}
+	
+	public static Object createCalculateFunction(String name, HashMap<Object, Object> record){
+		Object result = null;
+		NodeList funcList = behaviorDocument.getElementsByTagName(ScriptTag.FUNCTION);
+		if (funcMap.containsKey(name)){
+			Element funcElement = (Element) funcList.item(Integer.valueOf(funcMap.get(name).get(0)));
+			if (funcElement.getAttribute(ScriptTag.NAME).equals(name)){
+				NodeList nodesList = funcElement.getChildNodes();
+				int itemLen = nodesList.getLength();
+				for (int i=0; i<itemLen; i++){
+					Element element = (Element) nodesList.item(i);
+					if ((element.getNodeName().equals(ScriptTag.PARAMETER)) &&
+							element.getAttribute(ScriptTag.TYPE).equals(ScriptAttribute.RECORD)){
+						varMap.put(element.getAttribute(ScriptTag.NAME), 
+								addVariable(ScriptAttribute.RECORD, record));
+					}
+					else if (element.getNodeName().equals(ScriptTag.IF)){
+						result = String.valueOf(ifCondition(element));
+					}
+				}
+			}
+		}
+		if (result == null){
+			if (funcMap.get(name).get(1).equals(ScriptAttribute.STRING)){
+				result = "";
+			}
+		}
+		return result;
 	}
 	
 	public static void createFunction(String name, NodeList params){
 		NodeList funcList = behaviorDocument.getElementsByTagName(ScriptTag.FUNCTION);
 		if (funcMap.containsKey(name)){
-			Element funcElement = (Element) funcList.item(funcMap.get(name));
+			Element funcElement = (Element) funcList.item(Integer.valueOf(funcMap.get(name).get(0)));
 			if (funcElement.getAttribute(ScriptTag.NAME).equals(name)){
 				NodeList nodesList = funcElement.getChildNodes();
 				int itemLen = nodesList.getLength();
@@ -424,6 +474,12 @@ public class Function {
 			Log.i("info", "call getfilteredrecords function");
 			result = NS_DatabaseTable.GetFilteredRecords(element.getElementsByTagName(ScriptTag.PARAMETER));
 			Log.i("info", "getfilteredrecords "+result);
+		}
+		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETRECORDS)) &&
+				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB_TABLE))){
+			Log.i("info", "call getrecords function");
+			result = NS_DatabaseTable.GetRecords(element.getElementsByTagName(ScriptTag.PARAMETER));
+			Log.i("info", "getrecords "+result);
 		}
 		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NEWRECORD)) &&
 				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB_TABLE))){
@@ -592,6 +648,13 @@ public class Function {
 					Log.i("info", "call function "+child.getAttribute(ScriptTag.FUNCTION));
 					value = returnTypeFunction(child);
 				}
+				else if (child.getNodeName().equals(ScriptTag.ELEMENT)){
+					Log.i("info", "set element id "+child.getAttribute(ScriptTag.ELEMENT_ID));
+					value = child.getAttribute(ScriptTag.ELEMENT_ID);
+				}
+				else if (child.getNodeName().equals(ScriptTag.KEYWORD)){
+					value = getKeyWord(child);
+				}
 			}
 			Log.i("info", "prepare to add "+element.getAttribute(ScriptTag.NAME)+" in the var list its value is "+value);
 			varMap.put(element.getAttribute(ScriptTag.NAME), 
@@ -634,5 +697,13 @@ public class Function {
 	
 	public static Context getContext(){
 		return context;
+	}
+	
+	public static String getReturnValue(Element element){
+		String result = "";
+		if (element.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE){
+			result = element.getChildNodes().item(0).getNodeValue();
+		}
+		return result;
 	}
 }

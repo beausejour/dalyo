@@ -18,6 +18,7 @@ public class NS_List {
 			index = Integer.valueOf(String.valueOf(getValue(params, ScriptAttribute.PARAMETER_NAME_INDEX, ScriptAttribute.PARAMETER_TYPE_INT)));
 		}
 		if (index != -1){
+			Log.i("info", "list "+list);
 			value = ((ArrayList<?>)list).get(index-1);
 		}
 		return value;
