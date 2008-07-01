@@ -3,6 +3,9 @@ package com.penbase.dma.Dalyo.Function.Namespace;
 import java.util.HashMap;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
+import android.util.Log;
+
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Function.Function;
@@ -43,6 +46,10 @@ public class NS_Form {
 					}
 					else if (elt.getNodeName().equals(ScriptTag.CALL)){
 						value = Function.returnTypeFunction(elt);
+					}
+					else if (elt.getNodeName().equals(ScriptTag.VAR)){
+						value = Function.getVariablesMap().get(elt.getAttribute(ScriptTag.NAME)).get(1);
+						Log.i("info", "get variable value in NS_Object "+value);
 					}
 				}
 			}

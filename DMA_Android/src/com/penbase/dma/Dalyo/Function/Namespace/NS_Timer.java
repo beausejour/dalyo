@@ -57,7 +57,7 @@ public class NS_Timer {
 						}
 						else if (element.getChildNodes().item(0).getNodeType() == Node.ELEMENT_NODE){
 							Element child = (Element)element.getChildNodes().item(0);
-							if (child.getNodeName().equals(ScriptTag.KEYWOED)){
+							if (child.getNodeName().equals(ScriptTag.KEYWORD)){
 								value = Function.getKeyWord(child);
 							}
 							else if (child.getNodeName().equals(ScriptTag.VAR)){

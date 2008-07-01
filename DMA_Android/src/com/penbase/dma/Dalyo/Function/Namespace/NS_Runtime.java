@@ -113,7 +113,7 @@ public class NS_Runtime {
 				if (element.getChildNodes().getLength() == 1){
 					if (element.getChildNodes().item(0).getNodeType() == Node.ELEMENT_NODE){
 						Element elt = (Element) elements.item(0);
-						if (elt.getNodeName().equals(ScriptTag.KEYWOED)){
+						if (elt.getNodeName().equals(ScriptTag.KEYWORD)){
 							value = Function.getKeyWord(elt);
 						}
 						else if (elt.getNodeName().equals(ScriptTag.VAR)){
@@ -123,7 +123,7 @@ public class NS_Runtime {
 							else if (Function.getParamValue(newParams, elt.getAttribute(ScriptTag.NAME), type) != null){
 								value = (String) Function.getParamValue(newParams, elt.getAttribute(ScriptTag.NAME), type);
 							}
-							else if (elt.getNodeName().equals(ScriptTag.KEYWOED)){
+							else if (elt.getNodeName().equals(ScriptTag.KEYWORD)){
 								value = Function.getKeyWord(elt);
 							}
 						}

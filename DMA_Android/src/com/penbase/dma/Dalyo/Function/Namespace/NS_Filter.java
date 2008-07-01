@@ -48,7 +48,7 @@ public class NS_Filter {
 						else if (child.getNodeName().equals(ScriptTag.CALL)){
 							value = Function.returnTypeFunction(child);
 						}
-						else if (child.getNodeName().equals(ScriptTag.KEYWOED)){
+						else if (child.getNodeName().equals(ScriptTag.KEYWORD)){
 							value = Function.getKeyWord(child);
 						}
 					}

@@ -45,7 +45,7 @@ public class NS_ComponentDataview {
 						String varName = item.getAttribute(ScriptTag.NAME);
 						result = Function.getVariablesMap().get(varName);
 					}
-					else if (item.getNodeName().equals(ScriptTag.KEYWOED)){
+					else if (item.getNodeName().equals(ScriptTag.KEYWORD)){
 						result = Function.getKeyWord(item);
 					}
 				}

@@ -40,7 +40,8 @@ public class Component{
 	private String extension = null;
 	
 	//Variable for dataview
-	private ArrayList<ArrayList<String>> columnInfos = new ArrayList<ArrayList<String>>();	
+	private ArrayList<ArrayList<String>> columnInfos = new ArrayList<ArrayList<String>>();
+	private HashMap<Integer, String> onCalculateMap = new HashMap<Integer, String>();
 	
 	//Variable for Label
 	private String align = null;
@@ -111,6 +112,10 @@ public class Component{
 	
 	public void setDataviewColumns(ArrayList<ArrayList<String>> l){
 		this.columnInfos = l;
+	}
+	
+	public void setDataviewOncalculate(HashMap<Integer, String> onc){
+		this.onCalculateMap = onc;
 	}
 	
 	public void setMultiLine(String ml){
@@ -237,6 +242,7 @@ public class Component{
 			DataView dataview = new DataView(context, tableID);
 			dataview.setText(getFontSize(fontSize), getFontType(fontType));
 			dataview.setColumnInfo(columnInfos);
+			dataview.setOncalculate(onCalculateMap);
 			view = dataview;
 		}
 		else {

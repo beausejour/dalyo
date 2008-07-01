@@ -5,6 +5,8 @@ import java.util.HashMap;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import android.database.Cursor;
+import android.util.Log;
+
 import com.penbase.dma.Constant.DatabaseField;
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
@@ -49,6 +51,7 @@ public class NS_DatabaseTable {
 		if (record != null){
 			value = record.get(DatabaseField.FIELD+fieldId);
 		}
+		Log.i("info", "value "+value);
 		return value;
 	}
 	
@@ -57,7 +60,44 @@ public class NS_DatabaseTable {
 		Object filter = getValue(params, ScriptAttribute.FILTER, ScriptAttribute.FILTER);
 		return getRecords(tableId, filter);
 	}
-		
+	
+	public static ArrayList<HashMap<Object, Object>> GetRecords(NodeList params){
+		/*
+		 *     									<p n="table" t="table"><elt id="0" t="table"/></p>
+    									<p n="field" t="field"><elt id="0" t="field"/></p>
+    									<p n="value" t="object">
+    										<c f="getFieldValue" ns="database.table">
+    											<p n="table" t="table"><elt id="1" t="table"/></p>
+    											<p n="record" t="record"><v n="CurrentIntervention"/></p>
+    											<p n="field" t="field"><elt id="10" t="field"/></p>
+    										</c>
+    									</p>*/
+		String tableId = String.valueOf(getValue(params, ScriptAttribute.TABLE, ScriptAttribute.TABLE));
+		String fieldId = String.valueOf(getValue(params, ScriptAttribute.FIELD, ScriptAttribute.FIELD));
+		Object value = getValue(params, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
+		Log.i("info", "tableid "+tableId+" fieldid "+fieldId+" value "+value);
+		ArrayList<Integer> fieldList = new ArrayList<Integer>();
+		fieldList.add(Integer.valueOf(fieldId));
+		ArrayList<Object> valueList = new ArrayList<Object>();
+		valueList.add(value);
+		ArrayList<HashMap<Object, Object>> records = new ArrayList<HashMap<Object, Object>>();
+		Cursor cursor = DatabaseAdapter.selectQuery(tableId, fieldList, valueList);
+		cursor.first();
+		int cursorLen = cursor.count();
+		String[] columnNames = cursor.getColumnNames();
+		int columnsNb = columnNames.length;
+		for (int i=0; i<cursorLen; i++){
+			HashMap<Object, Object> record = new HashMap<Object, Object>();
+			for (int j=0; j<columnsNb; j++){
+				record.put(columnNames[j], DatabaseAdapter.getCursorValue(cursor, columnNames[j]));
+			}
+			records.add(record);
+			cursor.next();
+		}
+		Log.i("info", "records "+records);
+		return records;
+	}
+	
 	private static ArrayList<HashMap<Object, Object>> getRecords(String tableId, Object filter){
 		ArrayList<HashMap<Object, Object>> records = new ArrayList<HashMap<Object, Object>>();
 		ArrayList<String> tables = new ArrayList<String>();
@@ -69,7 +109,7 @@ public class NS_DatabaseTable {
 			String[] columnNames = cursor.getColumnNames();
 			int columnsRecordSize = columnNames.length;
 			for (int j=0; j<columnsRecordSize; j++){
-				record.put(columnNames[j], cursor.getString(j));
+				record.put(columnNames[j], DatabaseAdapter.getCursorValue(cursor, columnNames[j]));
 			}
 			records.add(record);
 			cursor.next();

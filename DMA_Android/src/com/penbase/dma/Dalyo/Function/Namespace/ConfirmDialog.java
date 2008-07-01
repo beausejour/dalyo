@@ -41,7 +41,7 @@ public class ConfirmDialog extends Thread{
 					int childrenLen = children.getLength();
 					for (int j=0; j<childrenLen; j++){
 						Element child = (Element)children.item(j);
-						if (child.getNodeName().equals(ScriptTag.KEYWOED)){
+						if (child.getNodeName().equals(ScriptTag.KEYWORD)){
 							title = (String) Function.getKeyWord(child);
 						}
 					}
