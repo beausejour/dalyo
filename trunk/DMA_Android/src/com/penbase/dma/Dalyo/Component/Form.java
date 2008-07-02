@@ -32,10 +32,17 @@ public class Form extends AbsoluteLayout{
 	}
 	
 	public void setRecord(String formId, HashMap<Object, Object> record){
+		Log.i("info", "setrecord in form");
 		int viewLen = this.getChildCount();
 		for (int i=0; i<viewLen; i++){
 			if (this.getChildAt(i) instanceof ComboBox) {
 				((ComboBox)this.getChildAt(i)).setCurrentValue(formId, record);
+			}
+			else if (this.getChildAt(i) instanceof TextField){
+				((TextField)this.getChildAt(i)).refresh(record);
+			}
+			else if (this.getChildAt(i) instanceof TextZone){
+				((TextZone)this.getChildAt(i)).refresh(record);
 			}
 		}
 	}

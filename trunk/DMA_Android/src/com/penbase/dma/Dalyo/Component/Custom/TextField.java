@@ -5,6 +5,7 @@ import java.util.HashMap;
 import com.penbase.dma.Constant.DatabaseField;
 import android.content.Context;
 import android.graphics.Typeface;
+import android.util.Log;
 import android.widget.AutoCompleteTextView;
 
 public class TextField extends AutoCompleteTextView{
@@ -35,6 +36,7 @@ public class TextField extends AutoCompleteTextView{
 	
 	public void refresh(HashMap<Object, Object> record){
 		if (!getFieldId().equals("")){
+			Log.i("info", "record "+record+" fieldid "+getFieldId());
 			TextField.this.setText((String)record.get(DatabaseField.FIELD+getFieldId()));
 		}
 	}

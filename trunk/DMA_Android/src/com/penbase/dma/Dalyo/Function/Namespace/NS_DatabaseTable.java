@@ -62,18 +62,10 @@ public class NS_DatabaseTable {
 	}
 	
 	public static ArrayList<HashMap<Object, Object>> GetRecords(NodeList params){
-		/*
-		 *     									<p n="table" t="table"><elt id="0" t="table"/></p>
-    									<p n="field" t="field"><elt id="0" t="field"/></p>
-    									<p n="value" t="object">
-    										<c f="getFieldValue" ns="database.table">
-    											<p n="table" t="table"><elt id="1" t="table"/></p>
-    											<p n="record" t="record"><v n="CurrentIntervention"/></p>
-    											<p n="field" t="field"><elt id="10" t="field"/></p>
-    										</c>
-    									</p>*/
 		String tableId = String.valueOf(getValue(params, ScriptAttribute.TABLE, ScriptAttribute.TABLE));
+		Log.i("info", "tableid "+tableId+" params "+params);
 		String fieldId = String.valueOf(getValue(params, ScriptAttribute.FIELD, ScriptAttribute.FIELD));
+		Log.i("info", "tableid "+fieldId);
 		Object value = getValue(params, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
 		Log.i("info", "tableid "+tableId+" fieldid "+fieldId+" value "+value);
 		ArrayList<Integer> fieldList = new ArrayList<Integer>();
@@ -120,7 +112,8 @@ public class NS_DatabaseTable {
 	private static Object getValue(NodeList params, String name, String type){
 		Object value = null;
 		int paramsLen = params.getLength();
-		for (int i=0; i<paramsLen; i++){
+		int i = 0;
+		while (i < paramsLen){
 			Element element = (Element) params.item(i);
 			if (element.getNodeName().equals(ScriptTag.PARAMETER)){
 				if ((element.getAttribute(ScriptTag.NAME).equals(name)) &&
@@ -129,22 +122,28 @@ public class NS_DatabaseTable {
 						Element child = (Element)element.getChildNodes().item(0);
 						if (child.getNodeName().equals(ScriptTag.ELEMENT)){
 							value = child.getAttribute(ScriptTag.ELEMENT_ID);
+							Log.i("info", "value of element id "+value);
+							i = paramsLen;
 						}
 						else if (child.getNodeName().equals(ScriptTag.VAR)){
 							if ((name.equals(ScriptAttribute.RECORD)) && type.equals(ScriptAttribute.RECORD) &&
 									(Function.getVariablesMap().get(child.getAttribute(ScriptTag.NAME)).size() > 1)) {
 								value = Function.getVariablesMap().get(child.getAttribute(ScriptTag.NAME)).get(1);
+								i = paramsLen;
 							}
 							else{
 								value = Function.getVariablesMap().get(child.getAttribute(ScriptTag.NAME));
+								i = paramsLen;
 							}
 						}
 						if (child.getNodeName().equals(ScriptTag.CALL)){
 							value = Function.returnTypeFunction(child);
+							i = paramsLen;
 						}
 					}
 				}
 			}
+			i++;
 		}
 		return value;
 	}

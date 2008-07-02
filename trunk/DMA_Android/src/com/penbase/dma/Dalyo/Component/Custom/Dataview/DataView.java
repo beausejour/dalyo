@@ -192,4 +192,8 @@ public class DataView extends ListView{
 			return records.get(position-1);	
 		}
 	}
+	
+	public void setCurrentPosition(int position){
+		currentPosition = position;
+	}
 }

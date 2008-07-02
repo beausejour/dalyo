@@ -5,6 +5,7 @@ import java.util.HashMap;
 import com.penbase.dma.Constant.DatabaseField;
 import android.content.Context;
 import android.graphics.Typeface;
+import android.util.Log;
 import android.widget.EditText;
 
 public class TextZone extends EditText{
@@ -34,6 +35,7 @@ public class TextZone extends EditText{
 	}
 	
 	public void refresh(HashMap<Object, Object> record){
+		Log.i("info", "record in textzone "+record);
 		if (!getFieldId().equals("")){
 			TextZone.this.setText((String)record.get(DatabaseField.FIELD+getFieldId()));
 		}

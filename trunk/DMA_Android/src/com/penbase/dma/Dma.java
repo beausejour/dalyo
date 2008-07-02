@@ -162,7 +162,7 @@ public class Dma extends Activity implements OnClickListener{
 	public static String getDeviceID(){
 		String imei = android.os.SystemProperties.get(TelephonyProperties.PROPERTY_IMEI,
 		"-1");
-		return "159159";
+		return "dfdfdfdfdfdfd";
 		//return imei;
 	}
 	

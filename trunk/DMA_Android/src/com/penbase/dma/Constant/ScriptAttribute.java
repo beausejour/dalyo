@@ -33,6 +33,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_SETENABLED = "setEnabled";
 	public static final String FUNCTION_SETTEXT = "setText";
 	public static final String FUNCTION_SETVALUE = "setValue";
+	public static final String FUNCTION_SETVISIBLE = "setVisible";
 	public static final String FUNCTION_SIZE = "size";
 	public static final String FUNCTION_START = "start";
 	public static final String FUNCTION_STARTNEWRECORD = "startNewRecord";
@@ -76,6 +77,7 @@ public class ScriptAttribute {
 	public static final String PARAMETER_NAME_TIMERID = "timer_id";
 	public static final String PARAMETER_NAME_VALUE = "value";
 	public static final String PARAMETER_NAME_VALUES = "values";
+	public static final String PARAMETER_NAME_VISIBLE = "visible";
 	
 	//Parameters type
 	public static final String PARAMETER_TYPE_BOOLEAN = "boolean";

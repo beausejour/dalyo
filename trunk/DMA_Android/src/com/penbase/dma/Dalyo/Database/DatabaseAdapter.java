@@ -85,6 +85,8 @@ public class DatabaseAdapter {
 		boolean result = true;
 		HashMap<String, ArrayList<String>> tsMap = new HashMap<String, ArrayList<String>>();
 		HashMap<String, String> fsMap = new HashMap<String, String>();
+		HashMap<String, String> fsPkMap = new HashMap<String, String>();
+		ArrayList<ArrayList<String>> fkList = new ArrayList<ArrayList<String>>();
 		SharedPreferences tablePref = context.getSharedPreferences(TABLEPREF, Context.MODE_PRIVATE);
 		SharedPreferences fieldPref = context.getSharedPreferences(FIELDPREF, Context.MODE_PRIVATE);
 		NodeList tableList = dbDocument.getElementsByTagName(XmlTag.TABLE);
@@ -116,6 +118,7 @@ public class DatabaseAdapter {
 						}
 						String fieldTypeValue = fieldType;
 						if (field.hasAttribute(XmlTag.FIELD_PK)){
+							fsPkMap.put(tableId, fieldId);
 							if (field.hasAttribute(XmlTag.FIELD_PK_AUTO)){
 								fieldTypeValue += " PRIMARY KEY AUTOINCREMENT, ";
 							}
@@ -125,9 +128,16 @@ public class DatabaseAdapter {
 						}
 						else if ((field.hasAttribute(XmlTag.FIELD_FORIEIGNTABLE)) 
 								&& (field.hasAttribute(XmlTag.FIELD_FORIEIGNFIELD))){
+							ArrayList<String> fk = new ArrayList<String>();
 							String foreignTableId = field.getAttribute(XmlTag.FIELD_FORIEIGNTABLE);
 							String foreignFieldId = field.getAttribute(XmlTag.FIELD_FORIEIGNFIELD);
 							fieldTypeValue += foreignTableId+" "+foreignFieldId;
+							fk.add(tableId);
+							fk.add(fieldId);
+							fk.add(foreignTableId);
+							fk.add(foreignFieldId);
+							fkList.add(fk);
+							
 						}
 						if (!fieldPref.getString(fieldId, "null").equals(fieldTypeValue)){
 							result = false;
@@ -146,6 +156,8 @@ public class DatabaseAdapter {
 		if (result){
 			tablesMap = tsMap;
 			fieldsMap = fsMap;
+			fieldsPKMap = fsPkMap;
+			foreignKeyList = fkList;
 		}
 		return result;
 	}
@@ -305,7 +317,7 @@ public class DatabaseAdapter {
 					byte[] valueLength = new byte[Binary.INTBYTE];
 					bis.read(valueLength, 0, valueLength.length);
 					int valueLengthInt = Binary.byteArrayToInt(valueLength);
-					
+					Log.i("info", "valueLengthInt "+valueLengthInt);
 					//Get value
 					byte[] value = new byte[valueLengthInt];
 					bis.read(value, 0, value.length);
@@ -422,11 +434,6 @@ public class DatabaseAdapter {
 						}
 						bos.write(valueLenth, 0, valueLenth.length);
 						bos.write(value, 0, value.length);
-						/*byte[] value = Binary.objectToByteArray(record.get(fields.get(fid)), valueType);
-						int valueLengthInt = value.length;
-						byte[] valueLenth = Binary.intToByteArray(valueLengthInt);
-						bos.write(valueLenth, 0, valueLenth.length);
-						bos.write(value, 0, value.length);*/
 					}
 				}
 			}
@@ -557,6 +564,7 @@ public class DatabaseAdapter {
 			result = KeyGenerator.getKeyGenerated();
 		}
 		else if (type.equals(DatabaseField.INTEGER)){
+			Log.i("info", "idValue "+idValue);
 			result = idValue;
 		}
 		return result;
@@ -578,10 +586,6 @@ public class DatabaseAdapter {
 	}
 	
 	public static Cursor selectQuery(ArrayList<String> tables, ArrayList<ArrayList<String>> columns, Object filter){
-		//String table = "COMMANDE, CLIENT";
-		//String[] projectionIn = new String[]{"CLIENT.nom", "COMMANDE.ID", "COMMANDE.date"};
-		//String selection = "COMMANDE.ID = CLIENT.ID AND COMMANDE.date = CLIENT.nom";
-		
 		Cursor result = null;
 		String table = createTableString(tables);
 		Log.i("info", "table "+table);
@@ -596,6 +600,7 @@ public class DatabaseAdapter {
 
 	//Add values and check primary key
 	public static void addQuery(int tableId, ArrayList<Integer> fieldsList, ArrayList<Object> record){
+		Log.i("info", "record "+record);
 		int fieldsNb = fieldsList.size();
 		String id = DatabaseField.ID+tableId;
 		String gid = DatabaseField.GID+tableId;
@@ -786,33 +791,25 @@ public class DatabaseAdapter {
 	private static String createSelectionString(ArrayList<String> tables, Object filter){
 		String result = "";
 		if (filter == null){
-			if (!createSelectionFKString(tables).equals("")){
-				result +=  "STATE != "+DatabaseField.DELETEVALUE+" AND ";
-				Log.i("info", "tables "+tables+" has fk");
-				if (result.equals("")){
-					result += createSelectionFKString(tables);	
+			int tablesSize = tables.size();
+			for (int i=0; i<tablesSize; i++){
+				if (i == 0){
+					result +=  DatabaseField.TABLE+tables.get(i)+".STATE != "+DatabaseField.DELETEVALUE;
 				}
 				else{
-					result += " AND "+createSelectionFKString(tables);
+					result +=  " AND "+DatabaseField.TABLE+tables.get(i)+".STATE != "+DatabaseField.DELETEVALUE;
 				}
 			}
-			else{
-				int tablesSize = tables.size();
-				for (int i=0; i<tablesSize; i++){
-					if (i == 0){
-						result +=  DatabaseField.TABLE+tables.get(i)+".STATE != "+DatabaseField.DELETEVALUE;
-					}
-					else{
-						result +=  " AND "+DatabaseField.TABLE+tables.get(i)+".STATE != "+DatabaseField.DELETEVALUE;
-					}
-				}
+			if (!createSelectionFKString(tables).equals("")){
+				Log.i("info", "filter null "+tables.size());
+				result += " AND "+createSelectionFKString(tables);	
 			}
 			return result;
 		}
 		else{
 			int filterSize = ((ArrayList<?>)filter).size();
 			if (filterSize > 2){
-				result +=  "STATE != "+DatabaseField.DELETEVALUE+" AND ";
+				Log.i("info", "filtersize > 2");
 				int filterNb = (filterSize - 2) / 4;
 				Log.i("info", "check how many filters "+filterNb);
 				for (int i=0; i<filterNb; i++){
@@ -886,6 +883,7 @@ public class DatabaseAdapter {
 	}
 	
 	private static String createSelectionFKString(ArrayList<String> tables){
+		Log.i("info", "fk string tables "+tables+" foreignKeyList "+foreignKeyList.toString());
 		String result = "";
 		int size = foreignKeyList.size();
 		if (tables.size() > 1){
