@@ -3,6 +3,7 @@ package com.penbase.dma.Dalyo.Database;
 import java.util.ArrayList;
 import java.util.HashMap;
 import android.database.Cursor;
+import android.util.Log;
 
 public class Record {
 	private HashMap<Object, Object> currentRecord = null;
@@ -43,12 +44,17 @@ public class Record {
 	public static void editRecord(String tableId, HashMap<Object, Object> record, ArrayList<Object> fList, ArrayList<Object> vList){
 		ArrayList<Integer> fieldList = new ArrayList<Integer>();
 		ArrayList<Object> valueList = new ArrayList<Object>();
-		int size = fList.size();
-		for (int i=2; i<size; i++){
-			fieldList.add(Integer.valueOf(String.valueOf(fList.get(i))));
-			valueList.add(vList.get(i));
+		if (fList.size() == vList.size()){
+			int size = fList.size();
+			for (int i=2; i<size; i++){
+				fieldList.add(Integer.valueOf(String.valueOf(fList.get(i))));
+				valueList.add(vList.get(i));
+			}
+			DatabaseAdapter.updateQuery(tableId, fieldList, valueList, record);
 		}
-		DatabaseAdapter.updateQuery(tableId, fieldList, valueList, record);
+		else{
+			//exception
+		}
 	}
 	
 	public static void deleteRecord(String tableId, HashMap<Object, Object> record){

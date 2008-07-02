@@ -37,6 +37,12 @@ public class NS_Component {
 		ApplicationView.getComponents().get(componentId).setEnabled(((Boolean)state).booleanValue());
 	}
 	
+	public static void SetVisible(NodeList params){
+		String componentId = String.valueOf(getValue(params, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT));
+		Object state =  getValue(params, ScriptAttribute.PARAMETER_NAME_VISIBLE, ScriptAttribute.PARAMETER_TYPE_BOOLEAN);
+		ApplicationView.getComponents().get(componentId).setVisible(((Boolean)state).booleanValue());
+	}
+	
 	private static Object getValue(NodeList params, String name, String type){
 		Object value = null;
 		int paramsLen = params.getLength();

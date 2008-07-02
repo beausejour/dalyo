@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import com.penbase.dma.Constant.XmlTag;
 import com.penbase.dma.Dalyo.Component.Custom.*;
+import com.penbase.dma.Dalyo.Component.Custom.Dataview.CustomLinearLayout;
 import com.penbase.dma.Dalyo.Component.Custom.Dataview.DataView;
 import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
 
@@ -15,6 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.*;
+import android.widget.AdapterView.OnItemClickListener;
 
 public class Component{
 	private Context context;
@@ -252,13 +254,24 @@ public class Component{
 		}
 	}
 	
-	public void setOnclickFunction(final String funcName, View view) {
-		view.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				Form.getFunction().createFunction(funcName, null);
-			}
-		});
+	public void setOnclickFunction(final String funcName, final View view) {
+		if (view instanceof DataView){
+			((DataView)view).setOnItemClickListener(new OnItemClickListener(){
+				@Override
+				public void onItemClick(AdapterView parent, View v, int position, long id){
+					((DataView)view).setCurrentPosition(position);
+					Form.getFunction().createFunction(funcName, null);
+				}
+			});
+		}
+		else{
+			view.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View arg0) {
+					Form.getFunction().createFunction(funcName, null);
+				}
+			});
+		}
 	}
 	
 	public void setOnchangeFunction(String funcName, View view) {
@@ -364,6 +377,15 @@ public class Component{
 		if (getView() instanceof Button){
 			Log.i("info", "button setenabled "+state);
 			((Button)getView()).setEnabled(state);
+		}
+	}
+	
+	public void setVisible(boolean state){
+		if (state){
+			getView().setVisibility(View.VISIBLE);
+		}
+		else{
+			getView().setVisibility(View.INVISIBLE);
 		}
 	}
 }

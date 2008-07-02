@@ -13,7 +13,12 @@ public class NS_Object {
 	}
 	
 	public static Integer ToInt(NodeList params){
-		return Integer.valueOf(String.valueOf(getValue(params)));
+		if (String.valueOf(getValue(params)).indexOf(".") != -1){
+			return Double.valueOf(String.valueOf(getValue(params))).intValue();
+		}
+		else{
+			return Integer.valueOf(String.valueOf(getValue(params)));
+		}
 	}
 	
 	public static Object ToRecord(NodeList params){

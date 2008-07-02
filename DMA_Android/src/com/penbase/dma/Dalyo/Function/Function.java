@@ -26,7 +26,6 @@ public class Function {
 	public Function(Context c, Document document){
 		context = c;
 		varMap = new HashMap<String, ArrayList<Object>>();
-	//	funcMap = new HashMap<String, Integer>();
 		funcMap = new HashMap<String, ArrayList<String>>();
 		behaviorDocument = document;
 		createMaps();
@@ -44,7 +43,6 @@ public class Function {
 			ArrayList<String> funcParams = new ArrayList<String>();
 			funcParams.add(String.valueOf(i));
 			funcParams.add(funcElement.getAttribute(ScriptTag.OUTPUT));
-			//funcMap.put(funcElement.getAttribute(ScriptTag.NAME), i);
 			funcMap.put(funcElement.getAttribute(ScriptTag.NAME), funcParams);
 			NodeList nodesList = funcElement.getChildNodes();
 			int itemLen = nodesList.getLength();
@@ -105,7 +103,9 @@ public class Function {
 				result = (left != right);
 				break;
 			case ScriptAttribute.GREATERTHAN:
-				result = (Integer.valueOf(String.valueOf(left)) > Integer.valueOf(String.valueOf(right)));
+				if ((left != null) && (right != null)){
+					result = (Integer.valueOf(String.valueOf(left)) > Integer.valueOf(String.valueOf(right)));	
+				}
 				break;
 		}
 		Log.i("info", "left "+left+" operator "+operator+" right "+right+" result "+result);
@@ -227,6 +227,11 @@ public class Function {
 				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.COMPONENT))){
 			Log.i("info", "call setenable function");
 			NS_Component.SetEnabled(element.getElementsByTagName(ScriptTag.PARAMETER));
+		}
+		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETVISIBLE)) &&
+				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.COMPONENT))){
+			Log.i("info", "call setvisible function");
+			NS_Component.SetVisible(element.getElementsByTagName(ScriptTag.PARAMETER));
 		}
 		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CANCEL)) &&
 				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_TIMER))){
@@ -701,8 +706,12 @@ public class Function {
 	
 	public static String getReturnValue(Element element){
 		String result = "";
-		if (element.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE){
-			result = element.getChildNodes().item(0).getNodeValue();
+		Log.i("info", "element.getChildNodes().item(0).getNodeType() "+element.getChildNodes().getLength());
+		if (element.getChildNodes().getLength() > 0){
+			if (element.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE){
+				Log.i("info", "has text node");
+				result = element.getChildNodes().item(0).getNodeValue();
+			}
 		}
 		return result;
 	}

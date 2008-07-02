@@ -278,6 +278,7 @@ public class ApplicationView extends Activity {
 					
 					//Add onclick event
 					if (element.hasAttribute(XmlTag.EVENT_ONCLICK)){
+						Log.i("info", "onclick function name "+element.getAttribute(XmlTag.EVENT_ONCLICK));
 						component.setOnclickFunction(element.getAttribute(XmlTag.EVENT_ONCLICK), component.getView());
 					}
 					

@@ -8,21 +8,31 @@ import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Function.Function;
 
 public class NS_Math {
-	public static Integer Sum(NodeList params){
-		Integer left = getValue(params, ScriptAttribute.PARAMETER_NAME_A);
-		Integer right = getValue(params, ScriptAttribute.PARAMETER_NAME_B);
-		return (left+right);
+	public static Object Sum(NodeList params){
+		Object left = getValue(params, ScriptAttribute.PARAMETER_NAME_A);
+		Object right = getValue(params, ScriptAttribute.PARAMETER_NAME_B);
+		if ((left.toString().indexOf(".") != -1) || (right.toString().indexOf(".") != -1)){
+			return (Double.valueOf(left.toString()) + Double.valueOf(right.toString()));
+		}
+		else{
+			return (Integer.valueOf(left.toString()) + Integer.valueOf(right.toString()));
+		}
 	}
 	
-	public static Integer Subtract(NodeList params){
-		Integer left = getValue(params, ScriptAttribute.PARAMETER_NAME_A);
-		Integer right = getValue(params, ScriptAttribute.PARAMETER_NAME_B);
-		return (left - right);
+	public static Object Subtract(NodeList params){
+		Object left = getValue(params, ScriptAttribute.PARAMETER_NAME_A);
+		Object right = getValue(params, ScriptAttribute.PARAMETER_NAME_B);
+		if ((left.toString().indexOf(".") != -1) || (right.toString().indexOf(".") != -1)){
+			return (Double.valueOf(left.toString()) - Double.valueOf(right.toString()));
+		}
+		else{
+			return (Integer.valueOf(left.toString()) - Integer.valueOf(right.toString()));
+		}
 	}
 	
-	private static Integer getValue(NodeList params, String name){
+	private static Object getValue(NodeList params, String name){
 		int paramsLen = params.getLength();
-		Integer value = null;
+		Object value = null;
 		for(int i=0; i<paramsLen; i++){
 			Element element = (Element) params.item(i);
 			if ((element.getNodeName().equals(ScriptTag.PARAMETER)) &&
@@ -32,7 +42,7 @@ public class NS_Math {
 					Element child = (Element)element.getChildNodes().item(0);
 					if (child.getNodeName().equals(ScriptTag.CALL)){
 						Log.i("info", "Subtraction a call function  "+child.getAttribute(ScriptTag.FUNCTION));
-						value = Integer.valueOf(String.valueOf(Function.returnTypeFunction(child)));
+						value = Function.returnTypeFunction(child);
 					}
 				}
 			}

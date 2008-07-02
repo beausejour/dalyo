@@ -54,7 +54,7 @@ public class NS_Runtime {
 					@Override
 					public void run() {
 						syncProgressDialog = ProgressDialog.show(Function.getContext(), "Please wait...", 
-								"Synchronizing application's data...", true, false);
+								"Synchronizing application's data uithread...", true, false);
 						new Thread(){
 							public void run() {
 								try {
@@ -73,7 +73,7 @@ public class NS_Runtime {
 				});
 			}
 			else{
-				syncProgressDialog = ProgressDialog.show(Function.getContext(), "Please wait...", "Synchronizing application's data...", true, false);
+				syncProgressDialog = ProgressDialog.show(Function.getContext(), "Please wait...", "Synchronizing application's data non uithread...", true, false);
 				new Thread(){
 					public void run() {
 						try {
