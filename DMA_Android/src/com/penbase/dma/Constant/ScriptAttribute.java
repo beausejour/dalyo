@@ -10,9 +10,11 @@ public class ScriptAttribute {
 	public static final String FUNCTION_CANCELTRANSACTION = "cancelTransaction";
 	public static final String FUNCTION_CLEAR = "clear";
 	public static final String FUNCTION_CONFIRM = "confirm";
+	public static final String FUNCTION_COUNT = "count";
 	public static final String FUNCTION_DELETERECORD = "deleteRecord";
 	public static final String FUNCTION_EDITRECORD = "editRecord";
 	public static final String FUNCTION_ERROR = "error";
+	public static final String FUNCTION_EXPORT = "export";
 	public static final String FUNCTION_GET = "get";
 	public static final String FUNCTION_GETFIELDVALUE = "getFieldValue";
 	public static final String FUNCTION_GETFILTEREDRECORDS = "getFilteredRecords";
@@ -24,6 +26,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_GETSIZE = "size";
 	public static final String FUNCTION_GETSTATUS = "getStatus";
 	public static final String FUNCTION_GETVALUE = "getValue";
+	public static final String FUNCTION_IMPORT = "import";
 	public static final String FUNCTION_INIT = "init";
 	public static final String FUNCTION_NAVIGATE = "navigate";
 	public static final String FUNCTION_NEWRECORD = "newRecord";
@@ -70,9 +73,11 @@ public class ScriptAttribute {
 	public static final String PARAMETER_NAME_ENABLE = "enable";
 	public static final String PARAMETER_NAME_FACELESS = "faceless";
 	public static final String PARAMETER_NAME_FIELDS = "fields";
+	public static final String PARAMETER_NAME_FILTERS = "filters";
 	public static final String PARAMETER_NAME_INDEX = "index";
 	public static final String PARAMETER_NAME_INTERVAL = "interval";
 	public static final String PARAMETER_NAME_LINK = "link";		//link the last condition 
+	public static final String PARAMETER_NAME_TABLES = "tables";
 	public static final String PARAMETER_NAME_TEXT = "text";
 	public static final String PARAMETER_NAME_TIMERID = "timer_id";
 	public static final String PARAMETER_NAME_VALUE = "value";

@@ -8,19 +8,13 @@ import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Function.Function;
 
 public class NS_Filter {
-	/*	Criteria in variable map: varName, type, null, [lfield, oeprator, value, link]* 
-	 * */
 	public static void AddCriteria(NodeList params){
 		String varName = String.valueOf(getValue(params, ScriptAttribute.FILTER, ScriptAttribute.FILTER));
 		String lField = String.valueOf(getValue(params, ScriptAttribute.PARAMETER_NAME_ELEMENT, ScriptAttribute.OBJECT));
 		String operator = String.valueOf(getValue(params, ScriptAttribute.OPERATOR, ScriptAttribute.OPERATOR));
 		Object value = getValue(params, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
 		Object link = getValue(params, ScriptAttribute.PARAMETER_NAME_LINK, ScriptAttribute.OPERATOR);
-
-		Function.getVariablesMap().get(varName).add(lField);
-		Function.getVariablesMap().get(varName).add(operator);
-		Function.getVariablesMap().get(varName).add(value);
-		Function.getVariablesMap().get(varName).add(link);
+		Function.addFilterValues(varName, lField, operator, value, link);
 	}
 	
 	private static Object getValue(NodeList params, String name, String type){
@@ -38,7 +32,7 @@ public class NS_Filter {
 								value = child.getAttribute(ScriptTag.NAME);
 							}
 							else if (name.equals(ScriptAttribute.PARAMETER_NAME_VALUE)){
-								value = Function.getVariablesMap().get(child.getAttribute(ScriptTag.NAME)).get(1);
+								value = Function.getVariableValue(child.getAttribute(ScriptTag.NAME));
 							}
 						}
 						else if ((child.getNodeName().equals(ScriptTag.ELEMENT)) && 

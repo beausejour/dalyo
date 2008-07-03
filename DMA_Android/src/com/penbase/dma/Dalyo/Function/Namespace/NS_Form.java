@@ -48,7 +48,7 @@ public class NS_Form {
 						value = Function.returnTypeFunction(elt);
 					}
 					else if (elt.getNodeName().equals(ScriptTag.VAR)){
-						value = Function.getVariablesMap().get(elt.getAttribute(ScriptTag.NAME)).get(1);
+						value = Function.getVariableValue(elt.getAttribute(ScriptTag.NAME));
 						Log.i("info", "get variable value in NS_Object "+value);
 					}
 				}

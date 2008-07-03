@@ -48,21 +48,20 @@ public class NS_Timer {
 		int paramsLen = params.getLength();
 		for (int i=0; i<paramsLen; i++){
 			Element element = (Element) params.item(i);
-			if (element.getNodeName().equals(ScriptTag.PARAMETER)){
-				if ((element.getAttribute(ScriptTag.NAME).equals(name)) &&
-						(element.getAttribute(ScriptTag.TYPE).equals(type))){
-					if (element.getChildNodes().getLength() == 1){
-						if (element.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE){
-							value = element.getChildNodes().item(0).getNodeValue();
+			if ((element.getNodeName().equals(ScriptTag.PARAMETER)) &&
+					(element.getAttribute(ScriptTag.NAME).equals(name)) &&
+					(element.getAttribute(ScriptTag.TYPE).equals(type))){
+				if (element.getChildNodes().getLength() == 1){
+					if (element.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE){
+						value = element.getChildNodes().item(0).getNodeValue();
+					}
+					else if (element.getChildNodes().item(0).getNodeType() == Node.ELEMENT_NODE){
+						Element child = (Element)element.getChildNodes().item(0);
+						if (child.getNodeName().equals(ScriptTag.KEYWORD)){
+							value = Function.getKeyWord(child);
 						}
-						else if (element.getChildNodes().item(0).getNodeType() == Node.ELEMENT_NODE){
-							Element child = (Element)element.getChildNodes().item(0);
-							if (child.getNodeName().equals(ScriptTag.KEYWORD)){
-								value = Function.getKeyWord(child);
-							}
-							else if (child.getNodeName().equals(ScriptTag.VAR)){
-								value = Function.getVariablesMap().get(child.getAttribute(ScriptTag.NAME)).get(1);
-							}
+						else if (child.getNodeName().equals(ScriptTag.VAR)){
+							value = Function.getVariableValue(child.getAttribute(ScriptTag.NAME));
 						}
 					}
 				}

@@ -90,6 +90,15 @@ public class NS_DatabaseTable {
 		return records;
 	}
 	
+	public static Integer Count(NodeList params){
+		String tableId = String.valueOf(getValue(params, ScriptAttribute.TABLE, ScriptAttribute.TABLE));
+		Object filter = getValue(params, ScriptAttribute.FILTER, ScriptAttribute.FILTER);
+		ArrayList<String> tables = new ArrayList<String>();
+		tables.add(tableId);
+		Cursor cursor = DatabaseAdapter.selectQuery(tables, null, filter);
+		return cursor.count();
+	}
+	
 	private static ArrayList<HashMap<Object, Object>> getRecords(String tableId, Object filter){
 		ArrayList<HashMap<Object, Object>> records = new ArrayList<HashMap<Object, Object>>();
 		ArrayList<String> tables = new ArrayList<String>();
@@ -127,16 +136,19 @@ public class NS_DatabaseTable {
 						}
 						else if (child.getNodeName().equals(ScriptTag.VAR)){
 							if ((name.equals(ScriptAttribute.RECORD)) && type.equals(ScriptAttribute.RECORD) &&
-									(Function.getVariablesMap().get(child.getAttribute(ScriptTag.NAME)).size() > 1)) {
-								value = Function.getVariablesMap().get(child.getAttribute(ScriptTag.NAME)).get(1);
+									(Function.getVariableValues(child.getAttribute(ScriptTag.NAME)).size() > 1)) {
+								value = Function.getVariableValue(child.getAttribute(ScriptTag.NAME));
+								i = paramsLen;
+							}
+							else if (name.equals(ScriptAttribute.FILTER)){
+								value = Function.getFilterValue(child.getAttribute(ScriptTag.NAME));
 								i = paramsLen;
 							}
 							else{
-								value = Function.getVariablesMap().get(child.getAttribute(ScriptTag.NAME));
-								i = paramsLen;
+								value = Function.getVariableValue(child.getAttribute(ScriptTag.NAME));
 							}
 						}
-						if (child.getNodeName().equals(ScriptTag.CALL)){
+						else if (child.getNodeName().equals(ScriptTag.CALL)){
 							value = Function.returnTypeFunction(child);
 							i = paramsLen;
 						}
