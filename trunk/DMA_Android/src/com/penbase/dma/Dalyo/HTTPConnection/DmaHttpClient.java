@@ -25,12 +25,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -40,9 +44,11 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import com.penbase.dma.Dma;
 import com.penbase.dma.Binary.Binary;
+import com.penbase.dma.Constant.DatabaseField;
 import com.penbase.dma.Constant.ErrorCode;
 import com.penbase.dma.Constant.XmlTag;
 import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
+import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.View.ApplicationListView;
 import com.penbase.dma.View.ApplicationView;
 
@@ -420,6 +426,57 @@ public class DmaHttpClient{
 		Log.i("info", "exportData "+exportData.length);
 		DmaHttpBinarySync exportSync = new DmaHttpBinarySync(url, sync, commit, exportData, "Export");
 		return exportSync.run();
+	}
+	
+	public void filteredImport(String AppId, String DbId, String login, String pwd, ArrayList<String> tables, Object filters){
+		String ask = "act=ask&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd="+pwd+
+		"&stream=1&useragent=ANDROID&did="+Dma.getDeviceID();
+		String report = "act=rep&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd="+pwd+
+		"&stream=1&useragent=ANDROID&did="+Dma.getDeviceID();
+		
+		int filtersSize = ((ArrayList<?>)filters).size();
+		if (filtersSize > 2){
+			Log.i("info", "filtersize > 2");
+			int filterNb = (filtersSize - 2) / 4;
+			Log.i("info", "check how many filters "+filterNb);
+			ask += "&fcount="+filterNb;
+			for (int i=0; i<filterNb; i++){
+				String fid = (String) ((ArrayList<?>)filters).get(4*i+2);
+				ask += "&ff"+i+"="+fid;
+				Object operator = Function.getOperator(((ArrayList<?>)filters).get(4*i+3));
+				Log.i("info", "operator "+operator);
+				ask += "&fo"+i+"="+urlEncode(String.valueOf(operator));
+				Object value = ((ArrayList<?>)filters).get(4*i+4);
+				ask += "&fv"+i+"="+String.valueOf(value);
+			}
+		}
+		Log.i("info", "action ask "+ask);
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		DmaHttpBinarySync importSync = null;
+		try {
+			int tablesNb = tables.size();
+			bos.write(Binary.intToByteArray(tablesNb));
+			for (int i=0; i<tablesNb; i++){
+				bos.write(Binary.intToByteArray(Integer.valueOf(tables.get(i))));
+			}
+			byte[] inputbytes = bos.toByteArray();
+			importSync = new DmaHttpBinarySync(url, ask, report, inputbytes, "Import");
+			importSync.run();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	private String urlEncode(String s){
+		String result = "";
+		try {
+			result = java.net.URLEncoder.encode(s, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 	
 	//Save the download xml stream to file

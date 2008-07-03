@@ -51,7 +51,7 @@ public class NS_Gps {
 						if (element.getChildNodes().item(0).getNodeType() == Node.ELEMENT_NODE){
 							Element child = (Element)element.getChildNodes().item(0);
 							if (child.getNodeName().equals(ScriptTag.VAR)){
-								value = Function.getVariablesMap().get(child.getAttribute(ScriptTag.NAME)).get(1);
+								value = Function.getVariableValue(child.getAttribute(ScriptTag.NAME));
 							}
 						}
 					}

@@ -104,6 +104,7 @@ public class NS_Runtime {
 	private static Object getValue(NodeList items, String name, String type, NodeList newParams){
 		Object value = null;
 		int itemsLen = items.getLength();
+		Log.i("info", "itemsLen "+itemsLen);
 		for (int i=0; i<itemsLen; i++){
 			Element element = (Element) items.item(i);
 			if ((element.getNodeName().equals(ScriptTag.PARAMETER)) &&

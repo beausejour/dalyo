@@ -688,17 +688,17 @@ public class DatabaseAdapter {
 		return tablesMap.keySet();
 	}
 	
-	public static void startTransaction(){
+	public static void beginTransaction(){
 		STARTTRANSACTION = true;
 		sqlite.execSQL("BEGIN TRANSACTION;");
 	}
 	
-	public static void cancelTransaction(){
+	public static void rollbackTransaction(){
 		STARTTRANSACTION = false;
 		sqlite.execSQL("ROLLBACK TRANSACTION;");
 	}
 	
-	public static void validateTransaction(){
+	public static void commitTransaction(){
 		STARTTRANSACTION = false;
 		sqlite.execSQL("COMMIT TRANSACTION;");
 	}
@@ -808,55 +808,52 @@ public class DatabaseAdapter {
 		}
 		else{
 			int filterSize = ((ArrayList<?>)filter).size();
-			if (filterSize > 2){
-				Log.i("info", "filtersize > 2");
-				int filterNb = (filterSize - 2) / 4;
-				Log.i("info", "check how many filters "+filterNb);
-				for (int i=0; i<filterNb; i++){
-					//Check the link is not implemented yet
-					if (i == 0){
-						String field = (String)DatabaseField.FIELD+((ArrayList<?>)filter).get(4*i+2);
-						Set<String> keySet = tablesMap.keySet();
-						String tableName = null;
-						for (String s : keySet){
-							if (tablesMap.get(s).contains(field)){
-								tableName = DatabaseField.TABLE+s;
-								result += tableName+"."+field;
-							}
+			int filterNb = filterSize / 4;
+			Log.i("info", "check how many filters "+filterNb);
+			for (int i=0; i<filterNb; i++){
+				//Link is considerated as AND
+				if (i == 0){
+					String field = (String)DatabaseField.FIELD+((ArrayList<?>)filter).get(4*i);
+					Set<String> keySet = tablesMap.keySet();
+					String tableName = null;
+					for (String s : keySet){
+						if (tablesMap.get(s).contains(field)){
+							tableName = DatabaseField.TABLE+s;
+							result += tableName+"."+field;
 						}
-						Object operator = Function.getOperator(((ArrayList<?>)filter).get(4*i+3));
-						Log.i("info", "operator "+operator);
-						result += " "+operator+" ";
-						Object value = "\'"+((ArrayList<?>)filter).get(4*i+4)+"\'";
-						result += value+" AND "+tableName+".STATE != "+DatabaseField.DELETEVALUE;
 					}
-					else{
-						result += " AND ";
-						String field = (String) DatabaseField.FIELD+((ArrayList<?>)filter).get(4*i+2);
-						Set<String> keySet = tablesMap.keySet();
-						String tableName = null;
-						for (String s : keySet){
-							if (tablesMap.get(s).contains(field)){
-								tableName = DatabaseField.TABLE+s;
-								result += tableName+"."+field;
-							}
-						}
-						Object operator = Function.getOperator(((ArrayList<?>)filter).get(4*i+3));
-						Log.i("info", "operator "+operator);
-						result += " "+operator+" ";
-						Object value = "\'"+((ArrayList<?>)filter).get(4*i+4)+"\'";
-						result += value+" AND "+tableName+".STATE != "+DatabaseField.DELETEVALUE;
-					}
-					Log.i("info", "result in createSelectionString "+result);
+					Object operator = Function.getOperator(((ArrayList<?>)filter).get(4*i+1));
+					Log.i("info", "operator "+operator);
+					result += " "+operator+" ";
+					Object value = "\'"+((ArrayList<?>)filter).get(4*i+2)+"\'";
+					result += value+" AND "+tableName+".STATE != "+DatabaseField.DELETEVALUE;
 				}
-				if (!createSelectionFKString(tables).equals("")){
-					Log.i("info", "tables "+tables+" has fk");
-					if (result.equals("")){
-						result += createSelectionFKString(tables);	
+				else{
+					result += " AND ";
+					String field = (String) DatabaseField.FIELD+((ArrayList<?>)filter).get(4*i);
+					Set<String> keySet = tablesMap.keySet();
+					String tableName = null;
+					for (String s : keySet){
+						if (tablesMap.get(s).contains(field)){
+							tableName = DatabaseField.TABLE+s;
+							result += tableName+"."+field;
+						}
 					}
-					else{
-						result += " AND "+createSelectionFKString(tables);
-					}
+					Object operator = Function.getOperator(((ArrayList<?>)filter).get(4*i+1));
+					Log.i("info", "operator "+operator);
+					result += " "+operator+" ";
+					Object value = "\'"+((ArrayList<?>)filter).get(4*i+2)+"\'";
+					result += value+" AND "+tableName+".STATE != "+DatabaseField.DELETEVALUE;
+				}
+				Log.i("info", "result in createSelectionString "+result);
+			}
+			if (!createSelectionFKString(tables).equals("")){
+				Log.i("info", "tables "+tables+" has fk");
+				if (result.equals("")){
+					result += createSelectionFKString(tables);	
+				}
+				else{
+					result += " AND "+createSelectionFKString(tables);
 				}
 			}
 			return result;	

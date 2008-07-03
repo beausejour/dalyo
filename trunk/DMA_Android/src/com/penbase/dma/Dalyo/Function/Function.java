@@ -8,18 +8,15 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import android.content.Context;
 import android.util.Log;
-
 import com.penbase.dma.Constant.GpsStatus;
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
-import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
 import com.penbase.dma.Dalyo.Function.Namespace.*;
 
 public class Function {
 	private static Document behaviorDocument;
 	private static Context context;
 	private static HashMap<String, ArrayList<Object>> varMap;
-	//private static HashMap<String, Integer> funcMap;
 	private static HashMap<String, ArrayList<String>> funcMap;
 	private static boolean first = true;
 	
@@ -56,6 +53,7 @@ public class Function {
 		first = false;
 	}	
 	
+	//Find out the result of boolean list
 	private static boolean checkConditions(boolean[] boolList){
 		boolean result = false;
 		int size = boolList.length;
@@ -83,19 +81,18 @@ public class Function {
 		return result;
 	}
 	
+	//Compare the left value and the right value
 	private static boolean checkCondition(Object left, String operator, Object right){
 		boolean result = false;
 		switch (Integer.valueOf(operator)){
 			case ScriptAttribute.EQUALS:
 				if ((left instanceof Integer) || (right instanceof Integer)){
-					Log.i("info", "integer");
 					result = (Integer.valueOf(String.valueOf(left)) == (Integer.valueOf(String.valueOf(right))));
 				}
 				else if ((left == null) || (right == null)){
 					result = (left == right);
 				}
 				else{
-					Log.i("info", "string");
 					result = (left.equals(right));
 				}
 				break;
@@ -175,7 +172,6 @@ public class Function {
 				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB_TABLE))){
 			Log.i("info", "call newrecord function");
 			if (!first){
-				Log.i("info", "not the first time");
 				NS_DatabaseTable.CreateNewRecord(element.getElementsByTagName(ScriptTag.PARAMETER));
 			}
 		}
@@ -191,17 +187,27 @@ public class Function {
 		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_STARTTRANSACTION)) &&
 				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB))){
 			Log.i("info", "call start transaction function");
-			DatabaseAdapter.startTransaction();
+			NS_Database.StartTransaction(element.getElementsByTagName(ScriptTag.PARAMETER));
 		}
 		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CANCELTRANSACTION)) &&
 				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB))){
 			Log.i("info", "call cancel transaction function");
-			DatabaseAdapter.cancelTransaction();
+			NS_Database.CancelTransaction(element.getElementsByTagName(ScriptTag.PARAMETER));
 		}
 		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_VALIDATETRANSACTION)) &&
 				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB))){
 			Log.i("info", "call VALIDATE transaction function");
-			DatabaseAdapter.validateTransaction();
+			NS_Database.ValidateTransaction(element.getElementsByTagName(ScriptTag.PARAMETER));
+		}
+		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_EXPORT)) &&
+				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB))){
+			Log.i("info", "call export function");
+			NS_Database.Export(element.getElementsByTagName(ScriptTag.PARAMETER));
+		}
+		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_IMPORT)) &&
+				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB))){
+			Log.i("info", "call import function");
+			NS_Database.Import(element.getElementsByTagName(ScriptTag.PARAMETER));
 		}
 		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ADD)) &&
 				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.LIST))){
@@ -275,15 +281,21 @@ public class Function {
 								NodeList leftchildren = conditionChild.getChildNodes();
 								int leftchildrenLen = leftchildren.getLength();
 								for (int m=0; m<leftchildrenLen; m++){
-									Element leftChild = (Element) leftchildren.item(m);
-									if (leftChild.getNodeName().equals(ScriptTag.CALL)){
-										left = returnTypeFunction(leftChild);
-										Log.i("info", "left return value "+left);
+									if (leftchildren.item(m).getNodeType() == Node.ELEMENT_NODE){
+										Element leftChild = (Element) leftchildren.item(m);
+										if (leftChild.getNodeName().equals(ScriptTag.CALL)){
+											left = returnTypeFunction(leftChild);
+											Log.i("info", "left return value "+left);
+										}
+										else if ((leftChild.getNodeName().equals(ScriptTag.VAR)) &&
+												leftChild.hasAttribute(ScriptTag.NAME)){
+											left = getVariableValue(leftChild.getAttribute(ScriptTag.NAME)); 
+											Log.i("info", "left variable "+left);
+										}
 									}
-									else if ((leftChild.getNodeName().equals(ScriptTag.VAR)) &&
-											leftChild.hasAttribute(ScriptTag.NAME)){
-										left = getVariableValue(leftChild.getAttribute(ScriptTag.NAME)); 
-										Log.i("info", "left variable "+left);
+									else if (leftchildren.item(m).getNodeType() == Node.TEXT_NODE){
+										left = leftchildren.item(m).getNodeValue();
+										Log.i("info", "left is a value "+right);
 									}
 								}
 							}
@@ -418,6 +430,7 @@ public class Function {
 				int itemLen = nodesList.getLength();
 				for (int i=0; i<itemLen; i++){
 					Element element = (Element) nodesList.item(i);
+					Log.i("info", "nodelist "+i+" "+element.getNodeName());
 					if (element.getNodeName().equals(ScriptTag.CALL)){
 						if ((element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_USER)) &&
 								(element.getElementsByTagName(ScriptTag.PARAMETER).getLength() > 1)){
@@ -441,8 +454,7 @@ public class Function {
 					else if (element.getNodeName().equals(ScriptTag.IF)){
 						ifCondition(element);
 					}
-					/*
-					 *	All the variables are global variables, if we need to set all the variable to be local,
+					/*	All the variables are global variables, if we need to set all the variable to be local,
 					 *	uncomment these codes to create variables locally
 					 * */
 					/*else if (element.getNodeName().equals(ScriptTag.SET)){
@@ -490,6 +502,11 @@ public class Function {
 				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB_TABLE))){
 			Log.i("info", "call newrecord function");
 			result = NS_DatabaseTable.CreateNewRecord(element.getElementsByTagName(ScriptTag.PARAMETER));
+		}
+		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_COUNT)) &&
+				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB_TABLE))){
+			Log.i("info", "call Count function");
+			result = NS_DatabaseTable.Count(element.getElementsByTagName(ScriptTag.PARAMETER));
 		}
 		else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NOW)) &&
 				(element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DATE))){
@@ -595,6 +612,7 @@ public class Function {
 		return result;
 	}
 	
+	//Return variable's value
 	public static Object getVariableValue(String name){
 		Object result = null;
 		if (varMap.containsKey(name)){
@@ -606,10 +624,46 @@ public class Function {
 		return result;
 	}
 
+	//Return variable's type, value, filter value etc
+	public static ArrayList<Object> getVariableValues(String name){
+		ArrayList<Object> result = null;
+		if (varMap.containsKey(name)){
+			result = varMap.get(name);
+		}
+		return result;
+	}
+	
+	//Return filter variable's elements [varName = {type, null, [field, operator, value, link]*}]
+	public static Object getFilterValue(String name){
+		Object result = null;
+		if (varMap.containsKey(name)){
+			ArrayList<Object> values = varMap.get(name);
+			values.remove(0);
+			values.remove(1);
+			result = values;
+		}
+		return result;
+	}
+	
+	public static void addFilterValues(String name, String field, String operator, Object value, Object link){
+		if (varMap.containsKey(name)){
+			varMap.get(name).add(field);
+			varMap.get(name).add(operator);
+			varMap.get(name).add(value);
+			varMap.get(name).add(link);
+		}
+	}
+	
+	public static void addVariableValue(String name, Object value){
+		if (varMap.containsKey(name)){
+			varMap.get(name).add(value);
+		}
+	}
+	
 	public static Object getParamValue(NodeList params, String name, String type){
 		Object result = null;
 		int paramLen = params.getLength();
-		
+		Log.i("info", "paramLen "+paramLen);
 		for (int i=0; i<paramLen; i++){
 			Element element = (Element) params.item(i);
 			if ((element.getAttribute(ScriptTag.NAME).equals(name)) &&
@@ -619,11 +673,8 @@ public class Function {
 				}
 			}
 		}
+		Log.i("info", "pass here "+result);
 		return result;
-	}
-	
-	public static HashMap<String, ArrayList<Object>> getVariablesMap(){
-		return varMap;
 	}
 	
 	private static void setVariable(Element element){
@@ -706,10 +757,8 @@ public class Function {
 	
 	public static String getReturnValue(Element element){
 		String result = "";
-		Log.i("info", "element.getChildNodes().item(0).getNodeType() "+element.getChildNodes().getLength());
 		if (element.getChildNodes().getLength() > 0){
 			if (element.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE){
-				Log.i("info", "has text node");
 				result = element.getChildNodes().item(0).getNodeValue();
 			}
 		}

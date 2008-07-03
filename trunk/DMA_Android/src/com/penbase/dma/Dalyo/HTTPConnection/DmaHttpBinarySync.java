@@ -86,19 +86,19 @@ public class DmaHttpBinarySync {
 			System.arraycopy(data, codeStr.length()+1, result, 0, result.length);
 			if (syncType.equals("Import")){
 				if (!DatabaseAdapter.hasStartTransaction()){
-					DatabaseAdapter.startTransaction();
+					DatabaseAdapter.beginTransaction();
 				}
 				byte[] returnByte = ApplicationView.getDataBase().syncImportTable(result);
 				byte[] responsedata = createConnection(responseAction, returnByte);
 				String codeReportStr = getErrorCode(responsedata);
 				Log.i("info", "report code "+Integer.valueOf(codeReportStr));
 				if (Integer.valueOf(codeReportStr) == ErrorCode.OK){
-					DatabaseAdapter.validateTransaction();
+					DatabaseAdapter.commitTransaction();
 					wellDone = true;
 				}
 				else{
 					Log.i("info", "cancel transaction");
-					DatabaseAdapter.cancelTransaction();
+					DatabaseAdapter.rollbackTransaction();
 				}
 			}
 			else if (syncType.equals("Export")){

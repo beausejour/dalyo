@@ -49,8 +49,7 @@ public class NS_List {
 			}
 		}
 		Object value = getValue(params, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
-		Function.getVariablesMap().get(listName).add(value);
-		Log.i("info", "getvariablesMap "+Function.getVariablesMap().get(listName));
+		Function.addVariableValue(listName, value);
 	}
 	
 	private static Object getValue(NodeList params, String name, String type){
@@ -69,8 +68,8 @@ public class NS_List {
 						else if (element.getChildNodes().item(0).getNodeType() == Node.ELEMENT_NODE){
 							Element child = (Element)element.getChildNodes().item(0);
 							if (child.getNodeName().equals(ScriptTag.VAR)){
-								if (Function.getVariablesMap().get(child.getAttribute(ScriptTag.NAME)).size() > 1){
-									value = Function.getVariablesMap().get(child.getAttribute(ScriptTag.NAME)).get(1);
+								if (Function.getVariableValues(child.getAttribute(ScriptTag.NAME)).size() > 1){
+									value = Function.getVariableValue(child.getAttribute(ScriptTag.NAME));
 									Log.i("info", "list in getsize "+value);
 								}
 							}
