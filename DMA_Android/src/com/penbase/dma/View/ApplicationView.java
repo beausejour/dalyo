@@ -117,7 +117,8 @@ public class ApplicationView extends Activity {
 			if (child.getNodeName().equals(XmlTag.DESIGN_S_G)){
 				if (child.hasAttribute(XmlTag.DESIGN_S_G_OS)){
 					String name = child.getAttribute(XmlTag.DESIGN_S_G_OS);
-					Function.createFunction(name, null);
+					//Function.createFunction(name, null);
+					Function.createFunction(name);
 				}
 			}
 		}

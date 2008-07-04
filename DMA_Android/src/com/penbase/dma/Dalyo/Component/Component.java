@@ -6,6 +6,7 @@ import com.penbase.dma.Constant.XmlTag;
 import com.penbase.dma.Dalyo.Component.Custom.*;
 import com.penbase.dma.Dalyo.Component.Custom.Dataview.CustomLinearLayout;
 import com.penbase.dma.Dalyo.Component.Custom.Dataview.DataView;
+import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
 
 import android.content.Context;
@@ -260,7 +261,8 @@ public class Component{
 				@Override
 				public void onItemClick(AdapterView parent, View v, int position, long id){
 					((DataView)view).setCurrentPosition(position);
-					Form.getFunction().createFunction(funcName, null);
+					//Form.getFunction().createFunction(funcName, null);
+					Function.createFunction(funcName);
 				}
 			});
 		}
@@ -268,14 +270,16 @@ public class Component{
 			view.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View arg0) {
-					Form.getFunction().createFunction(funcName, null);
+					//Form.getFunction().createFunction(funcName, null);
+					Function.createFunction(funcName);
 				}
 			});
 		}
 	}
 	
 	public void setOnchangeFunction(String funcName, View view) {
-		Form.getFunction().createFunction(funcName, null);
+		//Form.getFunction().createFunction(funcName, null);
+		Function.createFunction(funcName);
 	}
 	
 	private Alignment getAlign(String align) {
@@ -370,7 +374,12 @@ public class Component{
 	}
 	
 	public void setText(String text) {
-		((TextView)getView()).setText(text);
+		if (text.equals("null")){
+			((TextView)getView()).setText("");
+		}
+		else{
+			((TextView)getView()).setText(text);
+		}
 	}
 	
 	public void setEnabled(boolean state) {
