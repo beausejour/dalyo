@@ -10,7 +10,6 @@ import com.penbase.dma.Dalyo.Component.Custom.TextZone;
 import com.penbase.dma.Dalyo.Function.Function;
 
 public class Form extends AbsoluteLayout{
-	private static Function function;
 	private String tableId;
 	
 	public Form(Context context){		
@@ -20,7 +19,8 @@ public class Form extends AbsoluteLayout{
 	}
 	
 	public void onLoad(String name){
-		Function.createFunction(name, null);
+		//Function.createFunction(name, null);
+		Function.createFunction(name);
 	}
 	
 	public void setTableId(String tableId){
@@ -59,9 +59,5 @@ public class Form extends AbsoluteLayout{
 				}
 			}
 		}
-	}
-	
-	public static Function getFunction(){
-		return function;
 	}
 }

@@ -1,60 +1,29 @@
 package com.penbase.dma.Dalyo.Function.Namespace;
 
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import android.util.Log;
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Function.Function;
 
 public class NS_Object {
-	public static Object ToNumeric(NodeList params){
-		return getValue(params);
+	public static Object ToNumeric(Element element){
+		return Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
 	}
 	
-	public static Integer ToInt(NodeList params){
-		if (String.valueOf(getValue(params)).indexOf(".") != -1){
-			return Double.valueOf(String.valueOf(getValue(params))).intValue();
+	public static Integer ToInt(Element element){
+		if (String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT)).indexOf(".") != -1){
+			return Double.valueOf(String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT))).intValue();
 		}
 		else{
-			return Integer.valueOf(String.valueOf(getValue(params)));
+			return Integer.valueOf(String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT)));
 		}
 	}
 	
-	public static Object ToRecord(NodeList params){
-		return getValue(params);
+	public static Object ToRecord(Element element){
+		return Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
 	}
 	
-	public static String ToString(NodeList params){
-		return String.valueOf(getValue(params));
-	}
-	
-	private static Object getValue(NodeList params){
-		Object value = null;
-		Element element = (Element) params.item(0);
-		if ((element.getNodeName().equals(ScriptTag.PARAMETER)) &&
-				(element.getAttribute(ScriptTag.NAME).equals(ScriptAttribute.PARAMETER_NAME_VALUE)) &&
-				(element.getAttribute(ScriptTag.TYPE).equals(ScriptAttribute.OBJECT))){
-			Log.i("info", "element has "+element.getChildNodes().getLength()+" children");
-			if (element.getChildNodes().getLength() == 1){
-				if (element.getChildNodes().item(0).getNodeType() == Node.ELEMENT_NODE){
-					Element child = (Element)element.getChildNodes().item(0);
-					if (child.getNodeName().equals(ScriptTag.CALL)){
-						Log.i("info", "toint call function "+child.getAttribute(ScriptTag.FUNCTION));
-						value = Function.returnTypeFunction(child);
-						Log.i("info", "value of toint "+value);
-					}
-					else if (child.getNodeName().equals(ScriptTag.VAR)){
-						value = Function.getVariableValue(child.getAttribute(ScriptTag.NAME));
-						Log.i("info", "get variable value in NS_Object "+value);
-					}
-				}
-				else if (element.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE){
-					value = element.getChildNodes().item(0).getNodeValue();
-				}
-			}
-		}
-		return value;
+	public static String ToString(Element element){
+		return String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT));
 	}
 }

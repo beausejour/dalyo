@@ -809,7 +809,7 @@ public class DatabaseAdapter {
 		else{
 			int filterSize = ((ArrayList<?>)filter).size();
 			int filterNb = filterSize / 4;
-			Log.i("info", "check how many filters "+filterNb);
+			Log.i("info", "check how many filters "+filterNb+" tables "+tables.toString()+" filter "+filter.toString());
 			for (int i=0; i<filterNb; i++){
 				//Link is considerated as AND
 				if (i == 0){
