@@ -15,16 +15,8 @@ public class NS_Database {
 	private static ArrayList tables;
 	private static Object filters;
 	
-	public static void StartTransaction(){
-		DatabaseAdapter.beginTransaction();
-	}
-	
 	public static void CancelTransaction(){
 		DatabaseAdapter.rollbackTransaction();
-	}
-	
-	public static void ValidateTransaction(){
-		DatabaseAdapter.commitTransaction();
 	}
 	
 	public static void Export(Element element){
@@ -37,7 +29,7 @@ public class NS_Database {
 		filters = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_FILTERS, ScriptAttribute.LIST);
 		Object faceless = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_FACELESS, ScriptAttribute.PARAMETER_TYPE_BOOLEAN);
 		if ((faceless == null) || (((Boolean)faceless).booleanValue())){
-			//display pregress dialog
+			//display progress dialog
 			importProgressDialog = ProgressDialog.show(Function.getContext(), "Please wait...", "Synchronizing application's data non uithread...", true, false);
 			new Thread(){
 				public void run() {
@@ -63,5 +55,13 @@ public class NS_Database {
 					ApplicationListView.getApplicationsInfo().get("Userpassword"),
 					tables, filters);
 		}
+	}
+	
+	public static void StartTransaction(){
+		DatabaseAdapter.beginTransaction();
+	}
+	
+	public static void ValidateTransaction(){
+		DatabaseAdapter.commitTransaction();
 	}
 }

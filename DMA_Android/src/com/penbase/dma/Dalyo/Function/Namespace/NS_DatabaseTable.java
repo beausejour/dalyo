@@ -13,6 +13,18 @@ import com.penbase.dma.Dalyo.Database.Record;
 import com.penbase.dma.Dalyo.Function.Function;
 
 public class NS_DatabaseTable {
+	public static Integer Count(Element element){
+		String tableId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE));
+		Object filter = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FILTER, ScriptAttribute.FILTER);
+		return Record.countRecord(tableId, filter);
+	}
+	
+	public static void Clear(Element element){
+		String tableId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE));
+		Object filter = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FILTER, ScriptAttribute.FILTER);
+		DatabaseAdapter.clearTable(tableId);
+	}
+	
 	public static HashMap<Object, Object> CreateNewRecord(Element element){
 		String tableId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE));
 		ArrayList<Object> fieldsList = (ArrayList<Object>) Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_FIELDS, ScriptAttribute.LIST);
@@ -34,12 +46,6 @@ public class NS_DatabaseTable {
 		ArrayList<Object> fieldList = (ArrayList<Object>) Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_FIELDS, ScriptAttribute.LIST);
 		ArrayList<Object> valueList = (ArrayList<Object>) Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUES, ScriptAttribute.LIST);
 		Record.editRecord(tableId, record, fieldList, valueList);
-	}
-	
-	public static void Clear(Element element){
-		String tableId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE));
-		Object filter = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FILTER, ScriptAttribute.FILTER);
-		DatabaseAdapter.clearTable(tableId);
 	}
 	
 	public static Object GetFieldValue(Element element){
@@ -87,15 +93,6 @@ public class NS_DatabaseTable {
 		}
 		Log.i("info", "records "+records);
 		return records;
-	}
-	
-	public static Integer Count(Element element){
-		String tableId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE));
-		Object filter = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FILTER, ScriptAttribute.FILTER);
-		ArrayList<String> tables = new ArrayList<String>();
-		tables.add(tableId);
-		Cursor cursor = DatabaseAdapter.selectQuery(tables, null, filter);
-		return cursor.count();
 	}
 	
 	private static ArrayList<HashMap<Object, Object>> getRecords(String tableId, Object filter){

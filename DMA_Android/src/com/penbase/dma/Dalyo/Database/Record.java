@@ -37,13 +37,6 @@ public class Record {
 		}
 	}
 	
-	public Record(String tableId){}
-	
-	public HashMap<Object, Object> getRecord(){
-		Log.i("info", "getrecord "+currentRecord);
-		return currentRecord;
-	}
-	
 	public static void editRecord(String tableId, HashMap<Object, Object> record, ArrayList<Object> fList, ArrayList<Object> vList){
 		ArrayList<Integer> fieldList = new ArrayList<Integer>();
 		ArrayList<Object> valueList = new ArrayList<Object>();
@@ -62,5 +55,17 @@ public class Record {
 	
 	public static void deleteRecord(String tableId, HashMap<Object, Object> record){
 		DatabaseAdapter.deleteQuery(tableId, record);
+	}
+	
+	public HashMap<Object, Object> getRecord(){
+		Log.i("info", "getrecord "+currentRecord);
+		return currentRecord;
+	}
+	
+	public static int countRecord(String table, Object filter){
+		ArrayList<String> tables = new ArrayList<String>();
+		tables.add(table);
+		Cursor cursor = DatabaseAdapter.selectQuery(tables, null, filter);
+		return cursor.count();
 	}
 }

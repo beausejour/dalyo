@@ -16,7 +16,6 @@ import com.penbase.dma.Dalyo.Function.Namespace.*;
 public class Function {
 	private static Document behaviorDocument;
 	private static Context context;
-	//private static HashMap<String, ArrayList<Object>> varsMap;
 	private static HashMap<String, Object> varsMap;
 	private static HashMap<String, ArrayList<String>> funcsMap;
 	private static boolean first = true;
@@ -24,7 +23,6 @@ public class Function {
 	
 	public Function(Context c, Document document){
 		context = c;
-		//varsMap = new HashMap<String, ArrayList<Object>>();
 		varsMap = new HashMap<String, Object>();
 		funcsMap = new HashMap<String, ArrayList<String>>();
 		parametersMap = new HashMap<String, String>();
@@ -86,9 +84,9 @@ public class Function {
 	}
 	
 	//Compare the left value and the right value
-	private static boolean checkCondition(Object left, String operator, Object right){
+	private static boolean checkCondition(Object left, Object operator, Object right){
 		boolean result = false;
-		switch (Integer.valueOf(operator)){
+		switch (Integer.valueOf(String.valueOf(operator))){
 			case ScriptAttribute.EQUALS:
 				if ((left instanceof Integer) || (right instanceof Integer)){
 					result = (Integer.valueOf(String.valueOf(left)) == (Integer.valueOf(String.valueOf(right))));
@@ -127,64 +125,9 @@ public class Function {
 				for (int k=0; k<conditionsLen; k++){
 					Element condition = (Element)conditions.item(k);
 					if (condition.getNodeName().equals(ScriptTag.CONDITION)){
-						NodeList conditionchildren = condition.getChildNodes();
-						int conditionchildrenLen = conditionchildren.getLength();
-						Object left = null;
-						String operator = null;
-						Object right = null;
-						for (int l=0; l<conditionchildrenLen; l++){
-							Element conditionChild = (Element)conditionchildren.item(l);
-							if (conditionChild.getNodeName().equals(ScriptTag.LEFT)){
-								NodeList leftchildren = conditionChild.getChildNodes();
-								int leftchildrenLen = leftchildren.getLength();
-								for (int m=0; m<leftchildrenLen; m++){
-									if (leftchildren.item(m).getNodeType() == Node.ELEMENT_NODE){
-										Element leftChild = (Element) leftchildren.item(m);
-										if (leftChild.getNodeName().equals(ScriptTag.CALL)){
-											left = distributeCall(leftChild);
-											Log.i("info", "left return value "+left);
-										}
-										else if ((leftChild.getNodeName().equals(ScriptTag.VAR)) &&
-												leftChild.hasAttribute(ScriptTag.NAME)){
-											left = getVariableValue(leftChild); 
-											Log.i("info", "left variable "+left);
-										}
-									}
-									else if (leftchildren.item(m).getNodeType() == Node.TEXT_NODE){
-										left = leftchildren.item(m).getNodeValue();
-										Log.i("info", "left is a value "+right);
-									}
-								}
-							}
-							else if (conditionChild.getNodeName().equals(ScriptTag.OPERATOR)){
-								operator = conditionChild.getChildNodes().item(0).getNodeValue();
-								Log.i("info", "operator "+operator);
-							}
-							else if (conditionChild.getNodeName().equals(ScriptTag.RIGHT)){
-								NodeList rightchildren = conditionChild.getChildNodes();
-								int rightchildrenLen = rightchildren.getLength();
-								Log.i("info", "right children length "+rightchildrenLen);
-								for (int m=0; m<rightchildrenLen; m++){
-									if (rightchildren.item(m).getNodeType() == Node.ELEMENT_NODE){
-										Element rightChild = (Element) rightchildren.item(m);
-										Log.i("info", "rightchild node type "+rightChild.getNodeType()+" it has child "+
-												rightChild.getChildNodes().getLength());
-										if (rightChild.getNodeName().equals(ScriptTag.KEYWORD)){
-											right = getKeyWord(rightChild);
-											Log.i("info", "right has keyword "+right);
-										}
-										else if (rightChild.getNodeName().equals(ScriptTag.VAR)){
-											right = getVariableValue(rightChild);
-											Log.i("info", "right return value "+right);
-										}
-									}
-									else if (rightchildren.item(m).getNodeType() == Node.TEXT_NODE){
-										right = rightchildren.item(m).getNodeValue();
-										Log.i("info", "right is a value "+right);
-									}
-								}
-							}
-						}
+						Object left = getValue(condition, ScriptTag.LEFT, null, null);
+						Object operator = getValue(condition, ScriptTag.OPERATOR, null, null);
+						Object right = getValue(condition, ScriptTag.RIGHT, null, null);
 						checkList[k] = checkCondition(left, operator, right); 
 					}
 				}
@@ -286,7 +229,6 @@ public class Function {
 			for (int i=0; i<nodeLen; i++){
 				Element element = (Element) nodeList.item(i);
 				if (element.getNodeName().equals(ScriptTag.SET)){
-					Log.i("info", "set variable");
 					setVariable(element);
 				}
 				else if (element.getNodeName().equals(ScriptTag.CALL)){
@@ -295,12 +237,9 @@ public class Function {
 				}
 				else if (element.getNodeName().equals(ScriptTag.PARAMETER)){
 					//save parameters
-					Log.i("info", "save params");
 					String paramName = funcElement.getAttribute(ScriptTag.NAME)+"_"+element.getAttribute(ScriptTag.NAME);
 					if (parametersMap.containsKey(paramName)){
-						Log.i("info", "add params in varmap");
 						varsMap.put(paramName, parametersMap.get(paramName));
-						Log.i("info", "varmap has params "+varsMap.toString());
 					}
 				}
 				else if (element.getNodeName().equals(ScriptTag.IF)){
@@ -611,7 +550,6 @@ public class Function {
 		 * Each varable has a list of value, the two first values are its type and its default value,
 		 * for the list, its added values which start at the third position
 		 * */
-		Log.i("info", "element childnodes "+element.getChildNodes().getLength());
 		if (varsMap.containsKey(element.getAttribute(ScriptTag.NAME))){
 			varsMap.remove(element.getAttribute(ScriptTag.NAME));
 		}
@@ -623,24 +561,7 @@ public class Function {
 			varsMap.put(element.getAttribute(ScriptTag.NAME), element.getChildNodes().item(0).getNodeValue());	
 		}
 		else{
-			Object value = null;
-			NodeList children = element.getChildNodes();
-			int childrenLen = children.getLength();
-			if (childrenLen == 1){
-				Element child = (Element) children.item(0);
-				if (child.getNodeName().equals(ScriptTag.CALL)){
-					Log.i("info", "call function "+child.getAttribute(ScriptTag.FUNCTION)+" in setvariable");
-					value = distributeCall(child);
-					Log.i("info", "value in call function "+value);
-				}
-				else if (child.getNodeName().equals(ScriptTag.ELEMENT)){
-					Log.i("info", "set element id "+child.getAttribute(ScriptTag.ELEMENT_ID));
-					value = child.getAttribute(ScriptTag.ELEMENT_ID);
-				}
-				else if (child.getNodeName().equals(ScriptTag.KEYWORD)){
-					value = getKeyWord(child);
-				}
-			}
+			Object value = getValue(element, ScriptTag.SET, null, null);
 			Log.i("info", "prepare to add "+element.getAttribute(ScriptTag.NAME)+" in the var list its value is "+value);
 			varsMap.put(element.getAttribute(ScriptTag.NAME), value); 
 		}
@@ -699,7 +620,33 @@ public class Function {
 		int itemsLen = element.getChildNodes().getLength();
 		for (int i=0; i<itemsLen; i++){
 			Element child = (Element) element.getChildNodes().item(i);
-			if ((child.getNodeName().equals(tag)) &&
+			Log.i("info", "child item "+i+" name "+child.getNodeName()+" parent name "+element.getNodeName());
+			//If condition elements and set variables
+			if ((child.getNodeName().equals(tag)) && (name == null) && (type == null)){
+				if (child.getChildNodes().getLength() == 1){
+					if (child.getChildNodes().item(0).getNodeType() == Node.ELEMENT_NODE){
+						Element item = (Element) child.getChildNodes().item(0);
+						if (item.getNodeName().equals(ScriptTag.CALL)){
+							value = Function.distributeCall(item);
+						}
+						else if (item.getNodeName().equals(ScriptTag.KEYWORD)){
+							value = Function.getKeyWord(item);
+						}
+						else if (item.getNodeName().equals(ScriptTag.VAR)){
+							//use only one format to save all types of variale's value
+							value = getVariableValue(item);
+						}
+						else if (item.getNodeName().equals(ScriptTag.ELEMENT)){
+							value = item.getAttribute(ScriptTag.ELEMENT_ID);
+						}
+					}
+					else if (child.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE){
+						value = child.getChildNodes().item(0).getNodeValue();
+					}
+				}
+			}
+			//Function parameters
+			else if ((child.getNodeName().equals(tag)) &&
 					(child.getAttribute(ScriptTag.NAME).equals(name)) &&
 					(child.getAttribute(ScriptTag.TYPE).equals(type))){
 				if (child.getChildNodes().getLength() == 1){

@@ -9,6 +9,7 @@ import com.penbase.dma.View.ApplicationView;
 
 public class NS_ComponentCombobox {
 	public static void Refresh(Element element){
+		//order and distinct are not implemented yet
 		String componentId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT));
 		Object filter = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FILTER, ScriptAttribute.FILTER);
 		Object order = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.ORDER, ScriptAttribute.ORDER);

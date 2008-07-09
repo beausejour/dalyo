@@ -28,7 +28,6 @@ public class DatabaseAdapter {
 	private final Document dbDocument;
 	private final Context context;
 	private static SQLiteDatabase sqlite = null;
-	//private int DbId;
 	private static HashMap<String, ArrayList<String>> tablesMap;
 	private static HashMap<String, String> fieldsMap;
 	private static HashMap<String, String> fieldsPKMap;
@@ -209,8 +208,8 @@ public class DatabaseAdapter {
 						}
 					}
 					
-					else if ((field.hasAttribute(XmlTag.FIELD_FORIEIGNTABLE)) 
-							&& (field.hasAttribute(XmlTag.FIELD_FORIEIGNFIELD))){
+					else if ((field.hasAttribute(XmlTag.FIELD_FORIEIGNTABLE)) &&
+							(field.hasAttribute(XmlTag.FIELD_FORIEIGNFIELD))){
 						String foreignTableId = field.getAttribute(XmlTag.FIELD_FORIEIGNTABLE);
 						String foreignFieldId = field.getAttribute(XmlTag.FIELD_FORIEIGNFIELD);
 						fieldTypeValue += foreignTableId+" "+foreignFieldId;

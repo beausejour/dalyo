@@ -9,16 +9,6 @@ import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.View.ApplicationView;
 
 public class NS_ComponentDataview {
-	public static void Refresh(Element element){
-		String componentId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT));
-		Object filter = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FILTER, ScriptAttribute.FILTER);
-		if (filter != null){
-			Log.i("info", "filter in dataview refresh "+filter.toString());	
-		}
-		Object order = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.ORDER, ScriptAttribute.ORDER);
-		ApplicationView.refreshComponent(componentId, filter);
-	}
-	
 	public static HashMap<Object, Object> GetSelectedRecord(Element element){
 		String componentId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT));
 		HashMap<Object, Object> record = null;
@@ -27,5 +17,16 @@ public class NS_ComponentDataview {
 			Log.i("info", "record in getselectedrecord "+record);
 		}
 		return record;
+	}
+	
+	public static void Refresh(Element element){
+		String componentId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT));
+		Object filter = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FILTER, ScriptAttribute.FILTER);
+		if (filter != null){
+			Log.i("info", "filter in dataview refresh "+filter.toString());	
+		}
+		//Order is not implemented yet
+		Object order = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.ORDER, ScriptAttribute.ORDER);
+		ApplicationView.refreshComponent(componentId, filter);
 	}
 }
