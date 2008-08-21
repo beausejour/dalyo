@@ -24,15 +24,18 @@ import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
 import com.penbase.dma.View.ApplicationListView;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.telephony.TelephonyProperties;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-import android.view.Menu.Item;
+import android.view.MenuItem;
 import android.view.View.OnClickListener;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
@@ -43,15 +46,17 @@ public class Dma extends Activity implements OnClickListener{
 	private TextView tx_login;
 	private TextView tx_password;
 	private CheckBox cb_remember_me;
+	private AlertDialog alertDialog;
+	private ProgressDialog loadApps;
 	
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		setContentView(R.layout.login_layout);
-		SharedPreferences settings = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);	
+		SharedPreferences settings = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 		boolean rememberMe = settings.getBoolean("RememberMe", false);
-		Log.v("Dalyo", "start = " + Boolean.toString(rememberMe));
-		
+		alertDialog = new AlertDialog.Builder(this).create();
+		alertDialog.setTitle("Error");
 		if (!rememberMe){
 			setContentView(R.layout.login_layout);
 			Button bt = (Button) findViewById(R.id.ok);
@@ -62,10 +67,9 @@ public class Dma extends Activity implements OnClickListener{
 		}
 		else{
 			String xml = settings.getString("ApplicationList", null);
-			Log.i("info", "remember me");
 			GetListApplicationFromXml(xml);
-			//this.finish();
-			startSubActivity(new Intent(this, ApplicationListView.class), 0);
+			this.finish();
+			startActivityForResult(new Intent(this, ApplicationListView.class), 0);
 		}
 	}
 
@@ -113,44 +117,73 @@ public class Dma extends Activity implements OnClickListener{
 	
 	@Override
 	public void onClick(View arg0){
+		Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
 		if ("".equals(tx_login.getText().toString())
-				|| "".equals(tx_password.getText().toString())){
-			showAlert("Alert", 1,"Your credential!", "OK", false);
+				&& "".equals(tx_password.getText().toString())){
+			findViewById(R.id.textLogin).startAnimation(shake);
+	        findViewById(R.id.textePasswd).startAnimation(shake);
+	        return;
+		}
+		else if ("".equals(tx_login.getText().toString())) {
+			findViewById(R.id.textLogin).startAnimation(shake);
+			return;
+		}
+		else if ("".equals(tx_password.getText().toString())) {
+			findViewById(R.id.textePasswd).startAnimation(shake);
 			return;
 		}
 		DmaHttpClient client = new DmaHttpClient();
-		String rep = client.Authentication(tx_login.getText().toString(),
+		final String rep = client.Authentication(tx_login.getText().toString(),
 				tx_password.getText().toString());
 		if (rep == null){
-			showAlert("Alert", 1,"Error : " + client.GetLastError()+" check your username or password", "OK", false);
+			alertDialog.setMessage("Check your username or password!");
+			alertDialog.show();
 		}
 		else{
-			Log.i("info", "rewrite pref file");
+			loadApps = ProgressDialog.show(this, "Please wait...", "Loading application list...", true, false);
+			new Thread(){
+				public void run() {
+					try {
+						SharedPreferences.Editor editorPrefs = getSharedPreferences(Dma.PREFS_NAME, MODE_PRIVATE).edit();
+						editorPrefs.putBoolean("RememberMe", cb_remember_me.isChecked());
+						editorPrefs.putString("Username", tx_login.getText().toString());
+						editorPrefs.putString("Userpassword", tx_password.getText().toString());
+						editorPrefs.putString("ApplicationList", rep);
+						editorPrefs.commit();
+						Dma.GetListApplicationFromXml(rep);
+					}
+					catch(Exception e)
+					{e.printStackTrace();}
+					loadApps.dismiss();
+					Dma.this.finish();
+					startActivityForResult(new Intent(Dma.this, ApplicationListView.class), 0);
+				}
+			}.start();
+			
 			// save user info.
-			SharedPreferences.Editor editorPrefs = getSharedPreferences(Dma.PREFS_NAME, MODE_PRIVATE).edit();
+			/*SharedPreferences.Editor editorPrefs = getSharedPreferences(Dma.PREFS_NAME, MODE_PRIVATE).edit();
 			editorPrefs.putBoolean("RememberMe", cb_remember_me.isChecked());
 			editorPrefs.putString("Username", tx_login.getText().toString());
 			editorPrefs.putString("Userpassword", tx_password.getText().toString());
 			editorPrefs.putString("ApplicationList", rep);
 			editorPrefs.commit();
-			
 			Dma.GetListApplicationFromXml(rep);
 			this.finish();
-			startSubActivity(new Intent(this, ApplicationListView.class), 0);
+			startActivityForResult(new Intent(this, ApplicationListView.class), 0);*/
 		}
 	}
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		boolean r = super.onCreateOptionsMenu(menu);
-		menu.add(0, Menu.FIRST, getResources().getString(R.string.about));
-		menu.add(0, Menu.FIRST+1, getResources().getString(R.string.quit));
+		menu.add("About");
+		menu.add("Quit");
 		return r;
 	}
 
-	@Override
-	public boolean onMenuItemSelected(int featureId, Item item) {
-		switch (item.getId()){
+	//@Override
+	public boolean onOptionsItemSelected(int featureId, MenuItem item) {
+		switch (item.getItemId()){
 			case Menu.FIRST:
 				return true;
 			case Menu.FIRST+1:
@@ -160,9 +193,8 @@ public class Dma extends Activity implements OnClickListener{
 	}
 	
 	public static String getDeviceID(){
-		String imei = android.os.SystemProperties.get(TelephonyProperties.PROPERTY_IMEI,
-		"-1");
-		return "defr";
+		String imei = TelephonyManager.getDefault().getDeviceId();
+		return "ffffffffsssssss";
 		//return imei;
 	}
 	
@@ -172,6 +204,9 @@ public class Dma extends Activity implements OnClickListener{
 	}
 	
 	public void errorDialog(String message){
-		new AlertDialog.Builder(this).setMessage(message).setTitle("Error").show();
+		AlertDialog dialog = new AlertDialog.Builder(this).create();
+		dialog.setMessage(message);
+		dialog.setTitle("Error");
+		dialog.show();
 	}
 }

@@ -3,7 +3,6 @@ package com.penbase.dma.View;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.w3c.dom.*;
-
 import com.penbase.dma.R;
 import com.penbase.dma.Constant.XmlTag;
 import com.penbase.dma.Dalyo.LoadingThread;
@@ -15,12 +14,11 @@ import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.os.DeadObjectException;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.*;
-import android.view.Menu.Item;
+import android.view.MenuItem;
 import android.widget.*;
 import android.graphics.Color;
 
@@ -28,9 +26,7 @@ public class ApplicationView extends Activity {
 	private static ApplicationView applicationView;	
 	private static DmaHttpClient client;
 	private static HashMap<String, Form> layoutsMap;
-	private static HashMap<String, String> onLoadFuncMap;
-	private static final int BACK_ID = Menu.FIRST;
-	private static final int NEXT_ID = Menu.FIRST+1;	
+	private static HashMap<String, String> onLoadFuncMap;	
 	private static Document designDoc = null;
 	private Component component;
 	private static Document behaviorDocument = null;
@@ -84,9 +80,7 @@ public class ApplicationView extends Activity {
 
 	public static void prepareData(int position, String login, String pwd){
 		client = new DmaHttpClient();
-		Log.i("info", "client create");
 		client.checkDownloadFile(position, login, pwd);
-		Log.i("info", "client check files");
 		clientLogin = login;
 		behaviorDocument = client.getBehavior(ApplicationListView.getApplicationsInfo().get("AppId"),
 				ApplicationListView.getApplicationsInfo().get("AppVer"),
@@ -117,7 +111,6 @@ public class ApplicationView extends Activity {
 			if (child.getNodeName().equals(XmlTag.DESIGN_S_G)){
 				if (child.hasAttribute(XmlTag.DESIGN_S_G_OS)){
 					String name = child.getAttribute(XmlTag.DESIGN_S_G_OS);
-					//Function.createFunction(name, null);
 					Function.createFunction(name);
 				}
 			}
@@ -134,7 +127,6 @@ public class ApplicationView extends Activity {
 			Form form = new Form(this);
 			Element formElt = (Element) formsList.item(i);
 			String formId = formElt.getAttribute(XmlTag.DESIGN_F_ID);
-			Log.i("info", "formId "+formId);
 			if (!formElt.getAttribute(XmlTag.COMPONENT_COMMON_TABLEID).equals("")){
 				form.setTableId(formElt.getAttribute(XmlTag.COMPONENT_COMMON_TABLEID));
 			}
@@ -233,7 +225,6 @@ public class ApplicationView extends Activity {
 									acolumn.add(column.getAttribute(XmlTag.COMPONENT_DATAVIEW_COLUMN_HEADER));
 									acolumn.add(column.getAttribute(XmlTag.COMPONENT_COMMON_PWIDTH));
 									acolumn.add(column.getAttribute(XmlTag.COMPONENT_COMMON_LWIDTH));
-									Log.i("info", "column.getAttribute(XmlTag.COMPONENT_DATAVIEW_COLUMN_CALC) "+column.getAttribute(XmlTag.COMPONENT_DATAVIEW_COLUMN_CALC));
 									if (column.getAttribute(XmlTag.COMPONENT_DATAVIEW_COLUMN_CALC).equals("true")){
 										if (column.hasAttribute(XmlTag.EVENT_ONCALCULATE)){
 											onCalculateMap.put(k, column.getAttribute(XmlTag.EVENT_ONCALCULATE));
@@ -252,7 +243,6 @@ public class ApplicationView extends Activity {
 					else if ((element.getNodeName().equals(XmlTag.COMPONENT_DATEFIELD)) ||
 							(element.getNodeName().equals(XmlTag.COMPONENT_TIMEFIELD))){
 						if (element.hasAttribute(XmlTag.COMPONENT_COMMON_VALUE)){
-							Log.i("info", "set defaultvalue "+element.getAttribute(XmlTag.COMPONENT_COMMON_VALUE));
 							component.setDateTimeValue(element.getAttribute(XmlTag.COMPONENT_COMMON_VALUE));
 						}
 					}
@@ -297,27 +287,27 @@ public class ApplicationView extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		boolean result = super.onCreateOptionsMenu(menu);
-		menu.add(0, BACK_ID, R.string.back);
-		menu.add(0, NEXT_ID, R.string.next);
+		menu.add("Quit");
 		return result;
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(Item item) {
-		switch (item.getId()){
-			case BACK_ID:
-				//setContentView(layoutList.get(0));
-				return true;
-			case NEXT_ID:
-				//setContentView(layoutList.get(1));
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()){
+			case 0:
+				quit();
 				return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
 
+	private void quit() {
+		this.finish();
+	}
+	
 	public static final int getOrientation(){
 		int orientation = 0;
-		try{
+		/*try{
 			if (windowService.getOrientation() == 0){
 				orientation = 0;
 			}
@@ -327,7 +317,7 @@ public class ApplicationView extends Activity {
 		}
 		catch (DeadObjectException e){
 			e.printStackTrace();
-		}
+		}*/
 		return orientation;
 	}
 
@@ -372,6 +362,5 @@ public class ApplicationView extends Activity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		Log.i("info", "ondestroy");
 	}
 }

@@ -165,11 +165,7 @@ public class Function {
 					int elsechildrenLen = elsechildren.getLength();
 					for (int k=0; k<elsechildrenLen; k++){
 						Element elseChild = (Element) elsechildren.item(k);
-						if ((elseChild.getNodeName().equals(ScriptTag.CALL)) &&
-								(elseChild.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NEWRECORD))){
-							distributeCall(elseChild);
-						}
-						else if (elseChild.getNodeName().equals(ScriptTag.CALL)){
+						if (elseChild.getNodeName().equals(ScriptTag.CALL)){
 							distributeCall(elseChild);
 						}
 						else if (elseChild.getNodeName().equals(ScriptTag.SET)){
@@ -561,9 +557,12 @@ public class Function {
 			varsMap.put(element.getAttribute(ScriptTag.NAME), element.getChildNodes().item(0).getNodeValue());	
 		}
 		else{
-			Object value = getValue(element, ScriptTag.SET, null, null);
-			Log.i("info", "prepare to add "+element.getAttribute(ScriptTag.NAME)+" in the var list its value is "+value);
-			varsMap.put(element.getAttribute(ScriptTag.NAME), value); 
+			Log.i("info", "element "+element.getNodeName());
+			if (element.getChildNodes().item(0).getNodeName().equals(ScriptTag.CALL)) {
+				Object value = distributeCall((Element) element.getChildNodes().item(0));
+				Log.i("info", "prepare to add "+element.getAttribute(ScriptTag.NAME)+" in the var list its value is "+value);
+				varsMap.put(element.getAttribute(ScriptTag.NAME), value);				
+			}
 		}
 	}
 
@@ -620,13 +619,13 @@ public class Function {
 		int itemsLen = element.getChildNodes().getLength();
 		for (int i=0; i<itemsLen; i++){
 			Element child = (Element) element.getChildNodes().item(i);
-			Log.i("info", "child item "+i+" name "+child.getNodeName()+" parent name "+element.getNodeName());
 			//If condition elements and set variables
 			if ((child.getNodeName().equals(tag)) && (name == null) && (type == null)){
 				if (child.getChildNodes().getLength() == 1){
 					if (child.getChildNodes().item(0).getNodeType() == Node.ELEMENT_NODE){
 						Element item = (Element) child.getChildNodes().item(0);
 						if (item.getNodeName().equals(ScriptTag.CALL)){
+							Log.i("info", "set var call "+item.getNodeName());
 							value = Function.distributeCall(item);
 						}
 						else if (item.getNodeName().equals(ScriptTag.KEYWORD)){

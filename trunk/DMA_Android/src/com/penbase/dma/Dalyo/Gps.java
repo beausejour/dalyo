@@ -17,17 +17,20 @@ public class Gps{
 		this.context = c;
 		providerName = "gps";
 		locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-		List<LocationProvider> providers = locationManager.getProviders();
+		//List<LocationProvider> providers = locationManager.getProviders();
+		List<String> providers = locationManager.getAllProviders();
         for (int i=0; i<providers.size(); i++){
-        	if (providers.get(i).getName().equals(providerName)){
+        	/*if (providers.get(i).getName().equals(providerName)){
         		hasProvider = true;
-        	}
+        	}*/
         }
 	}
 	
 	public int GetStatus(){
 		if (hasProvider){
-			return locationManager.getProviderStatus(providerName);
+			//return locationManager.getProviderStatus(providerName);
+			//return locationManager.getProvider(providerName);
+			return 1;
 		}
 		else{
 			return 0;
@@ -35,7 +38,8 @@ public class Gps{
 	}
 	
 	public Location getLocation(){
-		return locationManager.getCurrentLocation(providerName);
+		//return locationManager.getCurrentLocation(providerName);
+		return locationManager.getLastKnownLocation(providerName);
 	}
 	
 	public double getLogitude(Location location){

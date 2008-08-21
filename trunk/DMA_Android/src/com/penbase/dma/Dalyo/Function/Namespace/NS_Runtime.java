@@ -11,7 +11,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
-import android.view.UIThreadUtilities;
+//import android.view.UIThreadUtilities;
 
 public class NS_Runtime {
 	private static boolean result = false;
@@ -45,7 +45,7 @@ public class NS_Runtime {
 		}
 
 		if (showProgress){
-			if (showen){
+			/*if (showen){
 				if (UIThreadUtilities.isUIThread(ApplicationView.getLayoutsMap().get(ApplicationView.getCurrentFormId()))){
 					showen = false;
 				}
@@ -70,8 +70,8 @@ public class NS_Runtime {
 						}.start();
 					}
 				});
-			}
-			else{
+			}*/
+			/*else{
 				syncProgressDialog = ProgressDialog.show(Function.getContext(), "Please wait...", "Synchronizing application's data non uithread...", true, false);
 				new Thread(){
 					public void run() {
@@ -88,7 +88,23 @@ public class NS_Runtime {
 						syncProgressDialog.dismiss();
 					}
 				}.start();
-			}
+			}*/
+			syncProgressDialog = ProgressDialog.show(Function.getContext(), "Please wait...", "Synchronizing application's data non uithread...", true, false);
+			new Thread(){
+				public void run() {
+					try {
+						result = ApplicationView.getCurrentClient().launchImport(
+								ApplicationListView.getApplicationsInfo().get("AppId"),
+								ApplicationListView.getApplicationsInfo().get("DbId"), 
+								ApplicationListView.getApplicationsInfo().get("Username"),
+								ApplicationListView.getApplicationsInfo().get("Userpassword"));
+						showen = true;
+					}
+					catch(Exception e)
+					{e.printStackTrace();}
+					syncProgressDialog.dismiss();
+				}
+			}.start();
 			return result;
 		}
 		else{

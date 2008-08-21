@@ -22,6 +22,7 @@ public class CustomLinearLayout extends LinearLayout {
 		this.widthList = wl;
 		
 		if (isHeader){
+			Log.i("info", "isheader");
 			for (int i=0; i<dataList.size(); i++){
 				CustomTextView ctv = new CustomTextView(context);
 				ctv.setText(dataList.get(i));
@@ -31,13 +32,14 @@ public class CustomLinearLayout extends LinearLayout {
 				int width = Integer.valueOf(widthList.get(i));
 				this.addView(ctv, new LinearLayout.LayoutParams(width, LayoutParams.WRAP_CONTENT));
 			}
-			setFocusable(false);
-			setFocusableInTouchMode(false);
-			setClickable(false);
-			setSelected(false);
+			//setFocusable(false);
+			//setFocusableInTouchMode(false);
+			//setClickable(false);
+			//setSelected(false);
 			setEnabled(false);
 		}
 		else{
+			Log.i("info", "isheader else");
 			for (int i=0; i<dataList.size(); i++){
 				CustomTextView ctv = new CustomTextView(context);
 				ctv.setText(dataList.get(i));
@@ -47,8 +49,11 @@ public class CustomLinearLayout extends LinearLayout {
 				//this.addView(ctv, new LinearLayout.LayoutParams(width, LayoutParams.WRAP_CONTENT));
 				this.addView(ctv, new LinearLayout.LayoutParams(width, 50));
 			}
-			setFocusable(true);
-			setFocusableInTouchMode(true);
+			//setFocusable(true);
+			//setFocusableInTouchMode(true);
+			//setClickable(true);
+			//setSelected(true);
+			setEnabled(true);
 		}
 	}	
 	

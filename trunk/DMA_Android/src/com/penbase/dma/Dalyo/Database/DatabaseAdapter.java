@@ -51,7 +51,28 @@ public class DatabaseAdapter {
 	}
 	
 	private void createDatabase(String database) throws SQLException{
-		try{
+		if (!databaseExists(database)){
+			Log.i("info", "the database doesn't exist");
+			sqlite = context.openOrCreateDatabase(database, 0, null);
+			/*context.createDatabase(database, 1, 0, null);
+			sqlite = context.openDatabase(database, null);*/
+			createTable();
+		}
+		else if (!checkDatabaseExists()){
+			Log.i("info", "the database isn't the same");
+			deleteDatabase(database);
+			/*context.createDatabase(database, 1, 0, null);
+			sqlite = context.openDatabase(database, null);*/
+			sqlite = context.openOrCreateDatabase(database, 0, null);
+			createTable();
+		}
+		else{
+			Log.i("info", "the database have nothing to change");
+			/*context.createDatabase(database, 1, 0, null);
+			sqlite = context.openDatabase(database, null);*/
+			sqlite = context.openOrCreateDatabase(database, 0, null);
+		}
+		/*try{
 			if (!databaseExists(database)){
 				Log.i("info", "the database doesn't exist");
 				context.createDatabase(database, 1, 0, null);
@@ -72,7 +93,7 @@ public class DatabaseAdapter {
 			}
 		}
 		catch (FileNotFoundException e){
-			e.printStackTrace();}
+			e.printStackTrace();}*/
 	}
 	
 	private boolean databaseExists(String database){
@@ -347,10 +368,10 @@ public class DatabaseAdapter {
 			String table = DatabaseField.TABLE+key;
 			String selection = "STATE != "+DatabaseField.SYNCHRONIZED;
 			Cursor cursor = sqlite.query(table, null, selection, null, null, null, null);
-			if (cursor.count() > 0){
-				int cursorCount = cursor.count();
+			if (cursor.getCount() > 0){
+				int cursorCount = cursor.getCount();
 				ArrayList<HashMap<Object, Object>> records = new ArrayList<HashMap<Object, Object>>();
-				cursor.first();
+				cursor.moveToFirst();
 				for (int i=0; i<cursorCount; i++){
 					HashMap<Object, Object> record = new HashMap<Object, Object>();
 					String[] columns = cursor.getColumnNames();
@@ -359,7 +380,7 @@ public class DatabaseAdapter {
 						record.put(columns[column], getCursorValue(cursor, columns[column]));
 					}
 					records.add(record);
-					cursor.next();
+					cursor.moveToNext();
 				}
 				tidMap.put(key, records);
 				tableNbInt += 1;
@@ -510,7 +531,7 @@ public class DatabaseAdapter {
 	private void insertValues(int tableId, ArrayList<Integer> fieldsList, ArrayList<Object> record){
 		Log.i("info", "add table value "+DatabaseField.TABLE+tableId);
 		Cursor cursorAllRows = selectQuery(String.valueOf(tableId), null, null);
-		int newId = cursorAllRows.count()+1;
+		int newId = cursorAllRows.getCount()+1;
 		String idValue = tableId+""+newId;
 		int fieldsNb = fieldsList.size();
 		String fields = "("+DatabaseField.ID+tableId+", "+DatabaseField.GID+tableId+", "+DatabaseField.STATE+", ";
@@ -537,22 +558,23 @@ public class DatabaseAdapter {
 		Log.i("info", "update table value "+DatabaseField.TABLE+tableId+" fieldList "+fieldsList+" record "+record);
 		int fieldsNb = fieldsList.size();
 		String tableName = DatabaseField.TABLE+tableId;
-		String newValue = DatabaseField.STATE+"="+DatabaseField.SYNCHRONIZED+" AND "+DatabaseField.GID+tableId+"="+record.get(1);
+		//String newValue = DatabaseField.STATE+"="+DatabaseField.SYNCHRONIZED+" AND "+DatabaseField.GID+tableId+"="+record.get(1);
+		String newValue = "";
 		for (int i=0; i<fieldsNb; i++){
 			if (i == fieldsNb-1){
-				newValue += DatabaseField.FIELD+fieldsList.get(i)+"=\'"+record.get(i+2)+"\'";
+				newValue += DatabaseField.STATE+"="+DatabaseField.SYNCHRONIZED+" ,"+DatabaseField.FIELD+fieldsList.get(i)+"=\'"+record.get(i+2)+"\'";
 			}
 			else{
 				newValue += DatabaseField.FIELD+fieldsList.get(i)+"=\'"+record.get(i+2)+"\', ";
 			}
 		}
-		String update = "UPDATE "+tableName+" SET "+newValue+" WHERE "+DatabaseField.ID+tableId+"=\'"+record.get(0)+"\';";
+		String update = "UPDATE "+tableName+" SET "+newValue+" WHERE "+DatabaseField.GID+tableId+"=\'"+record.get(1)+"\';";
 		Log.i("info", "update "+update);
 		sqlite.execSQL(update);
 	}
 	
 	private void deleteValues(int tableId, ArrayList<Integer> fieldsList, ArrayList<Object> record){
-		String delete = "DELETE FROM "+DatabaseField.TABLE+tableId+" WHERE "+DatabaseField.ID+tableId+"=\'"+record.get(0)+"\';";
+		String delete = "DELETE FROM "+DatabaseField.TABLE+tableId+" WHERE "+DatabaseField.GID+tableId+"=\'"+record.get(1)+"\';";
 		sqlite.execSQL(delete);
 	}
 	
@@ -714,8 +736,8 @@ public class DatabaseAdapter {
 			String id = DatabaseField.ID+key;
 			String[] projectionIn = new String[]{id, DatabaseField.STATE};
 			Cursor result = sqlite.query(table, projectionIn, null, null, null, null, null);
-			result.first();
-			int count = result.count();
+			result.moveToFirst();
+			int count = result.getCount();
 			for (int i=0; i<count; i++){
 				String whereClause = id+" = \'"+result.getString(result.getColumnIndex(id))+"\'";
 				if (result.getInt(result.getColumnIndex(DatabaseField.STATE)) != DatabaseField.DELETEVALUE){
@@ -726,7 +748,7 @@ public class DatabaseAdapter {
 				else{
 					sqlite.delete(table, whereClause, null);
 				}
-				result.next();
+				result.moveToNext();
 			}
 		}
 	}

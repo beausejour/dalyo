@@ -79,8 +79,8 @@ public class NS_DatabaseTable {
 		valueList.add(value);
 		ArrayList<HashMap<Object, Object>> records = new ArrayList<HashMap<Object, Object>>();
 		Cursor cursor = DatabaseAdapter.selectQuery(tableId, fieldList, valueList);
-		cursor.first();
-		int cursorLen = cursor.count();
+		cursor.moveToFirst();
+		int cursorLen = cursor.getCount();
 		String[] columnNames = cursor.getColumnNames();
 		int columnsNb = columnNames.length;
 		for (int i=0; i<cursorLen; i++){
@@ -89,7 +89,7 @@ public class NS_DatabaseTable {
 				record.put(columnNames[j], DatabaseAdapter.getCursorValue(cursor, columnNames[j]));
 			}
 			records.add(record);
-			cursor.next();
+			cursor.moveToNext();
 		}
 		Log.i("info", "records "+records);
 		return records;
@@ -100,8 +100,8 @@ public class NS_DatabaseTable {
 		ArrayList<String> tables = new ArrayList<String>();
 		tables.add(tableId);
 		Cursor cursor = DatabaseAdapter.selectQuery(tables, null, filter);
-		cursor.first();
-		for (int i=0; i<cursor.count(); i++){
+		cursor.moveToFirst();
+		for (int i=0; i<cursor.getCount(); i++){
 			HashMap<Object, Object> record = new HashMap<Object, Object>();
 			String[] columnNames = cursor.getColumnNames();
 			int columnsRecordSize = columnNames.length;
@@ -109,7 +109,7 @@ public class NS_DatabaseTable {
 				record.put(columnNames[j], DatabaseAdapter.getCursorValue(cursor, columnNames[j]));
 			}
 			records.add(record);
-			cursor.next();
+			cursor.moveToNext();
 		}
 		return records; 
 	}

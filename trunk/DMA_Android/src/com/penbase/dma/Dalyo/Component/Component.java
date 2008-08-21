@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import com.penbase.dma.Constant.XmlTag;
 import com.penbase.dma.Dalyo.Component.Custom.*;
-import com.penbase.dma.Dalyo.Component.Custom.Dataview.CustomLinearLayout;
+
 import com.penbase.dma.Dalyo.Component.Custom.Dataview.DataView;
 import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
@@ -14,6 +14,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.text.Layout.Alignment;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.*;
@@ -149,7 +150,8 @@ public class Component{
 			button.setTextSize(getFontSize(fontSize));
 			if (background != 0) {
 				Drawable d = Drawable.createFromPath(DmaHttpClient.getFilesPath()+background+"."+extension);
-				button.setBackground(d);
+				//button.setBackground(d);
+				button.setBackgroundDrawable(d);
 			}
 			view = button;
 		}
@@ -177,7 +179,8 @@ public class Component{
 			Label label = new Label(context, getFontType(fontType), getFontSize(fontSize));
 			label.setText(name);
 			if (align != null) {
-				label.setAlignment(getAlign(align));
+				label.setGravity(getGravity(align));
+				//label.setAlignment(getAlign(align));
 			}
 			view = label;
 		}
@@ -207,7 +210,8 @@ public class Component{
 				view = textfield;
 			}
 			if (align != null) {
-				((TextView)view).setAlignment(getAlign(align));
+				//((TextView)view).setAlignment(getAlign(align));
+				((TextView)view).setGravity(getGravity(align));
 			}
 			if (editable) {
 				((TextView)view).setEnabled(!editable);
@@ -237,7 +241,7 @@ public class Component{
 			ImageView imageview = new ImageView(context);
 			if (background != 0) {
 				Drawable d = Drawable.createFromPath(DmaHttpClient.getFilesPath()+background+"."+extension);
-				imageview.setBackground(d);
+				imageview.setBackgroundDrawable(d);
 			}
 			view = imageview;
 		}
@@ -261,7 +265,6 @@ public class Component{
 				@Override
 				public void onItemClick(AdapterView parent, View v, int position, long id){
 					((DataView)view).setCurrentPosition(position);
-					//Form.getFunction().createFunction(funcName, null);
 					Function.createFunction(funcName);
 				}
 			});
@@ -270,7 +273,6 @@ public class Component{
 			view.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View arg0) {
-					//Form.getFunction().createFunction(funcName, null);
 					Function.createFunction(funcName);
 				}
 			});
@@ -278,11 +280,10 @@ public class Component{
 	}
 	
 	public void setOnchangeFunction(String funcName, View view) {
-		//Form.getFunction().createFunction(funcName, null);
 		Function.createFunction(funcName);
 	}
 	
-	private Alignment getAlign(String align) {
+	/*private Alignment getAlign(String align) {
 		Alignment alignment = null;
 		if (align.equals("left")) {
 			alignment = Alignment.ALIGN_NORMAL;
@@ -294,6 +295,20 @@ public class Component{
 			alignment = Alignment.ALIGN_OPPOSITE;
 		}
 		return alignment;
+	}*/
+	
+	private int getGravity(String align) {
+		int gravity = 0;
+		if (align.equals("left")) {
+			gravity = Gravity.LEFT;
+		}
+		else if (align.equals("center")) {
+			gravity = Gravity.CENTER;
+		}
+		else if (align.equals("right")) {
+			gravity = Gravity.RIGHT;
+		}
+		return gravity;
 	}
 	
 	private float getFontSize(String fs) {
@@ -313,7 +328,7 @@ public class Component{
 	private Typeface getFontType(String ft) {
 		Typeface fontType = Typeface.DEFAULT;
 		if (ft.equals("italic")) {
-			fontType = Typeface.DEFAULT_ITALIC;
+			//fontType = Typeface.ITALIC;
 		}
 		else if (ft.equals("bold")) {
 			fontType = Typeface.DEFAULT_BOLD;
@@ -322,7 +337,8 @@ public class Component{
 			//Underline text, bug of android
 		}
 		else if (ft.equals("italicbold")) {
-			fontType = Typeface.DEFAULT_BOLD_ITALIC;
+			//fontType = Typeface.DEFAULT_BOLD_ITALIC;
+			//fontType = Typeface.BOLD_ITALIC;
 		}
 		return fontType;
 	}
