@@ -54,8 +54,8 @@ public class ComboBox extends Spinner implements OnItemSelectedListener{
 		}		
 		itemsList = new ArrayList<String>();
 		Cursor cursor = DatabaseAdapter.selectQuery(tables, null, filter);
-		cursor.first();
-		for (int i=0; i<cursor.count(); i++){
+		cursor.moveToFirst();
+		for (int i=0; i<cursor.getCount(); i++){
 			String[] columnNames = cursor.getColumnNames();
 			HashMap<Object, Object> record = new HashMap<Object, Object>();
 			int columnsSize = columnNames.length;
@@ -66,7 +66,7 @@ public class ComboBox extends Spinner implements OnItemSelectedListener{
 				record.put(columnNames[j], cursor.getString(j));
 			}
 			records.put(i, record);
-			cursor.next();
+			cursor.moveToNext();
 		}
 		spinnerArrayAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, itemsList);
 		this.setAdapter(spinnerArrayAdapter);

@@ -38,6 +38,7 @@ public class TextField extends AutoCompleteTextView{
 		if (!getFieldId().equals("")){
 			Log.i("info", "record "+record+" fieldid "+getFieldId());
 			TextField.this.setText((String)record.get(DatabaseField.FIELD+getFieldId()));
+			Log.i("info", "settext "+(String)record.get(DatabaseField.FIELD+getFieldId()));
 		}
 	}
 	

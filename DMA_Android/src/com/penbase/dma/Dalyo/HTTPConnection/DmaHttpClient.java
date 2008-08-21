@@ -33,8 +33,6 @@ import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Set;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -44,7 +42,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import com.penbase.dma.Dma;
 import com.penbase.dma.Binary.Binary;
-import com.penbase.dma.Constant.DatabaseField;
 import com.penbase.dma.Constant.ErrorCode;
 import com.penbase.dma.Constant.XmlTag;
 import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
@@ -79,12 +76,11 @@ public class DmaHttpClient{
 	//Image file's path
 	private String imageFilePath;
 	
-	
 	public DmaHttpClient(){
 		createFilesPath();
 		try{
 			url = new URL("http://192.168.0.1/server/com.penbase.arbiter.Arbiter");
-			//url = new URL("http://www.dalyo.com/server/com.penbase.arbiter.Arbiter");
+			//url = new URL("http://193.34.130.87/server/com.penbase.arbiter.Arbiter");
 		}
 		catch (MalformedURLException e) 
 		{e.printStackTrace();}
@@ -107,7 +103,6 @@ public class DmaHttpClient{
 			}
 			directory = "/data/data/com.penbase.dma/"+applicationName+"/";
 			if (!new File(directory).exists()){
-				Log.i("info", "doesn't exists");
 				new File(directory).mkdir();
 			}
 			login_XML = directory+"login.xml";
@@ -134,8 +129,9 @@ public class DmaHttpClient{
 	private String SendPost(String parameters, String type){
 		String result = null;
 		StringBuilder response = null;
+		HttpURLConnection connection = null;
 		try{
-			HttpURLConnection connection = null;
+			//HttpURLConnection connection = null;
 			connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestMethod("POST");
 			connection.setDoOutput(true);
@@ -178,12 +174,11 @@ public class DmaHttpClient{
 		catch (ProtocolException pe){
 			Log.i("info", "HTTPExample: ProtocolException; " + pe.getMessage());}
 		catch (IOException ioe){
-			Log.i("info", "HTTPExample: IOException; " + ioe.getMessage());}
+			Log.i("info", "HTTPExample: IOException; " + ioe.getMessage()+" "+ioe.toString());}
 
 		Log.i("info", "Server returned: " + errorCode);
 
 		if (errorCode != ErrorCode.OK){
-			new Dma().errorDialog("Connection failed");
 			return null;
 		}
 		else{
@@ -218,6 +213,7 @@ public class DmaHttpClient{
 	//Check if we need to download all xml files
 	public void checkDownloadFile(int position, String login, String pwd){
 		String loginStream = SendPost("act=login&login="+login+"&passwd="+pwd+"&useragent=ANDROID", STRING);
+		Log.i("info", "loginstream "+loginStream);
 		StreamToFile(loginStream, login_XML);
 		Document parserLogin = CreateParseDocument(loginStream, null);
 		NodeList list = parserLogin.getElementsByTagName("a");
@@ -481,18 +477,18 @@ public class DmaHttpClient{
 	
 	//Save the download xml stream to file
 	private void StreamToFile(String stream, String filePath){
-		File file = new File(filePath);
-		FileOutputStream fos;
-		try{
-			fos = new FileOutputStream(file);
-			DataOutputStream dos = new DataOutputStream(fos);
-			dos.writeBytes(stream);
-			Log.i("info", "file create ok "+filePath);
-		}
-		catch (FileNotFoundException e)
-		{e.printStackTrace();}
-		catch (IOException e)
-		{e.printStackTrace();}
+        File file = new File(filePath);
+        FileOutputStream fos;
+        try{
+                fos = new FileOutputStream(file);
+                DataOutputStream dos = new DataOutputStream(fos);
+                dos.writeBytes(stream);
+                Log.i("info", "file create ok "+filePath);
+        }
+        catch (FileNotFoundException e)
+        {e.printStackTrace();}
+        catch (IOException e)
+        {e.printStackTrace();} 
 	}
 	
 	//Check if file exists and its length is great than 0
@@ -501,7 +497,6 @@ public class DmaHttpClient{
 		if ((new File(fileName).exists()) && (new File(fileName).length() > 0)){
 			result = true;
 		}
-		Log.i("info", "check file exists "+fileName+" "+result);
 		return result;
 	}
 	

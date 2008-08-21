@@ -45,16 +45,22 @@ public class DataView extends ListView{
 		adapter = new DataViewAdapter(context);
 		pwidthList = new ArrayList<String>();
 		lwidthList = new ArrayList<String>();
+		this.setItemsCanFocus(true);
+        //this.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 		this.setOnItemClickListener(new OnItemClickListener(){
 			@Override
 			public void onItemClick(AdapterView parent, View v, int position, long id){
-				Log.i("info", "item position in dataview "+position);
+				Log.i("info", "item position in dataview "+position+" parent "+parent+" view "+v);
 				currentPosition = position;
 				if (!((CustomLinearLayout) v).hasHeader()){
-					v.setSelected(true);
+					Log.i("info", "has header");
+					//v.setSelected(true);
+					//v.setEnabled(false);
+					v.setPressed(true);
 				}
 			}
 		});
+		//this.setAdapter(adapter);
 	}
 	
 	@Override
@@ -140,10 +146,10 @@ public class DataView extends ListView{
 			}
 			Cursor cursor = DatabaseAdapter.selectQuery(tables, null, filter);
 			records = new HashMap<Integer, HashMap<Object, Object>>();
-			int count = cursor.count();
+			int count = cursor.getCount();
 			if (count > 0){
-				cursor.first();
-				for (int i=0; i<cursor.count(); i++){
+				cursor.moveToFirst();
+				for (int i=0; i<cursor.getCount(); i++){
 					String[] columnNames = cursor.getColumnNames();
 					ArrayList<String> data = new ArrayList<String>();
 					HashMap<Object, Object> record = new HashMap<Object, Object>();
@@ -176,7 +182,7 @@ public class DataView extends ListView{
 					adapter.addItem(layout);
 					adapter.notifyDataSetChanged();
 					records.put(i, record);
-					cursor.next();
+					cursor.moveToNext();
 				}
 			}
 		}

@@ -14,29 +14,37 @@
  */
 package com.penbase.dma.View;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import com.penbase.dma.Dma;
 import com.penbase.dma.R;
 import com.penbase.dma.Dalyo.Application;
 import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Menu.Item;
 import android.view.ViewGroup.LayoutParams;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -51,20 +59,50 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	private static HashMap<String, String> applicationInfos = new HashMap<String, String>();
 	private DmaHttpClient dmahttpclient = new DmaHttpClient();
 	private static String applicationName;
+	private GridView gridView;
 
 	@Override
 	protected void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
-		setContentView(R.layout.applicationlist_layout);
-		GridView g = (GridView) findViewById(R.id.mlist);
+		Animation animation = AnimationUtils.loadAnimation(this, R.anim.wave_scale);
+		LinearLayout layout = new LinearLayout(this);
+		layout.setOrientation(LinearLayout.VERTICAL);
+		layout.setBackgroundColor(Color.WHITE);
+		ImageView imageView = new ImageView(this);
+		imageView.setBackgroundResource(R.drawable.banniere_dalyo);
+		layout.addView(imageView, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+		
+		TextView textView = new TextView(this);
+		textView.setText("Application list:");
+		textView.setTextColor(Color.BLACK);
+		layout.addView(textView, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+		
+		gridView = new GridView(this);
+		gridView.setPadding(10, 10, 10, 10);
+		gridView.setVerticalSpacing(10);
+		gridView.setHorizontalSpacing(10);
+		gridView.setNumColumns(GridView.AUTO_FIT);
+		gridView.setColumnWidth(60);
+		gridView.setStretchMode(GridView.STRETCH_COLUMN_WIDTH);
+		gridView.setGravity(Gravity.CENTER);
+		gridView.setLayoutAnimation(new LayoutAnimationController(animation));
 		mAdapter = new AppsAdapter(this);		
-		mApplicationName = (TextView) findViewById(R.id.label2);
+		mApplicationName = new TextView(this);
+		mApplicationName.setGravity(Gravity.CENTER);
+		mApplicationName.setTextColor(Color.BLACK);
+		mApplicationName.setTypeface(Typeface.DEFAULT_BOLD);
+		layout.addView(mApplicationName, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 		for (int i =0; i < Dma.applicationList.size(); i++){
 			mAdapter.addApplication(Dma.applicationList.get(i));
+			if (i == 0) {
+				mApplicationName.setText(Dma.applicationList.get(i).getName());
+			}
 		}
-		g.setAdapter(mAdapter);
-		g.setOnItemSelectedListener(this);
-		g.setOnItemClickListener(this);
+		gridView.setAdapter(mAdapter);
+		gridView.setOnItemClickListener(this);
+		gridView.setOnItemSelectedListener(this);
+		layout.addView(gridView, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+		setContentView(layout);
 	}
 
 	public class AppsAdapter extends BaseAdapter {
@@ -78,9 +116,9 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 			ImageView i = new ImageView(mContext);		// Make an ImageView to show a photo
 			i.setImageResource(mApps.get(position));
 			i.setAdjustViewBounds(true);
-			i.setLayoutParams(new ViewGroup.MarginLayoutParams(
-					LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-			i.setBackground(android.R.drawable.picture_frame);		// Give it a nice background
+			i.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            i.setLayoutParams(new GridView.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+			i.setBackgroundResource(android.R.drawable.picture_frame);		// Give it a nice background
 			return i;
 		}
 
@@ -90,6 +128,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 
 		public final Object getItem(int position) {
 			return position;
+			//return mApps.get(position);
 		}
 
 		public final long getItemId(int position) {
@@ -104,19 +143,22 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		boolean r = super.onCreateOptionsMenu(menu);
-		menu.add(0, 0, getResources().getString(R.string.menu_logout));
-		menu.add(0, 1, getResources().getString(R.string.menu_about));
-		menu.add(0, 2, getResources().getString(R.string.menu_update));
+		menu.add("Logout");
+		menu.add("About");
+		menu.add("Update");
 		return r;
 	}
 
 	@Override
-	public boolean onMenuItemSelected(int featureId, Item item) {
-		switch (item.getId()) {
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		switch (item.getItemId()) {
 			case 0:
 				logout();
 				return true;
 			case 1:
+				Dialog dialog = new Dialog(this);
+				dialog.setTitle("DMA version 0.9");
+				dialog.show();
 				return true;
 			case 2:
 				update();
@@ -131,7 +173,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		editor.clear();
 		editor.commit();
 		this.finish();
-		startSubActivity(new Intent(this, Dma.class), 0);
+		startActivityForResult(new Intent(this, Dma.class), 0);
 	}
 
 	//Using the preference data to rebuild application list
@@ -155,7 +197,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 				
 				updateProgressDialog.dismiss();
 				ApplicationListView.this.finish();
-				startSubActivity(new Intent(ApplicationListView.this, ApplicationListView.class), 0);
+				startActivityForResult(new Intent(ApplicationListView.this, ApplicationListView.class), 0);
 			}
 		}.start();
 	}
@@ -193,10 +235,9 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 				
 				loadProgressDialog.dismiss();
 				//ApplicationListView.this.finish();
-				startSubActivity(i, 0);
+				startActivityForResult(i, 0);
 			}
 		}.start();
-		Log.i("info", "applicationInfos "+applicationInfos+" position "+position);
 	}
 	
 	public static HashMap<String, String> getApplicationsInfo() {

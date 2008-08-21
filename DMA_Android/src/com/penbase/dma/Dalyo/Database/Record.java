@@ -10,7 +10,7 @@ public class Record {
 	public Record(String tableId, ArrayList<Object> fList, ArrayList<Object> vList){
 		if ((fList != null) && (vList != null) && (fList.size() > 2) && (fList.size() == vList.size())){
 			Cursor cursorAllRows = DatabaseAdapter.selectQuery(tableId, null, null);
-			int newId = cursorAllRows.count()+1;
+			int newId = cursorAllRows.getCount()+1;
 			ArrayList<Integer> fieldList = new ArrayList<Integer>();
 			ArrayList<Object> valueList = new ArrayList<Object>();
 			valueList.add(newId);
@@ -24,14 +24,16 @@ public class Record {
 			currentRecord = new HashMap<Object, Object>();
 			valueList.remove(0);
 			Cursor cursor = DatabaseAdapter.selectQuery(tableId, fieldList, valueList);
-			cursor.first();
-			for (int i=0; i<cursor.count(); i++){
+			//cursor.first();
+			cursor.moveToFirst();
+			for (int i=0; i<cursor.getCount(); i++){
 				String[] columnNames = cursor.getColumnNames();
 				int columnsRecordSize = columnNames.length;
 				for (int j=0; j<columnsRecordSize; j++){
 					currentRecord.put(columnNames[j], cursor.getString(j));
 				}
-				cursor.next();
+				//cursor.next();
+				cursor.moveToNext();
 			}
 			Log.i("info", "currentRecord in constructor "+currentRecord);
 		}
@@ -66,6 +68,6 @@ public class Record {
 		ArrayList<String> tables = new ArrayList<String>();
 		tables.add(table);
 		Cursor cursor = DatabaseAdapter.selectQuery(tables, null, filter);
-		return cursor.count();
+		return cursor.getCount();
 	}
 }
