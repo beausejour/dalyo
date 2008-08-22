@@ -136,6 +136,10 @@ public class ApplicationView extends Activity {
 				String backgourndColor = "#"+formElt.getAttribute(XmlTag.DESIGN_F_BC);
 				form.setBackgroundColor(Color.parseColor(backgourndColor));
 			}
+			else {
+				//Default background color is white
+				form.setBackgroundColor(Color.WHITE);
+			}
 			
 			layoutsMap.put(formId, form);
 			

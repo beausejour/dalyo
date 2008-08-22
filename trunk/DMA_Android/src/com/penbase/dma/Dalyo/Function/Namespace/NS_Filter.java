@@ -8,7 +8,7 @@ import com.penbase.dma.Dalyo.Function.Function;
 
 public class NS_Filter {
 	public static void AddCriteria(Element Element){
-		String varName = String.valueOf(Function.getValue(Element, ScriptTag.PARAMETER, ScriptAttribute.FILTER, ScriptAttribute.FILTER));
+		String varName = String.valueOf(Function.getVariableName(Element, ScriptTag.PARAMETER, ScriptAttribute.FILTER, ScriptAttribute.FILTER));
 		String field = String.valueOf(Function.getValue(Element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_ELEMENT, ScriptAttribute.OBJECT));
 		String operator = String.valueOf(Function.getValue(Element, ScriptTag.PARAMETER, ScriptAttribute.OPERATOR, ScriptAttribute.OPERATOR));
 		Object value = Function.getValue(Element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);

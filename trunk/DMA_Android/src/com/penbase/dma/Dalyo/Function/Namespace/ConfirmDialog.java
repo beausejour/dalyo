@@ -10,6 +10,7 @@ import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
@@ -20,6 +21,7 @@ public class ConfirmDialog extends Thread{
 	Context context;
 	Builder builder;
 	Function function;
+    public Handler mHandler;
 	
 	public ConfirmDialog(NodeList params, Context context){
 		this.context = context;

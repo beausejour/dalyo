@@ -78,6 +78,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		layout.addView(textView, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 		
 		gridView = new GridView(this);
+		gridView.setVerticalScrollBarEnabled(false);
 		gridView.setPadding(10, 10, 10, 10);
 		gridView.setVerticalSpacing(10);
 		gridView.setHorizontalSpacing(10);
@@ -113,13 +114,25 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		}
 
 		public View getView(int position, View convertView, ViewGroup parent) {
+			LinearLayout layout = new LinearLayout(mContext);
+			layout.setOrientation(LinearLayout.VERTICAL);
+			
 			ImageView i = new ImageView(mContext);		// Make an ImageView to show a photo
 			i.setImageResource(mApps.get(position));
 			i.setAdjustViewBounds(true);
 			i.setScaleType(ImageView.ScaleType.FIT_CENTER);
             i.setLayoutParams(new GridView.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 			i.setBackgroundResource(android.R.drawable.picture_frame);		// Give it a nice background
-			return i;
+			
+			TextView tv = new TextView(mContext);
+			tv.setText(Dma.applicationList.get(position).getName());
+			tv.setTextSize(10);
+			tv.setGravity(Gravity.CENTER);
+			
+			layout.addView(i, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+			layout.addView(tv, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+			return layout;
+			//return i;
 		}
 
 		public final int getCount() {
@@ -143,9 +156,9 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		boolean r = super.onCreateOptionsMenu(menu);
-		menu.add("Logout");
-		menu.add("About");
-		menu.add("Update");
+		menu.add(Menu.NONE, 0, Menu.NONE, "Logout");
+		menu.add(Menu.NONE, 1, Menu.NONE, "About");
+		menu.add(Menu.NONE, 2, Menu.NONE, "Update");
 		return r;
 	}
 

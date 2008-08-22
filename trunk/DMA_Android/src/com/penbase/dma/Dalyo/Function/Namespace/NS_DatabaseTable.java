@@ -30,8 +30,7 @@ public class NS_DatabaseTable {
 		ArrayList<Object> fieldsList = (ArrayList<Object>) Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_FIELDS, ScriptAttribute.LIST);
 		ArrayList<Object> valuesList = (ArrayList<Object>) Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUES, ScriptAttribute.LIST);
 		Log.i("info", "flist "+fieldsList+" vlist "+valuesList);
-		Record record = new Record(tableId, fieldsList, valuesList);
-		return record.getRecord();
+		return new Record(tableId, fieldsList, valuesList).getRecord();
 	}
 	
 	public static void DeleteRecord(Element element){

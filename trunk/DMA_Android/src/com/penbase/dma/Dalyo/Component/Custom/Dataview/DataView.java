@@ -1,5 +1,6 @@
 package com.penbase.dma.Dalyo.Component.Custom.Dataview;
 
+import android.graphics.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import com.penbase.dma.Dma;
@@ -37,7 +38,7 @@ public class DataView extends ListView{
 	public DataView(Context c, String tid){
 		super(c);
 		borderPaint = new Paint();
-		borderPaint.setARGB(255, 255, 255, 255);
+		borderPaint.setARGB(255, 0, 0, 0);
 		borderPaint.setAntiAlias(true);
 		borderPaint.setStyle(Style.STROKE);
 		this.context = c;
@@ -54,9 +55,7 @@ public class DataView extends ListView{
 				currentPosition = position;
 				if (!((CustomLinearLayout) v).hasHeader()){
 					Log.i("info", "has header");
-					//v.setSelected(true);
-					//v.setEnabled(false);
-					v.setPressed(true);
+					v.setSelected(true);
 				}
 			}
 		});
@@ -195,7 +194,7 @@ public class DataView extends ListView{
 		}
 		else{
 			int position = currentPosition;
-			return records.get(position-1);	
+			return records.get(position-1);
 		}
 	}
 	

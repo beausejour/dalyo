@@ -2,6 +2,9 @@ package com.penbase.dma.Dalyo.Function.Namespace;
 
 import java.util.ArrayList;
 import org.w3c.dom.Element;
+
+import android.util.Log;
+
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Function.Function;
@@ -30,8 +33,9 @@ public class NS_List {
 	}
 	
 	public static void ListAddValue(Element element){
-		String listName = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.LIST, ScriptAttribute.LIST));
+		String listName = String.valueOf(Function.getVariableName(element, ScriptTag.PARAMETER, ScriptAttribute.LIST, ScriptAttribute.LIST));
 		Object value = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
+		Log.i("info", "listname "+listName+" value "+value);
 		Function.addVariableValue(listName, value);
 	}
 }

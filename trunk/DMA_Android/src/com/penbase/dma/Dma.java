@@ -154,8 +154,8 @@ public class Dma extends Activity implements OnClickListener{
 					}
 					catch(Exception e)
 					{e.printStackTrace();}
-					loadApps.dismiss();
 					Dma.this.finish();
+					loadApps.dismiss();
 					startActivityForResult(new Intent(Dma.this, ApplicationListView.class), 0);
 				}
 			}.start();
@@ -178,15 +178,17 @@ public class Dma extends Activity implements OnClickListener{
 		boolean r = super.onCreateOptionsMenu(menu);
 		menu.add("About");
 		menu.add("Quit");
+		menu.add(Menu.NONE, 0, Menu.NONE, "About");
+		menu.add(Menu.NONE, 1, Menu.NONE, "Quit");
 		return r;
 	}
 
 	//@Override
 	public boolean onOptionsItemSelected(int featureId, MenuItem item) {
 		switch (item.getItemId()){
-			case Menu.FIRST:
+			case 0:
 				return true;
-			case Menu.FIRST+1:
+			case 1:
 				this.finish();
 		}
 		return super.onMenuItemSelected(featureId, item);

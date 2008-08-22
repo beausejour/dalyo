@@ -360,6 +360,7 @@ public class DatabaseAdapter {
 	}
 	
 	public byte[] syncExportTable(){
+		Log.i("info", "syncExportTable ");
 		int tableNbInt = 0;
 		Set<String> keys = tablesMap.keySet();
 		HashMap<String, ArrayList<HashMap<Object, Object>>> tidMap = 
@@ -410,6 +411,7 @@ public class DatabaseAdapter {
 			}
 			//recordsNb
 			int recordsNbInt = tidMap.get(tidKey).size();
+			Log.i("info", "export record nb "+recordsNbInt);
 			byte[] recordsNb = Binary.intToByteArray(recordsNbInt);
 			bos.write(recordsNb, 0, recordsNb.length);
 			for (int k=0; k<recordsNbInt; k++){
@@ -444,6 +446,7 @@ public class DatabaseAdapter {
 							}
 							else if (DmaHttpClient.getServerInfo() == 1){
 								value = Binary.stringToByteArray(null);
+								Log.i("info", "synchronized value "+value);
 								valueLenth = Binary.intToByteArray(-1);
 							}
 						}

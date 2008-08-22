@@ -6,7 +6,14 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import android.R;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import com.penbase.dma.Constant.GpsStatus;
 import com.penbase.dma.Constant.ScriptAttribute;
@@ -462,8 +469,9 @@ public class Function {
 					e.printStackTrace();
 				}
 				result = confirmDialog.getValue();
+				Log.i("info", "value of confirmdialog "+result);
 				//Cancel the thread, because the stop() method is deprecated
-				confirmDialog = null;
+				//confirmDialog = null;
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SYNC)){
 				Log.i("info", "call sync function");
@@ -511,6 +519,7 @@ public class Function {
 	public static Object getVariableValue(Element item){
 		Object result = null;
 		if (varsMap.containsKey(item.getAttribute(ScriptTag.NAME))){
+			Log.i("info", "contains variable value "+varsMap.toString());
 			result = varsMap.get(item.getAttribute(ScriptTag.NAME));
 		}
 		else{
@@ -528,6 +537,10 @@ public class Function {
 	
 	public static void addFilterValues(String name, String field, String operator, Object value, Object link){
 		if (varsMap.containsKey(name)){
+			if (varsMap.get(name) == null) {
+				varsMap.remove(name);
+				varsMap.put(name, new ArrayList<Object>());
+			}
 			((ArrayList<Object>) varsMap.get(name)).add(field);
 			((ArrayList<Object>) varsMap.get(name)).add(operator);
 			((ArrayList<Object>) varsMap.get(name)).add(value);
@@ -536,7 +549,12 @@ public class Function {
 	}
 	
 	public static void addVariableValue(String name, Object value){
+		Log.i("info", "varsMap "+varsMap.toString());
 		if (varsMap.containsKey(name)){
+			if (varsMap.get(name) == null) {
+				varsMap.remove(name);
+				varsMap.put(name, new ArrayList<Object>());
+			}
 			((ArrayList<Object>) varsMap.get(name)).add(value);
 		}
 	}
@@ -550,6 +568,7 @@ public class Function {
 			varsMap.remove(element.getAttribute(ScriptTag.NAME));
 		}
 		if (!element.hasChildNodes()){
+			Log.i("info", "add variable "+element.getAttribute(ScriptTag.NAME));
 			varsMap.put(element.getAttribute(ScriptTag.NAME), null);
 		}
 		else if ((element.getChildNodes().getLength() == 1) && (element.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE)){
@@ -558,11 +577,9 @@ public class Function {
 		}
 		else{
 			Log.i("info", "element "+element.getNodeName());
-			if (element.getChildNodes().item(0).getNodeName().equals(ScriptTag.CALL)) {
-				Object value = distributeCall((Element) element.getChildNodes().item(0));
-				Log.i("info", "prepare to add "+element.getAttribute(ScriptTag.NAME)+" in the var list its value is "+value);
-				varsMap.put(element.getAttribute(ScriptTag.NAME), value);				
-			}
+			Object value = getValue(element, element.getChildNodes().item(0).getNodeName(), "", "");
+			Log.i("info", "prepare to add "+element.getAttribute(ScriptTag.NAME)+" in the var list its value is "+value);
+			varsMap.put(element.getAttribute(ScriptTag.NAME), value);
 		}
 	}
 
@@ -613,13 +630,38 @@ public class Function {
 		return result;
 	}
 	
+	public static Object getVariableName(Element element, String tag, String name, String type){
+		Object value = null;
+		int itemsLen = element.getChildNodes().getLength();
+		for (int i=0; i<itemsLen; i++){
+			Element child = (Element) element.getChildNodes().item(i);
+			if ((child.getNodeName().equals(tag)) &&
+					(child.getAttribute(ScriptTag.NAME).equals(name)) &&
+					(child.getAttribute(ScriptTag.TYPE).equals(type))){
+				if (child.getChildNodes().getLength() == 1){
+					if (child.getChildNodes().item(0).getNodeType() == Node.ELEMENT_NODE){
+						Element item = (Element) child.getChildNodes().item(0);
+						if (item.getNodeName().equals(ScriptTag.VAR)){
+							value = item.getAttribute(ScriptTag.NAME);
+							Log.i("info", "value of variable "+value);
+						}
+					}
+					else if (child.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE){
+						
+					}
+				}
+			}
+		}
+		return value;
+	}
+	
 	//Return values of function's parameter
 	public static Object getValue(Element element, String tag, String name, String type){
 		Object value = null;
 		int itemsLen = element.getChildNodes().getLength();
 		for (int i=0; i<itemsLen; i++){
 			Element child = (Element) element.getChildNodes().item(i);
-			//If condition elements and set variables
+			//If condition elements
 			if ((child.getNodeName().equals(tag)) && (name == null) && (type == null)){
 				if (child.getChildNodes().getLength() == 1){
 					if (child.getChildNodes().item(0).getNodeType() == Node.ELEMENT_NODE){
@@ -644,6 +686,23 @@ public class Function {
 					}
 				}
 			}
+			//Set variable
+			else if ((child.getNodeName().equals(tag)) && (name.equals("")) && (type.equals(""))){
+				if (child.getNodeName().equals(ScriptTag.CALL)){
+					Log.i("info", "set var call "+child.getNodeName());
+					value = Function.distributeCall(child);
+				}
+				else if (child.getNodeName().equals(ScriptTag.KEYWORD)){
+					value = Function.getKeyWord(child);
+				}
+				else if (child.getNodeName().equals(ScriptTag.VAR)){
+					//use only one format to save all types of variale's value
+					value = getVariableValue(child);
+				}
+				else if (child.getNodeName().equals(ScriptTag.ELEMENT)){
+					value = child.getAttribute(ScriptTag.ELEMENT_ID);
+				}
+			}
 			//Function parameters
 			else if ((child.getNodeName().equals(tag)) &&
 					(child.getAttribute(ScriptTag.NAME).equals(name)) &&
@@ -660,6 +719,7 @@ public class Function {
 						else if (item.getNodeName().equals(ScriptTag.VAR)){
 							//use only one format to save all types of variale's value
 							value = getVariableValue(item);
+							Log.i("info", "value of variable "+value);
 						}
 						else if (item.getNodeName().equals(ScriptTag.ELEMENT)){
 							value = item.getAttribute(ScriptTag.ELEMENT_ID);
