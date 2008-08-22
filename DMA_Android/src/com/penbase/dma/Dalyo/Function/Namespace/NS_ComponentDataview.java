@@ -13,7 +13,6 @@ public class NS_ComponentDataview {
 		String componentId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT));
 		HashMap<Object, Object> record = null;
 		Log.i("info", "getselectedrecord in dataview");
-		Log.i("info", "component id "+componentId+" all "+ApplicationView.getComponents().toString());
 		if (ApplicationView.getComponents().containsKey(componentId)){
 			record = ApplicationView.getComponents().get(componentId).getRecord();
 			Log.i("info", "record in getselectedrecord "+record);
