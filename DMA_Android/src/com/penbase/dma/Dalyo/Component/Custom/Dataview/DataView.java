@@ -1,6 +1,5 @@
 package com.penbase.dma.Dalyo.Component.Custom.Dataview;
 
-import android.graphics.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import com.penbase.dma.Dma;
@@ -15,7 +14,6 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.Paint.Style;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -32,7 +30,6 @@ public class DataView extends ListView{
 	private String tableId;
 	private int currentPosition = -1;
 	private HashMap<Integer, HashMap<Object, Object>> records;
-	private boolean adapterChanged = false;
 	private HashMap<Integer, String> onCalculateMap = new HashMap<Integer, String>();
 	
 	public DataView(Context c, String tid){
@@ -51,15 +48,13 @@ public class DataView extends ListView{
 		this.setOnItemClickListener(new OnItemClickListener(){
 			@Override
 			public void onItemClick(AdapterView parent, View v, int position, long id){
-				Log.i("info", "item position in dataview "+position+" parent "+parent+" view "+v);
 				currentPosition = position;
 				if (!((CustomLinearLayout) v).hasHeader()){
-					Log.i("info", "has header");
 					v.setSelected(true);
 				}
 			}
 		});
-		//this.setAdapter(adapter);
+		this.setAdapter(adapter);
 	}
 	
 	@Override
@@ -132,7 +127,6 @@ public class DataView extends ListView{
 				adapter = new DataViewAdapter(context);
 				adapter.addItem(header);
 				this.setAdapter(adapter);
-				adapterChanged = true;
 			}
 			int columnNb = columns.size();
 			ArrayList<String> tables = new ArrayList<String>();
@@ -165,7 +159,6 @@ public class DataView extends ListView{
 								String field = DatabaseField.FIELD+columns.get(k).get(1);
 								if (columnNames[j].equals(field)){
 									data.add(String.valueOf(DatabaseAdapter.getCursorValue(cursor, field)));
-									Log.i("info", "add data in customlinearlayout "+String.valueOf(DatabaseAdapter.getCursorValue(cursor, field)));
 								}
 								record.put(columnNames[j], cursor.getString(j));
 							}	
@@ -176,7 +169,6 @@ public class DataView extends ListView{
 						data.remove(calculateColumn);
 						data.add(calculateColumn, value);
 					}
-					
 					CustomLinearLayout layout = new CustomLinearLayout(context, data, getPWidthList(), false);
 					adapter.addItem(layout);
 					adapter.notifyDataSetChanged();
@@ -184,11 +176,11 @@ public class DataView extends ListView{
 					cursor.moveToNext();
 				}
 			}
+			cursor.close();
 		}
 	}
 	
 	public HashMap<Object, Object> getCurrentRecord(){
-		Log.i("info", "currentposition "+currentPosition+" adapterChanged "+adapterChanged);
 		if (currentPosition < 1){
 			return null;
 		}

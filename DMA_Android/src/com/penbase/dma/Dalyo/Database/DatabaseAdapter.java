@@ -51,49 +51,40 @@ public class DatabaseAdapter {
 	}
 	
 	private void createDatabase(String database) throws SQLException{
-		if (!databaseExists(database)){
+		/*if (!databaseExists(database)){
 			Log.i("info", "the database doesn't exist");
 			sqlite = context.openOrCreateDatabase(database, 0, null);
-			/*context.createDatabase(database, 1, 0, null);
-			sqlite = context.openDatabase(database, null);*/
 			createTable();
 		}
 		else if (!checkDatabaseExists()){
 			Log.i("info", "the database isn't the same");
 			deleteDatabase(database);
-			/*context.createDatabase(database, 1, 0, null);
-			sqlite = context.openDatabase(database, null);*/
 			sqlite = context.openOrCreateDatabase(database, 0, null);
 			createTable();
 		}
 		else{
 			Log.i("info", "the database have nothing to change");
-			/*context.createDatabase(database, 1, 0, null);
-			sqlite = context.openDatabase(database, null);*/
 			sqlite = context.openOrCreateDatabase(database, 0, null);
-		}
-		/*try{
+		}*/
+		try{
 			if (!databaseExists(database)){
 				Log.i("info", "the database doesn't exist");
-				context.createDatabase(database, 1, 0, null);
-				sqlite = context.openDatabase(database, null);
+				sqlite = context.openOrCreateDatabase(database, 0, null);
 				createTable();
 			}
 			else if (!checkDatabaseExists()){
 				Log.i("info", "the database isn't the same");
-				deleteDatabase(database);
-				context.createDatabase(database, 1, 0, null);
-				sqlite = context.openDatabase(database, null);
+				sqlite = context.openOrCreateDatabase(database, 0, null);
 				createTable();
 			}
 			else{
 				Log.i("info", "the database have nothing to change");
-				context.createDatabase(database, 1, 0, null);
-				sqlite = context.openDatabase(database, null);
+				sqlite = context.openOrCreateDatabase(database, 0, null);
 			}
 		}
-		catch (FileNotFoundException e){
-			e.printStackTrace();}*/
+		catch (Exception e){
+			e.printStackTrace();
+		}
 	}
 	
 	private boolean databaseExists(String database){
@@ -367,8 +358,11 @@ public class DatabaseAdapter {
 			new HashMap<String, ArrayList<HashMap<Object, Object>>>();
 		for (String key : keys){
 			String table = DatabaseField.TABLE+key;
-			String selection = "STATE != "+DatabaseField.SYNCHRONIZED;
+			Log.i("info", "table "+table);
+			String selection = table+".STATE != "+DatabaseField.SYNCHRONIZED;
+			Log.i("info", "selection "+selection);
 			Cursor cursor = sqlite.query(table, null, selection, null, null, null, null);
+			Log.i("info", "cursor count "+cursor.getCount());
 			if (cursor.getCount() > 0){
 				int cursorCount = cursor.getCount();
 				ArrayList<HashMap<Object, Object>> records = new ArrayList<HashMap<Object, Object>>();
@@ -386,15 +380,19 @@ public class DatabaseAdapter {
 				tidMap.put(key, records);
 				tableNbInt += 1;
 			}
+			cursor.close();
 		}
+		Log.i("info", "tidmap "+tidMap.toString());
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		//tableNb
 		byte[] tableNb = Binary.intToByteArray(tableNbInt);
+		Log.i("info", "tableNbInt "+tableNbInt);
 		bos.write(tableNb, 0, tableNb.length);
 		Set<String> tidKeys = tidMap.keySet();
 		for (String tidKey : tidKeys){
 			//tableId
 			int tableIdInt = Integer.valueOf(tidKey);
+			Log.i("info", "table id "+tableIdInt);
 			byte[] tableId = Binary.intToByteArray(tableIdInt);
 			bos.write(tableId, 0, tableId.length);
 			
@@ -444,7 +442,7 @@ public class DatabaseAdapter {
 								int valueLengthInt = value.length;
 								valueLenth = Binary.intToByteArray(valueLengthInt);
 							}
-							else if (DmaHttpClient.getServerInfo() == 1){
+							else if (DmaHttpClient.getServerInfo() == 2){
 								value = Binary.stringToByteArray(null);
 								Log.i("info", "synchronized value "+value);
 								valueLenth = Binary.intToByteArray(-1);
@@ -736,23 +734,27 @@ public class DatabaseAdapter {
 		Set<String> keys = tablesMap.keySet();
 		for (String key : keys){
 			String table = DatabaseField.TABLE+key;
+			Log.i("info", "table "+table);
 			String id = DatabaseField.ID+key;
 			String[] projectionIn = new String[]{id, DatabaseField.STATE};
 			Cursor result = sqlite.query(table, projectionIn, null, null, null, null, null);
 			result.moveToFirst();
 			int count = result.getCount();
 			for (int i=0; i<count; i++){
-				String whereClause = id+" = \'"+result.getString(result.getColumnIndex(id))+"\'";
-				if (result.getInt(result.getColumnIndex(DatabaseField.STATE)) != DatabaseField.DELETEVALUE){
+				String whereClause = id+" = \'"+result.getString(result.getColumnIndexOrThrow(id))+"\'";
+				if (result.getInt(result.getColumnIndexOrThrow(DatabaseField.STATE)) != DatabaseField.DELETEVALUE){
+					Log.i("info", "update value");
 					ContentValues values = new ContentValues();
 					values.put(DatabaseField.STATE, DatabaseField.SYNCHRONIZED);
 					sqlite.update(table, values, whereClause, null);
 				}
 				else{
+					Log.i("info", "delete value");
 					sqlite.delete(table, whereClause, null);
 				}
 				result.moveToNext();
 			}
+			result.close();
 		}
 	}
 	
@@ -760,17 +762,17 @@ public class DatabaseAdapter {
 		if (field.indexOf(DatabaseField.FIELD) != -1){
 			String fieldId = field.split("_")[1];
 			if (fieldsMap.get(fieldId).equals(DatabaseField.INTEGER)){
-				return cursor.getInt(cursor.getColumnIndex(field));
+				return cursor.getInt(cursor.getColumnIndexOrThrow(field));
 			}
 			else if (fieldsMap.get(fieldId).equals(DatabaseField.DOUBLE)){
-				return cursor.getDouble(cursor.getColumnIndex(field));
+				return cursor.getDouble(cursor.getColumnIndexOrThrow(field));
 			}
 			else{
-				return cursor.getString(cursor.getColumnIndex(field));
+				return cursor.getString(cursor.getColumnIndexOrThrow(field));
 			}
 		}
 		else{
-			return cursor.getString(cursor.getColumnIndex(field));
+			return cursor.getString(cursor.getColumnIndexOrThrow(field));
 		}
 	}
 	

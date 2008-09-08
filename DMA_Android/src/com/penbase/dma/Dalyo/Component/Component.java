@@ -254,7 +254,7 @@ public class Component{
 		}
 		else {
 			Button button = new Button(context);
-			button.setText("else");
+			button.setText(name);
 			view = button;
 		}
 	}

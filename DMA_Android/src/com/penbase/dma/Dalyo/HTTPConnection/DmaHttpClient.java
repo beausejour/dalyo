@@ -80,7 +80,7 @@ public class DmaHttpClient{
 		createFilesPath();
 		try{
 			url = new URL("http://192.168.0.1/server/com.penbase.arbiter.Arbiter");
-			//url = new URL("http://193.34.130.87/server/com.penbase.arbiter.Arbiter");
+			//url = new URL("http://emvista.com/server/com.penbase.arbiter.Arbiter");
 		}
 		catch (MalformedURLException e) 
 		{e.printStackTrace();}

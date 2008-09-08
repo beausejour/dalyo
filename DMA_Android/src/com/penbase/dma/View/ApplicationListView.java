@@ -16,7 +16,6 @@ package com.penbase.dma.View;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import com.penbase.dma.Dma;
 import com.penbase.dma.R;
 import com.penbase.dma.Dalyo.Application;
@@ -116,6 +115,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		public View getView(int position, View convertView, ViewGroup parent) {
 			LinearLayout layout = new LinearLayout(mContext);
 			layout.setOrientation(LinearLayout.VERTICAL);
+			layout.setGravity(Gravity.CENTER);
 			
 			ImageView i = new ImageView(mContext);		// Make an ImageView to show a photo
 			i.setImageResource(mApps.get(position));
@@ -127,7 +127,6 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 			TextView tv = new TextView(mContext);
 			tv.setText(Dma.applicationList.get(position).getName());
 			tv.setTextSize(10);
-			tv.setGravity(Gravity.CENTER);
 			
 			layout.addView(i, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 			layout.addView(tv, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
