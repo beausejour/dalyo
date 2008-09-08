@@ -60,14 +60,16 @@ public class ConfirmDialog extends Thread{
 		//.setIcon(R.drawable.star_big_on)
 		builder.setPositiveButton("Yes", new DialogInterface.OnClickListener(){
 			public void onClick(DialogInterface dialog, int whichButton){
-				value = true;		
+				value = true;
+				Log.i("info", "end dialog");
 				Looper.myLooper().quit();
 			}
 		});
 		
 		builder.setNegativeButton("No", new DialogInterface.OnClickListener(){
 			public void onClick(DialogInterface dialog, int whichButton){
-				value = false;	
+				value = false;
+				Log.i("info", "end dialog");
 				Looper.myLooper().quit();
 			}
 		});
@@ -75,8 +77,11 @@ public class ConfirmDialog extends Thread{
 	}
 	
 	public void run(){
+		Log.i("info", "prepare");
 		Looper.prepare();
+		Log.i("info", "displaydialog");
 		displayDialog();
+		Log.i("info", "loop");
 		Looper.loop();
 	}
 	

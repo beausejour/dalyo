@@ -461,13 +461,16 @@ public class Function {
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CONFIRM)){
 				Log.i("info", "call confirmdialog function");
 				ConfirmDialog confirmDialog = new ConfirmDialog(element.getElementsByTagName(ScriptTag.PARAMETER), context);
+				Log.i("info", "start thread");
 				confirmDialog.start();
 				try{
+					Log.i("info", "join thread");
 					confirmDialog.join();
 				}
 				catch (InterruptedException e){
 					e.printStackTrace();
 				}
+				Log.i("info", "get value");
 				result = confirmDialog.getValue();
 				Log.i("info", "value of confirmdialog "+result);
 				//Cancel the thread, because the stop() method is deprecated

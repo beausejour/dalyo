@@ -90,6 +90,7 @@ public class NS_DatabaseTable {
 			records.add(record);
 			cursor.moveToNext();
 		}
+		cursor.close();
 		Log.i("info", "records "+records);
 		return records;
 	}
@@ -110,6 +111,7 @@ public class NS_DatabaseTable {
 			records.add(record);
 			cursor.moveToNext();
 		}
+		cursor.close();
 		return records; 
 	}
 }

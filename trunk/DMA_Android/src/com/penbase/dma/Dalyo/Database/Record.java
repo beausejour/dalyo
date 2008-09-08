@@ -40,6 +40,7 @@ public class Record {
 				//cursor.next();
 				cursor.moveToNext();
 			}
+			cursor.close();
 			Log.i("info", "currentRecord in constructor "+currentRecord);
 		}
 	}

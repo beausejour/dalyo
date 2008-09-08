@@ -89,7 +89,7 @@ public class NS_Runtime {
 					}
 				}.start();
 			}*/
-			syncProgressDialog = ProgressDialog.show(Function.getContext(), "Please wait...", "Synchronizing application's data non uithread...", true, false);
+			syncProgressDialog = ProgressDialog.show(Function.getContext(), "Please wait...", "Synchronizing application's data...", true, false);
 			new Thread(){
 				public void run() {
 					try {
