@@ -68,7 +68,10 @@ public class ComboBox extends Spinner implements OnItemSelectedListener{
 			records.put(i, record);
 			cursor.moveToNext();
 		}
-		cursor.close();
+		if (!cursor.isClosed()) {
+			cursor.deactivate();
+			cursor.close();
+		}
 		spinnerArrayAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, itemsList);
 		this.setAdapter(spinnerArrayAdapter);
 	}

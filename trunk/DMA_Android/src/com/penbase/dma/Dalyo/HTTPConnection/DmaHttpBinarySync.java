@@ -111,7 +111,7 @@ public class DmaHttpBinarySync {
 				String codeResponseStr = getErrorCode(responsedata);
 				Log.i("info", "responsea "+responseAction+" code "+codeResponseStr);
 				if (Integer.valueOf(codeResponseStr) == ErrorCode.OK){
-					DatabaseAdapter.cleanTables();
+					//DatabaseAdapter.cleanTables();
 					wellDone = true;
 				}
 			}

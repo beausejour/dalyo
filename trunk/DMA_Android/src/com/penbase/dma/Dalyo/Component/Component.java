@@ -376,9 +376,11 @@ public class Component{
 		}
 		else if (getView() instanceof TextZone) {
 			result = ((TextZone)getView()).getValue();
+			Log.i("info", "result of textzone "+result);
 		}
 		else if (getView() instanceof TextField) {
 			result = ((TextField)getView()).getValue();
+			Log.i("info", "result of textfield "+result);
 		}
 		else if (getView() instanceof TimeField) {
 			result = ((TimeField)getView()).getTime();

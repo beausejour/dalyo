@@ -90,7 +90,10 @@ public class NS_DatabaseTable {
 			records.add(record);
 			cursor.moveToNext();
 		}
-		cursor.close();
+		if (!cursor.isClosed()) {
+			cursor.deactivate();
+			cursor.close();
+		}
 		Log.i("info", "records "+records);
 		return records;
 	}
@@ -111,7 +114,10 @@ public class NS_DatabaseTable {
 			records.add(record);
 			cursor.moveToNext();
 		}
-		cursor.close();
+		if (!cursor.isClosed()) {
+			cursor.deactivate();
+			cursor.close();
+		}
 		return records; 
 	}
 }

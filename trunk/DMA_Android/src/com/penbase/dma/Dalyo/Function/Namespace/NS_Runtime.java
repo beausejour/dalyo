@@ -9,20 +9,12 @@ import com.penbase.dma.View.ApplicationView;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.os.Handler;
 import android.util.Log;
-//import android.view.UIThreadUtilities;
+
 
 public class NS_Runtime {
 	private static boolean result = false;
-	private static ProgressDialog syncProgressDialog = null;
-	private static boolean showen = false; 
-	private static Handler handler = new Handler();
-	private static Runnable runnable = new Runnable() {
-		public void run() {
-			syncProgressDialog.dismiss();
-		}
-	}; 
+	private static ProgressDialog syncProgressDialog;
 	
 	public static void Alert(Context context, Element element){
 		String message = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_TEXT, ScriptAttribute.STRING));
@@ -45,69 +37,31 @@ public class NS_Runtime {
 		}
 
 		if (showProgress){
-			/*if (showen){
-				if (UIThreadUtilities.isUIThread(ApplicationView.getLayoutsMap().get(ApplicationView.getCurrentFormId()))){
-					showen = false;
-				}
-				UIThreadUtilities.runOnUIThread(ApplicationView.getCurrentView(), new Runnable(){
-					@Override
-					public void run() {
-						syncProgressDialog = ProgressDialog.show(Function.getContext(), "Please wait...", 
-								"Synchronizing application's data uithread...", true, false);
-						new Thread(){
-							public void run() {
-								try {
-									result = ApplicationView.getCurrentClient().launchImport(
-											ApplicationListView.getApplicationsInfo().get("AppId"),
-											ApplicationListView.getApplicationsInfo().get("DbId"), 
-											ApplicationListView.getApplicationsInfo().get("Username"),
-											ApplicationListView.getApplicationsInfo().get("Userpassword"));
-								}
-								catch(Exception e)
-								{e.printStackTrace();}
-								handler.post(runnable);
-							}
-						}.start();
-					}
-				});
-			}*/
-			/*else{
-				syncProgressDialog = ProgressDialog.show(Function.getContext(), "Please wait...", "Synchronizing application's data non uithread...", true, false);
-				new Thread(){
-					public void run() {
-						try {
-							result = ApplicationView.getCurrentClient().launchImport(
-									ApplicationListView.getApplicationsInfo().get("AppId"),
-									ApplicationListView.getApplicationsInfo().get("DbId"), 
-									ApplicationListView.getApplicationsInfo().get("Username"),
-									ApplicationListView.getApplicationsInfo().get("Userpassword"));
-							showen = true;
-						}
-						catch(Exception e)
-						{e.printStackTrace();}
-						syncProgressDialog.dismiss();
-					}
-				}.start();
-			}*/
+			Log.i("info", "showprogress");
 			syncProgressDialog = ProgressDialog.show(Function.getContext(), "Please wait...", "Synchronizing application's data...", true, false);
-			new Thread(){
+			Thread thread = new Thread(new Runnable() {
 				public void run() {
-					try {
-						result = ApplicationView.getCurrentClient().launchImport(
-								ApplicationListView.getApplicationsInfo().get("AppId"),
-								ApplicationListView.getApplicationsInfo().get("DbId"), 
-								ApplicationListView.getApplicationsInfo().get("Username"),
-								ApplicationListView.getApplicationsInfo().get("Userpassword"));
-						showen = true;
-					}
-					catch(Exception e)
-					{e.printStackTrace();}
+					Log.i("info", "thread run");
+					result = ApplicationView.getCurrentClient().launchImport(
+							ApplicationListView.getApplicationsInfo().get("AppId"),
+							ApplicationListView.getApplicationsInfo().get("DbId"), 
+							ApplicationListView.getApplicationsInfo().get("Username"),
+							ApplicationListView.getApplicationsInfo().get("Userpassword"));
 					syncProgressDialog.dismiss();
 				}
-			}.start();
+			});
+			thread.start();
+			try {
+				thread.join();
+			} 
+			catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
 			return result;
 		}
 		else{
+			Log.i("info", "else ");
 			return ApplicationView.getCurrentClient().launchImport(
 					ApplicationListView.getApplicationsInfo().get("AppId"),
 					ApplicationListView.getApplicationsInfo().get("DbId"), 
