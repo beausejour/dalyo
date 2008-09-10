@@ -14,6 +14,7 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.Paint.Style;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -176,7 +177,11 @@ public class DataView extends ListView{
 					cursor.moveToNext();
 				}
 			}
-			cursor.close();
+			if (!cursor.isClosed()) {
+				Log.i("info", "cursor is not closed");
+				cursor.deactivate();
+				cursor.close();
+			}
 		}
 	}
 	

@@ -51,21 +51,6 @@ public class DatabaseAdapter {
 	}
 	
 	private void createDatabase(String database) throws SQLException{
-		/*if (!databaseExists(database)){
-			Log.i("info", "the database doesn't exist");
-			sqlite = context.openOrCreateDatabase(database, 0, null);
-			createTable();
-		}
-		else if (!checkDatabaseExists()){
-			Log.i("info", "the database isn't the same");
-			deleteDatabase(database);
-			sqlite = context.openOrCreateDatabase(database, 0, null);
-			createTable();
-		}
-		else{
-			Log.i("info", "the database have nothing to change");
-			sqlite = context.openOrCreateDatabase(database, 0, null);
-		}*/
 		try{
 			if (!databaseExists(database)){
 				Log.i("info", "the database doesn't exist");
@@ -328,7 +313,6 @@ public class DatabaseAdapter {
 					byte[] valueLength = new byte[Binary.INTBYTE];
 					bis.read(valueLength, 0, valueLength.length);
 					int valueLengthInt = Binary.byteArrayToInt(valueLength);
-					Log.i("info", "valueLengthInt "+valueLengthInt);
 					//Get value
 					byte[] value = new byte[valueLengthInt];
 					bis.read(value, 0, value.length);
@@ -354,14 +338,17 @@ public class DatabaseAdapter {
 		Log.i("info", "syncExportTable ");
 		int tableNbInt = 0;
 		Set<String> keys = tablesMap.keySet();
+		Log.i("info", "tablesmap keys "+keys.toString());
 		HashMap<String, ArrayList<HashMap<Object, Object>>> tidMap = 
 			new HashMap<String, ArrayList<HashMap<Object, Object>>>();
 		for (String key : keys){
 			String table = DatabaseField.TABLE+key;
 			Log.i("info", "table "+table);
-			String selection = table+".STATE != "+DatabaseField.SYNCHRONIZED;
+			//String selection = table+".STATE != "+DatabaseField.SYNCHRONIZED;
+			String selection = "STATE != "+DatabaseField.SYNCHRONIZED;
 			Log.i("info", "selection "+selection);
 			Cursor cursor = sqlite.query(table, null, selection, null, null, null, null);
+			//Cursor cursor = selectQuery(key, null, null);
 			Log.i("info", "cursor count "+cursor.getCount());
 			if (cursor.getCount() > 0){
 				int cursorCount = cursor.getCount();
@@ -371,16 +358,27 @@ public class DatabaseAdapter {
 					HashMap<Object, Object> record = new HashMap<Object, Object>();
 					String[] columns = cursor.getColumnNames();
 					int columnsNb = columns.length;
+					boolean checkSyncType = true;
 					for (int column=0; column<columnsNb; column++){
+						Log.i("info", "column name "+columns[column]+" its value "+getCursorValue(cursor, columns[column]));
 						record.put(columns[column], getCursorValue(cursor, columns[column]));
+						if ((columns[column].equals(DatabaseField.STATE)) && (Integer.valueOf(String.valueOf(getCursorValue(cursor, columns[column]))) == DatabaseField.SYNCHRONIZED)) {
+							checkSyncType = false;
+						}
 					}
-					records.add(record);
+					if (checkSyncType) {
+						records.add(record);
+					}
 					cursor.moveToNext();
 				}
 				tidMap.put(key, records);
 				tableNbInt += 1;
 			}
-			cursor.close();
+			if (!cursor.isClosed()) {
+				Log.i("info", "cursor is not closed");
+				cursor.deactivate();
+				cursor.close();
+			}
 		}
 		Log.i("info", "tidmap "+tidMap.toString());
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -499,6 +497,7 @@ public class DatabaseAdapter {
 		String table = DatabaseField.TABLE+tableId;
 		ContentValues values = new ContentValues();
 		values.put(DatabaseField.GID+tableId, String.valueOf(gid));
+		values.put(DatabaseField.STATE, DatabaseField.SYNCHRONIZED);   //update sync type at the same time 
 		String whereClause = "";
 		if (tableId == 0){
 			String idValue = tableId+""+lid;
@@ -533,26 +532,25 @@ public class DatabaseAdapter {
 		Log.i("info", "add table value "+DatabaseField.TABLE+tableId);
 		Cursor cursorAllRows = selectQuery(String.valueOf(tableId), null, null);
 		int newId = cursorAllRows.getCount()+1;
-		String idValue = tableId+""+newId;
-		int fieldsNb = fieldsList.size();
-		String fields = "("+DatabaseField.ID+tableId+", "+DatabaseField.GID+tableId+", "+DatabaseField.STATE+", ";
-		String values = "('"+idValue+"\', \'"+record.get(1)+"\', "+DatabaseField.SYNCHRONIZED+", ";
-		for (int i=0; i<fieldsNb; i++){
-			if (i == fieldsNb-1){
-				fields += DatabaseField.FIELD+fieldsList.get(i);
-				values += "\'"+record.get(i+2)+"\'";
-			}
-			else{
-				fields += DatabaseField.FIELD+fieldsList.get(i)+", ";
-				values += "\'"+record.get(i+2)+"\', ";
-			}
+		if (!cursorAllRows.isClosed()) {
+			Log.i("info", "cursor is not closed");
+			cursorAllRows.deactivate();
+			cursorAllRows.close();
 		}
-		fields += ")";
-		values += ")";
+		Log.i("info", "calculated new id "+newId);
+		String idValue = tableId+""+newId;
+		Log.i("info", "idvalue is "+idValue);
+		ContentValues values = new ContentValues();
+		values.put(DatabaseField.ID+tableId, idValue);
+		values.put(DatabaseField.GID+tableId, (String)record.get(1));
+		values.put(DatabaseField.STATE, DatabaseField.SYNCHRONIZED);
+		int fieldsNb = fieldsList.size();
+		for (int i=0; i<fieldsNb; i++){
+			values.put(DatabaseField.FIELD+fieldsList.get(i), (String)record.get(i+2));
+		}
 		String tableName = DatabaseField.TABLE+tableId;
-		String insert = "INSERT INTO "+tableName+" "+fields+" VALUES"+values+";";
-		Log.i("info", "query "+insert);
-		sqlite.execSQL(insert);
+		long insertResult = sqlite.insert(tableName, null, values);
+		Log.i("info", "insertresult "+insertResult);
 	}
 	
 	private void updateValues(int tableId, ArrayList<Integer> fieldsList, ArrayList<Object> record){
@@ -616,7 +614,6 @@ public class DatabaseAdapter {
 		String selection = createSelectionString(tables, filter);
 		Log.i("info", "selection selectQuery "+selection);
 		result = sqlite.query(table, projectionIn, selection, null, null, null, null);
-		Log.i("info", "result "+result);
 		return result;
 	}
 
@@ -712,17 +709,21 @@ public class DatabaseAdapter {
 	
 	public static void beginTransaction(){
 		STARTTRANSACTION = true;
-		sqlite.execSQL("BEGIN TRANSACTION;");
+		//sqlite.beginTransaction();
+		//sqlite.execSQL("BEGIN TRANSACTION;");
 	}
 	
 	public static void rollbackTransaction(){
 		STARTTRANSACTION = false;
-		sqlite.execSQL("ROLLBACK TRANSACTION;");
+	//	sqlite.endTransaction();
+		//sqlite.execSQL("ROLLBACK TRANSACTION;");
 	}
 	
 	public static void commitTransaction(){
 		STARTTRANSACTION = false;
-		sqlite.execSQL("COMMIT TRANSACTION;");
+		/*sqlite.setTransactionSuccessful();
+		sqlite.endTransaction();*/
+		//sqlite.execSQL("COMMIT TRANSACTION;");
 	}
 	
 	public static boolean hasStartTransaction(){
@@ -742,19 +743,20 @@ public class DatabaseAdapter {
 			int count = result.getCount();
 			for (int i=0; i<count; i++){
 				String whereClause = id+" = \'"+result.getString(result.getColumnIndexOrThrow(id))+"\'";
-				if (result.getInt(result.getColumnIndexOrThrow(DatabaseField.STATE)) != DatabaseField.DELETEVALUE){
-					Log.i("info", "update value");
-					ContentValues values = new ContentValues();
-					values.put(DatabaseField.STATE, DatabaseField.SYNCHRONIZED);
-					sqlite.update(table, values, whereClause, null);
-				}
-				else{
+				if (result.getInt(result.getColumnIndexOrThrow(DatabaseField.STATE)) == DatabaseField.DELETEVALUE) {
 					Log.i("info", "delete value");
-					sqlite.delete(table, whereClause, null);
+					sqlite.delete(table, whereClause, null);					
 				}
 				result.moveToNext();
 			}
-			result.close();
+			if (!result.isClosed()) {
+				Log.i("info", "cursor is not closed");
+				result.deactivate();
+				result.close();
+			}
+			else {
+				Log.i("info", "cursor is closed");
+			}
 		}
 	}
 	

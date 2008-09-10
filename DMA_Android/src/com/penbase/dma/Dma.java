@@ -29,7 +29,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.MenuItem;
@@ -144,6 +143,7 @@ public class Dma extends Activity implements OnClickListener{
 			new Thread(){
 				public void run() {
 					try {
+						// save user info
 						SharedPreferences.Editor editorPrefs = getSharedPreferences(Dma.PREFS_NAME, MODE_PRIVATE).edit();
 						editorPrefs.putBoolean("RememberMe", cb_remember_me.isChecked());
 						editorPrefs.putString("Username", tx_login.getText().toString());
@@ -159,17 +159,6 @@ public class Dma extends Activity implements OnClickListener{
 					startActivityForResult(new Intent(Dma.this, ApplicationListView.class), 0);
 				}
 			}.start();
-			
-			// save user info.
-			/*SharedPreferences.Editor editorPrefs = getSharedPreferences(Dma.PREFS_NAME, MODE_PRIVATE).edit();
-			editorPrefs.putBoolean("RememberMe", cb_remember_me.isChecked());
-			editorPrefs.putString("Username", tx_login.getText().toString());
-			editorPrefs.putString("Userpassword", tx_password.getText().toString());
-			editorPrefs.putString("ApplicationList", rep);
-			editorPrefs.commit();
-			Dma.GetListApplicationFromXml(rep);
-			this.finish();
-			startActivityForResult(new Intent(this, ApplicationListView.class), 0);*/
 		}
 	}
 	
@@ -196,7 +185,7 @@ public class Dma extends Activity implements OnClickListener{
 	
 	public static String getDeviceID(){
 		String imei = TelephonyManager.getDefault().getDeviceId();
-		return "ffffffsssss";
+		return "zofsqrsdss";
 		//return imei;
 	}
 	

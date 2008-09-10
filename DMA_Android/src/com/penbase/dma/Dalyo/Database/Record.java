@@ -40,7 +40,10 @@ public class Record {
 				//cursor.next();
 				cursor.moveToNext();
 			}
-			cursor.close();
+			if (!cursor.isClosed()) {
+				cursor.deactivate();
+				cursor.close();	
+			}
 			Log.i("info", "currentRecord in constructor "+currentRecord);
 		}
 	}
@@ -50,7 +53,7 @@ public class Record {
 		ArrayList<Object> valueList = new ArrayList<Object>();
 		if (fList.size() == vList.size()){
 			int size = fList.size();
-			for (int i=2; i<size; i++){
+			for (int i=0; i<size; i++){
 				fieldList.add(Integer.valueOf(String.valueOf(fList.get(i))));
 				valueList.add(vList.get(i));
 			}
