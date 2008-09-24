@@ -549,7 +549,6 @@ public class DatabaseAdapter {
 		values.put(DatabaseField.STATE, DatabaseField.SYNCHRONIZED);
 		int fieldsNb = fieldsList.size();
 		for (int i=0; i<fieldsNb; i++){
-			Log.i("info", "key "+DatabaseField.FIELD+fieldsList.get(i)+" value "+record.get(i+2)+" field type "+fieldsMap.get(String.valueOf(fieldsList.get(i))));
 			//check field's type
 			if (fieldsMap.get(String.valueOf(fieldsList.get(i))).equals("BLOB")) {
 				ByteArrayOutputStream bos = new ByteArrayOutputStream();
