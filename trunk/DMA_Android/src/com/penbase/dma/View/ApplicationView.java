@@ -33,8 +33,8 @@ public class ApplicationView extends Activity {
 	private static Document dbDoc = null;
 	private static HashMap<String, String> resourcesFileMap;
 	private static HashMap<String, Component> componentsMap;
-	public static final android.view.IWindowManager windowService = android.view.IWindowManager.Stub.asInterface(
-			android.os.ServiceManager.getService("window"));
+	/*public static final android.view.IWindowManager windowService = android.view.IWindowManager.Stub.asInterface(
+			android.os.ServiceManager.getService("window"));*/
 	private static DatabaseAdapter database;
 	private LoadingThread loadingThread = null;
 	private ProgressDialog loadingbar;
@@ -308,7 +308,7 @@ public class ApplicationView extends Activity {
 	private void quit() {
 		this.finish();
 	}
-	
+
 	public static final int getOrientation(){
 		int orientation = 0;
 		/*try{

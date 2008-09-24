@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -48,8 +49,6 @@ import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
 import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.View.ApplicationListView;
 import com.penbase.dma.View.ApplicationView;
-
-import android.security.MessageDigest;
 import android.util.Log;
 
 public class DmaHttpClient{
@@ -75,6 +74,8 @@ public class DmaHttpClient{
 	
 	//Image file's path
 	private String imageFilePath;
+	
+	private boolean syncResult = false;
 	
 	public DmaHttpClient(){
 		createFilesPath();
@@ -385,20 +386,30 @@ public class DmaHttpClient{
 	//Import server data
 	public boolean launchImport(String AppId, String DbId, String login, String pwd) {
 		boolean result = false;
-		String ask = "act=ask&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd="+pwd+
+		final String ask = "act=ask&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd="+pwd+
 		"&stream=1&useragent=ANDROID&did="+Dma.getDeviceID();
 		String report = "act=rep&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd="+pwd+
 		"&stream=1&useragent=ANDROID&did="+Dma.getDeviceID();
+		
+		/*ImportExportTask ieTask = new ImportExportTask(url, ask, report, AppId, DbId, login, pwd);
+		ieTask.execute((Void[])null);
+		return ieTask.getResult();*/
+		
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		DmaHttpBinarySync importSync = null;
+		Log.i("info", "before try of import");
+		//DmaHttpBinarySync importSync = null;
 		try {
+			Log.i("info", "in try");
 			bos.write(Binary.intToByteArray(DatabaseAdapter.getTableNb()));
+			Log.i("info", "before for");
 			for (String s : DatabaseAdapter.getTableIds()){
 				bos.write(Binary.intToByteArray(Integer.valueOf(s)));
 			}
+			Log.i("info", "end of for");
 			byte[] inputbytes = bos.toByteArray();
-			importSync = new DmaHttpBinarySync(url, ask, report, inputbytes, "Import");
-			boolean importResult = importSync.run();
+			Log.i("info", "call import method");
+			boolean importResult = new DmaHttpBinarySync(url, ask, report, inputbytes, "Import").run();
+			Log.i("info", "get import result");
 			if (importResult){
 				result = launchExport(AppId, DbId, login, pwd);
 			}
@@ -407,6 +418,7 @@ public class DmaHttpClient{
 			e.printStackTrace();
 		}
 		return result;
+		//return syncResult;
 	}
 	
 	//Export local data to server
@@ -500,21 +512,20 @@ public class DmaHttpClient{
 		return result;
 	}
 	
-	public static String getBoundary(){
-		String result = "";
-		try{
-			MessageDigest digest = android.security.MessageDigest.getInstance("MD5");
-			String hex = Long.toHexString(System.currentTimeMillis());
-			digest.update(hex.getBytes());
-			
-			/*byte[] hash = digest.digest();
-			result = hash.toString();*/
-			result = hex;
-		}
-		catch (NoSuchAlgorithmException e){
+	public static String md5(String string) {
+		java.security.MessageDigest messageDigest = null;
+		try {
+			messageDigest = java.security.MessageDigest.getInstance("MD5");
+		} 
+		catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
-		return result;
+		messageDigest.update(string.getBytes(),0,string.length());
+		return new BigInteger(1, messageDigest.digest()).toString(16);
+	}
+	
+	public static String getBoundary(){
+		return new java.util.Date(System.currentTimeMillis()).toString();
 	}
 	
 	public static int getServerInfo(){

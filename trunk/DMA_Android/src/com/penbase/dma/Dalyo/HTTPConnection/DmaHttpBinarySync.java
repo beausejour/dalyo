@@ -21,6 +21,7 @@ public class DmaHttpBinarySync {
 	private String syncType;
 	
 	public DmaHttpBinarySync(URL url, String request, String response, byte[] inputbytes, String syncType){
+		Log.i("info", "create httpbinartsync object");
 		this.requestAction = request;
 		this.responseAction = response;
 		this.inputbytes = inputbytes;
@@ -31,8 +32,8 @@ public class DmaHttpBinarySync {
 	private byte[] createConnection(String action, byte[] bytes){
 		byte[] result = null;
 		try{
-			URL urlByte = new URL(urlString+"?"+action);
-			HttpURLConnection connection = (HttpURLConnection) urlByte.openConnection();
+			URL newUrl = new URL(urlString+"?"+action);
+			HttpURLConnection connection = (HttpURLConnection) newUrl.openConnection();
 			String boundary = DmaHttpClient.getBoundary();
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			bos.write("\r\n".getBytes());
@@ -78,6 +79,7 @@ public class DmaHttpBinarySync {
 	public boolean run(){
 		boolean wellDone = false;
 		byte[] data = createConnection(requestAction, inputbytes);
+		Log.i("info", "get connection data");
 		String codeStr = getErrorCode(data);
 		Log.i("info", "code of action "+requestAction+" : "+Integer.valueOf(codeStr));
 		if (Integer.valueOf(codeStr) == ErrorCode.OK){

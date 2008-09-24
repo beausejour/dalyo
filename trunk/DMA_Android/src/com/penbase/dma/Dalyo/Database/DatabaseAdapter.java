@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
@@ -319,7 +320,9 @@ public class DatabaseAdapter {
 					Object valueObject = Binary.byteArrayToObject(value, fieldsMap.get(String.valueOf(fieldList.get(l))));
 					valueList.add(valueObject);
 				}
-				recordsList.add(valueList);
+				if (syncTypeInt != DatabaseField.SYNCHRONIZED) {
+					recordsList.add(valueList);
+				}
 			}
 			updateTable(tableIdInt, fieldList, syncTypeList, recordsList);
 		}
@@ -529,7 +532,7 @@ public class DatabaseAdapter {
 	
 	//Add values and don't check primary key
 	private void insertValues(int tableId, ArrayList<Integer> fieldsList, ArrayList<Object> record){
-		Log.i("info", "add table value "+DatabaseField.TABLE+tableId);
+		Log.i("info", "add table value "+DatabaseField.TABLE+tableId+" record "+record);
 		Cursor cursorAllRows = selectQuery(String.valueOf(tableId), null, null);
 		int newId = cursorAllRows.getCount()+1;
 		if (!cursorAllRows.isClosed()) {
@@ -546,7 +549,23 @@ public class DatabaseAdapter {
 		values.put(DatabaseField.STATE, DatabaseField.SYNCHRONIZED);
 		int fieldsNb = fieldsList.size();
 		for (int i=0; i<fieldsNb; i++){
-			values.put(DatabaseField.FIELD+fieldsList.get(i), (String)record.get(i+2));
+			Log.i("info", "key "+DatabaseField.FIELD+fieldsList.get(i)+" value "+record.get(i+2)+" field type "+fieldsMap.get(String.valueOf(fieldsList.get(i))));
+			//check field's type
+			if (fieldsMap.get(String.valueOf(fieldsList.get(i))).equals("BLOB")) {
+				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				ObjectOutputStream oos;
+				try {
+					oos = new ObjectOutputStream(bos);
+					oos.writeObject(record.get(i+2));
+				}
+				catch (IOException e) {
+					e.printStackTrace();
+				}
+				values.put(DatabaseField.FIELD+fieldsList.get(i), bos.toByteArray());
+			}
+			else {
+				values.put(DatabaseField.FIELD+fieldsList.get(i), (String)record.get(i+2));
+			}
 		}
 		String tableName = DatabaseField.TABLE+tableId;
 		long insertResult = sqlite.insert(tableName, null, values);
