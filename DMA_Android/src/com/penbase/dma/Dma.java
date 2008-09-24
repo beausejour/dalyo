@@ -25,6 +25,7 @@ import com.penbase.dma.View.ApplicationListView;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -47,9 +48,11 @@ public class Dma extends Activity implements OnClickListener{
 	private CheckBox cb_remember_me;
 	private AlertDialog alertDialog;
 	private ProgressDialog loadApps;
+	private static Context context;
 	
 	@Override
 	public void onCreate(Bundle icicle) {
+		context = this;
 		super.onCreate(icicle);
 		setContentView(R.layout.login_layout);
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
@@ -132,8 +135,8 @@ public class Dma extends Activity implements OnClickListener{
 			return;
 		}
 		DmaHttpClient client = new DmaHttpClient();
-		final String rep = client.Authentication(tx_login.getText().toString(),
-				tx_password.getText().toString());
+		final String rep = client.Authentication(tx_login.getText().toString().trim(),
+				tx_password.getText().toString().trim());
 		if (rep == null){
 			alertDialog.setMessage("Check your username or password!");
 			alertDialog.show();
@@ -184,8 +187,9 @@ public class Dma extends Activity implements OnClickListener{
 	}
 	
 	public static String getDeviceID(){
-		String imei = TelephonyManager.getDefault().getDeviceId();
-		return "zofsqrsdss";
+		//Get imei
+		String imei = ((TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
+		return "zfsqrsds";
 		//return imei;
 	}
 	

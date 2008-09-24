@@ -43,6 +43,6 @@ public class TextField extends AutoCompleteTextView{
 	}
 	
 	public String getValue() {
-		return this.getText().toString();
+		return this.getText().toString().trim();
 	}
 }

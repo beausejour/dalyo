@@ -1,12 +1,18 @@
 package com.penbase.dma.Dalyo.Function;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import com.penbase.dma.Constant.GpsStatus;
 import com.penbase.dma.Constant.ScriptAttribute;
@@ -217,12 +223,15 @@ public class Function {
 	}
 	
 	public static void createFunction(String name){
+		Log.i("info", "createFunction");
 		NodeList funcList = behaviorDocument.getElementsByTagName(ScriptTag.FUNCTION);
 		if (funcsMap.containsKey(name)){
-			Element funcElement = (Element) funcList.item(Integer.valueOf(funcsMap.get(name).get(0)));
-			NodeList nodeList = funcElement.getChildNodes();
+			final Element funcElement = (Element) funcList.item(Integer.valueOf(funcsMap.get(name).get(0)));
+			final NodeList nodeList = funcElement.getChildNodes();
 			int nodeLen = nodeList.getLength();
+		
 			for (int i=0; i<nodeLen; i++){
+				Log.i("info", "createFunction loop");
 				Element element = (Element) nodeList.item(i);
 				if (element.getNodeName().equals(ScriptTag.SET)){
 					setVariable(element);
