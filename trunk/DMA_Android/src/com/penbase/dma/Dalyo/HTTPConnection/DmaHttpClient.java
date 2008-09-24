@@ -120,7 +120,7 @@ public class DmaHttpClient{
 	}
 
 	public String Authentication(String login, String password){
-		return SendPost("act=login&login="+login+"&passwd="+password+"&useragent=ANDROID", STRING);
+		return SendPost("act=login&login="+login+"&passwd_md5="+md5(password)+"&useragent=ANDROID", STRING);
 	}
 	
 	public static String getFilesPath(){
@@ -213,7 +213,7 @@ public class DmaHttpClient{
 	
 	//Check if we need to download all xml files
 	public void checkDownloadFile(int position, String login, String pwd){
-		String loginStream = SendPost("act=login&login="+login+"&passwd="+pwd+"&useragent=ANDROID", STRING);
+		String loginStream = SendPost("act=login&login="+login+"&passwd_md5="+md5(pwd)+"&useragent=ANDROID", STRING);
 		Log.i("info", "loginstream "+loginStream);
 		StreamToFile(loginStream, login_XML);
 		Document parserLogin = CreateParseDocument(loginStream, null);
@@ -276,7 +276,7 @@ public class DmaHttpClient{
 	public Document getDesign(String AppId, String AppVer, String AppBuild, String SubId, String login, String pwd){
 		if (sendDesign){
 			String getDesign = "act=getdesign&from=runtime&appid="+AppId+"&appversion="+AppVer+"&appbuild="+
-			AppBuild+"&subid="+SubId+"&login="+login+"&passwd="+pwd+"&useragent=ANDROID";
+			AppBuild+"&subid="+SubId+"&login="+login+"&passwd_md5="+md5(pwd)+"&useragent=ANDROID";
 			String designStream = SendPost(getDesign, STRING);
 			Log.i("info", "get design ");
 			StreamToFile(designStream, design_XML);
@@ -318,8 +318,7 @@ public class DmaHttpClient{
 	public void getResources(String AppId, String AppVer, String AppBuild, String SubId, String login, String pwd){
 		HashMap<String, String> resourceMapFile = getResourceMap("hashcode");
 		String getResources = "act=getresources&from=runtime&appid="+AppId+"&appversion="+AppVer+
-		"&appbuild="+AppBuild+"&subid="+SubId+"&did="+Dma.getDeviceID()+"&login="+login+"&passwd="+
-		pwd+"&useragent=ANDROID";
+		"&appbuild="+AppBuild+"&subid="+SubId+"&did="+Dma.getDeviceID()+"&login="+login+"&passwd_md5="+md5(pwd)+"&useragent=ANDROID";
 		String resourcesStream = SendPost(getResources, STRING);
 		Document resourceDocument = CreateParseDocument(resourcesStream, null);
 		NodeList resourceList = resourceDocument.getElementsByTagName(XmlTag.RESOURCES_RL).item(0).getChildNodes();
@@ -333,7 +332,7 @@ public class DmaHttpClient{
 				resource.getAttribute(XmlTag.RESOURCES_R_EXT);
 				String getResource = "act=getresource&from=runtime&appid="+AppId+"&appversion="+AppVer+
 				"&appbuild="+AppBuild+"&subid="+SubId+"&did="+Dma.getDeviceID()+"&resourceid="+
-				resource.getAttribute(XmlTag.RESOURCES_R_ID)+"&login="+login+"&passwd="+pwd+"&useragent=ANDROID";
+				resource.getAttribute(XmlTag.RESOURCES_R_ID)+"&login="+login+"&passwd_md5="+md5(pwd)+"&useragent=ANDROID";
 				if ((resourceMapFile.containsKey(resourceId)) && (checkFileExist(fileName))){
 					if (!resourceMapFile.get(resourceId).equals(resource.getAttribute(XmlTag.RESOURCES_R_HASHCODE))){
 						Log.i("info", "download repalce image");
@@ -357,7 +356,7 @@ public class DmaHttpClient{
 		Log.i("info", "sendDb "+sendDb);
 		if (sendDb){
 			String getDB = "act=getdb&from=runtime&appid="+AppId+"&appversion="+AppVer+"&appbuild="+
-			AppBuild+"&subid="+SubId+"&login="+login+"&passwd="+pwd+"&useragent=ANDROID";
+			AppBuild+"&subid="+SubId+"&login="+login+"&passwd_md5="+md5(pwd)+"&useragent=ANDROID";
 			String dbStream = SendPost(getDB, STRING);
 			Log.i("info", "dbstream ");
 			StreamToFile(dbStream, db_XML);
@@ -372,7 +371,7 @@ public class DmaHttpClient{
 	public Document getBehavior(String AppId, String AppVer, String AppBuild, String SubId, String login, String pwd){
 		if (sendBehavior){
 			String getBehavior = "act=getbehavior&from=runtime&appid="+AppId+"&appversion="+AppVer+
-			"&appbuild="+AppBuild+"&subid="+SubId+"&did="+Dma.getDeviceID()+"&login="+login+"&passwd="+pwd+"&useragent=ANDROID";
+			"&appbuild="+AppBuild+"&subid="+SubId+"&did="+Dma.getDeviceID()+"&login="+login+"&passwd_md5="+md5(pwd)+"&useragent=ANDROID";
 			Log.i("info", "getbehavior ");
 			String behaviorStream = SendPost(getBehavior, STRING);
 			StreamToFile(behaviorStream, behavior_XML);
@@ -386,9 +385,9 @@ public class DmaHttpClient{
 	//Import server data
 	public boolean launchImport(String AppId, String DbId, String login, String pwd) {
 		boolean result = false;
-		final String ask = "act=ask&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd="+pwd+
+		final String ask = "act=ask&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd_md5="+md5(pwd)+
 		"&stream=1&useragent=ANDROID&did="+Dma.getDeviceID();
-		String report = "act=rep&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd="+pwd+
+		String report = "act=rep&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd_md5="+md5(pwd)+
 		"&stream=1&useragent=ANDROID&did="+Dma.getDeviceID();
 		
 		/*ImportExportTask ieTask = new ImportExportTask(url, ask, report, AppId, DbId, login, pwd);
@@ -423,11 +422,11 @@ public class DmaHttpClient{
 	
 	//Export local data to server
 	private boolean launchExport(String AppId, String DbId, String login, String pwd) {
-		String sync = "act=sync&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd="+pwd+
+		String sync = "act=sync&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd_md5="+md5(pwd)+
 		"&stream=1&useragent=ANDROID&did="+Dma.getDeviceID();
-		String send = "act=send&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd="+pwd+
+		String send = "act=send&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd_md5="+md5(pwd)+
 		"&stream=1&useragent=ANDROID&did="+Dma.getDeviceID();
-		String commit = "act=commit&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd="+pwd+
+		String commit = "act=commit&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd_md5="+md5(pwd)+
 		"&stream=1&useragent=ANDROID&did="+Dma.getDeviceID();
 		
 		byte[] exportData = ApplicationView.getDataBase().syncExportTable();
@@ -437,9 +436,9 @@ public class DmaHttpClient{
 	}
 	
 	public void filteredImport(String AppId, String DbId, String login, String pwd, ArrayList<String> tables, Object filters){
-		String ask = "act=ask&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd="+pwd+
+		String ask = "act=ask&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd_md5="+md5(pwd)+
 		"&stream=1&useragent=ANDROID&did="+Dma.getDeviceID();
-		String report = "act=rep&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd="+pwd+
+		String report = "act=rep&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd_md5="+md5(pwd)+
 		"&stream=1&useragent=ANDROID&did="+Dma.getDeviceID();
 		
 		int filtersSize = ((ArrayList<?>)filters).size();
