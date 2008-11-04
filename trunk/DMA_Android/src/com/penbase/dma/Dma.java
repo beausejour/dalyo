@@ -168,8 +168,6 @@ public class Dma extends Activity implements OnClickListener{
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		boolean r = super.onCreateOptionsMenu(menu);
-		menu.add("About");
-		menu.add("Quit");
 		menu.add(Menu.NONE, 0, Menu.NONE, "About");
 		menu.add(Menu.NONE, 1, Menu.NONE, "Quit");
 		return r;
@@ -189,7 +187,7 @@ public class Dma extends Activity implements OnClickListener{
 	public static String getDeviceID(){
 		//Get imei
 		String imei = ((TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
-		return "zfsqrsds";
+		return "zfsqrffsds";
 		//return imei;
 	}
 	
