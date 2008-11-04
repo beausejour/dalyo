@@ -934,13 +934,10 @@ public class DatabaseAdapter {
 				ArrayList<String> foreignKey = foreignKeyList.get(i);
 				if ((tables.contains(foreignKey.get(0))) && (tables.contains(foreignKey.get(2)))){
 					if (result != ""){
-						result += "AND "+DatabaseField.TABLE+foreignKey.get(0)+"."+DatabaseField.FIELD+foreignKey.get(1)+" = "+
-						DatabaseField.TABLE+foreignKey.get(2)+"."+DatabaseField.FIELD+foreignKey.get(3);
+						result += "AND ";
 					}
-					else{
-						result += DatabaseField.TABLE+foreignKey.get(0)+"."+DatabaseField.FIELD+foreignKey.get(1)+" = "+
-						DatabaseField.TABLE+foreignKey.get(2)+"."+DatabaseField.FIELD+foreignKey.get(3);
-					}					
+					result += DatabaseField.TABLE+foreignKey.get(0)+"."+DatabaseField.FIELD+foreignKey.get(1)+" = "+
+					DatabaseField.TABLE+foreignKey.get(2)+"."+DatabaseField.FIELD+foreignKey.get(3);
 					Log.i("info", "result "+i+" "+result);
 				}
 			}

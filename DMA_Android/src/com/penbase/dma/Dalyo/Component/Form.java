@@ -1,10 +1,13 @@
 package com.penbase.dma.Dalyo.Component;
 
+import java.io.File;
 import java.util.HashMap;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.widget.AbsoluteLayout;
 import com.penbase.dma.Dalyo.Component.Custom.ComboBox;
+import com.penbase.dma.Dalyo.Component.Custom.DoodleView;
 import com.penbase.dma.Dalyo.Component.Custom.TextField;
 import com.penbase.dma.Dalyo.Component.Custom.TextZone;
 import com.penbase.dma.Dalyo.Function.Function;
@@ -57,6 +60,20 @@ public class Form extends AbsoluteLayout{
 				else if (this.getChildAt(i) instanceof TextZone){
 					((TextZone)this.getChildAt(i)).refresh(record);
 				}
+			}
+		}
+	}
+	
+	public void setPreview() {
+		int viewLen = this.getChildCount();
+		for (int i=0; i<viewLen; i++) {
+			if (this.getChildAt(i) instanceof DoodleView) {
+				 String imagePath = "/data/data/com.penbase.dma/doodle.jpg";
+			        File file = new File(imagePath);
+			        if (file.exists()) {
+			        	((DoodleView)this.getChildAt(i)).setText("");
+			        	((DoodleView)this.getChildAt(i)).setBackgroundDrawable(Drawable.createFromPath(imagePath));
+			        }
 			}
 		}
 	}

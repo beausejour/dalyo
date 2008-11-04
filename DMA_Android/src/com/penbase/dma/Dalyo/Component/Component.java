@@ -4,15 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import com.penbase.dma.Constant.XmlTag;
 import com.penbase.dma.Dalyo.Component.Custom.*;
-
 import com.penbase.dma.Dalyo.Component.Custom.Dataview.DataView;
 import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
-
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.text.Layout.Alignment;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -251,6 +249,18 @@ public class Component{
 			dataview.setColumnInfo(columnInfos);
 			dataview.setOncalculate(onCalculateMap);
 			view = dataview;
+		}
+		else if (type.equals(XmlTag.COMPONENT_DOODLE)) {
+			DoodleView doodleView= new DoodleView(context);
+			doodleView.setText("Open Doodle");
+			doodleView.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					Intent myIntent = new Intent(context, Doodle.class);
+					context.startActivity(myIntent);
+				}
+			});
+			view = doodleView;
 		}
 		else {
 			Button button = new Button(context);
