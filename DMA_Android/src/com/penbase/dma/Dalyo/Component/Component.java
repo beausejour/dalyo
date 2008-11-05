@@ -5,6 +5,8 @@ import java.util.HashMap;
 import com.penbase.dma.Constant.XmlTag;
 import com.penbase.dma.Dalyo.Component.Custom.*;
 import com.penbase.dma.Dalyo.Component.Custom.Dataview.DataView;
+import com.penbase.dma.Dalyo.Component.Custom.Doodle.Doodle;
+import com.penbase.dma.Dalyo.Component.Custom.Doodle.DoodleView;
 import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
 import android.content.Context;

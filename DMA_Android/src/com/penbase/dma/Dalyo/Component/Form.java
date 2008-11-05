@@ -7,9 +7,9 @@ import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.widget.AbsoluteLayout;
 import com.penbase.dma.Dalyo.Component.Custom.ComboBox;
-import com.penbase.dma.Dalyo.Component.Custom.DoodleView;
 import com.penbase.dma.Dalyo.Component.Custom.TextField;
 import com.penbase.dma.Dalyo.Component.Custom.TextZone;
+import com.penbase.dma.Dalyo.Component.Custom.Doodle.DoodleView;
 import com.penbase.dma.Dalyo.Function.Function;
 
 public class Form extends AbsoluteLayout{
