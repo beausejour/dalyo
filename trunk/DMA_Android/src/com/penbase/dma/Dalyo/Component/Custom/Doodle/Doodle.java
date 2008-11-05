@@ -1,4 +1,4 @@
-package com.penbase.dma.Dalyo.Component.Custom;
+package com.penbase.dma.Dalyo.Component.Custom.Doodle;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -18,7 +18,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 
-public class Doodle extends Activity {
+public class Doodle extends Activity implements ColorPickerDialog.OnColorChangedListener {
     private Paint       mPaint;
     private DoodleView	doodleView;
 
@@ -28,8 +28,7 @@ public class Doodle extends Activity {
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setDither(true);
-        //mPaint.setColor(0xFFFF0000);
-        mPaint.setARGB(255, 255, 1, 255);
+        mPaint.setColor(0xFF000000);
         mPaint.setStyle(Paint.Style.STROKE);	
         mPaint.setStrokeJoin(Paint.Join.ROUND);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
@@ -178,6 +177,11 @@ public class Doodle extends Activity {
    }
    
    private void changeColor() {
-	   //mPaint.setARGB(255, 255, 1, 255);
+	   new ColorPickerDialog(this, this, mPaint.getColor()).show();
+   }
+   
+   public void colorChanged(int color) {
+	   Log.i("info", "colorChanged");
+       mPaint.setColor(color);
    }
 }
