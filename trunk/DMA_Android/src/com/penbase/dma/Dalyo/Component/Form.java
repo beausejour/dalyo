@@ -75,6 +75,7 @@ public class Form extends AbsoluteLayout{
 			        	((DoodleView)this.getChildAt(i)).setBackgroundDrawable(Drawable.createFromPath(imagePath));
 			        }
 			}
+			//check picturebox
 		}
 	}
 }

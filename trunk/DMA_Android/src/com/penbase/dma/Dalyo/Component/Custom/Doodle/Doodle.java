@@ -17,14 +17,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
 
 public class Doodle extends Activity implements ColorPickerDialog.OnColorChangedListener {
     private Paint       mPaint;
-    private DoodleView	doodleView;
+    private DoodlePanelView	doodleView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setDither(true);
@@ -33,16 +35,16 @@ public class Doodle extends Activity implements ColorPickerDialog.OnColorChanged
         mPaint.setStrokeJoin(Paint.Join.ROUND);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
         mPaint.setStrokeWidth(1);
-        doodleView = new DoodleView(this);
+        doodleView = new DoodlePanelView(this);
         setContentView(doodleView);
     }
     
-   public class DoodleView extends View {
+   public class DoodlePanelView extends View {
         private Bitmap  mBitmap;
         private Canvas  mCanvas;
         private Path    mPath;
         
-        public DoodleView(Context c) {
+        public DoodlePanelView(Context c) {
             super(c);
             
             mBitmap = Bitmap.createBitmap(320, 480, Bitmap.Config.ARGB_8888);

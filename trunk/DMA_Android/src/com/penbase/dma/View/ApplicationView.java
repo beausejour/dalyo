@@ -368,6 +368,7 @@ public class ApplicationView extends Activity {
 		super.onRestart();
 		//Check if there is doodle image
 		getLayoutsMap().get(getCurrentFormId()).setPreview();
+		//Check if there is a picturebox
 	}
 
 	@Override

@@ -7,6 +7,8 @@ import com.penbase.dma.Dalyo.Component.Custom.*;
 import com.penbase.dma.Dalyo.Component.Custom.Dataview.DataView;
 import com.penbase.dma.Dalyo.Component.Custom.Doodle.Doodle;
 import com.penbase.dma.Dalyo.Component.Custom.Doodle.DoodleView;
+import com.penbase.dma.Dalyo.Component.Custom.PictureBox.PictureBox;
+import com.penbase.dma.Dalyo.Component.Custom.PictureBox.PictureBoxView;
 import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
 import android.content.Context;
@@ -210,7 +212,6 @@ public class Component{
 				view = textfield;
 			}
 			if (align != null) {
-				//((TextView)view).setAlignment(getAlign(align));
 				((TextView)view).setGravity(getGravity(align));
 			}
 			if (editable) {
@@ -233,9 +234,15 @@ public class Component{
 			view = numberbox;
 		}
 		else if(type.equals(XmlTag.COMPONENT_PICTUREBOX)) {
-			Button image = new Button(context);
-			image.setText("Picture");
-			view = image;
+			PictureBoxView pictureBox = new PictureBoxView(context);
+			pictureBox.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					Intent myIntent = new Intent(context, PictureBox.class);
+					context.startActivity(myIntent);
+				}
+			});
+			view = pictureBox;
 		}
 		else if(type.equals(XmlTag.COMPONENT_IMAGE)) {
 			ImageView imageview = new ImageView(context);
