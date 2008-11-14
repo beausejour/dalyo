@@ -1,18 +1,12 @@
 package com.penbase.dma.Dalyo.Function;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.util.Log;
 import com.penbase.dma.Constant.GpsStatus;
 import com.penbase.dma.Constant.ScriptAttribute;
@@ -117,6 +111,35 @@ public class Function {
 		return result;
 	}
 	
+	private static Object distributeAction(Element element) {
+		Object result = null;
+		if (element.getNodeName().equals(ScriptTag.CALL)){
+			result = Function.distributeCall(element);
+		}
+		else if (element.getNodeName().equals(ScriptTag.KEYWORD)){
+			result = Function.getKeyWord(element);
+		}
+		else if (element.getNodeName().equals(ScriptTag.VAR)){
+			//use only one format to save all types of variale's value
+			result = getVariableValue(element);
+		}
+		else if (element.getNodeName().equals(ScriptTag.ELEMENT)){
+			result = element.getAttribute(ScriptTag.ELEMENT_ID);
+		}
+		else if (element.getNodeName().equals(ScriptTag.SET)){
+			setVariable(element);
+		}
+		else if (element.getNodeName().equals(ScriptTag.IF)){
+			Log.i("info", "there is if condition in then");
+			result = ifCondition(element);
+		}
+		else if (element.getNodeName().equals(ScriptTag.RETURN)){
+			Log.i("info", "return value");
+			result = getReturnValue(element);
+		}
+		return result;
+	}
+	
 	private static Object ifCondition(Element element){
 		Object result = "";
 		Log.i("info", "if called");
@@ -146,21 +169,7 @@ public class Function {
 					int thenchildrenLen = thenchildren.getLength();
 					for (int k=0; k<thenchildrenLen; k++){
 						Element thenChild = (Element) thenchildren.item(k);
-						if (thenChild.getNodeName().equals(ScriptTag.CALL)){
-							Log.i("info", "call function in then "+thenChild.getAttribute(ScriptTag.FUNCTION));
-							distributeCall(thenChild);
-						}
-						else if (thenChild.getNodeName().equals(ScriptTag.SET)){
-							setVariable(thenChild);
-						}
-						else if (thenChild.getNodeName().equals(ScriptTag.IF)){
-							Log.i("info", "there is if condition in then");
-							ifCondition(thenChild);
-						}
-						else if (thenChild.getNodeName().equals(ScriptTag.RETURN)){
-							Log.i("info", "return value");
-							result = getReturnValue(thenChild);
-						}
+						result = distributeAction(thenChild);
 					} 
 				}
 			}
@@ -171,22 +180,8 @@ public class Function {
 					int elsechildrenLen = elsechildren.getLength();
 					for (int k=0; k<elsechildrenLen; k++){
 						Element elseChild = (Element) elsechildren.item(k);
-						if (elseChild.getNodeName().equals(ScriptTag.CALL)){
-							distributeCall(elseChild);
-						}
-						else if (elseChild.getNodeName().equals(ScriptTag.SET)){
-							Log.i("info", "call setvarable "+elseChild.getChildNodes().getLength());
-							setVariable(elseChild);
-							Log.i("info", "add variable "+elseChild.getAttribute(ScriptTag.NAME)+" type "+
-									elseChild.getAttribute(ScriptTag.TYPE));
-						}
-						else if (elseChild.getNodeName().equals(ScriptTag.IF)){
-							ifCondition(elseChild);
-						}
-						else if (elseChild.getNodeName().equals(ScriptTag.RETURN)){
-							Log.i("info", "return value");
-							result = getReturnValue(elseChild);
-						}
+						
+						result = distributeAction(elseChild);
 					}
 				}
 			}
@@ -208,8 +203,8 @@ public class Function {
 							element.getAttribute(ScriptTag.TYPE).equals(ScriptAttribute.RECORD)){
 						varsMap.put(element.getAttribute(ScriptTag.NAME), record);
 					}
-					else if (element.getNodeName().equals(ScriptTag.IF)){
-						result = String.valueOf(ifCondition(element));
+					else {
+						distributeAction(element);
 					}
 				}
 			}
@@ -233,22 +228,15 @@ public class Function {
 			for (int i=0; i<nodeLen; i++){
 				Log.i("info", "createFunction loop");
 				Element element = (Element) nodeList.item(i);
-				if (element.getNodeName().equals(ScriptTag.SET)){
-					setVariable(element);
-				}
-				else if (element.getNodeName().equals(ScriptTag.CALL)){
-					//create a method to check call function type
-					distributeCall(element);
-				}
-				else if (element.getNodeName().equals(ScriptTag.PARAMETER)){
+				if (element.getNodeName().equals(ScriptTag.PARAMETER)){
 					//save parameters
 					String paramName = funcElement.getAttribute(ScriptTag.NAME)+"_"+element.getAttribute(ScriptTag.NAME);
 					if (parametersMap.containsKey(paramName)){
 						varsMap.put(paramName, parametersMap.get(paramName));
 					}
 				}
-				else if (element.getNodeName().equals(ScriptTag.IF)){
-					ifCondition(element);
+				else {
+					distributeAction(element);
 				}
 			}
 		}
@@ -668,23 +656,12 @@ public class Function {
 			Element child = (Element) element.getChildNodes().item(i);
 			//If condition elements
 			if ((child.getNodeName().equals(tag)) && (name == null) && (type == null)){
+				Log.i("info", "child.getChildNodes().getLength() "+child.getChildNodes().getLength());
 				if (child.getChildNodes().getLength() == 1){
+					Log.i("info", "check string "+child.getChildNodes().toString());
 					if (child.getChildNodes().item(0).getNodeType() == Node.ELEMENT_NODE){
 						Element item = (Element) child.getChildNodes().item(0);
-						if (item.getNodeName().equals(ScriptTag.CALL)){
-							Log.i("info", "set var call "+item.getNodeName());
-							value = Function.distributeCall(item);
-						}
-						else if (item.getNodeName().equals(ScriptTag.KEYWORD)){
-							value = Function.getKeyWord(item);
-						}
-						else if (item.getNodeName().equals(ScriptTag.VAR)){
-							//use only one format to save all types of variale's value
-							value = getVariableValue(item);
-						}
-						else if (item.getNodeName().equals(ScriptTag.ELEMENT)){
-							value = item.getAttribute(ScriptTag.ELEMENT_ID);
-						}
+						value = distributeAction(item);
 					}
 					else if (child.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE){
 						value = child.getChildNodes().item(0).getNodeValue();
@@ -693,20 +670,7 @@ public class Function {
 			}
 			//Set variable
 			else if ((child.getNodeName().equals(tag)) && (name.equals("")) && (type.equals(""))){
-				if (child.getNodeName().equals(ScriptTag.CALL)){
-					Log.i("info", "set var call "+child.getNodeName());
-					value = Function.distributeCall(child);
-				}
-				else if (child.getNodeName().equals(ScriptTag.KEYWORD)){
-					value = Function.getKeyWord(child);
-				}
-				else if (child.getNodeName().equals(ScriptTag.VAR)){
-					//use only one format to save all types of variale's value
-					value = getVariableValue(child);
-				}
-				else if (child.getNodeName().equals(ScriptTag.ELEMENT)){
-					value = child.getAttribute(ScriptTag.ELEMENT_ID);
-				}
+				value = distributeAction(child);
 			}
 			//Function parameters
 			else if ((child.getNodeName().equals(tag)) &&
@@ -715,20 +679,7 @@ public class Function {
 				if (child.getChildNodes().getLength() == 1){
 					if (child.getChildNodes().item(0).getNodeType() == Node.ELEMENT_NODE){
 						Element item = (Element) child.getChildNodes().item(0);
-						if (item.getNodeName().equals(ScriptTag.CALL)){
-							value = Function.distributeCall(item);
-						}
-						else if (item.getNodeName().equals(ScriptTag.KEYWORD)){
-							value = Function.getKeyWord(item);
-						}
-						else if (item.getNodeName().equals(ScriptTag.VAR)){
-							//use only one format to save all types of variale's value
-							value = getVariableValue(item);
-							Log.i("info", "value of variable "+value);
-						}
-						else if (item.getNodeName().equals(ScriptTag.ELEMENT)){
-							value = item.getAttribute(ScriptTag.ELEMENT_ID);
-						}
+						value = distributeAction(item);
 					}
 					else if (child.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE){
 						value = child.getChildNodes().item(0).getNodeValue();

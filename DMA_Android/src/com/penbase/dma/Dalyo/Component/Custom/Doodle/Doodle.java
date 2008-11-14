@@ -124,7 +124,6 @@ public class Doodle extends Activity implements ColorPickerDialog.OnColorChanged
    
    @Override
    public boolean onOptionsItemSelected(MenuItem item) {
-	   Log.i("info", "item.getItemId() "+item.getItemId());
 	   switch (item.getItemId()) {
 	   		case 0:
 	   			saveImage();
@@ -181,7 +180,6 @@ public class Doodle extends Activity implements ColorPickerDialog.OnColorChanged
    }
    
    public void colorChanged(int color) {
-	   Log.i("info", "colorChanged");
        mPaint.setColor(color);
    }
 }

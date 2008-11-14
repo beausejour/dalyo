@@ -9,7 +9,6 @@ import android.widget.BaseAdapter;
 public class DataViewAdapter extends BaseAdapter{
 	private Context context;
 	private ArrayList<CustomLinearLayout> items = new ArrayList<CustomLinearLayout>();
-	private boolean test = true;
 	
 	public DataViewAdapter(Context c){
 		this.context = c;
@@ -42,19 +41,13 @@ public class DataViewAdapter extends BaseAdapter{
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent){
 		CustomLinearLayout layout = null;
-		if (convertView == null){
-			if ((position == 0) && (test)){
-				layout = new CustomLinearLayout(context, items.get(position).getDataList(),
-						items.get(position).getWidthList(), true);
-				test = false;
-			}
-			else{
-				layout = new CustomLinearLayout(context, items.get(position).getDataList(),
-						items.get(position).getWidthList(),false);
-			}
+		if (position == 0) {
+			layout = new CustomLinearLayout(context, items.get(position).getDataList(),
+					items.get(position).getWidthList(), true);
 		}
-		else{
-			layout = (CustomLinearLayout) convertView;
+		else {
+			layout = new CustomLinearLayout(context, items.get(position).getDataList(),
+					items.get(position).getWidthList(),false);
 		}
 		return layout;
 	}

@@ -45,7 +45,6 @@ public class DataView extends ListView{
 		pwidthList = new ArrayList<String>();
 		lwidthList = new ArrayList<String>();
 		this.setItemsCanFocus(true);
-        //this.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 		this.setOnItemClickListener(new OnItemClickListener(){
 			@Override
 			public void onItemClick(AdapterView parent, View v, int position, long id){
@@ -172,13 +171,13 @@ public class DataView extends ListView{
 					}
 					CustomLinearLayout layout = new CustomLinearLayout(context, data, getPWidthList(), false);
 					adapter.addItem(layout);
-					adapter.notifyDataSetChanged();
+					//adapter.notifyDataSetChanged();
 					records.put(i, record);
 					cursor.moveToNext();
 				}
+				adapter.notifyDataSetChanged();
 			}
 			if (!cursor.isClosed()) {
-				Log.i("info", "cursor is not closed");
 				cursor.deactivate();
 				cursor.close();
 			}
