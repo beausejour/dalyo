@@ -128,7 +128,8 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 			tv.setText(Dma.applicationList.get(position).getName());
 			tv.setTextSize(10);
 			
-			layout.addView(i, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+			//layout.addView(i, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+			layout.addView(i, new LinearLayout.LayoutParams(48, 48));
 			layout.addView(tv, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 			return layout;
 			//return i;

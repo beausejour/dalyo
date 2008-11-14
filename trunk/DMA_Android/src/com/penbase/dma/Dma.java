@@ -113,6 +113,7 @@ public class Dma extends Activity implements OnClickListener{
 				}
 			}
 			app.setIconRes(R.drawable.splash);
+			//app.setIconRes(R.drawable.icon);
 			applicationList.add(app);
 		}
 	}
