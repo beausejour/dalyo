@@ -57,7 +57,12 @@ public class Component{
 	private String multiLine;
 	
 	//Variable for TimeField/DateField
-	String dateTimeValue = null;
+	private String dateTimeValue = null;
+	
+	//Variable for Gauge
+	private int minValue;
+	private int maxValue;
+	private int initialValue;
 
 	public Component(Context c, String t) {
 		this.context = c;
@@ -134,6 +139,18 @@ public class Component{
 	
 	public void setDateTimeValue(String value){
 		this.dateTimeValue = value;
+	}
+	
+	public void setInitValue(int i) {
+		this.initialValue = i;
+	}
+	
+	public void setMinValue(int min) {
+		this.minValue = min;
+	}
+
+	public void setMaxValue(int max) {
+		this.maxValue = max;
 	}
 	
 	public View getView() {
@@ -271,6 +288,13 @@ public class Component{
 			});
 			view = doodleView;
 		}
+		else if (type.equals(XmlTag.COMPONENT_GAUGE)) {
+			Gauge gauge = new Gauge(context);
+			gauge.setProgress(initialValue);
+			gauge.setMax(maxValue);
+			gauge.setMinValue(minValue);
+			view = gauge;
+		}
 		else {
 			Button button = new Button(context);
 			button.setText(name);
@@ -282,10 +306,11 @@ public class Component{
 		if (view instanceof DataView){
 			((DataView)view).setOnItemClickListener(new OnItemClickListener(){
 				@Override
-				public void onItemClick(AdapterView parent, View v, int position, long id){
+				public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
 					((DataView)view).setCurrentPosition(position);
 					Function.createFunction(funcName);
 				}
+
 			});
 		}
 		else{
@@ -299,7 +324,12 @@ public class Component{
 	}
 	
 	public void setOnchangeFunction(String funcName, View view) {
-		Function.createFunction(funcName);
+		if (view instanceof Gauge) {
+			((Gauge)view).setOnChangeFunction(funcName);
+		}
+		else if (view instanceof ComboBox) {
+			((ComboBox)view).setOnChangeFunction(funcName);
+		}
 	}
 	
 	/*private Alignment getAlign(String align) {
@@ -386,6 +416,12 @@ public class Component{
 		if (getView() instanceof NumberBox) {
 			((NumberBox)getView()).setValue(value);
 		}
+		if (getView() instanceof TextField) {
+			((TextField)getView()).setText(String.valueOf(value));
+		}
+		if (getView() instanceof Label) {
+			((Label)getView()).setText(String.valueOf(value));
+		}
 	}
 	
 	public Object getValue() {
@@ -406,6 +442,10 @@ public class Component{
 		}
 		else if (getView() instanceof DateField) {
 			result = ((DateField)getView()).getDate();
+		}
+		else if (getView() instanceof Gauge) {
+			result = ((Gauge)getView()).getValue();
+			Log.i("info", "value of gauge "+result);
 		}
 		return result;
 	}

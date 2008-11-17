@@ -4,7 +4,6 @@ import java.util.HashMap;
 import com.penbase.dma.Constant.DatabaseField;
 import android.content.Context;
 import android.graphics.Typeface;
-import android.util.Log;
 import android.widget.EditText;
 
 public class TextZone extends EditText{

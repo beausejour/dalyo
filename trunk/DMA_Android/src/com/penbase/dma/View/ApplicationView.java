@@ -177,6 +177,15 @@ public class ApplicationView extends Activity {
 						component.setMultiLine(element.getAttribute(XmlTag.COMPONENT_TEXTFIELD_MULTI));
 						component.setEditable(element.hasAttribute(XmlTag.COMPONENT_TEXTFIELD_EDIT));
 					}
+					if (element.hasAttribute(XmlTag.COMPONENT_GAUGE_INIT)){
+						component.setInitValue(Integer.valueOf(element.getAttribute(XmlTag.COMPONENT_GAUGE_INIT)));
+					}
+					if (element.hasAttribute(XmlTag.COMPONENT_GAUGE_MIN)){
+						component.setMinValue(Integer.valueOf(element.getAttribute(XmlTag.COMPONENT_GAUGE_MIN)));
+					}
+					if (element.hasAttribute(XmlTag.COMPONENT_GAUGE_MAX)){
+						component.setMaxValue(Integer.valueOf(element.getAttribute(XmlTag.COMPONENT_GAUGE_MAX)));
+					}
 					
 					if (element.getNodeName().equals(XmlTag.COMPONENT_CHECKBOX)){
 						if (element.hasAttribute(XmlTag.COMPONENT_CHECKBOX_CHECKED)){

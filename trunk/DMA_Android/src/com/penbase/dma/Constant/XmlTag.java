@@ -50,6 +50,9 @@ public class XmlTag {
 	public static final String COMPONENT_DATEFIELD = "df";
 	public static final String COMPONENT_DOODLE = "dd";
 	public static final String COMPONENT_GAUGE = "g";
+	public static final String COMPONENT_GAUGE_INIT = "i";
+	public static final String COMPONENT_GAUGE_MAX = "m";
+	public static final String COMPONENT_GAUGE_MIN = "v";
 	public static final String COMPONENT_IMAGE = "i";   
 	public static final String COMPONENT_LABEL = "l";
 	public static final String COMPONENT_MENUBAR = "mb";
