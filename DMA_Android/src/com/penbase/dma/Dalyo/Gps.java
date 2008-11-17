@@ -4,7 +4,6 @@ import java.util.List;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
-import android.location.LocationProvider;
 import android.util.Log;
 
 public class Gps{

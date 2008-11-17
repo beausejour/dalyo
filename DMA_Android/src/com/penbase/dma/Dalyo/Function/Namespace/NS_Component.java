@@ -1,6 +1,9 @@
 package com.penbase.dma.Dalyo.Function.Namespace;
 
 import org.w3c.dom.Element;
+
+import android.util.Log;
+
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Function.Function;
@@ -29,6 +32,7 @@ public class NS_Component {
 	public static void SetValue(Element element){
 		String componentId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT));
 		Object value = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
+		Log.i("info", "value "+value);
 		if (value != null){
 			ApplicationView.getComponents().get(componentId).setValue(value);
 		}

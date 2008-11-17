@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import com.penbase.dma.Constant.DatabaseField;
 import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
+import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.View.ApplicationView;
 import android.content.Context;
 import android.database.Cursor;
@@ -12,9 +13,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.AdapterView.OnItemSelectedListener;
 
-public class ComboBox extends Spinner implements OnItemSelectedListener{
+public class ComboBox extends Spinner {
 	private ArrayAdapter<String> spinnerArrayAdapter;
 	private String currentValue = null;
 	private int currentPosition = -1;
@@ -24,13 +24,13 @@ public class ComboBox extends Spinner implements OnItemSelectedListener{
 	private Context context;
 	private String formId;
 	private HashMap<Integer, HashMap<Object, Object>> records = new HashMap<Integer, HashMap<Object, Object>>();
+	private String funcName;
 	
 	public ComboBox(Context context, ArrayList<String> labelList, ArrayList<String> valueList){
 		super(context);
 		this.context = context;
 		this.labelList = labelList;
 		this.valueList = valueList;
-		this.setOnItemSelectedListener(this);
 	}
 	
 	public ComboBox(Context context, ArrayList<String> il){
@@ -75,22 +75,30 @@ public class ComboBox extends Spinner implements OnItemSelectedListener{
 		spinnerArrayAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, itemsList);
 		this.setAdapter(spinnerArrayAdapter);
 	}
-
-	@Override
-	public void onItemSelected(AdapterView parent, View v, int position, long id){
-		currentValue = spinnerArrayAdapter.getItem(position).toString();
-		currentPosition = position;
-		Log.i("info", "currentposition "+currentPosition+" formId "+formId);
-		if (formId != null){
-			setCurrentValue(formId, getCurrentRecord());
-		}
-	}
-
-	@Override
-	public void onNothingSelected(AdapterView arg0) {}
 	
 	public Object getCurrentValue(){
 		return currentValue;
+	}
+	
+	public void setOnChangeFunction(String name) {
+		this.funcName = name;
+		this.setOnItemSelectedListener(new OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long arg3) {
+				Function.createFunction(funcName);
+				currentValue = spinnerArrayAdapter.getItem(position).toString();
+				currentPosition = position;
+				Log.i("info", "currentposition "+currentPosition+" formId "+formId);
+				if (formId != null){
+					setCurrentValue(formId, getCurrentRecord());
+				}
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+			}
+			
+		});
 	}
 	
 	public HashMap<Object, Object> getCurrentRecord(){

@@ -46,12 +46,13 @@ public class DataView extends ListView{
 		this.setItemsCanFocus(true);
 		this.setOnItemClickListener(new OnItemClickListener(){
 			@Override
-			public void onItemClick(AdapterView parent, View v, int position, long id){
+			public void onItemClick(AdapterView<?> arg0, View v, int position, long arg3) {
 				currentPosition = position;
 				if (!((CustomLinearLayout) v).hasHeader()){
 					v.setSelected(true);
 				}
 			}
+
 		});
 		this.setAdapter(adapter);
 	}
