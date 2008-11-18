@@ -28,6 +28,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.view.Menu;
@@ -54,13 +55,18 @@ public class Dma extends Activity implements OnClickListener{
 	public void onCreate(Bundle icicle) {
 		context = this;
 		super.onCreate(icicle);
-		setContentView(R.layout.login_layout);
+		
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 		boolean rememberMe = settings.getBoolean("RememberMe", false);
 		alertDialog = new AlertDialog.Builder(this).create();
 		alertDialog.setTitle("Error");
 		if (!rememberMe){
-			setContentView(R.layout.login_layout);
+			if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+				setContentView(R.layout.login_layout);
+			}
+			else if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+				setContentView(R.layout.login_layout_landscape);
+			}
 			Button bt = (Button) findViewById(R.id.ok);
 			bt.setOnClickListener(this);
 			tx_login = (TextView) findViewById(R.id.textLogin);

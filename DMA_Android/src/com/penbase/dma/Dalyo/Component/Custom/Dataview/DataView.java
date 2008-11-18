@@ -8,12 +8,14 @@ import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
 import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.View.ApplicationView;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.Paint.Style;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -54,7 +56,7 @@ public class DataView extends ListView{
 			}
 
 		});
-		this.setAdapter(adapter);
+		//this.setAdapter(adapter);
 	}
 	
 	@Override
@@ -92,9 +94,9 @@ public class DataView extends ListView{
 				columns.add(column);
 			}
 			
-			if (ApplicationView.getOrientation() == 0){
+			if (ApplicationView.getOrientation() == Configuration.ORIENTATION_PORTRAIT){
 				CustomLinearLayout header = new CustomLinearLayout(context, headerList, pwidthList, true);
-				adapter.addItem(header);
+				this.addHeaderView(header, null, false);
 			}
 			else{
 				CustomLinearLayout header = new CustomLinearLayout(context, headerList, lwidthList, true);

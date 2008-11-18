@@ -13,12 +13,12 @@ import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.*;
-import android.view.MenuItem;
 import android.widget.*;
 import android.graphics.Color;
 
@@ -52,6 +52,7 @@ public class ApplicationView extends Activity {
 			}
 		}
 	};
+	private static int currentOrientation;
 
 	@Override
 	public void onCreate(Bundle icicle){	
@@ -262,22 +263,22 @@ public class ApplicationView extends Activity {
 					component.setView();
 					componentsMap.put(element.getAttribute(XmlTag.COMPONENT_COMMON_ID), component);
 					
-					//windowService.setOrientation(1);
-					//windowService.setOrientation(0);
-					if (getOrientation() == 0){			//Orientation vertical
-						component.getView().setLayoutParams(new AbsoluteLayout.LayoutParams(
-								Integer.valueOf(element.getAttribute(XmlTag.COMPONENT_COMMON_PWIDTH)),
-								Integer.valueOf(element.getAttribute(XmlTag.COMPONENT_COMMON_PHEIGHT)),
-								Integer.valueOf(element.getAttribute(XmlTag.COMPONENT_COMMON_PCOORDX)),
-								Integer.valueOf(element.getAttribute(XmlTag.COMPONENT_COMMON_PCOORDY))));
-					}
-					else if (getOrientation() == 1){	//Orientation horizontal
+					if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+						currentOrientation = Configuration.ORIENTATION_LANDSCAPE;
 						component.getView().setLayoutParams(new AbsoluteLayout.LayoutParams(
 								Integer.valueOf(element.getAttribute(XmlTag.COMPONENT_COMMON_LWIDTH)),
 								Integer.valueOf(element.getAttribute(XmlTag.COMPONENT_COMMON_LHEIGHT)),
 								Integer.valueOf(element.getAttribute(XmlTag.COMPONENT_COMMON_LCOORDX)),
 								Integer.valueOf(element.getAttribute(XmlTag.COMPONENT_COMMON_LCOORDY))));
-					}
+			        }
+			        else if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+			        	currentOrientation = Configuration.ORIENTATION_PORTRAIT;
+			        	component.getView().setLayoutParams(new AbsoluteLayout.LayoutParams(
+								Integer.valueOf(element.getAttribute(XmlTag.COMPONENT_COMMON_PWIDTH)),
+								Integer.valueOf(element.getAttribute(XmlTag.COMPONENT_COMMON_PHEIGHT)),
+								Integer.valueOf(element.getAttribute(XmlTag.COMPONENT_COMMON_PCOORDX)),
+								Integer.valueOf(element.getAttribute(XmlTag.COMPONENT_COMMON_PCOORDY))));
+			        }
 					form.addView(component.getView());
 					
 					//Add onclick event
@@ -318,20 +319,8 @@ public class ApplicationView extends Activity {
 		this.finish();
 	}
 
-	public static final int getOrientation(){
-		int orientation = 0;
-		/*try{
-			if (windowService.getOrientation() == 0){
-				orientation = 0;
-			}
-			else if (windowService.getOrientation() == 1){
-				orientation = 1;
-			}
-		}
-		catch (DeadObjectException e){
-			e.printStackTrace();
-		}*/
-		return orientation;
+	public static int getOrientation(){
+		return currentOrientation;
 	}
 
 	public static HashMap<String, Component> getComponents(){

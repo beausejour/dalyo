@@ -26,10 +26,10 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -68,7 +68,12 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		layout.setOrientation(LinearLayout.VERTICAL);
 		layout.setBackgroundColor(Color.WHITE);
 		ImageView imageView = new ImageView(this);
-		imageView.setBackgroundResource(R.drawable.banniere_dalyo);
+		if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+			imageView.setBackgroundResource(R.drawable.banniere_dalyo);
+		}
+		else if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+			imageView.setBackgroundResource(R.drawable.banniere_dalyo1);
+		}
 		layout.addView(imageView, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 		
 		TextView textView = new TextView(this);
@@ -140,8 +145,8 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		}
 
 		public final Object getItem(int position) {
-			return position;
-			//return mApps.get(position);
+			//return position;
+			return mApps.get(position);
 		}
 
 		public final long getItemId(int position) {
@@ -216,15 +221,15 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	}
 
 	@Override
-	public void onItemSelected(AdapterView parent, View v, int position, long id) {
+	public void onItemSelected(AdapterView<?> parent, View v, int position, long id) {
 		mApplicationName.setText(Dma.applicationList.get(position).getName());
 	}
 
 	@Override
-	public void onNothingSelected(AdapterView arg0) {}
+	public void onNothingSelected(AdapterView<?> arg0) {}
 
 	@Override
-	public void onItemClick(AdapterView parent, View v, final int position, long id) {
+	public void onItemClick(AdapterView<?> parent, View v, final int position, long id) {
 		SharedPreferences prefs = getSharedPreferences(Dma.PREFS_NAME, MODE_PRIVATE);
 		applicationName = Dma.applicationList.get(position).getName();
 		applicationInfos.put("Username", prefs.getString("Username", ""));

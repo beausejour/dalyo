@@ -40,16 +40,10 @@ public class DataViewAdapter extends BaseAdapter{
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent){
-		CustomLinearLayout layout = null;
-		if (position == 0) {
-			layout = new CustomLinearLayout(context, items.get(position).getDataList(),
-					items.get(position).getWidthList(), true);
-		}
-		else {
-			layout = new CustomLinearLayout(context, items.get(position).getDataList(),
-					items.get(position).getWidthList(),false);
-		}
-		return layout;
+		/*CustomLinearLayout layout = null;
+		layout = new CustomLinearLayout(context, items.get(position).getDataList(),
+				items.get(position).getWidthList(),false);*/
+		return items.get(position);
 	}
 	
 	public void removeItems(){
