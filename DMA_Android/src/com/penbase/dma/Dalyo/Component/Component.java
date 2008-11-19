@@ -447,6 +447,10 @@ public class Component{
 			result = ((Gauge)getView()).getValue();
 			Log.i("info", "value of gauge "+result);
 		}
+		else if (getView() instanceof DoodleView) {
+			result = DoodleView.getImageName();
+			Log.i("info", "value of doodle "+result);
+		}
 		return result;
 	}
 	

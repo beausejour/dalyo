@@ -12,6 +12,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import com.penbase.dma.Binary.Binary;
+import com.penbase.dma.Constant.Constant;
 import com.penbase.dma.Constant.DatabaseField;
 import com.penbase.dma.Constant.XmlTag;
 import com.penbase.dma.Dalyo.Function.Function;
@@ -36,6 +37,7 @@ public class DatabaseAdapter {
 	private String TABLEPREF = "TablePrefFile";
 	private String FIELDPREF = "FieldPrefFile";
 	private static boolean STARTTRANSACTION = false;
+	private static  ArrayList<ArrayList<Object>> blobRecords;
 	
 	public DatabaseAdapter(Context c, Document d, String database){
 		this.context = c;
@@ -47,6 +49,7 @@ public class DatabaseAdapter {
 		fieldsMap = new HashMap<String, String>();
 		fieldsPKMap = new HashMap<String, String>();
 		foreignKeyList = new ArrayList<ArrayList<String>>();
+		blobRecords = new ArrayList<ArrayList<Object>>();
 		createDatabase(dbName);
 	}
 	
@@ -73,7 +76,7 @@ public class DatabaseAdapter {
 	}
 	
 	private boolean databaseExists(String database){
-		File dbFile = new File("data/data/com.penbase.dma/databases/"+database);
+		File dbFile = new File(Constant.packageName+"databases/"+database);
 		return dbFile.exists();
 	}
 	
@@ -377,7 +380,6 @@ public class DatabaseAdapter {
 				tableNbInt += 1;
 			}
 			if (!cursor.isClosed()) {
-				Log.i("info", "cursor is not closed");
 				cursor.deactivate();
 				cursor.close();
 			}
@@ -386,13 +388,11 @@ public class DatabaseAdapter {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		//tableNb
 		byte[] tableNb = Binary.intToByteArray(tableNbInt);
-		Log.i("info", "tableNbInt "+tableNbInt);
 		bos.write(tableNb, 0, tableNb.length);
 		Set<String> tidKeys = tidMap.keySet();
 		for (String tidKey : tidKeys){
 			//tableId
 			int tableIdInt = Integer.valueOf(tidKey);
-			Log.i("info", "table id "+tableIdInt);
 			byte[] tableId = Binary.intToByteArray(tableIdInt);
 			bos.write(tableId, 0, tableId.length);
 			
@@ -433,6 +433,7 @@ public class DatabaseAdapter {
 				if (syncTypeInt != DatabaseField.DELETEVALUE){
 					for (int fid=0; fid<fieldsNbInt; fid++){
 						String valueType = fieldsMap.get(fields.get(fid).split("_")[1]);
+						Log.i("info", "valueType "+valueType);
 						byte[] value = null;
 						byte[] valueLenth = null;
 						
@@ -448,10 +449,18 @@ public class DatabaseAdapter {
 								valueLenth = Binary.intToByteArray(-1);
 							}
 						}
-						else{
+						else {
 							value = Binary.objectToByteArray(record.get(fields.get(fid)), valueType);
+							Log.i("info", "value "+value);
 							int valueLengthInt = value.length;
+							Log.i("info", "value length "+valueLengthInt);
 							valueLenth = Binary.intToByteArray(valueLengthInt);
+							if (valueType.equals("BLOB")) {
+								ArrayList<Object> blobData = new ArrayList<Object>();
+								blobData.add(fields.get(fid).split("_")[1]);
+								blobData.add(record.get(fields.get(fid)));
+								blobRecords.add(blobData);
+							}
 						}
 						bos.write(valueLenth, 0, valueLenth.length);
 						bos.write(value, 0, value.length);
@@ -793,6 +802,10 @@ public class DatabaseAdapter {
 		else{
 			return cursor.getString(cursor.getColumnIndexOrThrow(field));
 		}
+	}
+	
+	public static ArrayList<ArrayList<Object>> getBlobRecords() {
+		return blobRecords;
 	}
 	
 	private static String createWhereClause(String tableId, HashMap<Object, Object> record){

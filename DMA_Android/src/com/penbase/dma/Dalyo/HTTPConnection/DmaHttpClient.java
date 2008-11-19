@@ -43,6 +43,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import com.penbase.dma.Dma;
 import com.penbase.dma.Binary.Binary;
+import com.penbase.dma.Constant.Constant;
 import com.penbase.dma.Constant.ErrorCode;
 import com.penbase.dma.Constant.XmlTag;
 import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
@@ -102,7 +103,7 @@ public class DmaHttpClient{
 			if (applicationName.indexOf(">") != -1){
 				applicationName = applicationName.replace(">", "");
 			}
-			directory = "/data/data/com.penbase.dma/"+applicationName+"/";
+			directory = Constant.packageName+applicationName+"/";
 			if (!new File(directory).exists()){
 				new File(directory).mkdir();
 			}
@@ -407,7 +408,7 @@ public class DmaHttpClient{
 			Log.i("info", "end of for");
 			byte[] inputbytes = bos.toByteArray();
 			Log.i("info", "call import method");
-			boolean importResult = new DmaHttpBinarySync(url, ask, report, inputbytes, "Import").run();
+			boolean importResult = new DmaHttpBinarySync(url.toString(), ask, null, report, inputbytes, "Import").run();
 			Log.i("info", "get import result");
 			if (importResult){
 				result = launchExport(AppId, DbId, login, pwd);
@@ -431,7 +432,7 @@ public class DmaHttpClient{
 		
 		byte[] exportData = ApplicationView.getDataBase().syncExportTable();
 		Log.i("info", "exportData "+exportData.length);
-		DmaHttpBinarySync exportSync = new DmaHttpBinarySync(url, sync, commit, exportData, "Export");
+		DmaHttpBinarySync exportSync = new DmaHttpBinarySync(url.toString(), sync, send, commit, exportData, "Export");
 		return exportSync.run();
 	}
 	
@@ -467,7 +468,7 @@ public class DmaHttpClient{
 				bos.write(Binary.intToByteArray(Integer.valueOf(tables.get(i))));
 			}
 			byte[] inputbytes = bos.toByteArray();
-			importSync = new DmaHttpBinarySync(url, ask, report, inputbytes, "Import");
+			importSync = new DmaHttpBinarySync(url.toString(), ask, null, report, inputbytes, "Import");
 			importSync.run();
 		}
 		catch (IOException e) {
