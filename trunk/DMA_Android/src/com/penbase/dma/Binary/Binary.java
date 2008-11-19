@@ -218,6 +218,9 @@ public class Binary {
 			if (value == null){
 				result = stringToByteArray("");	
 			}
+			else{
+				result = stringToByteArray(String.valueOf(value));
+			}
 		}
 		return result;
 	}

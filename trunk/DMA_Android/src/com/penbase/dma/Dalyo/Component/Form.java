@@ -6,6 +6,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.widget.AbsoluteLayout;
+import com.penbase.dma.Constant.Constant;
 import com.penbase.dma.Dalyo.Component.Custom.ComboBox;
 import com.penbase.dma.Dalyo.Component.Custom.TextField;
 import com.penbase.dma.Dalyo.Component.Custom.TextZone;
@@ -68,12 +69,12 @@ public class Form extends AbsoluteLayout{
 		int viewLen = this.getChildCount();
 		for (int i=0; i<viewLen; i++) {
 			if (this.getChildAt(i) instanceof DoodleView) {
-				 String imagePath = "/data/data/com.penbase.dma/doodle.jpg";
-			        File file = new File(imagePath);
-			        if (file.exists()) {
-			        	((DoodleView)this.getChildAt(i)).setText("");
-			        	((DoodleView)this.getChildAt(i)).setBackgroundDrawable(Drawable.createFromPath(imagePath));
-			        }
+				String path = Constant.packageName+DoodleView.getImageName();
+				File file = new File(path);
+				if (file.exists()) {
+					((DoodleView)this.getChildAt(i)).setText("");
+					((DoodleView)this.getChildAt(i)).setBackgroundDrawable(Drawable.createFromPath(path));
+				}
 			}
 			//check picturebox
 		}

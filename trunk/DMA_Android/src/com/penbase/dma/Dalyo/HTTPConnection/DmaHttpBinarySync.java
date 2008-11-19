@@ -2,30 +2,36 @@ package com.penbase.dma.Dalyo.HTTPConnection;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import android.util.Log;
 import com.penbase.dma.Dma;
 import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
+import com.penbase.dma.Constant.Constant;
 import com.penbase.dma.Constant.ErrorCode;
 import com.penbase.dma.View.ApplicationView;
 
 public class DmaHttpBinarySync {
 	private String requestAction;
 	private String responseAction;
+	private String blobSendAction;
 	private byte[] inputbytes;
 	private String urlString;
 	private String cookie = null;
 	private String syncType;
 	
-	public DmaHttpBinarySync(URL url, String request, String response, byte[] inputbytes, String syncType){
-		Log.i("info", "create httpbinartsync object");
+	public DmaHttpBinarySync(String url, String request, String blobSend, String response, byte[] inputbytes, String syncType){
 		this.requestAction = request;
+		this.blobSendAction = blobSend;
 		this.responseAction = response;
 		this.inputbytes = inputbytes;
-		this.urlString = url.toString();
+		this.urlString = url;
 		this.syncType = syncType;
 	}
 	
@@ -78,7 +84,14 @@ public class DmaHttpBinarySync {
 	
 	public boolean run(){
 		boolean wellDone = false;
-		byte[] data = createConnection(requestAction, inputbytes);
+		byte[] data;
+		if (requestAction != null) {
+			data = createConnection(requestAction, inputbytes);
+		}
+		else {
+			Log.i("info", "requestAction null");
+			data = createConnection(blobSendAction, inputbytes);
+		}
 		Log.i("info", "get connection data");
 		String codeStr = getErrorCode(data);
 		Log.i("info", "code of action "+requestAction+" : "+Integer.valueOf(codeStr));
@@ -105,7 +118,25 @@ public class DmaHttpBinarySync {
 					DatabaseAdapter.rollbackTransaction();
 				}
 			}
-			else if (syncType.equals("Export")){
+			else if (syncType.equals("Export")) {
+				//check if there is blob data to send
+				ArrayList<ArrayList<Object>> blobs = DatabaseAdapter.getBlobRecords();
+				int blobNb = blobs.size();
+				if (blobNb > 0) {
+					for (ArrayList<Object> blob : blobs) {
+						Log.i("info", "blob "+blob.toArray());
+						String sendAction = blobSendAction;
+						sendAction += "&fieldid="+blob.get(0);
+						sendAction += "&blob="+blob.get(1);
+						sendAction += "&format=jpg";
+						Log.i("info", "sendAction "+sendAction);
+						File image = new File(Constant.packageName+blob.get(1));
+						Log.i("info", "file path "+image.getPath());
+						byte[] responsedata = createConnection(sendAction, this.getBytesFromFile(image));
+						String codeResponseStr = getErrorCode(responsedata);
+						Log.i("info", "responsea "+sendAction+" code "+codeResponseStr);
+					}
+				}
 				Log.i("info", "update ids");
 				DatabaseAdapter.updateIds(result);
 				Log.i("info", "get data");
@@ -120,6 +151,41 @@ public class DmaHttpBinarySync {
 		}
 		return wellDone;
 	}
+	
+    //private byte[] getBytesFromFile(File file) throws IOException {
+	private byte[] getBytesFromFile(File file) {
+        InputStream is;
+        byte[] bytes = null;
+		try {
+			is = new FileInputStream(file);
+		       long length = file.length();
+		       
+		        // Create the byte array to hold the data
+		        bytes = new byte[(int)length];
+		    
+		        // Read in the bytes
+		        int offset = 0;
+		        int numRead = 0;
+				while (offset < bytes.length
+					       && (numRead=is.read(bytes, offset, bytes.length-offset)) >= 0) {
+					    offset += numRead;
+				}
+		    
+		        // Ensure all the bytes have been read in
+		        if (offset < bytes.length) {
+		            throw new IOException("Could not completely read file "+file.getName());
+		        }
+		        // Close the input stream and return bytes
+		        is.close();
+		} 
+		catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+        return bytes;
+    }
 	
 	private byte[] getData(HttpURLConnection connection) {
 		if (cookie == null){
