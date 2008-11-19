@@ -617,8 +617,46 @@ public class DatabaseAdapter {
 	}
 	
 	public static void clearTable(String tableId){
+		//Check if table has blob data
+		Cursor cursor = sqlite.query(DatabaseField.TABLE+tableId, null, null, null, null, null, null);
+		if (cursor.getCount() != 0) {
+			String[] columnsNames = cursor.getColumnNames();
+			boolean hasBlob = false;
+			int check = 0;
+			while (check < columnsNames.length) {
+				if (columnsNames[check].contains(DatabaseField.FIELD)) {
+					if (fieldsMap.get(columnsNames[check].split("_")[1]).equals("BLOB")) {
+						hasBlob = true;
+						check = columnsNames.length;
+					}
+				}
+				check ++;
+			}
+			if (hasBlob) {
+				int cursorCount = cursor.getCount();
+				cursor.moveToFirst();
+				for (int i=0; i<cursorCount; i++){
+					String[] columns = cursor.getColumnNames();
+					int columnsNb = columns.length;
+					for (int column=0; column<columnsNb; column++){
+						if (columnsNames[column].contains(DatabaseField.FIELD)) {
+							if (fieldsMap.get(columns[column].split("_")[1]).equals("BLOB")) {
+								String imageName = (String)getCursorValue(cursor, columns[column]);
+								//Delete the image
+								new File(Constant.packageName+imageName).delete();
+							}
+						}
+					}
+					cursor.moveToNext();
+				}
+				if (!cursor.isClosed()) {
+					cursor.deactivate();
+					cursor.close();
+				}	
+			}
+			
+		}
 		sqlite.execSQL("DELETE FROM "+DatabaseField.TABLE+tableId);
-		Log.i("info", "clear table "+tableId);
 	}
 	
 	public static Cursor selectQuery(String tableId, ArrayList<Integer> fieldList, ArrayList<Object> valueList){
