@@ -42,7 +42,7 @@ public class DataView extends ListView{
 		borderPaint.setStyle(Style.STROKE);
 		this.context = c;
 		this.tableId = tid;
-		adapter = new DataViewAdapter(context);
+		adapter = new DataViewAdapter();
 		pwidthList = new ArrayList<String>();
 		lwidthList = new ArrayList<String>();
 		this.setItemsCanFocus(true);
@@ -123,11 +123,9 @@ public class DataView extends ListView{
 			new Dma().errorDialog("Check your dataview setting");
 		}
 		else{
-			CustomLinearLayout header = (CustomLinearLayout) adapter.getItem(0);
 			if (adapter.getItems().size() > 1){
 				adapter.removeItems();
-				adapter = new DataViewAdapter(context);
-				adapter.addItem(header);
+				adapter = new DataViewAdapter();
 				this.setAdapter(adapter);
 			}
 			int columnNb = columns.size();
@@ -173,7 +171,6 @@ public class DataView extends ListView{
 					}
 					CustomLinearLayout layout = new CustomLinearLayout(context, data, getPWidthList(), false);
 					adapter.addItem(layout);
-					//adapter.notifyDataSetChanged();
 					records.put(i, record);
 					cursor.moveToNext();
 				}
@@ -184,6 +181,7 @@ public class DataView extends ListView{
 				cursor.close();
 			}
 		}
+		Log.i("info", "items nb "+adapter.getCount());
 	}
 	
 	public HashMap<Object, Object> getCurrentRecord(){
