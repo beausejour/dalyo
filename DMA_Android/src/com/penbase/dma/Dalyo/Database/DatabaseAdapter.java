@@ -348,7 +348,6 @@ public class DatabaseAdapter {
 			new HashMap<String, ArrayList<HashMap<Object, Object>>>();
 		for (String key : keys){
 			String table = DatabaseField.TABLE+key;
-			Log.i("info", "table "+table);
 			//String selection = table+".STATE != "+DatabaseField.SYNCHRONIZED;
 			String selection = "STATE != "+DatabaseField.SYNCHRONIZED;
 			Log.i("info", "selection "+selection);

@@ -84,15 +84,7 @@ public class DmaHttpBinarySync {
 	
 	public boolean run(){
 		boolean wellDone = false;
-		byte[] data;
-		if (requestAction != null) {
-			data = createConnection(requestAction, inputbytes);
-		}
-		else {
-			Log.i("info", "requestAction null");
-			data = createConnection(blobSendAction, inputbytes);
-		}
-		Log.i("info", "get connection data");
+		byte[] data = createConnection(requestAction, inputbytes);
 		String codeStr = getErrorCode(data);
 		Log.i("info", "code of action "+requestAction+" : "+Integer.valueOf(codeStr));
 		if (Integer.valueOf(codeStr) == ErrorCode.OK){
@@ -124,14 +116,11 @@ public class DmaHttpBinarySync {
 				int blobNb = blobs.size();
 				if (blobNb > 0) {
 					for (ArrayList<Object> blob : blobs) {
-						Log.i("info", "blob "+blob.toArray());
 						String sendAction = blobSendAction;
 						sendAction += "&fieldid="+blob.get(0);
 						sendAction += "&blob="+blob.get(1);
 						sendAction += "&format=jpg";
-						Log.i("info", "sendAction "+sendAction);
 						File image = new File(Constant.packageName+blob.get(1));
-						Log.i("info", "file path "+image.getPath());
 						byte[] responsedata = createConnection(sendAction, this.getBytesFromFile(image));
 						String codeResponseStr = getErrorCode(responsedata);
 						Log.i("info", "responsea "+sendAction+" code "+codeResponseStr);

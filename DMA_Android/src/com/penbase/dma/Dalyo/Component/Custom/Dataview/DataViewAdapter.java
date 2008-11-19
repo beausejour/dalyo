@@ -1,17 +1,15 @@
 package com.penbase.dma.Dalyo.Component.Custom.Dataview;
 
 import java.util.ArrayList;
-import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
 public class DataViewAdapter extends BaseAdapter{
-	private Context context;
+	//private Context context;
 	private ArrayList<CustomLinearLayout> items = new ArrayList<CustomLinearLayout>();
 	
-	public DataViewAdapter(Context c){
-		this.context = c;
+	public DataViewAdapter(){
 	}
 
 	@Override
@@ -20,7 +18,16 @@ public class DataViewAdapter extends BaseAdapter{
 	}
 
 	public void addItem(CustomLinearLayout cll){
-		items.add(cll);
+		boolean isAdded = false;
+		for (int i=0; i<getCount(); i++) {
+			CustomLinearLayout item = items.get(i);
+			if (item.getDataList().equals(cll.getDataList())) {
+				isAdded = true;
+			}
+		}
+		if (!isAdded) {
+			items.add(cll);
+		}
 	}
 	
 	@Override
