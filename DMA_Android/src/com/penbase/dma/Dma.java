@@ -15,6 +15,9 @@
 package com.penbase.dma;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -88,6 +91,7 @@ public class Dma extends Activity implements OnClickListener{
 		else{
 			applicationList.clear();
 		}
+		HashMap<String, Application> applicationMap = new HashMap<String, Application>();
 		Document doc = DmaHttpClient.CreateParseDocument(xml, null);
 		NodeList root = doc.getElementsByTagName(XmlTag.ROOT);
 		NodeList apps = root.item(0).getChildNodes();
@@ -119,8 +123,16 @@ public class Dma extends Activity implements OnClickListener{
 				}
 			}
 			app.setIconRes(R.drawable.splash);
+			applicationMap.put(app.getName(), app);
 			//app.setIconRes(R.drawable.icon);
-			applicationList.add(app);
+		}
+		
+		ArrayList<String> tempList = new ArrayList<String>();
+		tempList.addAll(applicationMap.keySet());
+		Collections.sort(tempList);
+		
+		for (int i=0; i<appsLen; i++) {
+			applicationList.add(applicationMap.get(tempList.get(i)));
 		}
 	}
 	
