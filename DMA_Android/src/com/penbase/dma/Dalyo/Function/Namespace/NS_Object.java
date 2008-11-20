@@ -4,6 +4,7 @@ import org.w3c.dom.Element;
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Function.Function;
+import com.penbase.dma.View.ApplicationView;
 
 public class NS_Object {
 	public static Integer ToInt(Element element){
@@ -11,12 +12,31 @@ public class NS_Object {
 			return Double.valueOf(String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT))).intValue();
 		}
 		else{
-			return Integer.valueOf(String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT)));
+			Integer result = null;
+			try {
+				result = Integer.valueOf(String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT)));
+			}
+			catch (NumberFormatException nfe) {
+				ApplicationView.errorDialog("Check your variable's type (ToInt) !");
+			}
+			return result;
 		}
 	}
 	
-	public static Object ToNumeric(Element element){
-		return Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
+	public static Number ToNumeric(Element element){
+		if (String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT)).indexOf(".") != -1){
+			return Double.valueOf(String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT)));
+		}
+		else{
+			Integer result = null;
+			try {
+				result = Integer.valueOf(String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT)));
+			}
+			catch (NumberFormatException nfe) {
+				ApplicationView.errorDialog("Check your variable's type (ToNumeric) !");
+			}
+			return result;
+		}
 	}
 	
 	public static Object ToRecord(Element element){

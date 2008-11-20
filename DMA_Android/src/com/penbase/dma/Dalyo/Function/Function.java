@@ -12,6 +12,7 @@ import com.penbase.dma.Constant.GpsStatus;
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Function.Namespace.*;
+import com.penbase.dma.View.ApplicationView;
 
 public class Function {
 	private static Document behaviorDocument;
@@ -115,6 +116,7 @@ public class Function {
 		int elementsNb = element.getChildNodes().getLength();
 		ArrayList<?> list = null;
 		String cursorName = null;
+		String cursorType = null;
 		for (int i=0; i<elementsNb; i++) {
 			Element child = (Element)element.getChildNodes().item(i);
 			if (child.getNodeName().equals(ScriptTag.LIST)) {
@@ -122,19 +124,59 @@ public class Function {
 			}
 			else if (child.getNodeName().equals(ScriptTag.CURSOR)) {
 				cursorName = child.getAttribute(ScriptTag.NAME);
+				cursorType = child.getAttribute(ScriptTag.TYPE);
 				setVariable(child);
 			}
 			else if (child.getNodeName().equals(ScriptTag.DO)) {
 				for (Object eachValue : list) {
-					addVariableValue(cursorName, eachValue, false);
-					int actionsNb = child.getChildNodes().getLength();
-					for (int j=0; j<actionsNb; j++) {
-						Element grandChild = (Element)child.getChildNodes().item(j);
-						distributeAction(grandChild);
+					if (checkValueType(cursorType, eachValue)) {
+						addVariableValue(cursorName, eachValue, false);
+						int actionsNb = child.getChildNodes().getLength();
+						for (int j=0; j<actionsNb; j++) {
+							Element grandChild = (Element)child.getChildNodes().item(j);
+							distributeAction(grandChild);
+						}
 					}
 				}
 			}
 		}
+	}
+	
+	private static boolean checkValueType(String type, Object value) {
+		boolean result = true;
+		if (type.equals("numeric")) {
+			if (String.valueOf(value).indexOf(".") != -1){
+				try {
+					Double.valueOf(String.valueOf(value));
+				}
+				catch (NumberFormatException nfe) {
+					result = false;
+					ApplicationView.errorDialog("Check your variable's type !");
+				}
+			}
+			else{
+				try {
+					Integer.valueOf(String.valueOf(value));
+				}
+				catch (NumberFormatException nfe) {
+					result = false;
+					ApplicationView.errorDialog("Check your variable's type !");
+				}
+			}
+		}
+		else if (type.equals("string")) {
+			if ((value.getClass().toString().contains("HashMap")) || (value.getClass().toString().contains("ArrayList"))) {
+				result = false;
+				ApplicationView.errorDialog("Check your variable's type !");
+			}
+		}
+		else if (type.equals("list")) {
+			if (!value.getClass().toString().contains("ArrayList")) {
+				result = false;
+				ApplicationView.errorDialog("Check your variable's type !");
+			}
+		}
+		return result;
 	}
 	
 	//Find out the result of boolean list

@@ -120,7 +120,7 @@ public class DataView extends ListView{
 	
 	public void refresh(Object filter){
 		if (tableId == null){
-			new Dma().errorDialog("Check your dataview setting");
+			ApplicationView.errorDialog("Check your dataview setting");
 		}
 		else{
 			if (adapter.getItems().size() > 1){
