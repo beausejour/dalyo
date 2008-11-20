@@ -36,6 +36,6 @@ public class NS_List {
 		String listName = String.valueOf(Function.getVariableName(element, ScriptTag.PARAMETER, ScriptAttribute.LIST, ScriptAttribute.LIST));
 		Object value = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
 		Log.i("info", "listname "+listName+" value "+value);
-		Function.addVariableValue(listName, value);
+		Function.addVariableValue(listName, value, true);
 	}
 }

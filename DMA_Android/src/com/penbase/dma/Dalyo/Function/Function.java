@@ -53,7 +53,89 @@ public class Function {
 			}
 		}
 		first = false;
-	}	
+	}
+	
+	public static void createFunction(String name){
+		Log.i("info", "createFunction");
+		NodeList funcList = behaviorDocument.getElementsByTagName(ScriptTag.FUNCTION);
+		if (funcsMap.containsKey(name)){
+			final Element funcElement = (Element) funcList.item(Integer.valueOf(funcsMap.get(name).get(0)));
+			final NodeList nodeList = funcElement.getChildNodes();
+			int nodeLen = nodeList.getLength();
+		
+			for (int i=0; i<nodeLen; i++){
+				Element element = (Element) nodeList.item(i);
+				if (element.getNodeName().equals(ScriptTag.PARAMETER)){
+					//save parameters
+					String paramName = funcElement.getAttribute(ScriptTag.NAME)+"_"+element.getAttribute(ScriptTag.NAME);
+					if (parametersMap.containsKey(paramName)){
+						varsMap.put(paramName, parametersMap.get(paramName));
+					}
+				}
+				else {
+					distributeAction(element);
+				}
+			}
+		}
+	}
+	
+	private static Object distributeAction(Element element) {
+		Object result = null;
+		if (element.getNodeName().equals(ScriptTag.CALL)){
+			result = Function.distributeCall(element);
+		}
+		else if (element.getNodeName().equals(ScriptTag.ELEMENT)){
+			result = element.getAttribute(ScriptTag.ELEMENT_ID);
+		}
+		else if (element.getNodeName().equals(ScriptTag.FOREACH)){
+			forEach(element);
+		}
+		else if (element.getNodeName().equals(ScriptTag.IF)){
+			Log.i("info", "there is if condition in then");
+			result = ifCondition(element);
+		}
+		else if (element.getNodeName().equals(ScriptTag.KEYWORD)){
+			result = Function.getKeyWord(element);
+		}
+		else if (element.getNodeName().equals(ScriptTag.RETURN)){
+			Log.i("info", "return value");
+			result = getReturnValue(element);
+		}
+		else if (element.getNodeName().equals(ScriptTag.SET)){
+			setVariable(element);
+		}
+		else if (element.getNodeName().equals(ScriptTag.VAR)){
+			//use only one format to save all types of variale's value
+			result = getVariableValue(element);
+		}
+		return result;
+	}
+	
+	private static void forEach(Element element) {
+		int elementsNb = element.getChildNodes().getLength();
+		ArrayList<?> list = null;
+		String cursorName = null;
+		for (int i=0; i<elementsNb; i++) {
+			Element child = (Element)element.getChildNodes().item(i);
+			if (child.getNodeName().equals(ScriptTag.LIST)) {
+				list = (ArrayList<?>)getVariableValue(((Element)child.getChildNodes().item(0)));
+			}
+			else if (child.getNodeName().equals(ScriptTag.CURSOR)) {
+				cursorName = child.getAttribute(ScriptTag.NAME);
+				setVariable(child);
+			}
+			else if (child.getNodeName().equals(ScriptTag.DO)) {
+				for (Object eachValue : list) {
+					addVariableValue(cursorName, eachValue, false);
+					int actionsNb = child.getChildNodes().getLength();
+					for (int j=0; j<actionsNb; j++) {
+						Element grandChild = (Element)child.getChildNodes().item(j);
+						distributeAction(grandChild);
+					}
+				}
+			}
+		}
+	}
 	
 	//Find out the result of boolean list
 	private static boolean checkConditions(boolean[] boolList){
@@ -111,35 +193,6 @@ public class Function {
 		return result;
 	}
 	
-	private static Object distributeAction(Element element) {
-		Object result = null;
-		if (element.getNodeName().equals(ScriptTag.CALL)){
-			result = Function.distributeCall(element);
-		}
-		else if (element.getNodeName().equals(ScriptTag.KEYWORD)){
-			result = Function.getKeyWord(element);
-		}
-		else if (element.getNodeName().equals(ScriptTag.VAR)){
-			//use only one format to save all types of variale's value
-			result = getVariableValue(element);
-		}
-		else if (element.getNodeName().equals(ScriptTag.ELEMENT)){
-			result = element.getAttribute(ScriptTag.ELEMENT_ID);
-		}
-		else if (element.getNodeName().equals(ScriptTag.SET)){
-			setVariable(element);
-		}
-		else if (element.getNodeName().equals(ScriptTag.IF)){
-			Log.i("info", "there is if condition in then");
-			result = ifCondition(element);
-		}
-		else if (element.getNodeName().equals(ScriptTag.RETURN)){
-			Log.i("info", "return value");
-			result = getReturnValue(element);
-		}
-		return result;
-	}
-	
 	private static Object ifCondition(Element element){
 		Object result = "";
 		Log.i("info", "if called");
@@ -180,7 +233,6 @@ public class Function {
 					int elsechildrenLen = elsechildren.getLength();
 					for (int k=0; k<elsechildrenLen; k++){
 						Element elseChild = (Element) elsechildren.item(k);
-						
 						result = distributeAction(elseChild);
 					}
 				}
@@ -215,31 +267,6 @@ public class Function {
 			}
 		}
 		return result;
-	}
-	
-	public static void createFunction(String name){
-		Log.i("info", "createFunction");
-		NodeList funcList = behaviorDocument.getElementsByTagName(ScriptTag.FUNCTION);
-		if (funcsMap.containsKey(name)){
-			final Element funcElement = (Element) funcList.item(Integer.valueOf(funcsMap.get(name).get(0)));
-			final NodeList nodeList = funcElement.getChildNodes();
-			int nodeLen = nodeList.getLength();
-		
-			for (int i=0; i<nodeLen; i++){
-				Log.i("info", "createFunction loop");
-				Element element = (Element) nodeList.item(i);
-				if (element.getNodeName().equals(ScriptTag.PARAMETER)){
-					//save parameters
-					String paramName = funcElement.getAttribute(ScriptTag.NAME)+"_"+element.getAttribute(ScriptTag.NAME);
-					if (parametersMap.containsKey(paramName)){
-						varsMap.put(paramName, parametersMap.get(paramName));
-					}
-				}
-				else {
-					distributeAction(element);
-				}
-			}
-		}
 	}
 	
 	//Check element's name and namespace to call the right function 
@@ -512,7 +539,6 @@ public class Function {
 	public static Object getVariableValue(Element item){
 		Object result = null;
 		if (varsMap.containsKey(item.getAttribute(ScriptTag.NAME))){
-			Log.i("info", "contains variable value "+varsMap.toString());
 			result = varsMap.get(item.getAttribute(ScriptTag.NAME));
 		}
 		else{
@@ -541,14 +567,20 @@ public class Function {
 		}
 	}
 	
-	public static void addVariableValue(String name, Object value){
-		Log.i("info", "varsMap "+varsMap.toString());
+	public static void addVariableValue(String name, Object value, boolean isList) {
 		if (varsMap.containsKey(name)){
 			if (varsMap.get(name) == null) {
-				varsMap.remove(name);
-				varsMap.put(name, new ArrayList<Object>());
+				if (isList) {
+					varsMap.remove(name);
+					varsMap.put(name, new ArrayList<Object>());
+				}
 			}
-			((ArrayList<Object>) varsMap.get(name)).add(value);
+			if (isList) {
+				((ArrayList<Object>) varsMap.get(name)).add(value);
+			}
+			else if (!isList) {
+				varsMap.put(name, value);
+			}
 		}
 	}
 	
