@@ -12,7 +12,9 @@ import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
 import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
@@ -359,6 +361,20 @@ public class ApplicationView extends Activity {
 	
 	public static void setCurrentFormI(String id){
 		currentFormId = id;
+	}
+	
+	public static void errorDialog(String message){
+		AlertDialog dialog = new AlertDialog.Builder(applicationView).create();
+		dialog.setMessage(message);
+		dialog.setTitle("Error");
+		dialog.setButton("OK", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				applicationView.finish();
+			}
+			
+		});
+		dialog.show();
 	}
 	
 	@Override

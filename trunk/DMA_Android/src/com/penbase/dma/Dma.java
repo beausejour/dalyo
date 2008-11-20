@@ -214,11 +214,4 @@ public class Dma extends Activity implements OnClickListener{
 		float result = (float) 1.0;
 		return result;
 	}
-	
-	public void errorDialog(String message){
-		AlertDialog dialog = new AlertDialog.Builder(this).create();
-		dialog.setMessage(message);
-		dialog.setTitle("Error");
-		dialog.show();
-	}
 }
