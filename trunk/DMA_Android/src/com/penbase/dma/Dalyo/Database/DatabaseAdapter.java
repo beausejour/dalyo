@@ -50,7 +50,9 @@ public class DatabaseAdapter {
 		fieldsPKMap = new HashMap<String, String>();
 		foreignKeyList = new ArrayList<ArrayList<String>>();
 		blobRecords = new ArrayList<ArrayList<Object>>();
-		createDatabase(dbName);
+		if (dbDocument.getElementsByTagName(XmlTag.TABLE).getLength() > 0) {
+			createDatabase(dbName);
+		}
 	}
 	
 	private void createDatabase(String database) throws SQLException{
@@ -73,6 +75,10 @@ public class DatabaseAdapter {
 		catch (Exception e){
 			e.printStackTrace();
 		}
+	}
+	
+	public void closeDatabase() {
+		sqlite.close();
 	}
 	
 	private boolean databaseExists(String database){
