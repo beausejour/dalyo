@@ -6,7 +6,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
 public class DataViewAdapter extends BaseAdapter{
-	//private Context context;
 	private ArrayList<CustomLinearLayout> items = new ArrayList<CustomLinearLayout>();
 	
 	public DataViewAdapter(){
