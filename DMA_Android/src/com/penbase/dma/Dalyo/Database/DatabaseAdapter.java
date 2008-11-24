@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
@@ -78,7 +79,9 @@ public class DatabaseAdapter {
 	}
 	
 	public void closeDatabase() {
-		sqlite.close();
+		if ((sqlite != null) && (sqlite.isOpen())) {
+			sqlite.close();
+		}
 	}
 	
 	private boolean databaseExists(String database){
@@ -460,7 +463,7 @@ public class DatabaseAdapter {
 							int valueLengthInt = value.length;
 							Log.i("info", "value length "+valueLengthInt);
 							valueLenth = Binary.intToByteArray(valueLengthInt);
-							if (valueType.equals("BLOB")) {
+							if (valueType.equals(DatabaseField.BLOB)) {
 								ArrayList<Object> blobData = new ArrayList<Object>();
 								blobData.add(fields.get(fid).split("_")[1]);
 								blobData.add(record.get(fields.get(fid)));
@@ -563,7 +566,7 @@ public class DatabaseAdapter {
 		int fieldsNb = fieldsList.size();
 		for (int i=0; i<fieldsNb; i++){
 			//check field's type
-			if (fieldsMap.get(String.valueOf(fieldsList.get(i))).equals("BLOB")) {
+			if (fieldsMap.get(String.valueOf(fieldsList.get(i))).equals(DatabaseField.BLOB)) {
 				ByteArrayOutputStream bos = new ByteArrayOutputStream();
 				ObjectOutputStream oos;
 				try {
@@ -630,7 +633,7 @@ public class DatabaseAdapter {
 			int check = 0;
 			while (check < columnsNames.length) {
 				if (columnsNames[check].contains(DatabaseField.FIELD)) {
-					if (fieldsMap.get(columnsNames[check].split("_")[1]).equals("BLOB")) {
+					if (fieldsMap.get(columnsNames[check].split("_")[1]).equals(DatabaseField.BLOB)) {
 						hasBlob = true;
 						check = columnsNames.length;
 					}
@@ -645,7 +648,7 @@ public class DatabaseAdapter {
 					int columnsNb = columns.length;
 					for (int column=0; column<columnsNb; column++){
 						if (columnsNames[column].contains(DatabaseField.FIELD)) {
-							if (fieldsMap.get(columns[column].split("_")[1]).equals("BLOB")) {
+							if (fieldsMap.get(columns[column].split("_")[1]).equals(DatabaseField.BLOB)) {
 								String imageName = (String)getCursorValue(cursor, columns[column]);
 								//Delete the image
 								new File(Constant.packageName+imageName).delete();
@@ -831,12 +834,25 @@ public class DatabaseAdapter {
 	
 	public static Object getCursorValue(Cursor cursor, String field){
 		if (field.indexOf(DatabaseField.FIELD) != -1){
-			String fieldId = field.split("_")[1];
+			String fieldId = String.valueOf(Integer.valueOf(field.split("_")[1]));
 			if (fieldsMap.get(fieldId).equals(DatabaseField.INTEGER)){
 				return cursor.getInt(cursor.getColumnIndexOrThrow(field));
 			}
 			else if (fieldsMap.get(fieldId).equals(DatabaseField.DOUBLE)){
 				return cursor.getDouble(cursor.getColumnIndexOrThrow(field));
+			}
+			else if (fieldsMap.get(fieldId).equals(DatabaseField.BLOB)){
+				String result = null;
+				try {
+					result = new String(cursor.getBlob(cursor.getColumnIndexOrThrow(field)), "UTF-8");
+				}
+				catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
+				} 
+				catch (IllegalArgumentException e) {
+					e.printStackTrace();
+				}
+				return result;
 			}
 			else{
 				return cursor.getString(cursor.getColumnIndexOrThrow(field));

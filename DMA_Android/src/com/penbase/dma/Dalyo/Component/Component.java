@@ -5,7 +5,6 @@ import java.util.HashMap;
 import com.penbase.dma.Constant.XmlTag;
 import com.penbase.dma.Dalyo.Component.Custom.*;
 import com.penbase.dma.Dalyo.Component.Custom.Dataview.DataView;
-import com.penbase.dma.Dalyo.Component.Custom.Doodle.Doodle;
 import com.penbase.dma.Dalyo.Component.Custom.Doodle.DoodleView;
 import com.penbase.dma.Dalyo.Component.Custom.PictureBox.PictureBox;
 import com.penbase.dma.Dalyo.Component.Custom.PictureBox.PictureBoxView;
@@ -277,15 +276,7 @@ public class Component{
 			view = dataview;
 		}
 		else if (type.equals(XmlTag.COMPONENT_DOODLE)) {
-			DoodleView doodleView= new DoodleView(context);
-			doodleView.setText("Open Doodle");
-			doodleView.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					Intent myIntent = new Intent(context, Doodle.class);
-					context.startActivity(myIntent);
-				}
-			});
+			DoodleView doodleView= new DoodleView(context, id);
 			view = doodleView;
 		}
 		else if (type.equals(XmlTag.COMPONENT_GAUGE)) {
@@ -448,7 +439,7 @@ public class Component{
 			Log.i("info", "value of gauge "+result);
 		}
 		else if (getView() instanceof DoodleView) {
-			result = DoodleView.getImageName();
+			result = ((DoodleView)getView()).getImageName();
 			Log.i("info", "value of doodle "+result);
 		}
 		return result;
