@@ -152,6 +152,9 @@ public class ApplicationView extends Activity {
 						(!element.getNodeName().equals(XmlTag.COMPONENT_NAVIBAR))){
 					component = new Component(this, element.getNodeName());
 					
+					if (element.hasAttribute(XmlTag.COMPONENT_COMMON_ID)){
+						component.setId(element.getAttribute(XmlTag.COMPONENT_COMMON_ID));
+					}
 					if (element.hasAttribute(XmlTag.COMPONENT_COMMON_FONTSIZE)){
 						component.setFontSize(element.getAttribute(XmlTag.COMPONENT_COMMON_FONTSIZE));
 					}

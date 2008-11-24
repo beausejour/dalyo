@@ -1,6 +1,7 @@
 package com.penbase.dma.Constant;
 
 public class DatabaseField {
+	public static final String BLOB = "BLOB";
 	public static final String KEY = "KEY";
 	public static final String INTEGER = "INTEGER";
 	public static final String DOUBLE = "DOUBLE";

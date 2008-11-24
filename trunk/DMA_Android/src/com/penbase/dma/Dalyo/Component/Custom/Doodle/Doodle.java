@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
 import com.penbase.dma.Constant.Constant;
+import com.penbase.dma.View.ApplicationView;
 
 import android.app.Activity;
 import android.content.Context;
@@ -25,6 +26,7 @@ import android.view.Window;
 public class Doodle extends Activity implements ColorPickerDialog.OnColorChangedListener {
     private Paint       mPaint;
     private DoodlePanelView	doodleView;
+    private String id;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,6 +41,7 @@ public class Doodle extends Activity implements ColorPickerDialog.OnColorChanged
         mPaint.setStrokeCap(Paint.Cap.ROUND);
         mPaint.setStrokeWidth(1);
         doodleView = new DoodlePanelView(this);
+        id = this.getIntent().getStringExtra("ID");
         setContentView(doodleView);
     }
     
@@ -163,7 +166,7 @@ public class Doodle extends Activity implements ColorPickerDialog.OnColorChanged
        }
        catch (FileNotFoundException e)
        {e.printStackTrace();}
-       DoodleView.setImageName(imageName);
+       ((DoodleView)ApplicationView.getComponents().get(id).getView()).setImageName(imageName);
        this.finish();
    }
    

@@ -1,5 +1,6 @@
 package com.penbase.dma.Dalyo.Component.Custom.Dataview;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import com.penbase.dma.Dma;
@@ -160,7 +161,7 @@ public class DataView extends ListView{
 								if (columnNames[j].equals(field)){
 									data.add(String.valueOf(DatabaseAdapter.getCursorValue(cursor, field)));
 								}
-								record.put(columnNames[j], cursor.getString(j));
+								record.put(columnNames[j], String.valueOf(DatabaseAdapter.getCursorValue(cursor, columnNames[j])));
 							}	
 						}
 					}

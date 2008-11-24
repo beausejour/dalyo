@@ -206,7 +206,7 @@ public class Dma extends Activity implements OnClickListener{
 	public static String getDeviceID(){
 		//Get imei
 		String imei = ((TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
-		return "zfsqrffusds";
+		return "zfsqsrffusds";
 		//return imei;
 	}
 	
