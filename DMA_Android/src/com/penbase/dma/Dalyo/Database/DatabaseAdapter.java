@@ -843,14 +843,19 @@ public class DatabaseAdapter {
 			}
 			else if (fieldsMap.get(fieldId).equals(DatabaseField.BLOB)){
 				String result = null;
-				try {
-					result = new String(cursor.getBlob(cursor.getColumnIndexOrThrow(field)), "UTF-8");
+				if (cursor.isNull(cursor.getColumnIndex(field))) {
+					result = "";
 				}
-				catch (UnsupportedEncodingException e) {
-					e.printStackTrace();
-				} 
-				catch (IllegalArgumentException e) {
-					e.printStackTrace();
+				else {
+					try {
+						result = new String(cursor.getBlob(cursor.getColumnIndexOrThrow(field)), "UTF-8");
+					}
+					catch (UnsupportedEncodingException e) {
+						e.printStackTrace();
+					} 
+					catch (IllegalArgumentException e) {
+						e.printStackTrace();
+					}
 				}
 				return result;
 			}
