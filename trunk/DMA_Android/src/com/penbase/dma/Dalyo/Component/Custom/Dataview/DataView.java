@@ -1,9 +1,7 @@
 package com.penbase.dma.Dalyo.Component.Custom.Dataview;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import com.penbase.dma.Dma;
 import com.penbase.dma.Constant.DatabaseField;
 import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
 import com.penbase.dma.Dalyo.Function.Function;
@@ -16,7 +14,6 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.Paint.Style;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -57,7 +54,6 @@ public class DataView extends ListView{
 			}
 
 		});
-		//this.setAdapter(adapter);
 	}
 	
 	@Override
@@ -117,7 +113,7 @@ public class DataView extends ListView{
 	
 	private ArrayList<String> getLWidthList(){
 		return lwidthList;
-	}	
+	}
 	
 	public void refresh(Object filter){
 		if (tableId == null){
@@ -170,7 +166,14 @@ public class DataView extends ListView{
 						data.remove(calculateColumn);
 						data.add(calculateColumn, value);
 					}
-					CustomLinearLayout layout = new CustomLinearLayout(context, data, getPWidthList(), false);
+					CustomLinearLayout layout = null;
+					if (context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+						layout = new CustomLinearLayout(context, data, getLWidthList(), false);
+					}
+					else if (context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+						layout = new CustomLinearLayout(context, data, getPWidthList(), false);
+					}
+
 					adapter.addItem(layout);
 					records.put(i, record);
 					cursor.moveToNext();
@@ -182,7 +185,6 @@ public class DataView extends ListView{
 				cursor.close();
 			}
 		}
-		Log.i("info", "items nb "+adapter.getCount());
 	}
 	
 	public HashMap<Object, Object> getCurrentRecord(){
