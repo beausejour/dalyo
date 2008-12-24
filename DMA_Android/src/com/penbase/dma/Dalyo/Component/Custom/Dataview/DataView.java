@@ -14,11 +14,16 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.Paint.Style;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.GestureDetector.OnGestureListener;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.AdapterView.OnItemClickListener;
 
-public class DataView extends ListView{	
+public class DataView extends LinearLayout implements OnGestureListener {	
 	private Paint borderPaint;
 	private static float fontSize;
 	private static Typeface fontType;
@@ -31,6 +36,8 @@ public class DataView extends ListView{
 	private int currentPosition = -1;
 	private HashMap<Integer, HashMap<Object, Object>> records;
 	private HashMap<Integer, String> onCalculateMap = new HashMap<Integer, String>();
+	private ListView mListView;
+	private GestureDetector mGestureDetector;
 	
 	public DataView(Context c, String tid){
 		super(c);
@@ -40,11 +47,14 @@ public class DataView extends ListView{
 		borderPaint.setStyle(Style.STROKE);
 		this.context = c;
 		this.tableId = tid;
+		this.mListView = new ListView(c);
+		this.mGestureDetector = new GestureDetector(this);
+    	this.mGestureDetector.setIsLongpressEnabled(false);
 		adapter = new DataViewAdapter();
 		pwidthList = new ArrayList<String>();
 		lwidthList = new ArrayList<String>();
-		this.setItemsCanFocus(true);
-		this.setOnItemClickListener(new OnItemClickListener(){
+		mListView.setItemsCanFocus(true);
+		mListView.setOnItemClickListener(new OnItemClickListener(){
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View v, int position, long arg3) {
 				currentPosition = position;
@@ -52,7 +62,6 @@ public class DataView extends ListView{
 					v.setSelected(true);
 				}
 			}
-
 		});
 	}
 	
@@ -78,6 +87,7 @@ public class DataView extends ListView{
 	}
 	
 	public void setColumnInfo(ArrayList<ArrayList<String>> list){
+		int width = 0;
 		if (list.size() > 0){
 			int listSize = list.size();
 			ArrayList<String> headerList = new ArrayList<String>();
@@ -93,14 +103,21 @@ public class DataView extends ListView{
 			
 			if (ApplicationView.getOrientation() == Configuration.ORIENTATION_PORTRAIT){
 				CustomLinearLayout header = new CustomLinearLayout(context, headerList, pwidthList, true);
-				this.addHeaderView(header, null, false);
+				mListView.addHeaderView(header, null, false);
+				for (String s : pwidthList) {
+					width += Integer.valueOf(s);
+				}
 			}
 			else{
 				CustomLinearLayout header = new CustomLinearLayout(context, headerList, lwidthList, true);
-				adapter.addItem(header);
+				mListView.addHeaderView(header, null, false);
+				for (String s : lwidthList) {
+					width += Integer.valueOf(s);
+				}
 			}
-			this.setAdapter(adapter);
+			mListView.setAdapter(adapter);
 		}
+		this.addView(mListView, new LinearLayout.LayoutParams(width, LayoutParams.FILL_PARENT));
 	}
 	
 	public void setOncalculate(HashMap<Integer, String> onc){
@@ -123,7 +140,7 @@ public class DataView extends ListView{
 			if (adapter.getItems().size() > 1){
 				adapter.removeItems();
 				adapter = new DataViewAdapter();
-				this.setAdapter(adapter);
+				mListView.setAdapter(adapter);
 			}
 			int columnNb = columns.size();
 			ArrayList<String> tables = new ArrayList<String>();
@@ -199,5 +216,64 @@ public class DataView extends ListView{
 	
 	public void setCurrentPosition(int position){
 		currentPosition = position;
+	}
+	
+	public ListView getListView() {
+		return mListView;
+	}
+	
+	@Override
+	public boolean onDown(MotionEvent arg0) {
+		return false;
+	}
+
+	@Override
+	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+		//lv.scrollBy((int) (velocityX / 10), 0);
+		/*if (e1.getY() == e2.getY()) {
+			tv.scrollBy((int) (velocityX / 10), 0);
+		}*/
+		return true;
+	}
+
+	@Override
+	public void onLongPress(MotionEvent e) {
+		
+	}
+
+	@Override
+	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+		int scrollWidth = mListView.getWidth() - this.getWidth();
+		if ((this.getScrollX() >= 0) && (this.getScrollX() <= scrollWidth)) {
+			int moveX = (int)distanceX;
+			if (((moveX + this.getScrollX()) >= 0) && ((Math.abs(moveX) + Math.abs(this.getScrollX())) <= scrollWidth)) {
+				this.scrollBy(moveX, 0);
+			}
+			else {
+				if (distanceX >= 0) {
+					this.scrollBy(scrollWidth - Math.max(Math.abs(moveX), Math.abs(this.getScrollX())), 0);
+				}
+				else {
+					this.scrollBy(-Math.min(Math.abs(moveX), Math.abs(this.getScrollX())), 0);
+				}
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public void onShowPress(MotionEvent e) {
+
+	}
+
+	@Override
+	public boolean onSingleTapUp(MotionEvent e) {
+		return false;
+	}
+	
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent ev){
+		mGestureDetector.onTouchEvent(ev);
+		return true;
 	}
 }

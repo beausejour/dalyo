@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.util.Log;
 import android.widget.LinearLayout;
 
 public class CustomLinearLayout extends LinearLayout {
@@ -28,6 +29,7 @@ public class CustomLinearLayout extends LinearLayout {
 				String fond = "#8F3600";
 				ctv.setBackgroundColor(Color.parseColor(fond));
 				int width = Integer.valueOf(widthList.get(i));
+				Log.i("info", "width "+width);
 				this.addView(ctv, new LinearLayout.LayoutParams(width, LayoutParams.WRAP_CONTENT));
 			}
 			setEnabled(false);
