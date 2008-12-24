@@ -263,19 +263,24 @@ public class ApplicationView extends Activity {
 							component.setDateTimeValue(element.getAttribute(XmlTag.COMPONENT_COMMON_VALUE));
 						}
 					}
+					if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+						currentOrientation = Configuration.ORIENTATION_LANDSCAPE;
+					}
+					else if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+			        	currentOrientation = Configuration.ORIENTATION_PORTRAIT;
+			        }
+					
 					component.setView();
 					componentsMap.put(element.getAttribute(XmlTag.COMPONENT_COMMON_ID), component);
 					
-					if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-						currentOrientation = Configuration.ORIENTATION_LANDSCAPE;
+					if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
 						component.getView().setLayoutParams(new AbsoluteLayout.LayoutParams(
 								Integer.valueOf(element.getAttribute(XmlTag.COMPONENT_COMMON_LWIDTH)),
 								Integer.valueOf(element.getAttribute(XmlTag.COMPONENT_COMMON_LHEIGHT)),
 								Integer.valueOf(element.getAttribute(XmlTag.COMPONENT_COMMON_LCOORDX)),
 								Integer.valueOf(element.getAttribute(XmlTag.COMPONENT_COMMON_LCOORDY))));
 			        }
-			        else if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-			        	currentOrientation = Configuration.ORIENTATION_PORTRAIT;
+			        else {
 			        	component.getView().setLayoutParams(new AbsoluteLayout.LayoutParams(
 								Integer.valueOf(element.getAttribute(XmlTag.COMPONENT_COMMON_PWIDTH)),
 								Integer.valueOf(element.getAttribute(XmlTag.COMPONENT_COMMON_PHEIGHT)),

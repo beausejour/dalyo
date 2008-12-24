@@ -295,7 +295,7 @@ public class Component{
 	
 	public void setOnclickFunction(final String funcName, final View view) {
 		if (view instanceof DataView){
-			((DataView)view).setOnItemClickListener(new OnItemClickListener(){
+			((DataView)view).getListView().setOnItemClickListener(new OnItemClickListener(){
 				@Override
 				public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
 					((DataView)view).setCurrentPosition(position);
