@@ -244,7 +244,7 @@ public class DataView extends LinearLayout implements OnGestureListener {
 	@Override
 	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
 		int scrollWidth = mListView.getWidth() - this.getWidth();
-		if ((this.getScrollX() >= 0) && (this.getScrollX() <= scrollWidth)) {
+		if ((this.getScrollX() >= 0) && (this.getScrollX() <= scrollWidth) && (scrollWidth > 0)) {
 			int moveX = (int)distanceX;
 			if (((moveX + this.getScrollX()) >= 0) && ((Math.abs(moveX) + Math.abs(this.getScrollX())) <= scrollWidth)) {
 				this.scrollBy(moveX, 0);
