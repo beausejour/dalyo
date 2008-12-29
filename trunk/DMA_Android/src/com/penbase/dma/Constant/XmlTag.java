@@ -107,6 +107,8 @@ public class XmlTag {
 	public static final String FIELD_TYPE = "ty";
 	public static final String FIELD_SIZE = "sz";
 	public static final String FIELD_SYNC = "sy";
+	public static final String FIELD_SYSFIELD = "sf";
+	public static final String FIELD_SYSTABLE = "st";
 	
 	//Resources     
 	public static final String RESOURCES_RL = "rl";

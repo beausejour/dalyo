@@ -75,7 +75,7 @@ public class ApplicationView extends Activity {
 		if (onLoadFuncMap.containsKey(startFormId)){
 			layoutsMap.get(startFormId).onLoad(onLoadFuncMap.get(startFormId));
 		}
-		setCurrentFormI(startFormId);
+		setCurrentFormId(startFormId);
 		setContentView(layoutsMap.get(startFormId));
 	}
 
@@ -365,7 +365,7 @@ public class ApplicationView extends Activity {
 		return currentFormId;
 	}
 	
-	public static void setCurrentFormI(String id){
+	public static void setCurrentFormId(String id){
 		currentFormId = id;
 	}
 	
