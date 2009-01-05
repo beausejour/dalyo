@@ -15,6 +15,16 @@ public class NS_Component {
 		return ApplicationView.getComponents().get(componentId).getValue();
 	}
 	
+	public static boolean IsEnabled(Element element){
+		String componentId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT));
+		return ApplicationView.getComponents().get(componentId).isEnabled();
+	}
+	
+	public static boolean IsVisible(Element element){
+		String componentId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT));
+		return ApplicationView.getComponents().get(componentId).isVisible();
+	}
+	
 	public static void SetEnabled(Element element){
 		String componentId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT));
 		Object state =  Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_ENABLE, ScriptAttribute.PARAMETER_TYPE_BOOLEAN);
@@ -32,7 +42,6 @@ public class NS_Component {
 	public static void SetValue(Element element){
 		String componentId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT));
 		Object value = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
-		Log.i("info", "value "+value);
 		if (value != null){
 			ApplicationView.getComponents().get(componentId).setValue(value);
 		}

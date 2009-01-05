@@ -276,6 +276,13 @@ public class ApplicationView extends Activity {
 					component.setView();
 					componentsMap.put(element.getAttribute(XmlTag.COMPONENT_COMMON_ID), component);
 					
+					if (element.hasAttribute(XmlTag.COMPONENT_COMMON_ENABLE)){
+						component.getView().setEnabled(false);
+					}
+					if (element.hasAttribute(XmlTag.COMPONENT_COMMON_VISIBLE)){
+						component.getView().setVisibility(View.INVISIBLE);
+					}
+					
 					if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
 						component.getView().setLayoutParams(new AbsoluteLayout.LayoutParams(
 								Integer.valueOf(element.getAttribute(XmlTag.COMPONENT_COMMON_LWIDTH)),

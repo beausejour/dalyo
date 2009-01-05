@@ -28,6 +28,8 @@ public class ScriptAttribute {
 	public static final String FUNCTION_GETVALUE = "getValue";
 	public static final String FUNCTION_IMPORT = "import";
 	public static final String FUNCTION_INIT = "init";
+	public static final String FUNCTION_ISENABLED = "isEnabled";
+	public static final String FUNCTION_ISVISIBLE = "isVisible";
 	public static final String FUNCTION_NAVIGATE = "navigate";
 	public static final String FUNCTION_NEWRECORD = "newRecord";
 	public static final String FUNCTION_NOW = "now";

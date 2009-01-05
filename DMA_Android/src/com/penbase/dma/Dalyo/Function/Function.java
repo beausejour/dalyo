@@ -11,6 +11,7 @@ import android.util.Log;
 import com.penbase.dma.Constant.GpsStatus;
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
+import com.penbase.dma.Constant.XmlTag;
 import com.penbase.dma.Dalyo.Function.Namespace.*;
 import com.penbase.dma.View.ApplicationView;
 
@@ -211,6 +212,13 @@ public class Function {
 	private static boolean checkCondition(Object left, Object operator, Object right){
 		boolean result = false;
 		switch (Integer.valueOf(String.valueOf(operator))){
+			case ScriptAttribute.AND:
+				if (left == right) {
+					if (String.valueOf(left).equals(XmlTag.TRUE)) {
+						result = true;
+					}
+				}
+				break;
 			case ScriptAttribute.EQUALS:
 				if ((left instanceof Integer) || (right instanceof Integer)){
 					result = (Integer.valueOf(String.valueOf(left)) == (Integer.valueOf(String.valueOf(right))));
@@ -222,12 +230,17 @@ public class Function {
 					result = (left.equals(right));
 				}
 				break;
-			case ScriptAttribute.NOTEQUALS:
-				result = (left != right);
-				break;
 			case ScriptAttribute.GREATERTHAN:
 				if ((left != null) && (right != null)){
 					result = (Integer.valueOf(String.valueOf(left)) > Integer.valueOf(String.valueOf(right)));	
+				}
+				break;
+			case ScriptAttribute.NOTEQUALS:
+				result = (left != right);
+				break;
+			case ScriptAttribute.OR:
+				if (Boolean.getBoolean(String.valueOf(left)) || Boolean.getBoolean(String.valueOf(right))) {
+					result = true;
 				}
 				break;
 		}
@@ -314,260 +327,212 @@ public class Function {
 	//Check element's name and namespace to call the right function 
 	public static Object distributeCall(Element element){
 		Object result = null;
+		Log.i("info", "function name "+element.getAttribute(ScriptTag.FUNCTION));
 		if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.COMPONENT)){
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETVALUE)){
-				Log.i("info", "call getvalue fucntion");
 				result = NS_Component.GetValue(element);
 			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ISENABLED)){
+				result = NS_Component.IsEnabled(element);
+			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ISVISIBLE)){
+				result = NS_Component.IsVisible(element);
+			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETENABLED)){
-				Log.i("info", "call setenable function");
 				NS_Component.SetEnabled(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETTEXT)){
-				Log.i("info", "call SETTEXT function");
 				NS_Component.SetText(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETVISIBLE)){
-				Log.i("info", "call setvisible function");
 				NS_Component.SetVisible(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETVALUE)){
-				Log.i("info", "call set value function");
 				NS_Component.SetValue(element);
 			}
 		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_COMPONENT_CB)){
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSELECTEDRECORD)){
-				Log.i("info", "call combobox getSelectedRecord function");
 				result = NS_ComponentCombobox.GetSelectedRecord(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_REFRESH)){
-				Log.i("info", "call combobox refresh function");
 				NS_ComponentCombobox.Refresh(element);
 			}
 		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_COMPONENT_DV)){
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSELECTEDRECORD)){
-				Log.i("info", "call dataview getSelectedRecord function");
 				result = NS_ComponentDataview.GetSelectedRecord(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_REFRESH)){
-				Log.i("info", "call dataview refresh function");
 				NS_ComponentDataview.Refresh(element);
 			}
 		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DATE)){
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NOW)){
-				Log.i("info", "call getcurrentdate function");
 				result = NS_Date.GetCurrentDate();
 			}
 		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB)){
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CANCELTRANSACTION)){
-				Log.i("info", "call cancel transaction function");
 				NS_Database.CancelTransaction();
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_EXPORT)){
-				Log.i("info", "call export function");
 				NS_Database.Export(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_IMPORT)){
-				Log.i("info", "call import function");
 				NS_Database.Import(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_STARTTRANSACTION)){
-				Log.i("info", "call start transaction function");
 				NS_Database.StartTransaction();
 			}
 
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_VALIDATETRANSACTION)){
-				Log.i("info", "call VALIDATE transaction function");
 				NS_Database.ValidateTransaction();
 			}
 		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB_TABLE)){
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CANCELNRECORD)){
-				Log.i("info", "call cancelnewrecord function");
+
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CLEAR)){
-				Log.i("info", "call clear function");
 				NS_DatabaseTable.Clear(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_COUNT)){
-				Log.i("info", "call Count function");
 				result = NS_DatabaseTable.Count(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NEWRECORD)){
-				Log.i("info", "call newrecord function "+first);
 				if (!first){
 					result = NS_DatabaseTable.CreateNewRecord(element);
 				}
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_DELETERECORD)){
-				Log.i("info", "call delete record function");
 				NS_DatabaseTable.DeleteRecord(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_EDITRECORD)){
-				Log.i("info", "call edit record function");
 				NS_DatabaseTable.EditRecord(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETFIELDVALUE)){
-				Log.i("info", "call getfieldvalue function");
 				result = NS_DatabaseTable.GetFieldValue(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETFILTEREDRECORDS)){
-				Log.i("info", "call getfilteredrecords function");
 				result = NS_DatabaseTable.GetFilteredRecords(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETRECORDS)){
-				Log.i("info", "call getrecords function");
 				result = NS_DatabaseTable.GetRecords(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_STARTNEWRECORD)){
-				Log.i("info", "call startnewrecord function");
+
 			}
 		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.FILTER)){
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ADDCRITERIA)){
-				Log.i("info", "call add criteria function");
 				NS_Filter.AddCriteria(element);
 			}
 		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.FORM)){
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NAVIGATE)){
-				Log.i("info", "navigate function");
 				NS_Form.Navigate(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETCURRENTRECORD)){
-				Log.i("info", "call setcurrentrecord function");
 				NS_Form.SetCurrentRecord(element);
 			}
 		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_GPS)){
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETLATITUDE)){
-				Log.i("info", "call getlatitude fucntion");
 				result = NS_Gps.GetLatitude(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETLOCATION)){
-				Log.i("info", "call getlocation fucntion");
 				result = NS_Gps.GetLocation();
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETLONGITUDE)){
-				Log.i("info", "call get logitude fucntion");
 				result = NS_Gps.GetLogitude(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSTATUS)){
-				Log.i("info", "call get status fucntion");
 				result = NS_Gps.GetStatus();
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_INIT)){
-				Log.i("info", "call gps init fucntion");
 				NS_Gps.Init(context);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_STOP)){
-				Log.i("info", "call gps stop fucntion");
 				NS_Gps.Stop();
 			}
 		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.LIST)){
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GET)){
-				Log.i("info", "call get list item fucntion");
 				result = NS_List.GetListItem(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSIZE)){
-				Log.i("info", "call list size fucntion");
 				result = NS_List.GetSize(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ADD)){
-				Log.i("info", "call add value function");
 				NS_List.ListAddValue(element);
 			}
 		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_MATH)){
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SUB)){
-				Log.i("info", "call sub function");
 				result = NS_Math.Subtract(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ADD)){
-				Log.i("info", "call sum function");
 				result = NS_Math.Sum(element);
 			}
 		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.OBJECT)){
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TOINT)){
-				Log.i("info", "call toint fucntion");
 				result = NS_Object.ToInt(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TONUMERIC)){
-				Log.i("info", "call tonumeric fucntion");
 				result = NS_Object.ToNumeric(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TOSTRING)){
-				Log.i("info", "call TOSTRING fucntion");
 				result = NS_Object.ToString(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TORECORD)){
-				Log.i("info", "call torecord fucntion");
 				result = NS_Object.ToRecord(element);
 			}
 		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_RUNTIME)){
 			if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ALERT)) ||
 					(element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ERROR))){
-				Log.i("info", "call showalertdialog");
 				NS_Runtime.Alert(context, element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CONFIRM)){
-				Log.i("info", "call confirmdialog function");
 				ConfirmDialog confirmDialog = new ConfirmDialog(element.getElementsByTagName(ScriptTag.PARAMETER), context);
-				Log.i("info", "start thread");
 				confirmDialog.start();
 				try{
-					Log.i("info", "join thread");
 					confirmDialog.join();
 				}
 				catch (InterruptedException e){
 					e.printStackTrace();
 				}
-				Log.i("info", "get value");
 				result = confirmDialog.getValue();
-				Log.i("info", "value of confirmdialog "+result);
 				//Cancel the thread, because the stop() method is deprecated
 				//confirmDialog = null;
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SYNC)){
-				Log.i("info", "call sync function");
 				if (!first){
-					Log.i("info", "not the first time");
 					result = NS_Runtime.Synchronize(element);
 				}
 			}
 		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_TIMER)){
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CANCEL)){
-				Log.i("info", "call cancel timer fucntion");
 				NS_Timer.Cancel(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_START)){
-				Log.i("info", "call start timer fucntion");
 				if (!first){
-					Log.i("info", "not the first time");
 					result = NS_Timer.Start(element);
 				}
 			}
 		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_USER)){
-			Log.i("info", "call user function "+element.getAttribute(ScriptTag.FUNCTION));
 			if (element.getChildNodes().getLength() > 0){
 				int childrenLen = element.getChildNodes().getLength();
-				Log.i("info", "childrenLen "+childrenLen);
 				for (int i=0; i<childrenLen; i++){
 					Element child = (Element)element.getChildNodes().item(i);
 					if ((child.getNodeName().equals(ScriptTag.PARAMETER)) && (child.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE)){
 						parametersMap.put(element.getAttribute(ScriptTag.FUNCTION)+"_"+child.getAttribute(ScriptTag.NAME), child.getChildNodes().item(0).getNodeValue());
 					}
 				}
-				Log.i("info", "parametersMap "+parametersMap.toString());
 				createFunction(element.getAttribute(ScriptTag.FUNCTION));
 			}
 			else{
