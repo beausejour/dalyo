@@ -168,7 +168,7 @@ public class ApplicationView extends Activity {
 						component.setAlign(element.getAttribute(XmlTag.COMPONENT_COMMON_ALIGN));
 					}
 					if (element.hasAttribute(XmlTag.COMPONENT_COMMON_LABEL)){
-						component.setName(element.getAttribute(XmlTag.COMPONENT_COMMON_LABEL));
+						component.setLabel(element.getAttribute(XmlTag.COMPONENT_COMMON_LABEL));
 					}
 					if (element.hasAttribute(XmlTag.COMPONENT_COMMON_TABLEID)){
 						component.setTableId(element.getAttribute(XmlTag.COMPONENT_COMMON_TABLEID));

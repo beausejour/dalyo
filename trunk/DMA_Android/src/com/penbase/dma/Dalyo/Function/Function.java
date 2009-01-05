@@ -338,6 +338,9 @@ public class Function {
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ISVISIBLE)){
 				result = NS_Component.IsVisible(element);
 			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_RESET)){
+				NS_Component.ReSet(element);
+			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETENABLED)){
 				NS_Component.SetEnabled(element);
 			}

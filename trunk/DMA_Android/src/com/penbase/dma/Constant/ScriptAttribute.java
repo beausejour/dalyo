@@ -34,6 +34,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_NEWRECORD = "newRecord";
 	public static final String FUNCTION_NOW = "now";
 	public static final String FUNCTION_REFRESH = "refresh";
+	public static final String FUNCTION_RESET = "reset";
 	public static final String FUNCTION_SETCURRENTRECORD = "setCurrentRecord";
 	public static final String FUNCTION_SETENABLED = "setEnabled";
 	public static final String FUNCTION_SETTEXT = "setText";
