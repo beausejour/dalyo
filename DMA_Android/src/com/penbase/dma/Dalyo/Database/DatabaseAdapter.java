@@ -9,15 +9,18 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
 import com.penbase.dma.Binary.Binary;
 import com.penbase.dma.Constant.Constant;
 import com.penbase.dma.Constant.DatabaseField;
 import com.penbase.dma.Constant.XmlTag;
 import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -85,7 +88,7 @@ public class DatabaseAdapter {
 	}
 	
 	private boolean databaseExists(String database){
-		File dbFile = new File(Constant.packageName+"databases/"+database);
+		File dbFile = new File(Constant.PACKAGENAME+"databases/"+database);
 		return dbFile.exists();
 	}
 	
@@ -693,7 +696,7 @@ public class DatabaseAdapter {
 							if (fieldsMap.get(columns[column].split("_")[1]).equals(DatabaseField.BLOB)) {
 								String imageName = (String)getCursorValue(cursor, columns[column]);
 								//Delete the image
-								new File(Constant.packageName+imageName).delete();
+								new File(Constant.PACKAGENAME+imageName).delete();
 							}
 						}
 					}

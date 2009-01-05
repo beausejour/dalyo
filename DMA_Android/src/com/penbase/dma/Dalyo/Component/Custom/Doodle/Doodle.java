@@ -152,7 +152,7 @@ public class Doodle extends Activity implements ColorPickerDialog.OnColorChanged
    private void saveImage() {
 	   //save bitmap
 	   String imageName = System.currentTimeMillis()+".jpg";
-       File file = new File(Constant.packageName+imageName);
+       File file = new File(Constant.PACKAGENAME+imageName);
        FileOutputStream fos;
        try{
                fos = new FileOutputStream(file);

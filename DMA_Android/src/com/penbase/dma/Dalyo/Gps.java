@@ -18,7 +18,8 @@ public class Gps{
 		locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 		//List<LocationProvider> providers = locationManager.getProviders();
 		List<String> providers = locationManager.getAllProviders();
-        for (int i=0; i<providers.size(); i++){
+		int size = providers.size();
+        for (int i=0; i<size; i++){
         	/*if (providers.get(i).getName().equals(providerName)){
         		hasProvider = true;
         	}*/

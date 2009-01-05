@@ -69,7 +69,7 @@ public class Form extends AbsoluteLayout{
 		int viewLen = this.getChildCount();
 		for (int i=0; i<viewLen; i++) {
 			if (this.getChildAt(i) instanceof DoodleView) {
-				String path = Constant.packageName+((DoodleView)this.getChildAt(i)).getImageName();
+				String path = Constant.PACKAGENAME+((DoodleView)this.getChildAt(i)).getImageName();
 				File file = new File(path);
 				if (file.exists()) {
 					((DoodleView)this.getChildAt(i)).setText("");

@@ -10,7 +10,9 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+
 import android.util.Log;
+
 import com.penbase.dma.Dma;
 import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
 import com.penbase.dma.Constant.Constant;
@@ -120,7 +122,7 @@ public class DmaHttpBinarySync {
 						sendAction += "&fieldid="+blob.get(0);
 						sendAction += "&blob="+blob.get(1);
 						sendAction += "&format=jpg";
-						File image = new File(Constant.packageName+blob.get(1));
+						File image = new File(Constant.PACKAGENAME+blob.get(1));
 						byte[] responsedata = createConnection(sendAction, this.getBytesFromFile(image));
 						String codeResponseStr = getErrorCode(responsedata);
 						Log.i("info", "responsea "+sendAction+" code "+codeResponseStr);

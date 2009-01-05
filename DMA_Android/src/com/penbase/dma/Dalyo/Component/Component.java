@@ -2,19 +2,20 @@ package com.penbase.dma.Dalyo.Component;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import com.penbase.dma.Constant.Constant;
 import com.penbase.dma.Constant.XmlTag;
 import com.penbase.dma.Dalyo.Component.Custom.*;
 import com.penbase.dma.Dalyo.Component.Custom.Dataview.DataView;
 import com.penbase.dma.Dalyo.Component.Custom.Doodle.DoodleView;
-import com.penbase.dma.Dalyo.Component.Custom.PictureBox.PictureBox;
-import com.penbase.dma.Dalyo.Component.Custom.PictureBox.PictureBoxView;
+import com.penbase.dma.Dalyo.Component.Custom.PictureBox.*;
 import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
+
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -168,7 +169,6 @@ public class Component{
 			button.setTextSize(getFontSize(fontSize));
 			if (background != 0) {
 				Drawable d = Drawable.createFromPath(DmaHttpClient.getFilesPath()+background+"."+extension);
-				//button.setBackground(d);
 				button.setBackgroundDrawable(d);
 			}
 			view = button;
@@ -198,7 +198,6 @@ public class Component{
 			label.setText(name);
 			if (align != null) {
 				label.setGravity(getGravity(align));
-				//label.setAlignment(getAlign(align));
 			}
 			view = label;
 		}
@@ -323,29 +322,15 @@ public class Component{
 		}
 	}
 	
-	/*private Alignment getAlign(String align) {
-		Alignment alignment = null;
-		if (align.equals("left")) {
-			alignment = Alignment.ALIGN_NORMAL;
-		}
-		else if (align.equals("center")) {
-			alignment = Alignment.ALIGN_CENTER;
-		}
-		else if (align.equals("right")) {
-			alignment = Alignment.ALIGN_OPPOSITE;
-		}
-		return alignment;
-	}*/
-	
 	private int getGravity(String align) {
 		int gravity = 0;
-		if (align.equals("left")) {
+		if (align.equals(Constant.LEFT)) {
 			gravity = Gravity.LEFT;
 		}
-		else if (align.equals("center")) {
+		else if (align.equals(Constant.CENTER)) {
 			gravity = Gravity.CENTER;
 		}
-		else if (align.equals("right")) {
+		else if (align.equals(Constant.RIGHT)) {
 			gravity = Gravity.RIGHT;
 		}
 		return gravity;
@@ -353,13 +338,13 @@ public class Component{
 	
 	private float getFontSize(String fs) {
 		float fontSize = 12;
-		if (fs.equals("small")) {
+		if (fs.equals(Constant.SMALL)) {
 			fontSize = 10;
 		}
-		else if (fs.equals("big")) {
+		else if (fs.equals(Constant.BIG)) {
 			fontSize = 14;
 		}
-		else if (fs.equals("extra")) {
+		else if (fs.equals(Constant.EXTRA)) {
 			fontSize = 16;
 		}
 		return fontSize;
@@ -367,18 +352,17 @@ public class Component{
 	
 	private Typeface getFontType(String ft) {
 		Typeface fontType = Typeface.DEFAULT;
-		if (ft.equals("italic")) {
-			//fontType = Typeface.ITALIC;
+		if (ft.equals(Constant.ITALIC)) {
+			fontType = Typeface.create(Typeface.SERIF, Typeface.ITALIC);
 		}
-		else if (ft.equals("bold")) {
+		else if (ft.equals(Constant.BOLD)) {
 			fontType = Typeface.DEFAULT_BOLD;
 		}
-		else if (ft.equals("underline")) {
-			//Underline text, bug of android
+		else if (ft.equals(Constant.UNDERLINE)) {
+			//Underline text, not implemented yet in android
 		}
-		else if (ft.equals("italicbold")) {
-			//fontType = Typeface.DEFAULT_BOLD_ITALIC;
-			//fontType = Typeface.BOLD_ITALIC;
+		else if (ft.equals(Constant.ITALICBOLD)) {
+			fontType = Typeface.create(Typeface.SERIF, Typeface.BOLD_ITALIC);
 		}
 		return fontType;
 	}
@@ -422,11 +406,9 @@ public class Component{
 		}
 		else if (getView() instanceof TextZone) {
 			result = ((TextZone)getView()).getValue();
-			Log.i("info", "result of textzone "+result);
 		}
 		else if (getView() instanceof TextField) {
 			result = ((TextField)getView()).getValue();
-			Log.i("info", "result of textfield "+result);
 		}
 		else if (getView() instanceof TimeField) {
 			result = ((TimeField)getView()).getTime();
@@ -436,11 +418,9 @@ public class Component{
 		}
 		else if (getView() instanceof Gauge) {
 			result = ((Gauge)getView()).getValue();
-			Log.i("info", "value of gauge "+result);
 		}
 		else if (getView() instanceof DoodleView) {
 			result = ((DoodleView)getView()).getImageName();
-			Log.i("info", "value of doodle "+result);
 		}
 		return result;
 	}
@@ -456,7 +436,6 @@ public class Component{
 	
 	public void setEnabled(boolean state) {
 		if (getView() instanceof Button){
-			Log.i("info", "button setenabled "+state);
 			((Button)getView()).setEnabled(state);
 		}
 	}

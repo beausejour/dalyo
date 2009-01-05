@@ -21,7 +21,8 @@ public class CustomLinearLayout extends LinearLayout {
 		this.widthList = wl;
 		
 		if (isHeader){
-			for (int i=0; i<dataList.size(); i++){
+			int size = dataList.size();
+			for (int i=0; i<size; i++){
 				CustomTextView ctv = new CustomTextView(context);
 				ctv.setText(dataList.get(i));
 				ctv.setTypeface(Typeface.DEFAULT_BOLD);
@@ -33,7 +34,8 @@ public class CustomLinearLayout extends LinearLayout {
 			setEnabled(false);
 		}
 		else{
-			for (int i=0; i<dataList.size(); i++){
+			int size = dataList.size();
+			for (int i=0; i<size; i++){
 				CustomTextView ctv = new CustomTextView(context);
 				ctv.setText(dataList.get(i));
 				ctv.setTextSize(DataView.getTextSize());
