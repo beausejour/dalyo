@@ -37,10 +37,12 @@ import java.util.HashMap;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
 import com.penbase.dma.Dma;
 import com.penbase.dma.Binary.Binary;
 import com.penbase.dma.Constant.Constant;
@@ -50,6 +52,7 @@ import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
 import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.View.ApplicationListView;
 import com.penbase.dma.View.ApplicationView;
+
 import android.util.Log;
 
 public class DmaHttpClient{
@@ -81,7 +84,7 @@ public class DmaHttpClient{
 	public DmaHttpClient(){
 		createFilesPath();
 		try{
-			url = new URL("http://192.168.0.1/server/com.penbase.arbiter.Arbiter");
+			url = new URL(Constant.LOCAL);
 			//url = new URL("http://emvista.com/server/com.penbase.arbiter.Arbiter");
 		}
 		catch (MalformedURLException e) 
@@ -103,7 +106,7 @@ public class DmaHttpClient{
 			if (applicationName.indexOf(">") != -1){
 				applicationName = applicationName.replace(">", "");
 			}
-			directory = Constant.packageName+applicationName+"/";
+			directory = Constant.PACKAGENAME+applicationName+"/";
 			if (!new File(directory).exists()){
 				new File(directory).mkdir();
 			}
@@ -487,7 +490,7 @@ public class DmaHttpClient{
 		return result;
 	}
 	
-	//Save the download xml stream to file
+	//Save the downloaded xml stream to file
 	private void StreamToFile(String stream, String filePath){
         File file = new File(filePath);
         FileOutputStream fos;

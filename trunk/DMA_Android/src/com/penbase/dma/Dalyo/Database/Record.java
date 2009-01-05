@@ -31,7 +31,8 @@ public class Record {
 			Cursor cursor = DatabaseAdapter.selectQuery(tableId, fieldList, valueList);
 			//cursor.first();
 			cursor.moveToFirst();
-			for (int i=0; i<cursor.getCount(); i++){
+			int cursorCount = cursor.getCount();
+			for (int i=0; i<cursorCount; i++){
 				String[] columnNames = cursor.getColumnNames();
 				int columnsRecordSize = columnNames.length;
 				for (int j=0; j<columnsRecordSize; j++){

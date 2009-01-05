@@ -21,10 +21,13 @@ import java.util.HashMap;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import com.penbase.dma.Constant.Constant;
 import com.penbase.dma.Constant.XmlTag;
 import com.penbase.dma.Dalyo.Application;
 import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
 import com.penbase.dma.View.ApplicationListView;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -45,7 +48,6 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 public class Dma extends Activity implements OnClickListener{
-	public static final String PREFS_NAME = "DmaPrefsFile";
 	public static ArrayList<Application> applicationList = null;
 	private TextView tx_login;
 	private TextView tx_password;
@@ -59,7 +61,7 @@ public class Dma extends Activity implements OnClickListener{
 		context = this;
 		super.onCreate(icicle);
 		
-		SharedPreferences settings = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+		SharedPreferences settings = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE);
 		boolean rememberMe = settings.getBoolean("RememberMe", false);
 		alertDialog = new AlertDialog.Builder(this).create();
 		alertDialog.setTitle("Error");
@@ -99,7 +101,8 @@ public class Dma extends Activity implements OnClickListener{
 		for (int s = 0; s < appsLen; s++){
 			NodeList els = apps.item(s).getChildNodes();
 			Application app = new Application();
-			for (int t = 0; t < els.getLength(); t++){
+			int elsLength = els.getLength();
+			for (int t = 0; t < elsLength; t++){
 				Node noeud = els.item(t);
 				if (noeud.getNodeType() == Node.ELEMENT_NODE){
 					if (noeud.getNodeName().equals(XmlTag.LOGIN_ID)){
@@ -166,7 +169,7 @@ public class Dma extends Activity implements OnClickListener{
 				public void run() {
 					try {
 						// save user info
-						SharedPreferences.Editor editorPrefs = getSharedPreferences(Dma.PREFS_NAME, MODE_PRIVATE).edit();
+						SharedPreferences.Editor editorPrefs = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE).edit();
 						editorPrefs.putBoolean("RememberMe", cb_remember_me.isChecked());
 						editorPrefs.putString("Username", tx_login.getText().toString());
 						editorPrefs.putString("Userpassword", tx_password.getText().toString());

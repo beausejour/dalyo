@@ -104,7 +104,8 @@ public class NS_DatabaseTable {
 		tables.add(tableId);
 		Cursor cursor = DatabaseAdapter.selectQuery(tables, null, filter);
 		cursor.moveToFirst();
-		for (int i=0; i<cursor.getCount(); i++){
+		int cursorCount = cursor.getCount(); 
+		for (int i=0; i<cursorCount; i++){
 			HashMap<Object, Object> record = new HashMap<Object, Object>();
 			String[] columnNames = cursor.getColumnNames();
 			int columnsRecordSize = columnNames.length;

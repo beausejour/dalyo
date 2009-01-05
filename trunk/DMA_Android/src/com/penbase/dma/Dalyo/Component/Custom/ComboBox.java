@@ -55,7 +55,8 @@ public class ComboBox extends Spinner {
 		itemsList = new ArrayList<String>();
 		Cursor cursor = DatabaseAdapter.selectQuery(tables, null, filter);
 		cursor.moveToFirst();
-		for (int i=0; i<cursor.getCount(); i++){
+		int cursorCount = cursor.getCount();
+		for (int i=0; i<cursorCount; i++){
 			String[] columnNames = cursor.getColumnNames();
 			HashMap<Object, Object> record = new HashMap<Object, Object>();
 			int columnsSize = columnNames.length;

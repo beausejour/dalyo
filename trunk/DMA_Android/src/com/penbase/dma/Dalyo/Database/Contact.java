@@ -52,7 +52,7 @@ public class Contact {
 		int contactsCursorCount = contactsCursor.getCount();
 		if (contactsCursorCount > 0) {
 			contactsCursor.moveToFirst();
-			for (int i=0; i<contactsCursor.getCount(); i++) {
+			for (int i=0; i<contactsCursorCount; i++) {
 				ArrayList<Integer> fieldsList = new ArrayList<Integer>();
 				ArrayList<Object> record = new ArrayList<Object>();
 				Cursor allRowsCursor = DatabaseAdapter.selectQuery(tableId, null, null);

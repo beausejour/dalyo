@@ -16,10 +16,13 @@ package com.penbase.dma.View;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import com.penbase.dma.Dma;
 import com.penbase.dma.R;
+import com.penbase.dma.Constant.Constant;
 import com.penbase.dma.Dalyo.Application;
 import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -97,7 +100,8 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		mApplicationName.setTextColor(Color.BLACK);
 		mApplicationName.setTypeface(Typeface.DEFAULT_BOLD);
 		layout.addView(mApplicationName, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-		for (int i =0; i < Dma.applicationList.size(); i++){
+		int size = Dma.applicationList.size();
+		for (int i =0; i < size; i++){
 			mAdapter.addApplication(Dma.applicationList.get(i));
 			if (i == 0) {
 				mApplicationName.setText(Dma.applicationList.get(i).getName());
@@ -187,7 +191,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 
 	//Logout delete the preference data
 	public void logout() {
-		SharedPreferences.Editor editor = getSharedPreferences(Dma.PREFS_NAME, MODE_PRIVATE).edit();
+		SharedPreferences.Editor editor = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE).edit();
 		editor.clear();
 		editor.commit();
 		this.finish();
@@ -200,11 +204,11 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		new Thread(){
 			public void run() {
 				try {
-					SharedPreferences prefs = getSharedPreferences(Dma.PREFS_NAME, MODE_PRIVATE);
+					SharedPreferences prefs = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE);
 					String appsList = dmahttpclient.Authentication(prefs.getString("Username", ""),
 							prefs.getString("Userpassword", ""));
 					Dma.GetListApplicationFromXml(appsList);
-					SharedPreferences.Editor editorPrefs = getSharedPreferences(Dma.PREFS_NAME, MODE_PRIVATE).edit();
+					SharedPreferences.Editor editorPrefs = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE).edit();
 					editorPrefs.remove("ApplicationList");
 					editorPrefs.putString("ApplicationList", appsList);
 					editorPrefs.commit();
@@ -230,7 +234,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View v, final int position, long id) {
-		SharedPreferences prefs = getSharedPreferences(Dma.PREFS_NAME, MODE_PRIVATE);
+		SharedPreferences prefs = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE);
 		applicationName = Dma.applicationList.get(position).getName();
 		applicationInfos.put("Username", prefs.getString("Username", ""));
 		applicationInfos.put("Userpassword", prefs.getString("Userpassword", ""));
