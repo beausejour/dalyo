@@ -2,8 +2,6 @@ package com.penbase.dma.Dalyo.Function.Namespace;
 
 import org.w3c.dom.Element;
 
-import android.util.Log;
-
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Function.Function;
@@ -23,6 +21,11 @@ public class NS_Component {
 	public static boolean IsVisible(Element element){
 		String componentId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT));
 		return ApplicationView.getComponents().get(componentId).isVisible();
+	}
+	
+	public static void ReSet(Element element){
+		String componentId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT));
+		ApplicationView.getComponents().get(componentId).reSet();
 	}
 	
 	public static void SetEnabled(Element element){

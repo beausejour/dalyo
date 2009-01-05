@@ -26,7 +26,7 @@ public class Component{
 	private Context context;
 	private String id;
 	private String type;
-	private String name;
+	private String label;
 	private String fontSize;
 	private String fontType;
 	private View view = null;
@@ -89,8 +89,8 @@ public class Component{
 		this.align = align;
 	}
 	
-	public void setName(String n){
-		this.name = n;
+	public void setLabel(String l){
+		this.label = l;
 	}
 		
 	public void setTableId(String tid){
@@ -164,7 +164,7 @@ public class Component{
 	public void setView() {
 		if(type.equals(XmlTag.COMPONENT_BUTTON)) {
 			Button button = new Button(context);
-			button.setText(name);
+			button.setText(label);
 			button.setTypeface(getFontType(fontType));
 			button.setTextSize(getFontSize(fontSize));
 			if (background != 0) {
@@ -175,7 +175,7 @@ public class Component{
 		}
 		else if(type.equals(XmlTag.COMPONENT_CHECKBOX)) {
 			CheckBox checkbox = new CheckBox(context);
-			checkbox.setText(name);
+			checkbox.setText(label);
 			checkbox.setTypeface(getFontType(fontType));
 			checkbox.setTextSize(getFontSize(fontSize));
 			if (checked.equals(true)) {
@@ -194,12 +194,12 @@ public class Component{
 			view = combobox;
 		}
 		else if(type.equals(XmlTag.COMPONENT_LABEL)) {
-			Label label = new Label(context, getFontType(fontType), getFontSize(fontSize));
-			label.setText(name);
+			Label labelObject = new Label(context, getFontType(fontType), getFontSize(fontSize));
+			labelObject.setText(label);
 			if (align != null) {
-				label.setGravity(getGravity(align));
+				labelObject.setGravity(getGravity(align));
 			}
-			view = label;
+			view = labelObject;
 		}
 		else if(type.equals(XmlTag.COMPONENT_DATEFIELD)) {
 			DateField datefield = new DateField(context, getFontType(fontType), getFontSize(fontSize), dateTimeValue);
@@ -239,7 +239,7 @@ public class Component{
 		}
 		else if(type.equals(XmlTag.COMPONENT_RADIOBUTTON)) {
 			RadioButton radiobutton = new RadioButton(context);
-			radiobutton.setText(name);
+			radiobutton.setText(label);
 			radiobutton.setTypeface(getFontType(fontType));
 			radiobutton.setTextSize(getFontSize(fontSize));
 			view = radiobutton;
@@ -287,7 +287,7 @@ public class Component{
 		}
 		else {
 			Button button = new Button(context);
-			button.setText(name);
+			button.setText(label);
 			view = button;
 		}
 	}
@@ -460,5 +460,9 @@ public class Component{
 		else {
 			return false;
 		}
+	}
+	
+	public void reSet() {
+		setValue(label);
 	}
 }
