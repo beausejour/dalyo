@@ -70,6 +70,7 @@ public class XmlTag {
 	//Common component attributes
 	public static final String COMPONENT_COMMON_ALIGN = "a";
 	public static final String COMPONENT_COMMON_BACKGROUND = "bg";
+	public static final String COMPONENT_COMMON_ENABLE = "en";
 	public static final String COMPONENT_COMMON_FIELDID = "fid";
 	public static final String COMPONENT_COMMON_FONTSIZE = "fs";
 	public static final String COMPONENT_COMMON_FONTTYPE = "ft";
@@ -85,6 +86,7 @@ public class XmlTag {
 	public static final String COMPONENT_COMMON_PWIDTH = "w";
 	public static final String COMPONENT_COMMON_TABLEID = "tid";
 	public static final String COMPONENT_COMMON_VALUE = "v";
+	public static final String COMPONENT_COMMON_VISIBLE = "vi";
 	
 	//Database element
 	public static final String DB = "db";

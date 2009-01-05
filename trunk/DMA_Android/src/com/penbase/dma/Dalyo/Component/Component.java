@@ -427,10 +427,10 @@ public class Component{
 	
 	public void setText(String text) {
 		if (text.equals("null")){
-			((TextView)getView()).setText("");
+			((Label)getView()).setText("");
 		}
 		else{
-			((TextView)getView()).setText(text);
+			((Label)getView()).setText(text);
 		}
 	}
 	
@@ -440,12 +440,25 @@ public class Component{
 		}
 	}
 	
+	public boolean isEnabled() {
+		return getView().isEnabled();
+	}
+	
 	public void setVisible(boolean state){
 		if (state){
 			getView().setVisibility(View.VISIBLE);
 		}
 		else{
 			getView().setVisibility(View.INVISIBLE);
+		}
+	}
+	
+	public boolean isVisible() {
+		if (getView().getVisibility() == View.VISIBLE) {
+			return true;
+		}
+		else {
+			return false;
 		}
 	}
 }
