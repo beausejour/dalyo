@@ -444,6 +444,12 @@ public class Component{
 		return getView().isEnabled();
 	}
 	
+	public void setFocus() {
+		if (getView().isFocusableInTouchMode()) {
+			getView().requestFocus();
+		}
+	}
+	
 	public void setVisible(boolean state){
 		if (state){
 			getView().setVisibility(View.VISIBLE);

@@ -37,6 +37,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_RESET = "reset";
 	public static final String FUNCTION_SETCURRENTRECORD = "setCurrentRecord";
 	public static final String FUNCTION_SETENABLED = "setEnabled";
+	public static final String FUNCTION_SETFOCUS = "setFocus";
 	public static final String FUNCTION_SETTEXT = "setText";
 	public static final String FUNCTION_SETTITLE = "setTitle";
 	public static final String FUNCTION_SETVALUE = "setValue";

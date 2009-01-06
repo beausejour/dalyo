@@ -39,6 +39,11 @@ public class NS_Component {
 		ApplicationView.getComponents().get(componentId).setEnabled(((Boolean)state).booleanValue());
 	}
 	
+	public static void SetFocus(Element element){
+		String componentId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT));
+		ApplicationView.getComponents().get(componentId).setFocus();
+	}
+	
 	public static void SetText(Element element){
 		String componentId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT));
 		if (Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_TEXT, ScriptAttribute.STRING) != null){

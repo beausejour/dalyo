@@ -3,7 +3,10 @@ package com.penbase.dma.View;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.penbase.dma.R;
 import com.penbase.dma.Constant.DesignTag;
@@ -68,6 +71,7 @@ public class ApplicationView extends Activity {
 		setContentView(R.layout.loading);
 		loadingbar = ProgressDialog.show(this, "Please wait...", "Building application ...", true, false);
 		loadingThread = new LoadingThread(handler);
+        setTitle(ApplicationListView.getApplicationName());
 		loadingThread.Start();
 	}
 
