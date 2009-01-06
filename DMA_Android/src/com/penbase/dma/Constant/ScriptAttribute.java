@@ -9,6 +9,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_CANCELNRECORD = "cancelNewRecord";
 	public static final String FUNCTION_CANCELTRANSACTION = "cancelTransaction";
 	public static final String FUNCTION_CLEAR = "clear";
+	public static final String FUNCTION_CONCAT = "concat";
 	public static final String FUNCTION_CONFIRM = "confirm";
 	public static final String FUNCTION_COUNT = "count";
 	public static final String FUNCTION_DELETERECORD = "deleteRecord";
@@ -64,6 +65,7 @@ public class ScriptAttribute {
 	public static final String NAMESPACE_MATH = "math";
 	public static final String NAMESPACE_GPS = "gps";
 	public static final String NAMESPACE_RUNTIME = "runtime";
+	public static final String NAMESPACE_STRING = "string";
 	public static final String NAMESPACE_TIMER = "timer";
 	public static final String NAMESPACE_USER = "user";
 	
