@@ -22,7 +22,7 @@ public class XmlTag {
 	public static final String DESIGN_S_MM = "mm";
 	public static final String DESIGN_S_MM_E = "e";
 	public static final String DESIGN_F = "f";
-	public static final String DESIGN_F_T = "t";
+	public static final String DESIGN_F_TITLE = "t";
 	public static final String DESIGN_F_BC = "bc";
 	public static final String DESIGN_F_DGT = "dgt";
 	public static final String DESIGN_F_FS = "fs";

@@ -38,6 +38,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_SETCURRENTRECORD = "setCurrentRecord";
 	public static final String FUNCTION_SETENABLED = "setEnabled";
 	public static final String FUNCTION_SETTEXT = "setText";
+	public static final String FUNCTION_SETTITLE = "setTitle";
 	public static final String FUNCTION_SETVALUE = "setValue";
 	public static final String FUNCTION_SETVISIBLE = "setVisible";
 	public static final String FUNCTION_SIZE = "size";
@@ -83,6 +84,7 @@ public class ScriptAttribute {
 	public static final String PARAMETER_NAME_TABLES = "tables";
 	public static final String PARAMETER_NAME_TEXT = "text";
 	public static final String PARAMETER_NAME_TIMERID = "timer_id";
+	public static final String PARAMETER_NAME_TITLE = "title";
 	public static final String PARAMETER_NAME_VALUE = "value";
 	public static final String PARAMETER_NAME_VALUES = "values";
 	public static final String PARAMETER_NAME_VISIBLE = "visible";

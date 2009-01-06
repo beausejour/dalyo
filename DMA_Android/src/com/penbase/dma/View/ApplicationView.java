@@ -65,7 +65,6 @@ public class ApplicationView extends Activity {
 		resourcesFileMap = client.getResourceMap("ext");
 		componentsMap = new HashMap<String, Component>();
 		new Function(this, behaviorDocument);
-		setTitle(ApplicationListView.getApplicationName());
 		setContentView(R.layout.loading);
 		loadingbar = ProgressDialog.show(this, "Please wait...", "Building application ...", true, false);
 		loadingThread = new LoadingThread(handler);
@@ -79,6 +78,7 @@ public class ApplicationView extends Activity {
 			layoutsMap.get(startFormId).onLoad(onLoadFuncMap.get(startFormId));
 		}
 		setCurrentFormId(startFormId);
+		setTitle(layoutsMap.get(startFormId).getTitle());
 		setContentView(layoutsMap.get(startFormId));
 	}
 
@@ -143,6 +143,12 @@ public class ApplicationView extends Activity {
 			else {
 				//Default background color is white
 				form.setBackgroundColor(Color.WHITE);
+			}
+			
+			//Check form's title
+			if (formElt.hasAttribute(XmlTag.DESIGN_F_TITLE)){
+				String title = formElt.getAttribute(XmlTag.DESIGN_F_TITLE);
+				form.setTitle(title);
 			}
 			
 			layoutsMap.put(formId, form);

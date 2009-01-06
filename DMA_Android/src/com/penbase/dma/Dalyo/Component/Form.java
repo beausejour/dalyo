@@ -15,6 +15,7 @@ import com.penbase.dma.Dalyo.Function.Function;
 
 public class Form extends AbsoluteLayout{
 	private String tableId;
+	private String title;
 	
 	public Form(Context context){		
 		super(context);
@@ -33,6 +34,14 @@ public class Form extends AbsoluteLayout{
 	
 	public String getTableId(){
 		return tableId;
+	}
+	
+	public void setTitle(String t) {
+		this.title = t;
+	}
+	
+	public String getTitle() {
+		return title;
 	}
 	
 	public void setRecord(String formId, HashMap<Object, Object> record){
