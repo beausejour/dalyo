@@ -3,7 +3,7 @@ package com.penbase.dma.Dalyo.Database;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.penbase.dma.Constant.DatabaseField;
+import com.penbase.dma.Constant.DatabaseAttribute;
 import com.penbase.dma.View.ApplicationView;
 
 import android.database.Cursor;
@@ -63,46 +63,46 @@ public class Contact {
 				setValue(contactsCursor, contactsColumns);
 				for (String key : fields.keySet()) {
 					fieldsList.add(Integer.valueOf(key));
-					if (Integer.valueOf(fields.get(key).get(1)) == DatabaseField.LASTNAME) {
+					if (Integer.valueOf(fields.get(key).get(1)) == DatabaseAttribute.LASTNAME) {
 						record.add(lastName);
 					}
-					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseField.FIRSTNAME) {
+					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseAttribute.FIRSTNAME) {
 						record.add(firstName);
 					}
-					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseField.PHONEWORK) {
+					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseAttribute.PHONEWORK) {
 						record.add(workPhone);
 					}
-					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseField.HOMEPHONE) {
+					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseAttribute.HOMEPHONE) {
 						record.add(homePhone);
 					}
-					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseField.MOBILEPHONE) {
+					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseAttribute.MOBILEPHONE) {
 						record.add(mobilePhone);
 					}
-					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseField.PHONE2WORK) {
+					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseAttribute.PHONE2WORK) {
 						record.add(otherPhone);
 					}
-					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseField.FAXWORK) {
+					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseAttribute.FAXWORK) {
 						record.add(faxWork);
 					}
-					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseField.COMPANYPHONE) {
+					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseAttribute.COMPANYPHONE) {
 						record.add(companyPhone);
 					}
-					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseField.EMAIL) {
+					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseAttribute.EMAIL) {
 						record.add(email);
 					}
-					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseField.EMAILWORK) {
+					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseAttribute.EMAILWORK) {
 						record.add(emailWork);
 					}
-					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseField.IMWORK) {
+					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseAttribute.IMWORK) {
 						record.add(imWork);
 					}
-					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseField.STREET) {
+					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseAttribute.STREET) {
 						record.add(street);
 					}
-					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseField.STREETWORK) {
+					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseAttribute.STREETWORK) {
 						record.add(streetWork);
 					}
-					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseField.COMPANY) {
+					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseAttribute.COMPANY) {
 						record.add(company);
 					}
 					else {

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import org.w3c.dom.Element;
 import android.database.Cursor;
 import android.util.Log;
-import com.penbase.dma.Constant.DatabaseField;
+import com.penbase.dma.Constant.DatabaseAttribute;
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
@@ -53,7 +53,7 @@ public class NS_DatabaseTable {
 		HashMap<Object, Object> record = (HashMap<Object, Object>)Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.RECORD, ScriptAttribute.RECORD);
 		String fieldId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FIELD, ScriptAttribute.FIELD));
 		if (record != null){
-			value = record.get(DatabaseField.FIELD+fieldId);
+			value = record.get(DatabaseAttribute.FIELD+fieldId);
 		}
 		Log.i("info", "value "+value);
 		return value;

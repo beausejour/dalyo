@@ -8,10 +8,11 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import android.content.Context;
 import android.util.Log;
+
+import com.penbase.dma.Constant.Constant;
 import com.penbase.dma.Constant.GpsStatus;
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
-import com.penbase.dma.Constant.XmlTag;
 import com.penbase.dma.Dalyo.Function.Namespace.*;
 import com.penbase.dma.View.ApplicationView;
 
@@ -214,7 +215,7 @@ public class Function {
 		switch (Integer.valueOf(String.valueOf(operator))){
 			case ScriptAttribute.AND:
 				if (left == right) {
-					if (String.valueOf(left).equals(XmlTag.TRUE)) {
+					if (String.valueOf(left).equals(Constant.TRUE)) {
 						result = true;
 					}
 				}
@@ -640,6 +641,9 @@ public class Function {
 			}
 			else if (element.getChildNodes().item(0).getNodeValue().equals(ScriptAttribute.CONST_GPS_SIGNAL_OK)){
 				result = GpsStatus.GPS_SIGNAL_OK;
+			}
+			else if (element.getChildNodes().item(0).getNodeValue().equals(ScriptAttribute.CONST_EMPTY_STRING)){
+				result = "";
 			}
 		}
 		return result;

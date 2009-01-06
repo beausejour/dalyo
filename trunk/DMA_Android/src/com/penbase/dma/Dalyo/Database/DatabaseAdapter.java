@@ -16,8 +16,8 @@ import org.w3c.dom.NodeList;
 
 import com.penbase.dma.Binary.Binary;
 import com.penbase.dma.Constant.Constant;
-import com.penbase.dma.Constant.DatabaseField;
-import com.penbase.dma.Constant.XmlTag;
+import com.penbase.dma.Constant.DatabaseAttribute;
+import com.penbase.dma.Constant.DatabaseTag;
 import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
 
@@ -54,7 +54,7 @@ public class DatabaseAdapter {
 		fieldsPKMap = new HashMap<String, String>();
 		foreignKeyList = new ArrayList<ArrayList<String>>();
 		blobRecords = new ArrayList<ArrayList<Object>>();
-		if (dbDocument.getElementsByTagName(XmlTag.TABLE).getLength() > 0) {
+		if (dbDocument.getElementsByTagName(DatabaseTag.TABLE).getLength() > 0) {
 			createDatabase(dbName);
 		}
 	}
@@ -100,12 +100,12 @@ public class DatabaseAdapter {
 		ArrayList<ArrayList<String>> fkList = new ArrayList<ArrayList<String>>();
 		SharedPreferences tablePref = context.getSharedPreferences(TABLEPREF, Context.MODE_PRIVATE);
 		SharedPreferences fieldPref = context.getSharedPreferences(FIELDPREF, Context.MODE_PRIVATE);
-		NodeList tableList = dbDocument.getElementsByTagName(XmlTag.TABLE);
+		NodeList tableList = dbDocument.getElementsByTagName(DatabaseTag.TABLE);
 		int tableLen = tableList.getLength();
 		int i = 0;
 		while (i < tableLen){
 			Element table = (Element) tableList.item(i);
-			String tableId = table.getAttribute(XmlTag.TABLE_ID);
+			String tableId = table.getAttribute(DatabaseTag.TABLE_ID);
 			if (!tablePref.getString(tableId, "null").equals("")){
 				result = false;
 				i = tableLen;
@@ -118,17 +118,17 @@ public class DatabaseAdapter {
 					ArrayList<String> tableElements = new ArrayList<String>();
 					while (j < fieldLen){
 						Element field = (Element) fieldList.item(j);
-						String fieldId = field.getAttribute(XmlTag.FIELD_ID);
-						String fieldType = field.getAttribute(XmlTag.FIELD_TYPE);
-						String fieldSize = field.getAttribute(XmlTag.FIELD_SIZE);
-						String fieldName = DatabaseField.FIELD+fieldId;
+						String fieldId = field.getAttribute(DatabaseTag.FIELD_ID);
+						String fieldType = field.getAttribute(DatabaseTag.FIELD_TYPE);
+						String fieldSize = field.getAttribute(DatabaseTag.FIELD_SIZE);
+						String fieldName = DatabaseAttribute.FIELD+fieldId;
 						fsMap.put(fieldId, fieldType);
 						tableElements.add(fieldName);
-						if (fieldType.equals(DatabaseField.VARCHAR)){
+						if (fieldType.equals(DatabaseAttribute.VARCHAR)){
 							fieldType = fieldType+"("+fieldSize+")";
 						}
 						String fieldTypeValue = fieldType;
-						if (field.hasAttribute(XmlTag.FIELD_PK)){
+						if (field.hasAttribute(DatabaseTag.FIELD_PK)){
 							fsPkMap.put(tableId, fieldId);
 							/*if (field.hasAttribute(XmlTag.FIELD_PK_AUTO)){
 								fieldTypeValue += " PRIMARY KEY AUTOINCREMENT, ";
@@ -138,11 +138,11 @@ public class DatabaseAdapter {
 							}*/
 							fieldTypeValue += " UNIQUE, ";
 						}
-						else if ((field.hasAttribute(XmlTag.FIELD_FORIEIGNTABLE)) 
-								&& (field.hasAttribute(XmlTag.FIELD_FORIEIGNFIELD))){
+						else if ((field.hasAttribute(DatabaseTag.FIELD_FORIEIGNTABLE)) 
+								&& (field.hasAttribute(DatabaseTag.FIELD_FORIEIGNFIELD))){
 							ArrayList<String> fk = new ArrayList<String>();
-							String foreignTableId = field.getAttribute(XmlTag.FIELD_FORIEIGNTABLE);
-							String foreignFieldId = field.getAttribute(XmlTag.FIELD_FORIEIGNFIELD);
+							String foreignTableId = field.getAttribute(DatabaseTag.FIELD_FORIEIGNTABLE);
+							String foreignFieldId = field.getAttribute(DatabaseTag.FIELD_FORIEIGNFIELD);
 							fieldTypeValue += foreignTableId+" "+foreignFieldId;
 							fk.add(tableId);
 							fk.add(fieldId);
@@ -177,19 +177,19 @@ public class DatabaseAdapter {
 	private void createTable(){
 		SharedPreferences.Editor editorTablePref = context.getSharedPreferences(TABLEPREF, Context.MODE_PRIVATE).edit();
 		SharedPreferences.Editor editorFieldPref = context.getSharedPreferences(FIELDPREF, Context.MODE_PRIVATE).edit();
-		NodeList tableList = dbDocument.getElementsByTagName(XmlTag.TABLE);
+		NodeList tableList = dbDocument.getElementsByTagName(DatabaseTag.TABLE);
 		int tableLen = tableList.getLength();
 		for (int i=0; i<tableLen; i++){
 			String createquery = "CREATE TABLE IF NOT EXISTS ";
 			Element table = (Element) tableList.item(i);
-			String typeSync = table.getAttribute(XmlTag.TABLE_SYNC);
-			String tableId = table.getAttribute(XmlTag.TABLE_ID);
+			String typeSync = table.getAttribute(DatabaseTag.TABLE_SYNC);
+			String tableId = table.getAttribute(DatabaseTag.TABLE_ID);
 			editorTablePref.putString(tableId, "");
-			String tableName = DatabaseField.TABLE+tableId;
+			String tableName = DatabaseAttribute.TABLE+tableId;
 			ArrayList<String> tableElements = new ArrayList<String>();
-			String id = DatabaseField.ID+tableId;
-			String gid = DatabaseField.GID+tableId;
-			createquery += tableName+" ("+id+" VARCHAR(255), "+gid+" VARCHAR(255), "+DatabaseField.STATE+" INTEGER, ";
+			String id = DatabaseAttribute.ID+tableId;
+			String gid = DatabaseAttribute.GID+tableId;
+			createquery += tableName+" ("+id+" VARCHAR(255), "+gid+" VARCHAR(255), "+DatabaseAttribute.STATE+" INTEGER, ";
 			NodeList fieldList = table.getChildNodes();
 			int fieldLen = fieldList.getLength();
 			ArrayList<ArrayList<String>> foreignKeyTable = new ArrayList<ArrayList<String>>();
@@ -199,18 +199,18 @@ public class DatabaseAdapter {
 					//foreignKey has 4 elements (tid, fid, ftid, ffid)
 					ArrayList<String> foreignKey = new ArrayList<String>();	
 					Element field = (Element) fieldList.item(j);
-					String fieldId = field.getAttribute(XmlTag.FIELD_ID);
-					String fieldName = DatabaseField.FIELD+fieldId;
+					String fieldId = field.getAttribute(DatabaseTag.FIELD_ID);
+					String fieldName = DatabaseAttribute.FIELD+fieldId;
 					tableElements.add(fieldName);
-					String fieldType = field.getAttribute(XmlTag.FIELD_TYPE);
-					String fieldSize = field.getAttribute(XmlTag.FIELD_SIZE);
+					String fieldType = field.getAttribute(DatabaseTag.FIELD_TYPE);
+					String fieldSize = field.getAttribute(DatabaseTag.FIELD_SIZE);
 					fieldsMap.put(fieldId, fieldType);
-					if (fieldType.equals(DatabaseField.VARCHAR)){
+					if (fieldType.equals(DatabaseAttribute.VARCHAR)){
 						fieldType = fieldType+"("+fieldSize+")";
 					}
-					String fieldSync = field.getAttribute(XmlTag.FIELD_SYNC);
+					String fieldSync = field.getAttribute(DatabaseTag.FIELD_SYNC);
 					String fieldTypeValue = fieldType;
-					if (field.hasAttribute(XmlTag.FIELD_PK)){
+					if (field.hasAttribute(DatabaseTag.FIELD_PK)){
 						fieldsPKMap.put(tableId, fieldId);
 						/*if (field.hasAttribute(XmlTag.FIELD_PK_AUTO)){
 							createquery += fieldName+" "+fieldType+" PRIMARY KEY AUTOINCREMENT, ";
@@ -224,10 +224,10 @@ public class DatabaseAdapter {
 						fieldTypeValue += " UNIQUE, ";
 					}
 					
-					else if ((field.hasAttribute(XmlTag.FIELD_FORIEIGNTABLE)) &&
-							(field.hasAttribute(XmlTag.FIELD_FORIEIGNFIELD))){
-						String foreignTableId = field.getAttribute(XmlTag.FIELD_FORIEIGNTABLE);
-						String foreignFieldId = field.getAttribute(XmlTag.FIELD_FORIEIGNFIELD);
+					else if ((field.hasAttribute(DatabaseTag.FIELD_FORIEIGNTABLE)) &&
+							(field.hasAttribute(DatabaseTag.FIELD_FORIEIGNFIELD))){
+						String foreignTableId = field.getAttribute(DatabaseTag.FIELD_FORIEIGNTABLE);
+						String foreignFieldId = field.getAttribute(DatabaseTag.FIELD_FORIEIGNFIELD);
 						fieldTypeValue += foreignTableId+" "+foreignFieldId;
 						createquery += fieldName+" "+fieldType+", ";
 						foreignKey.add(tableId);
@@ -242,10 +242,10 @@ public class DatabaseAdapter {
 					}
 					
 					//check system fields setting
-					if ((field.hasAttribute(XmlTag.FIELD_SYSTABLE)) && (field.hasAttribute(XmlTag.FIELD_SYSFIELD))) {
+					if ((field.hasAttribute(DatabaseTag.FIELD_SYSTABLE)) && (field.hasAttribute(DatabaseTag.FIELD_SYSFIELD))) {
 						ArrayList<String> systemField = new ArrayList<String>();
-						systemField.add(field.getAttribute(XmlTag.FIELD_SYSTABLE));
-						systemField.add(field.getAttribute(XmlTag.FIELD_SYSFIELD));
+						systemField.add(field.getAttribute(DatabaseTag.FIELD_SYSTABLE));
+						systemField.add(field.getAttribute(DatabaseTag.FIELD_SYSFIELD));
 						systemFields.put(fieldId, systemField);
 					}
 					
@@ -274,7 +274,7 @@ public class DatabaseAdapter {
 				HashMap<String, ArrayList<String>> eventFields = new HashMap<String, ArrayList<String>>();
 				HashMap<String, ArrayList<String>> taskFields = new HashMap<String, ArrayList<String>>();
 				for (String key : systemFields.keySet()) {
-					if (Integer.valueOf(systemFields.get(key).get(0)) == DatabaseField.CONTACT) {
+					if (Integer.valueOf(systemFields.get(key).get(0)) == DatabaseAttribute.CONTACT) {
 						contactFields.put(key, systemFields.get(key));
 					}
 					//else for event and task
@@ -374,7 +374,7 @@ public class DatabaseAdapter {
 					Object valueObject = Binary.byteArrayToObject(value, fieldsMap.get(String.valueOf(fieldList.get(l))));
 					valueList.add(valueObject);
 				}
-				if (syncTypeInt != DatabaseField.SYNCHRONIZED) {
+				if (syncTypeInt != DatabaseAttribute.SYNCHRONIZED) {
 					recordsList.add(valueList);
 				}
 			}
@@ -399,9 +399,9 @@ public class DatabaseAdapter {
 		HashMap<String, ArrayList<HashMap<Object, Object>>> tidMap = 
 			new HashMap<String, ArrayList<HashMap<Object, Object>>>();
 		for (String key : keys){
-			String table = DatabaseField.TABLE+key;
+			String table = DatabaseAttribute.TABLE+key;
 			//String selection = table+".STATE != "+DatabaseField.SYNCHRONIZED;
-			String selection = "STATE != "+DatabaseField.SYNCHRONIZED;
+			String selection = "STATE != "+DatabaseAttribute.SYNCHRONIZED;
 			Log.i("info", "selection "+selection);
 			Cursor cursor = sqlite.query(table, null, selection, null, null, null, null);
 			//Cursor cursor = selectQuery(key, null, null);
@@ -418,7 +418,7 @@ public class DatabaseAdapter {
 					for (int column=0; column<columnsNb; column++){
 						Log.i("info", "column name "+columns[column]+" its value "+getCursorValue(cursor, columns[column]));
 						record.put(columns[column], getCursorValue(cursor, columns[column]));
-						if ((columns[column].equals(DatabaseField.STATE)) && (Integer.valueOf(String.valueOf(getCursorValue(cursor, columns[column]))) == DatabaseField.SYNCHRONIZED)) {
+						if ((columns[column].equals(DatabaseAttribute.STATE)) && (Integer.valueOf(String.valueOf(getCursorValue(cursor, columns[column]))) == DatabaseAttribute.SYNCHRONIZED)) {
 							checkSyncType = false;
 						}
 					}
@@ -466,22 +466,22 @@ public class DatabaseAdapter {
 			for (int k=0; k<recordsNbInt; k++){
 				HashMap<Object, Object> record = tidMap.get(tidKey).get(k);
 				//syncType
-				int syncTypeInt = Integer.valueOf(String.valueOf(record.get(DatabaseField.STATE)));
+				int syncTypeInt = Integer.valueOf(String.valueOf(record.get(DatabaseAttribute.STATE)));
 				byte[] syncType = Binary.typeToByteArray(syncTypeInt);
 				bos.write(syncType, 0, syncType.length);
 
 				//local id
-				int localIdInt = Integer.valueOf(String.valueOf(record.get(DatabaseField.ID+tidKey)));
+				int localIdInt = Integer.valueOf(String.valueOf(record.get(DatabaseAttribute.ID+tidKey)));
 				byte[] localId = Binary.intToByteArray(localIdInt);
 				bos.write(localId, 0, localId.length);
 
 				//global id is
-				int globalIdInt = Integer.valueOf(String.valueOf(record.get(DatabaseField.GID+tidKey)));
+				int globalIdInt = Integer.valueOf(String.valueOf(record.get(DatabaseAttribute.GID+tidKey)));
 				byte[] globalId = Binary.intToByteArray(globalIdInt);
 				bos.write(globalId, 0, globalId.length);
 
 				//value
-				if (syncTypeInt != DatabaseField.DELETEVALUE){
+				if (syncTypeInt != DatabaseAttribute.DELETEVALUE){
 					for (int fid=0; fid<fieldsNbInt; fid++){
 						String valueType = fieldsMap.get(fields.get(fid).split("_")[1]);
 						Log.i("info", "valueType "+valueType);
@@ -504,7 +504,7 @@ public class DatabaseAdapter {
 							value = Binary.objectToByteArray(record.get(fields.get(fid)), valueType);
 							int valueLengthInt = value.length;
 							valueLenth = Binary.intToByteArray(valueLengthInt);
-							if (valueType.equals(DatabaseField.BLOB)) {
+							if (valueType.equals(DatabaseAttribute.BLOB)) {
 								ArrayList<Object> blobData = new ArrayList<Object>();
 								blobData.add(fields.get(fid).split("_")[1]);
 								blobData.add(record.get(fields.get(fid)));
@@ -561,17 +561,17 @@ public class DatabaseAdapter {
 	
 	private static void updateGid(int tableId, int lid, int gid){
 		Log.i("info", "updategid tableId "+tableId+" lid "+lid+" gid "+gid);
-		String table = DatabaseField.TABLE+tableId;
+		String table = DatabaseAttribute.TABLE+tableId;
 		ContentValues values = new ContentValues();
-		values.put(DatabaseField.GID+tableId, String.valueOf(gid));
-		values.put(DatabaseField.STATE, DatabaseField.SYNCHRONIZED);   //update sync type at the same time 
+		values.put(DatabaseAttribute.GID+tableId, String.valueOf(gid));
+		values.put(DatabaseAttribute.STATE, DatabaseAttribute.SYNCHRONIZED);   //update sync type at the same time 
 		String whereClause = "";
 		if (tableId == 0){
 			String idValue = tableId+""+lid;
-			whereClause = DatabaseField.ID+tableId+"=\'"+idValue+"\'";
+			whereClause = DatabaseAttribute.ID+tableId+"=\'"+idValue+"\'";
 		}
 		else{
-			whereClause = DatabaseField.ID+tableId+"=\'"+lid+"\'";
+			whereClause = DatabaseAttribute.ID+tableId+"=\'"+lid+"\'";
 		}
 		sqlite.update(table, values, whereClause, null);
 	}
@@ -581,13 +581,13 @@ public class DatabaseAdapter {
 		int syncTypeListSize = syncTypeList.size();
 		for (int i=0; i<syncTypeListSize; i++){
 			switch (syncTypeList.get(i)){
-				case DatabaseField.ADDVALUE:
+				case DatabaseAttribute.ADDVALUE:
 					insertValues(tableId, fields, records.get(i));
 					break;
-				case DatabaseField.UPDATEVALUE:
+				case DatabaseAttribute.UPDATEVALUE:
 					updateValues(tableId, fields, records.get(i));
 					break;
-				case DatabaseField.DELETEVALUE:
+				case DatabaseAttribute.DELETEVALUE:
 					deleteValues(tableId, fields, records.get(i));
 					break;
 			}
@@ -596,7 +596,7 @@ public class DatabaseAdapter {
 	
 	//Add values and don't check primary key
 	private void insertValues(int tableId, ArrayList<Integer> fieldsList, ArrayList<Object> record){
-		Log.i("info", "add table value "+DatabaseField.TABLE+tableId+" record "+record);
+		Log.i("info", "add table value "+DatabaseAttribute.TABLE+tableId+" record "+record);
 		Cursor cursorAllRows = selectQuery(String.valueOf(tableId), null, null);
 		int newId = cursorAllRows.getCount()+1;
 		if (!cursorAllRows.isClosed()) {
@@ -608,13 +608,13 @@ public class DatabaseAdapter {
 		String idValue = tableId+""+newId;
 		Log.i("info", "idvalue is "+idValue);
 		ContentValues values = new ContentValues();
-		values.put(DatabaseField.ID+tableId, idValue);
-		values.put(DatabaseField.GID+tableId, (String)record.get(1));
-		values.put(DatabaseField.STATE, DatabaseField.SYNCHRONIZED);
+		values.put(DatabaseAttribute.ID+tableId, idValue);
+		values.put(DatabaseAttribute.GID+tableId, (String)record.get(1));
+		values.put(DatabaseAttribute.STATE, DatabaseAttribute.SYNCHRONIZED);
 		int fieldsNb = fieldsList.size();
 		for (int i=0; i<fieldsNb; i++){
 			//check field's type
-			if (fieldsMap.get(String.valueOf(fieldsList.get(i))).equals(DatabaseField.BLOB)) {
+			if (fieldsMap.get(String.valueOf(fieldsList.get(i))).equals(DatabaseAttribute.BLOB)) {
 				ByteArrayOutputStream bos = new ByteArrayOutputStream();
 				ObjectOutputStream oos;
 				try {
@@ -624,48 +624,48 @@ public class DatabaseAdapter {
 				catch (IOException e) {
 					e.printStackTrace();
 				}
-				values.put(DatabaseField.FIELD+fieldsList.get(i), bos.toByteArray());
+				values.put(DatabaseAttribute.FIELD+fieldsList.get(i), bos.toByteArray());
 			}
 			else {
-				values.put(DatabaseField.FIELD+fieldsList.get(i), (String)record.get(i+2));
+				values.put(DatabaseAttribute.FIELD+fieldsList.get(i), (String)record.get(i+2));
 			}
 		}
-		String tableName = DatabaseField.TABLE+tableId;
+		String tableName = DatabaseAttribute.TABLE+tableId;
 		long insertResult = sqlite.insert(tableName, null, values);
 		Log.i("info", "insertresult "+insertResult);
 	}
 	
 	private void updateValues(int tableId, ArrayList<Integer> fieldsList, ArrayList<Object> record){
-		Log.i("info", "update table value "+DatabaseField.TABLE+tableId+" fieldList "+fieldsList+" record "+record);
+		Log.i("info", "update table value "+DatabaseAttribute.TABLE+tableId+" fieldList "+fieldsList+" record "+record);
 		int fieldsNb = fieldsList.size();
-		String tableName = DatabaseField.TABLE+tableId;
+		String tableName = DatabaseAttribute.TABLE+tableId;
 		//String newValue = DatabaseField.STATE+"="+DatabaseField.SYNCHRONIZED+" AND "+DatabaseField.GID+tableId+"="+record.get(1);
 		String newValue = "";
 		for (int i=0; i<fieldsNb; i++){
 			if (i == fieldsNb-1){
-				newValue += DatabaseField.STATE+"="+DatabaseField.SYNCHRONIZED+" ,"+DatabaseField.FIELD+fieldsList.get(i)+"=\'"+record.get(i+2)+"\'";
+				newValue += DatabaseAttribute.STATE+"="+DatabaseAttribute.SYNCHRONIZED+" ,"+DatabaseAttribute.FIELD+fieldsList.get(i)+"=\'"+record.get(i+2)+"\'";
 			}
 			else{
-				newValue += DatabaseField.FIELD+fieldsList.get(i)+"=\'"+record.get(i+2)+"\', ";
+				newValue += DatabaseAttribute.FIELD+fieldsList.get(i)+"=\'"+record.get(i+2)+"\', ";
 			}
 		}
-		String update = "UPDATE "+tableName+" SET "+newValue+" WHERE "+DatabaseField.GID+tableId+"=\'"+record.get(1)+"\';";
+		String update = "UPDATE "+tableName+" SET "+newValue+" WHERE "+DatabaseAttribute.GID+tableId+"=\'"+record.get(1)+"\';";
 		Log.i("info", "update "+update);
 		sqlite.execSQL(update);
 	}
 	
 	private void deleteValues(int tableId, ArrayList<Integer> fieldsList, ArrayList<Object> record){
-		String delete = "DELETE FROM "+DatabaseField.TABLE+tableId+" WHERE "+DatabaseField.GID+tableId+"=\'"+record.get(1)+"\';";
+		String delete = "DELETE FROM "+DatabaseAttribute.TABLE+tableId+" WHERE "+DatabaseAttribute.GID+tableId+"=\'"+record.get(1)+"\';";
 		sqlite.execSQL(delete);
 	}
 	
 	//Generate primary key for KEY and INTEGER
 	private static Object generatePK(String type, Object idValue){
 		Object result = null;
-		if (type.equals(DatabaseField.KEY)){
+		if (type.equals(DatabaseAttribute.KEY)){
 			result = KeyGenerator.getKeyGenerated();
 		}
-		else if (type.equals(DatabaseField.INTEGER)){
+		else if (type.equals(DatabaseAttribute.INTEGER)){
 			Log.i("info", "idValue "+idValue);
 			result = idValue;
 		}
@@ -674,14 +674,14 @@ public class DatabaseAdapter {
 	
 	public static void clearTable(String tableId){
 		//Check if table has blob data
-		Cursor cursor = sqlite.query(DatabaseField.TABLE+tableId, null, null, null, null, null, null);
+		Cursor cursor = sqlite.query(DatabaseAttribute.TABLE+tableId, null, null, null, null, null, null);
 		if (cursor.getCount() != 0) {
 			String[] columnsNames = cursor.getColumnNames();
 			boolean hasBlob = false;
 			int check = 0;
 			while (check < columnsNames.length) {
-				if (columnsNames[check].contains(DatabaseField.FIELD)) {
-					if (fieldsMap.get(columnsNames[check].split("_")[1]).equals(DatabaseField.BLOB)) {
+				if (columnsNames[check].contains(DatabaseAttribute.FIELD)) {
+					if (fieldsMap.get(columnsNames[check].split("_")[1]).equals(DatabaseAttribute.BLOB)) {
 						hasBlob = true;
 						check = columnsNames.length;
 					}
@@ -695,8 +695,8 @@ public class DatabaseAdapter {
 					String[] columns = cursor.getColumnNames();
 					int columnsNb = columns.length;
 					for (int column=0; column<columnsNb; column++){
-						if (columnsNames[column].contains(DatabaseField.FIELD)) {
-							if (fieldsMap.get(columns[column].split("_")[1]).equals(DatabaseField.BLOB)) {
+						if (columnsNames[column].contains(DatabaseAttribute.FIELD)) {
+							if (fieldsMap.get(columns[column].split("_")[1]).equals(DatabaseAttribute.BLOB)) {
 								String imageName = (String)getCursorValue(cursor, columns[column]);
 								//Delete the image
 								new File(Constant.PACKAGENAME+imageName).delete();
@@ -712,12 +712,12 @@ public class DatabaseAdapter {
 			}
 			
 		}
-		sqlite.execSQL("DELETE FROM "+DatabaseField.TABLE+tableId);
+		sqlite.execSQL("DELETE FROM "+DatabaseAttribute.TABLE+tableId);
 	}
 	
 	public static Cursor selectQuery(String tableId, ArrayList<Integer> fieldList, ArrayList<Object> valueList){
 		Cursor result = null;
-		String table = DatabaseField.TABLE+tableId;
+		String table = DatabaseAttribute.TABLE+tableId;
 		Log.i("info", "tableid "+table);
 		String selection = createSelectionString(fieldList, valueList);
 		Log.i("info", "selection "+selection);
@@ -742,11 +742,11 @@ public class DatabaseAdapter {
 		Log.i("info", "record "+record+" size "+record.size());
 		Log.i("info", "fieldsList "+fieldsList+" size "+fieldsList.size());
 		int fieldsNb = fieldsList.size();
-		String id = DatabaseField.ID+tableId;
-		String gid = DatabaseField.GID+tableId;
+		String id = DatabaseAttribute.ID+tableId;
+		String gid = DatabaseAttribute.GID+tableId;
 		String idValue = String.valueOf(tableId+""+record.get(0));
-		String fields = "("+id+", "+gid+", "+DatabaseField.STATE+", ";
-		String values = "('"+idValue+"\', 0, "+DatabaseField.ADDVALUE+", ";
+		String fields = "("+id+", "+gid+", "+DatabaseAttribute.STATE+", ";
+		String values = "('"+idValue+"\', 0, "+DatabaseAttribute.ADDVALUE+", ";
 		for (int i=0; i<fieldsNb; i++){
 			if ((fieldsPKMap.containsKey(String.valueOf(tableId))) && 
 					(fieldsPKMap.get(String.valueOf(tableId)).equals(fieldsList.get(i))) &&
@@ -756,7 +756,7 @@ public class DatabaseAdapter {
 				record.add(i+1, generatePK(fieldsMap.get(fieldsList.get(i)), record.get(0)));
 			}
 			
-			fields += DatabaseField.FIELD+fieldsList.get(i);
+			fields += DatabaseAttribute.FIELD+fieldsList.get(i);
 			values += "\'"+record.get(i+1)+"\'";
 			
 			if (i != fieldsNb-1){
@@ -767,12 +767,12 @@ public class DatabaseAdapter {
 		if ((!fieldsList.contains(fieldsPKMap.get(String.valueOf(tableId)))) &&
 				(fieldsPKMap.containsKey(String.valueOf(tableId)))){
 			Log.i("info", "in case of field list hasn't pk field, generate its value");
-			fields += ", "+DatabaseField.FIELD+fieldsPKMap.get(String.valueOf(tableId));
+			fields += ", "+DatabaseAttribute.FIELD+fieldsPKMap.get(String.valueOf(tableId));
 			values += ", \'"+generatePK(fieldsMap.get(fieldsPKMap.get(String.valueOf(tableId))), record.get(0))+"\'";
 		}
 		fields += ")";
 		values += ")";
-		String tableName = DatabaseField.TABLE+tableId;
+		String tableName = DatabaseAttribute.TABLE+tableId;
 		String insert = "INSERT INTO "+tableName+" "+fields+" VALUES"+values+";";
 		Log.i("info", "query "+insert);
 		sqlite.execSQL(insert);
@@ -781,20 +781,20 @@ public class DatabaseAdapter {
 	public static void updateQuery(String tableId, ArrayList<Integer> fieldList, ArrayList<Object> valueList, HashMap<Object, Object> record){
 		Log.i("info", "updateQuery Record "+record+" fieldList "+fieldList+" valueList "+valueList);
 		//Check if state is Synchronized, update to updatevalue. Otherwise, don't change state's value.
-		String table = DatabaseField.TABLE+tableId;
-		int newState = DatabaseField.ADDVALUE;
-		if ((record.containsKey(DatabaseField.STATE)) && (record.get(DatabaseField.STATE) != null)){
-			if (Integer.valueOf(String.valueOf(record.get(DatabaseField.STATE))) == DatabaseField.SYNCHRONIZED){
-				newState = DatabaseField.UPDATEVALUE;
+		String table = DatabaseAttribute.TABLE+tableId;
+		int newState = DatabaseAttribute.ADDVALUE;
+		if ((record.containsKey(DatabaseAttribute.STATE)) && (record.get(DatabaseAttribute.STATE) != null)){
+			if (Integer.valueOf(String.valueOf(record.get(DatabaseAttribute.STATE))) == DatabaseAttribute.SYNCHRONIZED){
+				newState = DatabaseAttribute.UPDATEVALUE;
 			}
-			record.remove(DatabaseField.STATE);
+			record.remove(DatabaseAttribute.STATE);
 		}
 		ContentValues values = new ContentValues();
-		values.put(DatabaseField.STATE, newState);
+		values.put(DatabaseAttribute.STATE, newState);
 		int listSize = fieldList.size();
 		for (int i=0; i<listSize; i++){
-			values.put(DatabaseField.FIELD+String.valueOf(fieldList.get(i)), String.valueOf(valueList.get(i)));
-			record.remove(DatabaseField.FIELD+fieldList.get(i));
+			values.put(DatabaseAttribute.FIELD+String.valueOf(fieldList.get(i)), String.valueOf(valueList.get(i)));
+			record.remove(DatabaseAttribute.FIELD+fieldList.get(i));
 		}
 		Log.i("info", "values "+values);
 		String whereClause = createWhereClause(tableId, record);
@@ -804,12 +804,12 @@ public class DatabaseAdapter {
 	
 	public static void deleteQuery(String tableId, HashMap<Object, Object> record){
 		Log.i("info", "deletequery table "+tableId+" record "+record);
-		if (record.containsKey(DatabaseField.STATE)){
-			String table = DatabaseField.TABLE+tableId;
+		if (record.containsKey(DatabaseAttribute.STATE)){
+			String table = DatabaseAttribute.TABLE+tableId;
 			String whereClause = createWhereClause(tableId, record);
-			if (Integer.valueOf(String.valueOf(record.get(DatabaseField.STATE))) == DatabaseField.SYNCHRONIZED){
+			if (Integer.valueOf(String.valueOf(record.get(DatabaseAttribute.STATE))) == DatabaseAttribute.SYNCHRONIZED){
 				ContentValues values = new ContentValues();
-				values.put(DatabaseField.STATE, DatabaseField.DELETEVALUE);
+				values.put(DatabaseAttribute.STATE, DatabaseAttribute.DELETEVALUE);
 				Log.i("info", "whereclause "+whereClause+" values "+values);
 				sqlite.update(table, values, whereClause, null);
 			}
@@ -855,16 +855,16 @@ public class DatabaseAdapter {
 		Log.i("info", "cleantables");
 		Set<String> keys = tablesMap.keySet();
 		for (String key : keys){
-			String table = DatabaseField.TABLE+key;
+			String table = DatabaseAttribute.TABLE+key;
 			Log.i("info", "table "+table);
-			String id = DatabaseField.ID+key;
-			String[] projectionIn = new String[]{id, DatabaseField.STATE};
+			String id = DatabaseAttribute.ID+key;
+			String[] projectionIn = new String[]{id, DatabaseAttribute.STATE};
 			Cursor result = sqlite.query(table, projectionIn, null, null, null, null, null);
 			result.moveToFirst();
 			int count = result.getCount();
 			for (int i=0; i<count; i++){
 				String whereClause = id+" = \'"+result.getString(result.getColumnIndexOrThrow(id))+"\'";
-				if (result.getInt(result.getColumnIndexOrThrow(DatabaseField.STATE)) == DatabaseField.DELETEVALUE) {
+				if (result.getInt(result.getColumnIndexOrThrow(DatabaseAttribute.STATE)) == DatabaseAttribute.DELETEVALUE) {
 					Log.i("info", "delete value");
 					sqlite.delete(table, whereClause, null);					
 				}
@@ -882,15 +882,15 @@ public class DatabaseAdapter {
 	}
 	
 	public static Object getCursorValue(Cursor cursor, String field){
-		if (field.indexOf(DatabaseField.FIELD) != -1){
+		if (field.indexOf(DatabaseAttribute.FIELD) != -1){
 			String fieldId = String.valueOf(Integer.valueOf(field.split("_")[1]));
-			if (fieldsMap.get(fieldId).equals(DatabaseField.INTEGER)){
+			if (fieldsMap.get(fieldId).equals(DatabaseAttribute.INTEGER)){
 				return cursor.getInt(cursor.getColumnIndexOrThrow(field));
 			}
-			else if (fieldsMap.get(fieldId).equals(DatabaseField.DOUBLE)){
+			else if (fieldsMap.get(fieldId).equals(DatabaseAttribute.DOUBLE)){
 				return cursor.getDouble(cursor.getColumnIndexOrThrow(field));
 			}
-			else if (fieldsMap.get(fieldId).equals(DatabaseField.BLOB)){
+			else if (fieldsMap.get(fieldId).equals(DatabaseAttribute.BLOB)){
 				String result = null;
 				if (cursor.isNull(cursor.getColumnIndex(field))) {
 					result = "";
@@ -923,8 +923,8 @@ public class DatabaseAdapter {
 	
 	private static String createWhereClause(String tableId, HashMap<Object, Object> record){
 		String result = "";
-		if (record.containsKey(DatabaseField.ID+tableId)){
-			result += DatabaseField.ID+tableId+" = \'"+record.get(DatabaseField.ID+tableId)+"\'";
+		if (record.containsKey(DatabaseAttribute.ID+tableId)){
+			result += DatabaseAttribute.ID+tableId+" = \'"+record.get(DatabaseAttribute.ID+tableId)+"\'";
 		}
 		return result;
 	}
@@ -935,10 +935,10 @@ public class DatabaseAdapter {
 		int size = tables.size();
 		for (int i=0; i<size; i++){
 			if (i != size-1){
-				result += DatabaseField.TABLE+tables.get(i)+", ";
+				result += DatabaseAttribute.TABLE+tables.get(i)+", ";
 			}
 			else{
-				result += DatabaseField.TABLE+tables.get(i);
+				result += DatabaseAttribute.TABLE+tables.get(i);
 			}	
 		}
 		return result;
@@ -953,7 +953,7 @@ public class DatabaseAdapter {
 			String[] result = new String[size];
 			for (int i=0; i<size; i++){
 				ArrayList<String> column = columns.get(i);
-				result[i] = DatabaseField.TABLE+column.get(0)+"."+DatabaseField.FIELD+column.get(1);
+				result[i] = DatabaseAttribute.TABLE+column.get(0)+"."+DatabaseAttribute.FIELD+column.get(1);
 			}
 			return result;
 		}
@@ -965,10 +965,10 @@ public class DatabaseAdapter {
 			int tablesSize = tables.size();
 			for (int i=0; i<tablesSize; i++){
 				if (i == 0){
-					result +=  DatabaseField.TABLE+tables.get(i)+".STATE != "+DatabaseField.DELETEVALUE;
+					result +=  DatabaseAttribute.TABLE+tables.get(i)+".STATE != "+DatabaseAttribute.DELETEVALUE;
 				}
 				else{
-					result +=  " AND "+DatabaseField.TABLE+tables.get(i)+".STATE != "+DatabaseField.DELETEVALUE;
+					result +=  " AND "+DatabaseAttribute.TABLE+tables.get(i)+".STATE != "+DatabaseAttribute.DELETEVALUE;
 				}
 			}
 			if (!createSelectionFKString(tables).equals("")){
@@ -982,35 +982,35 @@ public class DatabaseAdapter {
 			for (int i=0; i<filterNb; i++){
 				//Link is considered as AND
 				if (i == 0){
-					String field = (String)DatabaseField.FIELD+((ArrayList<?>)filter).get(4*i);
+					String field = (String)DatabaseAttribute.FIELD+((ArrayList<?>)filter).get(4*i);
 					Set<String> keySet = tablesMap.keySet();
 					String tableName = null;
 					for (String s : keySet){
 						if (tablesMap.get(s).contains(field)){
-							tableName = DatabaseField.TABLE+s;
+							tableName = DatabaseAttribute.TABLE+s;
 							result += tableName+"."+field;
 						}
 					}
 					Object operator = Function.getOperator(((ArrayList<?>)filter).get(4*i+1));
 					result += " "+operator+" ";
 					Object value = "\'"+((ArrayList<?>)filter).get(4*i+2)+"\'";
-					result += value+" AND "+tableName+".STATE != "+DatabaseField.DELETEVALUE;
+					result += value+" AND "+tableName+".STATE != "+DatabaseAttribute.DELETEVALUE;
 				}
 				else{
 					result += " AND ";
-					String field = (String) DatabaseField.FIELD+((ArrayList<?>)filter).get(4*i);
+					String field = (String) DatabaseAttribute.FIELD+((ArrayList<?>)filter).get(4*i);
 					Set<String> keySet = tablesMap.keySet();
 					String tableName = null;
 					for (String s : keySet){
 						if (tablesMap.get(s).contains(field)){
-							tableName = DatabaseField.TABLE+s;
+							tableName = DatabaseAttribute.TABLE+s;
 							result += tableName+"."+field;
 						}
 					}
 					Object operator = Function.getOperator(((ArrayList<?>)filter).get(4*i+1));
 					result += " "+operator+" ";
 					Object value = "\'"+((ArrayList<?>)filter).get(4*i+2)+"\'";
-					result += value+" AND "+tableName+".STATE != "+DatabaseField.DELETEVALUE;
+					result += value+" AND "+tableName+".STATE != "+DatabaseAttribute.DELETEVALUE;
 				}
 			}
 			if (!createSelectionFKString(tables).equals("")){
@@ -1034,10 +1034,10 @@ public class DatabaseAdapter {
 			int size = fieldList.size();
 			for (int i=0; i<size; i++){
 				if (i == 0){
-					result += "STATE != "+DatabaseField.DELETEVALUE+" AND "+DatabaseField.FIELD+fieldList.get(i)+" = \'"+valueList.get(i)+"\'";
+					result += "STATE != "+DatabaseAttribute.DELETEVALUE+" AND "+DatabaseAttribute.FIELD+fieldList.get(i)+" = \'"+valueList.get(i)+"\'";
 				}
 				else{
-					result += " AND "+DatabaseField.FIELD+fieldList.get(i)+" = \'"+valueList.get(i)+"\'";
+					result += " AND "+DatabaseAttribute.FIELD+fieldList.get(i)+" = \'"+valueList.get(i)+"\'";
 				}
 			}
 			return result;
@@ -1054,8 +1054,8 @@ public class DatabaseAdapter {
 					if (result != ""){
 						result += "AND ";
 					}
-					result += DatabaseField.TABLE+foreignKey.get(0)+"."+DatabaseField.FIELD+foreignKey.get(1)+" = "+
-					DatabaseField.TABLE+foreignKey.get(2)+"."+DatabaseField.FIELD+foreignKey.get(3);
+					result += DatabaseAttribute.TABLE+foreignKey.get(0)+"."+DatabaseAttribute.FIELD+foreignKey.get(1)+" = "+
+					DatabaseAttribute.TABLE+foreignKey.get(2)+"."+DatabaseAttribute.FIELD+foreignKey.get(3);
 				}
 			}
 		}		
