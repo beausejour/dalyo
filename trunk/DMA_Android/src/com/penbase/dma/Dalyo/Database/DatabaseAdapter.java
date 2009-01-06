@@ -130,12 +130,13 @@ public class DatabaseAdapter {
 						String fieldTypeValue = fieldType;
 						if (field.hasAttribute(XmlTag.FIELD_PK)){
 							fsPkMap.put(tableId, fieldId);
-							if (field.hasAttribute(XmlTag.FIELD_PK_AUTO)){
+							/*if (field.hasAttribute(XmlTag.FIELD_PK_AUTO)){
 								fieldTypeValue += " PRIMARY KEY AUTOINCREMENT, ";
 							}
 							else{
 								fieldTypeValue += " PRIMARY KEY, ";
-							}
+							}*/
+							fieldTypeValue += " UNIQUE, ";
 						}
 						else if ((field.hasAttribute(XmlTag.FIELD_FORIEIGNTABLE)) 
 								&& (field.hasAttribute(XmlTag.FIELD_FORIEIGNFIELD))){
@@ -211,14 +212,16 @@ public class DatabaseAdapter {
 					String fieldTypeValue = fieldType;
 					if (field.hasAttribute(XmlTag.FIELD_PK)){
 						fieldsPKMap.put(tableId, fieldId);
-						if (field.hasAttribute(XmlTag.FIELD_PK_AUTO)){
+						/*if (field.hasAttribute(XmlTag.FIELD_PK_AUTO)){
 							createquery += fieldName+" "+fieldType+" PRIMARY KEY AUTOINCREMENT, ";
 							fieldTypeValue += " PRIMARY KEY AUTOINCREMENT, ";
 						}
 						else{
 							createquery += fieldName+" "+fieldType+" PRIMARY KEY, ";
 							fieldTypeValue += " PRIMARY KEY, ";
-						}
+						}*/
+						createquery += fieldName+" "+fieldType+" UNIQUE, ";
+						fieldTypeValue += " UNIQUE, ";
 					}
 					
 					else if ((field.hasAttribute(XmlTag.FIELD_FORIEIGNTABLE)) &&
@@ -251,13 +254,13 @@ public class DatabaseAdapter {
 			}
 			
 			tablesMap.put(tableId, tableElements);
-			int fksSize = foreignKeyTable.size();
+			/*int fksSize = foreignKeyTable.size();
 			if (fksSize > 0){
 				for (int k=0; k<fksSize; k++){
 					createquery += " FOREIGN KEY ("+DatabaseField.FIELD+foreignKeyTable.get(k).get(1)+") REFERENCES "+
 					DatabaseField.TABLE+foreignKeyTable.get(k).get(2)+"("+DatabaseField.FIELD+foreignKeyTable.get(k).get(3)+"), ";
 				}
-			}
+			}*/
 			
 			createquery = createquery.substring(0, createquery.length()-2);
 			createquery += ");";

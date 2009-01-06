@@ -10,7 +10,12 @@ import com.penbase.dma.View.ApplicationView;
 public class NS_Component {
 	public static Object GetValue(Element element){
 		String componentId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT));
-		return ApplicationView.getComponents().get(componentId).getValue();
+		if (ApplicationView.getComponents().containsKey(componentId)) {
+			return ApplicationView.getComponents().get(componentId).getValue();
+		}
+		else {
+			return null;
+		}
 	}
 	
 	public static boolean IsEnabled(Element element){

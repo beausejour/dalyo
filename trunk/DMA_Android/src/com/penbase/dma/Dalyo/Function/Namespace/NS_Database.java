@@ -12,7 +12,7 @@ import com.penbase.dma.View.ApplicationView;
 
 public class NS_Database {
 	private static ProgressDialog importProgressDialog = null;
-	private static ArrayList tables;
+	private static ArrayList<String> tables;
 	private static Object filters;
 	
 	public static void CancelTransaction(){
@@ -20,12 +20,11 @@ public class NS_Database {
 	}
 	
 	public static void Export(Element element){
-
 		
 	}
 	
 	public static void Import(Element element){
-		tables = (ArrayList) Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_TABLES, ScriptAttribute.LIST);
+		tables = (ArrayList<String>) Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_TABLES, ScriptAttribute.LIST);
 		filters = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_FILTERS, ScriptAttribute.LIST);
 		Object faceless = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_FACELESS, ScriptAttribute.PARAMETER_TYPE_BOOLEAN);
 		if ((faceless == null) || (((Boolean)faceless).booleanValue())){

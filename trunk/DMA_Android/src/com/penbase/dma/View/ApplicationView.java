@@ -188,10 +188,14 @@ public class ApplicationView extends Activity {
 						component.setInitValue(Integer.valueOf(element.getAttribute(XmlTag.COMPONENT_GAUGE_INIT)));
 					}
 					if (element.hasAttribute(XmlTag.COMPONENT_GAUGE_MIN)){
-						component.setMinValue(Integer.valueOf(element.getAttribute(XmlTag.COMPONENT_GAUGE_MIN)));
+						if (!element.getAttribute(XmlTag.COMPONENT_GAUGE_MIN).equals("true") && !element.getAttribute(XmlTag.COMPONENT_GAUGE_MIN).equals("false")) {
+							component.setMinValue(Integer.valueOf(element.getAttribute(XmlTag.COMPONENT_GAUGE_MIN)));
+						}
 					}
 					if (element.hasAttribute(XmlTag.COMPONENT_GAUGE_MAX)){
-						component.setMaxValue(Integer.valueOf(element.getAttribute(XmlTag.COMPONENT_GAUGE_MAX)));
+						if (!element.getAttribute(XmlTag.COMPONENT_GAUGE_MAX).equals("true") && !element.getAttribute(XmlTag.COMPONENT_GAUGE_MAX).equals("false")) {
+							component.setMaxValue(Integer.valueOf(element.getAttribute(XmlTag.COMPONENT_GAUGE_MAX)));
+						}
 					}
 					
 					if (element.getNodeName().equals(XmlTag.COMPONENT_CHECKBOX)){
