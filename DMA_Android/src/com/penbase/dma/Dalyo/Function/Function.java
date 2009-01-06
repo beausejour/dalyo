@@ -481,10 +481,14 @@ public class Function {
 		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.OBJECT)){
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TOINT)){
-				result = NS_Object.ToInt(element);
+				if (!first){
+					result = NS_Object.ToInt(element);
+				}
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TONUMERIC)){
-				result = NS_Object.ToNumeric(element);
+				if (!first){
+					result = NS_Object.ToNumeric(element);
+				}
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TOSTRING)){
 				result = NS_Object.ToString(element);

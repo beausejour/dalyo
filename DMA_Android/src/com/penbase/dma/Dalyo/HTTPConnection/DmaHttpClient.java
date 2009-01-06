@@ -394,38 +394,27 @@ public class DmaHttpClient{
 		String report = "act=rep&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd_md5="+md5(pwd)+
 		"&stream=1&useragent=ANDROID&did="+Dma.getDeviceID();
 		
-		/*ImportExportTask ieTask = new ImportExportTask(url, ask, report, AppId, DbId, login, pwd);
-		ieTask.execute((Void[])null);
-		return ieTask.getResult();*/
-		
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		Log.i("info", "before try of import");
-		//DmaHttpBinarySync importSync = null;
 		try {
-			Log.i("info", "in try");
 			bos.write(Binary.intToByteArray(DatabaseAdapter.getTableNb()));
-			Log.i("info", "before for");
 			for (String s : DatabaseAdapter.getTableIds()){
 				bos.write(Binary.intToByteArray(Integer.valueOf(s)));
 			}
-			Log.i("info", "end of for");
 			byte[] inputbytes = bos.toByteArray();
-			Log.i("info", "call import method");
-			boolean importResult = new DmaHttpBinarySync(url.toString(), ask, null, report, inputbytes, "Import").run();
-			Log.i("info", "get import result");
-			if (importResult){
+			result = new DmaHttpBinarySync(url.toString(), ask, null, report, inputbytes, "Import").run();
+			/*if (importResult){
 				result = launchExport(AppId, DbId, login, pwd);
-			}
+			}*/
 		}
 		catch (IOException e) {
 			e.printStackTrace();
 		}
 		return result;
-		//return syncResult;
 	}
 	
 	//Export local data to server
-	private boolean launchExport(String AppId, String DbId, String login, String pwd) {
+	//public
+	public boolean launchExport(String AppId, String DbId, String login, String pwd) {
 		String sync = "act=sync&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd_md5="+md5(pwd)+
 		"&stream=1&useragent=ANDROID&did="+Dma.getDeviceID();
 		String send = "act=send&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd_md5="+md5(pwd)+
@@ -445,20 +434,22 @@ public class DmaHttpClient{
 		String report = "act=rep&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd_md5="+md5(pwd)+
 		"&stream=1&useragent=ANDROID&did="+Dma.getDeviceID();
 		
-		int filtersSize = ((ArrayList<?>)filters).size();
-		if (filtersSize > 2){
-			Log.i("info", "filtersize > 2");
-			int filterNb = (filtersSize - 2) / 4;
-			Log.i("info", "check how many filters "+filterNb);
-			ask += "&fcount="+filterNb;
-			for (int i=0; i<filterNb; i++){
-				String fid = (String) ((ArrayList<?>)filters).get(4*i+2);
-				ask += "&ff"+i+"="+fid;
-				Object operator = Function.getOperator(((ArrayList<?>)filters).get(4*i+3));
-				Log.i("info", "operator "+operator);
-				ask += "&fo"+i+"="+urlEncode(String.valueOf(operator));
-				Object value = ((ArrayList<?>)filters).get(4*i+4);
-				ask += "&fv"+i+"="+String.valueOf(value);
+		if (filters != null) {
+			int filtersSize = ((ArrayList<?>)filters).size();
+			if (filtersSize > 2){
+				Log.i("info", "filtersize > 2");
+				int filterNb = (filtersSize - 2) / 4;
+				Log.i("info", "check how many filters "+filterNb);
+				ask += "&fcount="+filterNb;
+				for (int i=0; i<filterNb; i++){
+					String fid = (String) ((ArrayList<?>)filters).get(4*i+2);
+					ask += "&ff"+i+"="+fid;
+					Object operator = Function.getOperator(((ArrayList<?>)filters).get(4*i+3));
+					Log.i("info", "operator "+operator);
+					ask += "&fo"+i+"="+urlEncode(String.valueOf(operator));
+					Object value = ((ArrayList<?>)filters).get(4*i+4);
+					ask += "&fv"+i+"="+String.valueOf(value);
+				}
 			}
 		}
 		Log.i("info", "action ask "+ask);
