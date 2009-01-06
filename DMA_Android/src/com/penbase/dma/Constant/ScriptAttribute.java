@@ -109,6 +109,7 @@ public class ScriptAttribute {
 	public static final String TABLE = "table";
 	
 	//Constants
+	public static final String CONST_EMPTY_STRING = "EMPTY_STRING";
 	public static final String CONST_FALSE = "FALSE";
 	public static final String CONST_NULL = "NULL";
 	public static final String CONST_TRUE = "TRUE";

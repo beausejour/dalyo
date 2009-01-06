@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.penbase.dma.Constant.Constant;
-import com.penbase.dma.Constant.XmlTag;
+import com.penbase.dma.Constant.DesignTag;
 import com.penbase.dma.Dalyo.Component.Custom.*;
 import com.penbase.dma.Dalyo.Component.Custom.Dataview.DataView;
 import com.penbase.dma.Dalyo.Component.Custom.Doodle.DoodleView;
@@ -162,7 +162,7 @@ public class Component{
 	}
 	
 	public void setView() {
-		if(type.equals(XmlTag.COMPONENT_BUTTON)) {
+		if(type.equals(DesignTag.COMPONENT_BUTTON)) {
 			Button button = new Button(context);
 			button.setText(label);
 			button.setTypeface(getFontType(fontType));
@@ -173,7 +173,7 @@ public class Component{
 			}
 			view = button;
 		}
-		else if(type.equals(XmlTag.COMPONENT_CHECKBOX)) {
+		else if(type.equals(DesignTag.COMPONENT_CHECKBOX)) {
 			CheckBox checkbox = new CheckBox(context);
 			checkbox.setText(label);
 			checkbox.setTypeface(getFontType(fontType));
@@ -183,7 +183,7 @@ public class Component{
 			}
 			view = checkbox;
 		}
-		else if(type.equals(XmlTag.COMPONENT_COMBOBOX)) {
+		else if(type.equals(DesignTag.COMPONENT_COMBOBOX)) {
 			ComboBox combobox;
 			if ((valueList != null) && (labelList != null)) {
 				combobox = new ComboBox(context, labelList, valueList);
@@ -193,7 +193,7 @@ public class Component{
 			}
 			view = combobox;
 		}
-		else if(type.equals(XmlTag.COMPONENT_LABEL)) {
+		else if(type.equals(DesignTag.COMPONENT_LABEL)) {
 			Label labelObject = new Label(context, getFontType(fontType), getFontSize(fontSize));
 			labelObject.setText(label);
 			if (align != null) {
@@ -201,15 +201,15 @@ public class Component{
 			}
 			view = labelObject;
 		}
-		else if(type.equals(XmlTag.COMPONENT_DATEFIELD)) {
+		else if(type.equals(DesignTag.COMPONENT_DATEFIELD)) {
 			DateField datefield = new DateField(context, getFontType(fontType), getFontSize(fontSize), dateTimeValue);
 			view = datefield;
 		}
-		else if(type.equals(XmlTag.COMPONENT_TIMEFIELD)) {
+		else if(type.equals(DesignTag.COMPONENT_TIMEFIELD)) {
 			TimeField timefield = new TimeField(context, getFontType(fontType), getFontSize(fontSize), dateTimeValue);
 			view = timefield;
 		}
-		else if(type.equals(XmlTag.COMPONENT_TEXTFIELD)) {
+		else if(type.equals(DesignTag.COMPONENT_TEXTFIELD)) {
 			if (multiLine.equals("true")) {
 				TextZone textzone = new TextZone(context, getFontType(fontType), getFontSize(fontSize));
 				if ((tableID != null) && (fieldID != null)) {
@@ -233,22 +233,22 @@ public class Component{
 				((TextView)view).setEnabled(!editable);
 			}
 		}
-		else if(type.equals(XmlTag.COMPONENT_TEXTZONE)) {
+		else if(type.equals(DesignTag.COMPONENT_TEXTZONE)) {
 			TextZone textzone = new TextZone(context, getFontType(fontType), getFontSize(fontSize));
 			view = textzone;
 		}
-		else if(type.equals(XmlTag.COMPONENT_RADIOBUTTON)) {
+		else if(type.equals(DesignTag.COMPONENT_RADIOBUTTON)) {
 			RadioButton radiobutton = new RadioButton(context);
 			radiobutton.setText(label);
 			radiobutton.setTypeface(getFontType(fontType));
 			radiobutton.setTextSize(getFontSize(fontSize));
 			view = radiobutton;
 		}
-		else if(type.equals(XmlTag.COMPONENT_NUMBERBOX)) {
+		else if(type.equals(DesignTag.COMPONENT_NUMBERBOX)) {
 			NumberBox numberbox = new NumberBox(context);
 			view = numberbox;
 		}
-		else if(type.equals(XmlTag.COMPONENT_PICTUREBOX)) {
+		else if(type.equals(DesignTag.COMPONENT_PICTUREBOX)) {
 			PictureBoxView pictureBox = new PictureBoxView(context);
 			pictureBox.setOnClickListener(new OnClickListener() {
 				@Override
@@ -259,7 +259,7 @@ public class Component{
 			});
 			view = pictureBox;
 		}
-		else if(type.equals(XmlTag.COMPONENT_IMAGE)) {
+		else if(type.equals(DesignTag.COMPONENT_IMAGE)) {
 			ImageView imageview = new ImageView(context);
 			if (background != 0) {
 				Drawable d = Drawable.createFromPath(DmaHttpClient.getFilesPath()+background+"."+extension);
@@ -267,18 +267,18 @@ public class Component{
 			}
 			view = imageview;
 		}
-		else if(type.equals(XmlTag.COMPONENT_DATAVIEW)) {
+		else if(type.equals(DesignTag.COMPONENT_DATAVIEW)) {
 			DataView dataview = new DataView(context, tableID);
 			dataview.setText(getFontSize(fontSize), getFontType(fontType));
 			dataview.setColumnInfo(columnInfos);
 			dataview.setOncalculate(onCalculateMap);
 			view = dataview;
 		}
-		else if (type.equals(XmlTag.COMPONENT_DOODLE)) {
+		else if (type.equals(DesignTag.COMPONENT_DOODLE)) {
 			DoodleView doodleView= new DoodleView(context, id);
 			view = doodleView;
 		}
-		else if (type.equals(XmlTag.COMPONENT_GAUGE)) {
+		else if (type.equals(DesignTag.COMPONENT_GAUGE)) {
 			Gauge gauge = new Gauge(context);
 			gauge.setProgress(initialValue);
 			gauge.setMax(maxValue);

@@ -46,8 +46,10 @@ import org.xml.sax.SAXException;
 import com.penbase.dma.Dma;
 import com.penbase.dma.Binary.Binary;
 import com.penbase.dma.Constant.Constant;
+import com.penbase.dma.Constant.DatabaseTag;
 import com.penbase.dma.Constant.ErrorCode;
-import com.penbase.dma.Constant.XmlTag;
+import com.penbase.dma.Constant.RessourceTag;
+import com.penbase.dma.Constant.DesignTag;
 import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
 import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.View.ApplicationListView;
@@ -232,19 +234,19 @@ public class DmaHttpClient{
 		int DbId = 0;
 		
 		for (int i=0; i<idLen; i++){
-			if (idList.item(i).getNodeName().equals(XmlTag.LOGIN_ID)){
+			if (idList.item(i).getNodeName().equals(DesignTag.LOGIN_ID)){
 				AppId = Integer.parseInt(idList.item(i).getChildNodes().item(0).getNodeValue().trim());
 			}
-			else if (idList.item(i).getNodeName().equals(XmlTag.LOGIN_VER)){
+			else if (idList.item(i).getNodeName().equals(DesignTag.LOGIN_VER)){
 				AppVer =  Integer.parseInt(idList.item(i).getChildNodes().item(0).getNodeValue().trim());
 			}
-			else if (idList.item(i).getNodeName().equals(XmlTag.LOGIN_BLD)){
+			else if (idList.item(i).getNodeName().equals(DesignTag.LOGIN_BLD)){
 				AppBuild = Integer.parseInt(idList.item(i).getChildNodes().item(0).getNodeValue().trim());
 			}
-			else if (idList.item(i).getNodeName().equals(XmlTag.LOGIN_SUB)){
+			else if (idList.item(i).getNodeName().equals(DesignTag.LOGIN_SUB)){
 				SubId = Integer.parseInt(idList.item(i).getChildNodes().item(0).getNodeValue().trim());
 			}
-			else if (idList.item(i).getNodeName().equals(XmlTag.LOGIN_DBID)){
+			else if (idList.item(i).getNodeName().equals(DesignTag.LOGIN_DBID)){
 				DbId = Integer.parseInt(idList.item(i).getChildNodes().item(0).getNodeValue().trim());
 			}
 		}
@@ -272,8 +274,8 @@ public class DmaHttpClient{
 	public int getIdDb(File dbXml){
 		Log.i("info", "getiddb");
 		Document dbDoc = CreateParseDocument(null, dbXml);
-		Element tagID = (Element)dbDoc.getElementsByTagName(XmlTag.DB).item(0);
-		return Integer.valueOf(tagID.getAttribute(XmlTag.DB_ID));
+		Element tagID = (Element)dbDoc.getElementsByTagName(DatabaseTag.DB).item(0);
+		return Integer.valueOf(tagID.getAttribute(DatabaseTag.DB_ID));
 	}
 	
 	//Get the design of an application
@@ -297,20 +299,20 @@ public class DmaHttpClient{
 		HashMap<String, String> resourceMapFile = new HashMap<String, String>();
 		if (checkFileExist(resources_XML)){
 			Document resuourcesFileDoc = CreateParseDocument(null, new File(resources_XML));
-			Log.i("info", "resourcexml exits "+resuourcesFileDoc.getElementsByTagName(XmlTag.RESOURCES_RL).item(0).getChildNodes());
-			NodeList resourceFileList = resuourcesFileDoc.getElementsByTagName(XmlTag.RESOURCES_RL).item(0).getChildNodes();
+			Log.i("info", "resourcexml exits "+resuourcesFileDoc.getElementsByTagName(RessourceTag.RESOURCES_RL).item(0).getChildNodes());
+			NodeList resourceFileList = resuourcesFileDoc.getElementsByTagName(RessourceTag.RESOURCES_RL).item(0).getChildNodes();
 			int resourceFileLen = resourceFileList.getLength();
 			for (int i=0; i<resourceFileLen; i++){
 				Element resource = (Element) resourceFileList.item(i);
-				if ((resource.hasAttribute(XmlTag.RESOURCES_R_ID)) && 
-						(resource.hasAttribute(XmlTag.RESOURCES_R_HASHCODE))){
+				if ((resource.hasAttribute(RessourceTag.RESOURCES_R_ID)) && 
+						(resource.hasAttribute(RessourceTag.RESOURCES_R_HASHCODE))){
 					if (value.equals("hashcode")){
-						resourceMapFile.put(resource.getAttribute(XmlTag.RESOURCES_R_ID), 
-								resource.getAttribute(XmlTag.RESOURCES_R_HASHCODE));
+						resourceMapFile.put(resource.getAttribute(RessourceTag.RESOURCES_R_ID), 
+								resource.getAttribute(RessourceTag.RESOURCES_R_HASHCODE));
 					}
 					else if (value.equals("ext")){
-						resourceMapFile.put(resource.getAttribute(XmlTag.RESOURCES_R_ID), 
-								resource.getAttribute(XmlTag.RESOURCES_R_EXT));
+						resourceMapFile.put(resource.getAttribute(RessourceTag.RESOURCES_R_ID), 
+								resource.getAttribute(RessourceTag.RESOURCES_R_EXT));
 					}
 				}
 			}
@@ -325,20 +327,20 @@ public class DmaHttpClient{
 		"&appbuild="+AppBuild+"&subid="+SubId+"&did="+Dma.getDeviceID()+"&login="+login+"&passwd_md5="+md5(pwd)+"&useragent=ANDROID";
 		String resourcesStream = SendPost(getResources, STRING);
 		Document resourceDocument = CreateParseDocument(resourcesStream, null);
-		NodeList resourceList = resourceDocument.getElementsByTagName(XmlTag.RESOURCES_RL).item(0).getChildNodes();
+		NodeList resourceList = resourceDocument.getElementsByTagName(RessourceTag.RESOURCES_RL).item(0).getChildNodes();
 		int resourceLen = resourceList.getLength();
 		
 		for (int i=0; i<resourceLen; i++){
 			Element resource = (Element) resourceList.item(i);
-			if (resource.hasAttribute(XmlTag.RESOURCES_R_ID)){
-				String resourceId = resource.getAttribute(XmlTag.RESOURCES_R_ID);
-				String fileName = imageFilePath+resource.getAttribute(XmlTag.RESOURCES_R_ID)+"."+
-				resource.getAttribute(XmlTag.RESOURCES_R_EXT);
+			if (resource.hasAttribute(RessourceTag.RESOURCES_R_ID)){
+				String resourceId = resource.getAttribute(RessourceTag.RESOURCES_R_ID);
+				String fileName = imageFilePath+resource.getAttribute(RessourceTag.RESOURCES_R_ID)+"."+
+				resource.getAttribute(RessourceTag.RESOURCES_R_EXT);
 				String getResource = "act=getresource&from=runtime&appid="+AppId+"&appversion="+AppVer+
 				"&appbuild="+AppBuild+"&subid="+SubId+"&did="+Dma.getDeviceID()+"&resourceid="+
-				resource.getAttribute(XmlTag.RESOURCES_R_ID)+"&login="+login+"&passwd_md5="+md5(pwd)+"&useragent=ANDROID";
+				resource.getAttribute(RessourceTag.RESOURCES_R_ID)+"&login="+login+"&passwd_md5="+md5(pwd)+"&useragent=ANDROID";
 				if ((resourceMapFile.containsKey(resourceId)) && (checkFileExist(fileName))){
-					if (!resourceMapFile.get(resourceId).equals(resource.getAttribute(XmlTag.RESOURCES_R_HASHCODE))){
+					if (!resourceMapFile.get(resourceId).equals(resource.getAttribute(RessourceTag.RESOURCES_R_HASHCODE))){
 						Log.i("info", "download repalce image");
 						new File(fileName).delete();
 						String resourceStream = SendPost(getResource, IMAGE);

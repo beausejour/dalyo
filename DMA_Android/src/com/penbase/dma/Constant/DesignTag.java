@@ -1,6 +1,6 @@
 package com.penbase.dma.Constant;
 
-public class XmlTag {
+public class DesignTag {
 	//Root
 	public static final String ROOT = "x35";
 	public static final String APP = "a";
@@ -88,49 +88,9 @@ public class XmlTag {
 	public static final String COMPONENT_COMMON_VALUE = "v";
 	public static final String COMPONENT_COMMON_VISIBLE = "vi";
 	
-	//Database element
-	public static final String DB = "db";
-	public static final String DB_ID = "id";
-	
-	//Table
-	public static final String TABLE = "t";
-	public static final String TABLE_ID = "id";
-	public static final String TABLE_NAME = "n";
-	public static final String TABLE_SYNC = "sy";
-	
-	//Field
-	public static final String FIELD = "f";
-	public static final String FIELD_FORIEIGNTABLE = "ft";
-	public static final String FIELD_FORIEIGNFIELD = "ff";
-	public static final String FIELD_ID = "id";
-	public static final String FIELD_NAME = "n";
-	public static final String FIELD_PK = "pk";
-	public static final String FIELD_PK_AUTO = "auto";
-	public static final String FIELD_TYPE = "ty";
-	public static final String FIELD_SIZE = "sz";
-	public static final String FIELD_SYNC = "sy";
-	public static final String FIELD_SYSFIELD = "sf";
-	public static final String FIELD_SYSTABLE = "st";
-	
-	//Resources     
-	public static final String RESOURCES_RL = "rl";
-	public static final String RESOURCES_RL_ID = "id";
-	public static final String RESOURCES_R = "r";
-	public static final String RESOURCES_R_ID = "id";
-	public static final String RESOURCES_R_HASHCODE = "h";
-	public static final String RESOURCES_R_EXT = "ext";
-	
 	//Events
 	public static final String EVENT_ONCLICK = "onc";
 	public static final String EVENT_ONCALCULATE = "oncalc";
 	public static final String EVENT_ONLOAD = "onl";
 	public static final String EVENT_ONCHANGE = "ong";
-	
-	public static final String IMPORT = "import";
-	public static final String EXPORT = "export";
-	public static final String IMPORT_EXPORT = "import_export";
-	
-	public static final String FALSE = "false";
-	public static final String TRUE = "true";
-
 }

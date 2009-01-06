@@ -2,7 +2,7 @@ package com.penbase.dma.Dalyo.Component.Custom.Dataview;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import com.penbase.dma.Constant.DatabaseField;
+import com.penbase.dma.Constant.DatabaseAttribute;
 import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
 import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.View.ApplicationView;
@@ -170,7 +170,7 @@ public class DataView extends LinearLayout implements OnGestureListener {
 						}
 						else{
 							for (int j=0; j<columnsRecordSize; j++){
-								String field = DatabaseField.FIELD+columns.get(k).get(1);
+								String field = DatabaseAttribute.FIELD+columns.get(k).get(1);
 								if (columnNames[j].equals(field)){
 									data.add(String.valueOf(DatabaseAdapter.getCursorValue(cursor, field)));
 								}

@@ -23,7 +23,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.penbase.dma.Constant.Constant;
-import com.penbase.dma.Constant.XmlTag;
+import com.penbase.dma.Constant.DesignTag;
 import com.penbase.dma.Dalyo.Application;
 import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
 import com.penbase.dma.View.ApplicationListView;
@@ -95,7 +95,7 @@ public class Dma extends Activity implements OnClickListener{
 		}
 		HashMap<String, Application> applicationMap = new HashMap<String, Application>();
 		Document doc = DmaHttpClient.CreateParseDocument(xml, null);
-		NodeList root = doc.getElementsByTagName(XmlTag.ROOT);
+		NodeList root = doc.getElementsByTagName(DesignTag.ROOT);
 		NodeList apps = root.item(0).getChildNodes();
 		int appsLen = apps.getLength();
 		for (int s = 0; s < appsLen; s++){
@@ -105,22 +105,22 @@ public class Dma extends Activity implements OnClickListener{
 			for (int t = 0; t < elsLength; t++){
 				Node noeud = els.item(t);
 				if (noeud.getNodeType() == Node.ELEMENT_NODE){
-					if (noeud.getNodeName().equals(XmlTag.LOGIN_ID)){
+					if (noeud.getNodeName().equals(DesignTag.LOGIN_ID)){
 						app.setAppId(noeud.getChildNodes().item(0).getNodeValue());
 					}		
-					else if (noeud.getNodeName().equals(XmlTag.LOGIN_TIT)){
+					else if (noeud.getNodeName().equals(DesignTag.LOGIN_TIT)){
 						app.setName(noeud.getChildNodes().item(0).getNodeValue());
 					}
-					else if (noeud.getNodeName().equals(XmlTag.LOGIN_BLD)){
+					else if (noeud.getNodeName().equals(DesignTag.LOGIN_BLD)){
 						app.setAppBuild(noeud.getChildNodes().item(0).getNodeValue());
 					}
-					else if (noeud.getNodeName().equals(XmlTag.LOGIN_SUB)){
+					else if (noeud.getNodeName().equals(DesignTag.LOGIN_SUB)){
 						app.setSubId(noeud.getChildNodes().item(0).getNodeValue());
 					}
-					else if (noeud.getNodeName().equals(XmlTag.LOGIN_DBID)){
+					else if (noeud.getNodeName().equals(DesignTag.LOGIN_DBID)){
 						app.setDbId(noeud.getChildNodes().item(0).getNodeValue());
 					}
-					else if (noeud.getNodeName().equals(XmlTag.LOGIN_VER)){
+					else if (noeud.getNodeName().equals(DesignTag.LOGIN_VER)){
 						app.setAppVer(noeud.getChildNodes().item(0).getNodeValue());
 					}
 				}

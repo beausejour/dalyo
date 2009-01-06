@@ -2,7 +2,7 @@ package com.penbase.dma.Dalyo.Component.Custom;
 
 import java.util.HashMap;
 
-import com.penbase.dma.Constant.DatabaseField;
+import com.penbase.dma.Constant.DatabaseAttribute;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.util.Log;
@@ -37,8 +37,8 @@ public class TextField extends AutoCompleteTextView{
 	public void refresh(HashMap<Object, Object> record){
 		if (!getFieldId().equals("")){
 			Log.i("info", "record "+record+" fieldid "+getFieldId());
-			TextField.this.setText((String)record.get(DatabaseField.FIELD+getFieldId()));
-			Log.i("info", "settext "+(String)record.get(DatabaseField.FIELD+getFieldId()));
+			TextField.this.setText((String)record.get(DatabaseAttribute.FIELD+getFieldId()));
+			Log.i("info", "settext "+(String)record.get(DatabaseAttribute.FIELD+getFieldId()));
 		}
 	}
 	

@@ -26,4 +26,7 @@ public class Constant {
 	
 	//Preference file name
 	public static final String PREFNAME = "DmaPrefsFile";
+	
+	public static final String FALSE = "false";
+	public static final String TRUE = "true";
 }
