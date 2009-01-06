@@ -426,11 +426,18 @@ public class Component{
 	}
 	
 	public void setText(String text) {
-		if (text.equals("null")){
-			((Label)getView()).setText("");
+		String newText = "";
+		if (!text.equals("null")) {
+			newText = text;
 		}
-		else{
-			((Label)getView()).setText(text);
+		if (getView() instanceof TextZone) {
+			((TextZone)getView()).setText(newText);
+		}
+		else if (getView() instanceof Label) {
+			((Label)getView()).setText(newText);
+		}
+		else if (getView() instanceof TextField) {
+			((TextField)getView()).setText(newText);
 		}
 	}
 	
