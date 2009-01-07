@@ -19,6 +19,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_GET = "get";
 	public static final String FUNCTION_GETFIELDVALUE = "getFieldValue";
 	public static final String FUNCTION_GETFILTEREDRECORDS = "getFilteredRecords";
+	public static final String FUNCTION_GETLABEL = "getLabel";
 	public static final String FUNCTION_GETLATITUDE = "getLatitude";
 	public static final String FUNCTION_GETLOCATION = "getLocation";
 	public static final String FUNCTION_GETLONGITUDE = "getLongitude";
@@ -31,6 +32,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_INIT = "init";
 	public static final String FUNCTION_ISENABLED = "isEnabled";
 	public static final String FUNCTION_ISVISIBLE = "isVisible";
+	public static final String FUNCTION_LENGTH = "length";
 	public static final String FUNCTION_NAVIGATE = "navigate";
 	public static final String FUNCTION_NEWRECORD = "newRecord";
 	public static final String FUNCTION_NOW = "now";
