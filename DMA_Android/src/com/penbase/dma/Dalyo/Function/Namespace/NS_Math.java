@@ -1,15 +1,32 @@
 package com.penbase.dma.Dalyo.Function.Namespace;
 
+import java.util.Random;
+
 import org.w3c.dom.Element;
+
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Function.Function;
 
 public class NS_Math {
-	public static Object Subtract(Element element){
+	public static int Random(Element element) {
+		Object max = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_MAX, ScriptAttribute.PARAMETER_TYPE_INT);
+		Object min = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_MIN, ScriptAttribute.PARAMETER_TYPE_INT);
+		if ((max == null) && (min == null)) {
+			return new Random().nextInt();
+		}
+		else if (min == null) {
+			return new Random().nextInt(Integer.valueOf(String.valueOf(max)));
+		}
+		else {
+			return Double.valueOf(Integer.valueOf(String.valueOf(min)) * Math.random()).intValue(); 
+		}
+	}
+	
+	public static Object Subtract(Element element) {
 		Object left = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_A, ScriptAttribute.PARAMETER_TYPE_NUMERIC);
 		Object right = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_B, ScriptAttribute.PARAMETER_TYPE_NUMERIC);
-		if ((left.toString().indexOf(".") != -1) || (right.toString().indexOf(".") != -1)){
+		if ((left.toString().indexOf(".") != -1) || (right.toString().indexOf(".") != -1)) {
 			return (Double.valueOf(left.toString()) - Double.valueOf(right.toString()));
 		}
 		else{
@@ -17,10 +34,10 @@ public class NS_Math {
 		}
 	}
 	
-	public static Object Sum(Element element){
+	public static Object Sum(Element element) {
 		Object left = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_A, ScriptAttribute.PARAMETER_TYPE_NUMERIC);
 		Object right = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_B, ScriptAttribute.PARAMETER_TYPE_NUMERIC);
-		if ((left.toString().indexOf(".") != -1) || (right.toString().indexOf(".") != -1)){
+		if ((left.toString().indexOf(".") != -1) || (right.toString().indexOf(".") != -1)) {
 			return (Double.valueOf(left.toString()) + Double.valueOf(right.toString()));
 		}
 		else{

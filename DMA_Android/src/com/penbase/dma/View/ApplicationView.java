@@ -194,19 +194,6 @@ public class ApplicationView extends Activity {
 						component.setMultiLine(element.getAttribute(DesignTag.COMPONENT_TEXTFIELD_MULTI));
 						component.setEditable(element.hasAttribute(DesignTag.COMPONENT_TEXTFIELD_EDIT));
 					}
-					if (element.hasAttribute(DesignTag.COMPONENT_GAUGE_INIT)){
-						component.setInitValue(Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_GAUGE_INIT)));
-					}
-					if (element.hasAttribute(DesignTag.COMPONENT_GAUGE_MIN)){
-						if (!element.getAttribute(DesignTag.COMPONENT_GAUGE_MIN).equals("true") && !element.getAttribute(DesignTag.COMPONENT_GAUGE_MIN).equals("false")) {
-							component.setMinValue(Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_GAUGE_MIN)));
-						}
-					}
-					if (element.hasAttribute(DesignTag.COMPONENT_GAUGE_MAX)){
-						if (!element.getAttribute(DesignTag.COMPONENT_GAUGE_MAX).equals("true") && !element.getAttribute(DesignTag.COMPONENT_GAUGE_MAX).equals("false")) {
-							component.setMaxValue(Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_GAUGE_MAX)));
-						}
-					}
 					
 					if (element.getNodeName().equals(DesignTag.COMPONENT_CHECKBOX)){
 						if (element.hasAttribute(DesignTag.COMPONENT_CHECKBOX_CHECKED)){
@@ -280,6 +267,22 @@ public class ApplicationView extends Activity {
 							component.setDateTimeValue(element.getAttribute(DesignTag.COMPONENT_COMMON_VALUE));
 						}
 					}
+					else if (element.getNodeName().equals(DesignTag.COMPONENT_GAUGE)){
+						if (element.hasAttribute(DesignTag.COMPONENT_GAUGE_INIT)){
+							component.setInitValue(Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_GAUGE_INIT)));
+						}
+						if (element.hasAttribute(DesignTag.COMPONENT_GAUGE_MIN)){
+							if (!element.getAttribute(DesignTag.COMPONENT_GAUGE_MIN).equals("true") && !element.getAttribute(DesignTag.COMPONENT_GAUGE_MIN).equals("false")) {
+								component.setMinValue(Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_GAUGE_MIN)));
+							}
+						}
+						if (element.hasAttribute(DesignTag.COMPONENT_GAUGE_MAX)){
+							if (!element.getAttribute(DesignTag.COMPONENT_GAUGE_MAX).equals("true") && !element.getAttribute(DesignTag.COMPONENT_GAUGE_MAX).equals("false")) {
+								component.setMaxValue(Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_GAUGE_MAX)));
+							}
+						}
+					}
+					
 					if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
 						currentOrientation = Configuration.ORIENTATION_LANDSCAPE;
 					}
