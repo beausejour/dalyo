@@ -397,12 +397,27 @@ public class Component{
 		if (getView() instanceof Label) {
 			((Label)getView()).setText(String.valueOf(value));
 		}
+		else if (getView() instanceof TextZone) {
+			((TextZone)getView()).setText(String.valueOf(value));
+		}
+		else if (getView() instanceof TimeField) {
+			((TimeField)getView()).setTime(String.valueOf(value));
+		}
+		else if (getView() instanceof DateField) {
+			((DateField)getView()).setDate(String.valueOf(value));
+		}
+		else if (getView() instanceof Gauge) {
+			((Gauge)getView()).setValue(Integer.valueOf(String.valueOf(value)));
+		}
 	}
 	
 	public Object getValue() {
 		Object result = null;
 		if (getView() instanceof NumberBox) {
 			result = ((NumberBox)getView()).getValue();
+		}
+		else if (getView() instanceof Label) {
+			result = ((Label)getView()).getText();
 		}
 		else if (getView() instanceof TextZone) {
 			result = ((TextZone)getView()).getValue();

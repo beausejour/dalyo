@@ -56,4 +56,8 @@ public class DateField extends Button implements OnClickListener{
 		String date = mDay+"/"+mMonth+"/"+mYear;
 		return date;
 	}
+	
+	public void setDate(String date){
+		this.setText(date);
+	}
 }
