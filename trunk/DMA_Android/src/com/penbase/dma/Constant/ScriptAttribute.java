@@ -35,6 +35,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_NEWRECORD = "newRecord";
 	public static final String FUNCTION_NOW = "now";
 	public static final String FUNCTION_NOWHOUR = "nowH";
+	public static final String FUNCTION_RANDOM = "rand";
 	public static final String FUNCTION_REFRESH = "refresh";
 	public static final String FUNCTION_RESET = "reset";
 	public static final String FUNCTION_SETCURRENTRECORD = "setCurrentRecord";
@@ -85,7 +86,9 @@ public class ScriptAttribute {
 	public static final String PARAMETER_NAME_FILTERS = "filters";
 	public static final String PARAMETER_NAME_INDEX = "index";
 	public static final String PARAMETER_NAME_INTERVAL = "interval";
-	public static final String PARAMETER_NAME_LINK = "link";		//link the last condition 
+	public static final String PARAMETER_NAME_LINK = "link";		//link the last condition
+	public static final String PARAMETER_NAME_MAX = "max";
+	public static final String PARAMETER_NAME_MIN = "min";
 	public static final String PARAMETER_NAME_TABLES = "tables";
 	public static final String PARAMETER_NAME_TEXT = "text";
 	public static final String PARAMETER_NAME_TIMERID = "timer_id";

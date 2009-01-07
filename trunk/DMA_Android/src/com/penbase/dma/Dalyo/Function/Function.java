@@ -24,7 +24,7 @@ public class Function {
 	private static boolean first = true;
 	private static HashMap<String, String> parametersMap;
 	
-	public Function(Context c, Document document){
+	public Function(Context c, Document document) {
 		context = c;
 		varsMap = new HashMap<String, Object>();
 		funcsMap = new HashMap<String, ArrayList<String>>();
@@ -37,10 +37,10 @@ public class Function {
 	 * This method need to be modified if we don't need global variables anymore in Dalyo studio
 	 * Create 2 maps which contains variables and the positions of function
 	 * */
-	private void createMaps(){
+	private void createMaps() {
 		NodeList funcList = behaviorDocument.getElementsByTagName(ScriptTag.FUNCTION);
 		int functionSize = funcList.getLength();
-		for (int i=0; i<functionSize; i++){
+		for (int i=0; i<functionSize; i++) {
 			Element funcElement = (Element) funcList.item(i);
 			ArrayList<String> funcParams = new ArrayList<String>();
 			funcParams.add(String.valueOf(i));
@@ -48,9 +48,9 @@ public class Function {
 			funcsMap.put(funcElement.getAttribute(ScriptTag.NAME), funcParams);
 			NodeList nodesList = funcElement.getChildNodes();
 			int itemLen = nodesList.getLength();
-			for (int j=0; j<itemLen; j++){
+			for (int j=0; j<itemLen; j++) {
 				Element element = (Element) nodesList.item(j);
-				if (element.getNodeName().equals(ScriptTag.SET)){
+				if (element.getNodeName().equals(ScriptTag.SET)) {
 					setVariable(element);
 				}
 			}
@@ -58,20 +58,20 @@ public class Function {
 		first = false;
 	}
 	
-	public static void createFunction(String name){
+	public static void createFunction(String name) {
 		Log.i("info", "createFunction");
 		NodeList funcList = behaviorDocument.getElementsByTagName(ScriptTag.FUNCTION);
-		if (funcsMap.containsKey(name)){
+		if (funcsMap.containsKey(name)) {
 			final Element funcElement = (Element) funcList.item(Integer.valueOf(funcsMap.get(name).get(0)));
 			final NodeList nodeList = funcElement.getChildNodes();
 			int nodeLen = nodeList.getLength();
 		
-			for (int i=0; i<nodeLen; i++){
+			for (int i=0; i<nodeLen; i++) {
 				Element element = (Element) nodeList.item(i);
-				if (element.getNodeName().equals(ScriptTag.PARAMETER)){
+				if (element.getNodeName().equals(ScriptTag.PARAMETER)) {
 					//save parameters
 					String paramName = funcElement.getAttribute(ScriptTag.NAME)+"_"+element.getAttribute(ScriptTag.NAME);
-					if (parametersMap.containsKey(paramName)){
+					if (parametersMap.containsKey(paramName)) {
 						varsMap.put(paramName, parametersMap.get(paramName));
 					}
 				}
@@ -84,30 +84,30 @@ public class Function {
 	
 	private static Object distributeAction(Element element) {
 		Object result = null;
-		if (element.getNodeName().equals(ScriptTag.CALL)){
+		if (element.getNodeName().equals(ScriptTag.CALL)) {
 			result = Function.distributeCall(element);
 		}
-		else if (element.getNodeName().equals(ScriptTag.ELEMENT)){
+		else if (element.getNodeName().equals(ScriptTag.ELEMENT)) {
 			result = element.getAttribute(ScriptTag.ELEMENT_ID);
 		}
-		else if (element.getNodeName().equals(ScriptTag.FOREACH)){
+		else if (element.getNodeName().equals(ScriptTag.FOREACH)) {
 			forEach(element);
 		}
-		else if (element.getNodeName().equals(ScriptTag.IF)){
+		else if (element.getNodeName().equals(ScriptTag.IF)) {
 			Log.i("info", "there is if condition in then");
 			result = ifCondition(element);
 		}
-		else if (element.getNodeName().equals(ScriptTag.KEYWORD)){
+		else if (element.getNodeName().equals(ScriptTag.KEYWORD)) {
 			result = Function.getKeyWord(element);
 		}
-		else if (element.getNodeName().equals(ScriptTag.RETURN)){
+		else if (element.getNodeName().equals(ScriptTag.RETURN)) {
 			Log.i("info", "return value");
 			result = getReturnValue(element);
 		}
-		else if (element.getNodeName().equals(ScriptTag.SET)){
+		else if (element.getNodeName().equals(ScriptTag.SET)) {
 			setVariable(element);
 		}
-		else if (element.getNodeName().equals(ScriptTag.VAR)){
+		else if (element.getNodeName().equals(ScriptTag.VAR)) {
 			//use only one format to save all types of variale's value
 			result = getVariableValue(element);
 		}
@@ -147,7 +147,7 @@ public class Function {
 	private static boolean checkValueType(String type, Object value) {
 		boolean result = true;
 		if (type.equals("numeric")) {
-			if (String.valueOf(value).indexOf(".") != -1){
+			if (String.valueOf(value).indexOf(".") != -1) {
 				try {
 					Double.valueOf(String.valueOf(value));
 				}
@@ -182,19 +182,19 @@ public class Function {
 	}
 	
 	//Find out the result of boolean list
-	private static boolean checkConditions(boolean[] boolList){
+	private static boolean checkConditions(boolean[] boolList) {
 		boolean result = false;
 		int size = boolList.length;
 		int i = 0;
 		int j = 0;
 		int checked = 0;
-		while (i < size){
-			if (!boolList[i]){
+		while (i < size) {
+			if (!boolList[i]) {
 				result = boolList[i];
 				i = size;
 			}
 			else{
-				if (boolList[i] == boolList[j]){
+				if (boolList[i] == boolList[j]) {
 					checked++;
 					i++;
 				}
@@ -203,16 +203,16 @@ public class Function {
 				}
 			}
 		}
-		if (checked == size){
+		if (checked == size) {
 			result = true;
 		}
 		return result;
 	}
 	
 	//Compare the left value and the right value
-	private static boolean checkCondition(Object left, Object operator, Object right){
+	private static boolean checkCondition(Object left, Object operator, Object right) {
 		boolean result = false;
-		switch (Integer.valueOf(String.valueOf(operator))){
+		switch (Integer.valueOf(String.valueOf(operator))) {
 			case ScriptAttribute.AND:
 				if (left == right) {
 					if (String.valueOf(left).equals(Constant.TRUE)) {
@@ -221,10 +221,10 @@ public class Function {
 				}
 				break;
 			case ScriptAttribute.EQUALS:
-				if ((left instanceof Integer) || (right instanceof Integer)){
+				if ((left instanceof Integer) || (right instanceof Integer)) {
 					result = (Integer.valueOf(String.valueOf(left)) == (Integer.valueOf(String.valueOf(right))));
 				}
-				else if ((left == null) || (right == null)){
+				else if ((left == null) || (right == null)) {
 					result = (left == right);
 				}
 				else{
@@ -232,7 +232,7 @@ public class Function {
 				}
 				break;
 			case ScriptAttribute.GREATERTHAN:
-				if ((left != null) && (right != null)){
+				if ((left != null) && (right != null)) {
 					result = (Integer.valueOf(String.valueOf(left)) > Integer.valueOf(String.valueOf(right)));	
 				}
 				break;
@@ -249,20 +249,20 @@ public class Function {
 		return result;
 	}
 	
-	private static Object ifCondition(Element element){
+	private static Object ifCondition(Element element) {
 		Object result = "";
 		Log.i("info", "if called");
 		int elementLen = element.getChildNodes().getLength();
 		boolean conditionCheck = false;
-		for (int i=0; i<elementLen; i++){
+		for (int i=0; i<elementLen; i++) {
 			Element child = (Element) element.getChildNodes().item(i);
-			if (child.getNodeName().equals(ScriptTag.CONDITIONS)){
+			if (child.getNodeName().equals(ScriptTag.CONDITIONS)) {
 				NodeList conditions = child.getChildNodes();
 				int conditionsLen = conditions.getLength();
 				boolean[] checkList = new boolean[conditionsLen];
-				for (int k=0; k<conditionsLen; k++){
+				for (int k=0; k<conditionsLen; k++) {
 					Element condition = (Element)conditions.item(k);
-					if (condition.getNodeName().equals(ScriptTag.CONDITION)){
+					if (condition.getNodeName().equals(ScriptTag.CONDITION)) {
 						Object left = getValue(condition, ScriptTag.LEFT, null, null);
 						Object operator = getValue(condition, ScriptTag.OPERATOR, null, null);
 						Object right = getValue(condition, ScriptTag.RIGHT, null, null);
@@ -271,23 +271,23 @@ public class Function {
 				}
 				conditionCheck = checkConditions(checkList); 
 			}
-			else if (child.getNodeName().equals(ScriptTag.THEN)){
-				if (conditionCheck){
+			else if (child.getNodeName().equals(ScriptTag.THEN)) {
+				if (conditionCheck) {
 					Log.i("info", "pass to then");
 					NodeList thenchildren = child.getChildNodes();
 					int thenchildrenLen = thenchildren.getLength();
-					for (int k=0; k<thenchildrenLen; k++){
+					for (int k=0; k<thenchildrenLen; k++) {
 						Element thenChild = (Element) thenchildren.item(k);
 						result = distributeAction(thenChild);
 					} 
 				}
 			}
-			else if (child.getNodeName().equals(ScriptTag.ELSE)){
-				if (!conditionCheck){
+			else if (child.getNodeName().equals(ScriptTag.ELSE)) {
+				if (!conditionCheck) {
 					Log.i("info", "pass to else");
 					NodeList elsechildren = child.getChildNodes();
 					int elsechildrenLen = elsechildren.getLength();
-					for (int k=0; k<elsechildrenLen; k++){
+					for (int k=0; k<elsechildrenLen; k++) {
 						Element elseChild = (Element) elsechildren.item(k);
 						result = distributeAction(elseChild);
 					}
@@ -297,18 +297,18 @@ public class Function {
 		return result;
 	}
 	
-	public static Object createCalculateFunction(String name, HashMap<Object, Object> record){
+	public static Object createCalculateFunction(String name, HashMap<Object, Object> record) {
 		Object result = null;
 		NodeList funcList = behaviorDocument.getElementsByTagName(ScriptTag.FUNCTION);
-		if (funcsMap.containsKey(name)){
+		if (funcsMap.containsKey(name)) {
 			Element funcElement = (Element) funcList.item(Integer.valueOf(funcsMap.get(name).get(0)));
-			if (funcElement.getAttribute(ScriptTag.NAME).equals(name)){
+			if (funcElement.getAttribute(ScriptTag.NAME).equals(name)) {
 				NodeList nodesList = funcElement.getChildNodes();
 				int itemLen = nodesList.getLength();
-				for (int i=0; i<itemLen; i++){
+				for (int i=0; i<itemLen; i++) {
 					Element element = (Element) nodesList.item(i);
 					if ((element.getNodeName().equals(ScriptTag.PARAMETER)) &&
-							element.getAttribute(ScriptTag.TYPE).equals(ScriptAttribute.RECORD)){
+							element.getAttribute(ScriptTag.TYPE).equals(ScriptAttribute.RECORD)) {
 						varsMap.put(element.getAttribute(ScriptTag.NAME), record);
 					}
 					else {
@@ -317,8 +317,8 @@ public class Function {
 				}
 			}
 		}
-		if (result == null){
-			if (funcsMap.get(name).get(1).equals(ScriptAttribute.STRING)){
+		if (result == null) {
+			if (funcsMap.get(name).get(1).equals(ScriptAttribute.STRING)) {
 				result = "";
 			}
 		}
@@ -326,235 +326,240 @@ public class Function {
 	}
 	
 	//Check element's name and namespace to call the right function 
-	public static Object distributeCall(Element element){
+	public static Object distributeCall(Element element) {
 		Object result = null;
 		Log.i("info", "function name "+element.getAttribute(ScriptTag.FUNCTION));
-		if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.COMPONENT)){
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETVALUE)){
+		if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.COMPONENT)) {
+			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETVALUE)) {
 				result = NS_Component.GetValue(element);
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ISENABLED)){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ISENABLED)) {
 				result = NS_Component.IsEnabled(element);
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ISVISIBLE)){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ISVISIBLE)) {
 				result = NS_Component.IsVisible(element);
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_RESET)){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_RESET)) {
 				NS_Component.ReSet(element);
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETENABLED)){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETENABLED)) {
 				NS_Component.SetEnabled(element);
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETFOCUS)){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETFOCUS)) {
 				NS_Component.SetFocus(element);
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETTEXT)){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETTEXT)) {
 				NS_Component.SetText(element);
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETVISIBLE)){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETVISIBLE)) {
 				NS_Component.SetVisible(element);
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETVALUE)){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETVALUE)) {
 				NS_Component.SetValue(element);
 			}
 		}
-		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_COMPONENT_CB)){
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSELECTEDRECORD)){
+		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_COMPONENT_CB)) {
+			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSELECTEDRECORD)) {
 				result = NS_ComponentCombobox.GetSelectedRecord(element);
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_REFRESH)){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_REFRESH)) {
 				NS_ComponentCombobox.Refresh(element);
 			}
 		}
-		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_COMPONENT_DV)){
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSELECTEDRECORD)){
+		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_COMPONENT_DV)) {
+			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSELECTEDRECORD)) {
 				result = NS_ComponentDataview.GetSelectedRecord(element);
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_REFRESH)){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_REFRESH)) {
 				NS_ComponentDataview.Refresh(element);
 			}
 		}
-		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DATE)){
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NOW)){
+		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DATE)) {
+			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NOW)) {
 				result = NS_Date.CurrentDate();
 			}
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NOWHOUR)){
+			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NOWHOUR)) {
 				result = NS_Date.CurrentHour();
 			}
 		}
-		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB)){
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CANCELTRANSACTION)){
+		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB)) {
+			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CANCELTRANSACTION)) {
 				NS_Database.CancelTransaction();
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_EXPORT)){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_EXPORT)) {
 				NS_Database.Export(element);
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_IMPORT)){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_IMPORT)) {
 				NS_Database.Import(element);
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_STARTTRANSACTION)){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_STARTTRANSACTION)) {
 				NS_Database.StartTransaction();
 			}
 
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_VALIDATETRANSACTION)){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_VALIDATETRANSACTION)) {
 				NS_Database.ValidateTransaction();
 			}
 		}
-		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB_TABLE)){
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CANCELNRECORD)){
+		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB_TABLE)) {
+			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CANCELNRECORD)) {
 
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CLEAR)){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CLEAR)) {
 				NS_DatabaseTable.Clear(element);
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_COUNT)){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_COUNT)) {
 				result = NS_DatabaseTable.Count(element);
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NEWRECORD)){
-				if (!first){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NEWRECORD)) {
+				if (!first) {
 					result = NS_DatabaseTable.CreateNewRecord(element);
 				}
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_DELETERECORD)){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_DELETERECORD)) {
 				NS_DatabaseTable.DeleteRecord(element);
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_EDITRECORD)){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_EDITRECORD)) {
 				NS_DatabaseTable.EditRecord(element);
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETFIELDVALUE)){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETFIELDVALUE)) {
 				result = NS_DatabaseTable.GetFieldValue(element);
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETFILTEREDRECORDS)){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETFILTEREDRECORDS)) {
 				result = NS_DatabaseTable.GetFilteredRecords(element);
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETRECORDS)){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETRECORDS)) {
 				result = NS_DatabaseTable.GetRecords(element);
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_STARTNEWRECORD)){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_STARTNEWRECORD)) {
 
 			}
 		}
-		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.FILTER)){
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ADDCRITERIA)){
+		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.FILTER)) {
+			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ADDCRITERIA)) {
 				NS_Filter.AddCriteria(element);
 			}
 		}
-		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.FORM)){
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NAVIGATE)){
+		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.FORM)) {
+			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NAVIGATE)) {
 				NS_Form.Navigate(element);
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETCURRENTRECORD)){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETCURRENTRECORD)) {
 				NS_Form.SetCurrentRecord(element);
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETTITLE)){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETTITLE)) {
 				NS_Form.SetTitle(element);
 			}
 		}
-		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_GPS)){
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETLATITUDE)){
+		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_GPS)) {
+			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETLATITUDE)) {
 				result = NS_Gps.GetLatitude(element);
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETLOCATION)){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETLOCATION)) {
 				result = NS_Gps.GetLocation();
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETLONGITUDE)){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETLONGITUDE)) {
 				result = NS_Gps.GetLogitude(element);
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSTATUS)){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSTATUS)) {
 				result = NS_Gps.GetStatus();
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_INIT)){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_INIT)) {
 				NS_Gps.Init(context);
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_STOP)){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_STOP)) {
 				NS_Gps.Stop();
 			}
 		}
-		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.LIST)){
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GET)){
+		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.LIST)) {
+			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GET)) {
 				result = NS_List.GetListItem(element);
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSIZE)){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSIZE)) {
 				result = NS_List.GetSize(element);
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ADD)){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ADD)) {
 				NS_List.ListAddValue(element);
 			}
 		}
-		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_MATH)){
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SUB)){
-				result = NS_Math.Subtract(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ADD)){
+		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_MATH)) {
+			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ADD)) {
 				result = NS_Math.Sum(element);
 			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_RANDOM)) {
+				result = NS_Math.Random(element);
+				Log.i("info", "random "+result);
+			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SUB)) {
+				result = NS_Math.Subtract(element);
+			}
+			
 		}
-		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.OBJECT)){
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TOBOOLEAN)){
+		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.OBJECT)) {
+			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TOBOOLEAN)) {
 				result = NS_Object.ToBoolean(element);
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TOINT)){
-				if (!first){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TOINT)) {
+				if (!first) {
 					result = NS_Object.ToInt(element);
 				}
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TONUMERIC)){
-				if (!first){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TONUMERIC)) {
+				if (!first) {
 					result = NS_Object.ToNumeric(element);
 				}
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TOSTRING)){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TOSTRING)) {
 				result = NS_Object.ToString(element);
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TORECORD)){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TORECORD)) {
 				result = NS_Object.ToRecord(element);
 			}
 		}
-		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_RUNTIME)){
+		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_RUNTIME)) {
 			if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ALERT)) ||
-					(element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ERROR))){
+					(element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ERROR))) {
 				NS_Runtime.Alert(context, element);
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CONFIRM)){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CONFIRM)) {
 				ConfirmDialog confirmDialog = new ConfirmDialog(element.getElementsByTagName(ScriptTag.PARAMETER), context);
 				confirmDialog.start();
 				try{
 					confirmDialog.join();
 				}
-				catch (InterruptedException e){
+				catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 				result = confirmDialog.getValue();
 				//Cancel the thread, because the stop() method is deprecated
 				//confirmDialog = null;
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SYNC)){
-				if (!first){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SYNC)) {
+				if (!first) {
 					result = NS_Runtime.Synchronize(element);
 				}
 			}
 		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_STRING)) {
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CONCAT)){
+			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CONCAT)) {
 				result = NS_String.Concat(element);
 			}
 		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_TIMER)) {
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CANCEL)){
+			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CANCEL)) {
 				NS_Timer.Cancel(element);
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_START)){
-				if (!first){
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_START)) {
+				if (!first) {
 					result = NS_Timer.Start(element);
 				}
 			}
 		}
-		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_USER)){
-			if (element.getChildNodes().getLength() > 0){
+		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_USER)) {
+			if (element.getChildNodes().getLength() > 0) {
 				int childrenLen = element.getChildNodes().getLength();
-				for (int i=0; i<childrenLen; i++){
+				for (int i=0; i<childrenLen; i++) {
 					Element child = (Element)element.getChildNodes().item(i);
-					if ((child.getNodeName().equals(ScriptTag.PARAMETER)) && (child.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE)){
+					if ((child.getNodeName().equals(ScriptTag.PARAMETER)) && (child.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE)) {
 						parametersMap.put(element.getAttribute(ScriptTag.FUNCTION)+"_"+child.getAttribute(ScriptTag.NAME), child.getChildNodes().item(0).getNodeValue());
 					}
 				}
@@ -568,26 +573,26 @@ public class Function {
 	}
 	
 	//Return variable's value
-	public static Object getVariableValue(Element item){
+	public static Object getVariableValue(Element item) {
 		Object result = null;
-		if (varsMap.containsKey(item.getAttribute(ScriptTag.NAME))){
+		if (varsMap.containsKey(item.getAttribute(ScriptTag.NAME))) {
 			result = varsMap.get(item.getAttribute(ScriptTag.NAME));
 		}
 		else{
 			Node parent = item.getParentNode();
-			while (!parent.getNodeName().equals(ScriptTag.FUNCTION)){
+			while (!parent.getNodeName().equals(ScriptTag.FUNCTION)) {
 				parent = parent.getParentNode();
 			}
 			String varName = ((Element) parent).getAttribute(ScriptTag.NAME)+"_"+item.getAttribute(ScriptTag.NAME);
-			if (varsMap.containsKey(varName)){
+			if (varsMap.containsKey(varName)) {
 				result = varsMap.get(varName);
 			}
 		}
 		return result;
 	}
 	
-	public static void addFilterValues(String name, String field, String operator, Object value, Object link){
-		if (varsMap.containsKey(name)){
+	public static void addFilterValues(String name, String field, String operator, Object value, Object link) {
+		if (varsMap.containsKey(name)) {
 			if (varsMap.get(name) == null) {
 				varsMap.remove(name);
 				varsMap.put(name, new ArrayList<Object>());
@@ -600,7 +605,7 @@ public class Function {
 	}
 	
 	public static void addVariableValue(String name, Object value, boolean isList) {
-		if (varsMap.containsKey(name)){
+		if (varsMap.containsKey(name)) {
 			if (varsMap.get(name) == null) {
 				if (isList) {
 					varsMap.remove(name);
@@ -616,19 +621,19 @@ public class Function {
 		}
 	}
 	
-	private static void setVariable(Element element){
+	private static void setVariable(Element element) {
 		/*
 		 * Each varable has a list of value, the two first values are its type and its default value,
 		 * for the list, its added values which start at the third position
 		 * */
-		if (varsMap.containsKey(element.getAttribute(ScriptTag.NAME))){
+		if (varsMap.containsKey(element.getAttribute(ScriptTag.NAME))) {
 			varsMap.remove(element.getAttribute(ScriptTag.NAME));
 		}
-		if (!element.hasChildNodes()){
+		if (!element.hasChildNodes()) {
 			Log.i("info", "add variable "+element.getAttribute(ScriptTag.NAME));
 			varsMap.put(element.getAttribute(ScriptTag.NAME), null);
 		}
-		else if ((element.getChildNodes().getLength() == 1) && (element.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE)){
+		else if ((element.getChildNodes().getLength() == 1) && (element.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE)) {
 			Log.i("info", "1 child "+element.getChildNodes().item(0).getNodeValue());
 			varsMap.put(element.getAttribute(ScriptTag.NAME), element.getChildNodes().item(0).getNodeValue());	
 		}
@@ -643,29 +648,29 @@ public class Function {
 	public static Object getKeyWord(Element element)
 	{
 		Object result = null;
-		if (element.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE){
-			if (element.getChildNodes().item(0).getNodeValue().equals(ScriptAttribute.CONST_NULL)){
+		if (element.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE) {
+			if (element.getChildNodes().item(0).getNodeValue().equals(ScriptAttribute.CONST_NULL)) {
 				result = null;
 			}
-			else if (element.getChildNodes().item(0).getNodeValue().equals(ScriptAttribute.CONST_TRUE)){
+			else if (element.getChildNodes().item(0).getNodeValue().equals(ScriptAttribute.CONST_TRUE)) {
 				result = true;
 			}
-			else if (element.getChildNodes().item(0).getNodeValue().equals(ScriptAttribute.CONST_FALSE)){
+			else if (element.getChildNodes().item(0).getNodeValue().equals(ScriptAttribute.CONST_FALSE)) {
 				result = false;
 			}
-			else if (element.getChildNodes().item(0).getNodeValue().equals(ScriptAttribute.CONST_GPS_SIGNAL_OK)){
+			else if (element.getChildNodes().item(0).getNodeValue().equals(ScriptAttribute.CONST_GPS_SIGNAL_OK)) {
 				result = GpsStatus.GPS_SIGNAL_OK;
 			}
-			else if (element.getChildNodes().item(0).getNodeValue().equals(ScriptAttribute.CONST_EMPTY_STRING)){
+			else if (element.getChildNodes().item(0).getNodeValue().equals(ScriptAttribute.CONST_EMPTY_STRING)) {
 				result = "";
 			}
 		}
 		return result;
 	}
 	
-	public static Object getOperator(Object operator){
+	public static Object getOperator(Object operator) {
 		Object result = null;
-		switch (Integer.valueOf((String)operator)){
+		switch (Integer.valueOf((String)operator)) {
 			case ScriptAttribute.EQUALS:
 				result = "=";
 				break;
@@ -676,37 +681,37 @@ public class Function {
 		return result;
 	}
 	
-	public static Context getContext(){
+	public static Context getContext() {
 		return context;
 	}
 	
-	private static String getReturnValue(Element element){
+	private static String getReturnValue(Element element) {
 		String result = "";
-		if (element.getChildNodes().getLength() > 0){
-			if (element.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE){
+		if (element.getChildNodes().getLength() > 0) {
+			if (element.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE) {
 				result = element.getChildNodes().item(0).getNodeValue();
 			}
 		}
 		return result;
 	}
 	
-	public static Object getVariableName(Element element, String tag, String name, String type){
+	public static Object getVariableName(Element element, String tag, String name, String type) {
 		Object value = null;
 		int itemsLen = element.getChildNodes().getLength();
-		for (int i=0; i<itemsLen; i++){
+		for (int i=0; i<itemsLen; i++) {
 			Element child = (Element) element.getChildNodes().item(i);
 			if ((child.getNodeName().equals(tag)) &&
 					(child.getAttribute(ScriptTag.NAME).equals(name)) &&
-					(child.getAttribute(ScriptTag.TYPE).equals(type))){
-				if (child.getChildNodes().getLength() == 1){
-					if (child.getChildNodes().item(0).getNodeType() == Node.ELEMENT_NODE){
+					(child.getAttribute(ScriptTag.TYPE).equals(type))) {
+				if (child.getChildNodes().getLength() == 1) {
+					if (child.getChildNodes().item(0).getNodeType() == Node.ELEMENT_NODE) {
 						Element item = (Element) child.getChildNodes().item(0);
-						if (item.getNodeName().equals(ScriptTag.VAR)){
+						if (item.getNodeName().equals(ScriptTag.VAR)) {
 							value = item.getAttribute(ScriptTag.NAME);
 							Log.i("info", "value of variable "+value);
 						}
 					}
-					else if (child.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE){
+					else if (child.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE) {
 						
 					}
 				}
@@ -716,37 +721,37 @@ public class Function {
 	}
 	
 	//Return values of function's parameter
-	public static Object getValue(Element element, String tag, String name, String type){
+	public static Object getValue(Element element, String tag, String name, String type) {
 		Object value = null;
 		int itemsLen = element.getChildNodes().getLength();
-		for (int i=0; i<itemsLen; i++){
+		for (int i=0; i<itemsLen; i++) {
 			Element child = (Element) element.getChildNodes().item(i);
 			//If condition elements
-			if ((child.getNodeName().equals(tag)) && (name == null) && (type == null)){
-				if (child.getChildNodes().getLength() == 1){
-					if (child.getChildNodes().item(0).getNodeType() == Node.ELEMENT_NODE){
+			if ((child.getNodeName().equals(tag)) && (name == null) && (type == null)) {
+				if (child.getChildNodes().getLength() == 1) {
+					if (child.getChildNodes().item(0).getNodeType() == Node.ELEMENT_NODE) {
 						Element item = (Element) child.getChildNodes().item(0);
 						value = distributeAction(item);
 					}
-					else if (child.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE){
+					else if (child.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE) {
 						value = child.getChildNodes().item(0).getNodeValue();
 					}
 				}
 			}
 			//Set variable
-			else if ((child.getNodeName().equals(tag)) && (name.equals("")) && (type.equals(""))){
+			else if ((child.getNodeName().equals(tag)) && (name.equals("")) && (type.equals(""))) {
 				value = distributeAction(child);
 			}
 			//Function parameters
 			else if ((child.getNodeName().equals(tag)) &&
 					(child.getAttribute(ScriptTag.NAME).equals(name)) &&
-					(child.getAttribute(ScriptTag.TYPE).equals(type))){
-				if (child.getChildNodes().getLength() == 1){
-					if (child.getChildNodes().item(0).getNodeType() == Node.ELEMENT_NODE){
+					(child.getAttribute(ScriptTag.TYPE).equals(type))) {
+				if (child.getChildNodes().getLength() == 1) {
+					if (child.getChildNodes().item(0).getNodeType() == Node.ELEMENT_NODE) {
 						Element item = (Element) child.getChildNodes().item(0);
 						value = distributeAction(item);
 					}
-					else if (child.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE){
+					else if (child.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE) {
 						value = child.getChildNodes().item(0).getNodeValue();
 					}
 				}
