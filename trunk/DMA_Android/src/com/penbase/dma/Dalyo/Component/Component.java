@@ -440,6 +440,20 @@ public class Component{
 		return result;
 	}
 	
+	public String getLabel() {
+		String result = "";
+		if (getView() instanceof Label) {
+			result = ((Label)getView()).getText().toString();
+		}
+		else if (getView() instanceof TextZone) {
+			result = ((TextZone)getView()).getValue();
+		}
+		else if (getView() instanceof TextField) {
+			result = ((TextField)getView()).getValue();
+		}
+		return result;
+	}
+	
 	public void setText(String text) {
 		String newText = "";
 		if (!text.equals("null")) {

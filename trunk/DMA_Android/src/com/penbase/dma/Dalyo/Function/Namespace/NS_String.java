@@ -12,4 +12,14 @@ public class NS_String {
 		String right = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_B, ScriptAttribute.STRING));
 		return left+right;
 	}
+	
+	public static int Length(Element element) {
+		Object value = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.STRING, ScriptAttribute.STRING);
+		if (value == null) {
+			return 0;
+		}
+		else {
+			return String.valueOf(value).length();
+		}
+	}
 }
