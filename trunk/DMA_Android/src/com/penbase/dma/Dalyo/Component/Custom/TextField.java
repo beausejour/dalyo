@@ -43,6 +43,10 @@ public class TextField extends AutoCompleteTextView{
 	}
 	
 	public String getValue() {
-		return this.getText().toString().trim();
+		return this.getText().toString();
+	}
+	
+	public String isVide() {
+		return this.isVide();
 	}
 }

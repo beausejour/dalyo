@@ -27,6 +27,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_GETSELECTEDRECORD = "getSelectedRecord";
 	public static final String FUNCTION_GETSIZE = "size";
 	public static final String FUNCTION_GETSTATUS = "getStatus";
+	public static final String FUNCTION_GETTEXT = "getText";
 	public static final String FUNCTION_GETVALUE = "getValue";
 	public static final String FUNCTION_IMPORT = "import";
 	public static final String FUNCTION_INIT = "init";
@@ -39,6 +40,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_NOWHOUR = "nowH";
 	public static final String FUNCTION_RANDOM = "rand";
 	public static final String FUNCTION_REFRESH = "refresh";
+	public static final String FUNCTION_REMOVEALLITEMS = "removeAllItems";
 	public static final String FUNCTION_RESET = "reset";
 	public static final String FUNCTION_SETCURRENTRECORD = "setCurrentRecord";
 	public static final String FUNCTION_SETENABLED = "setEnabled";
@@ -64,6 +66,7 @@ public class ScriptAttribute {
 	//Namespace
 	public static final String NAMESPACE_COMPONENT_CB = "component.combobox";
 	public static final String NAMESPACE_COMPONENT_DV = "component.dataview";
+	public static final String NAMESPACE_COMPONENT_TF = "component.textfield";
 	public static final String NAMESPACE_DATE = "date";
 	public static final String NAMESPACE_DB = "database";
 	public static final String NAMESPACE_DB_TABLE = "database.table";

@@ -368,6 +368,9 @@ public class Function {
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_REFRESH)) {
 				NS_ComponentCombobox.Refresh(element);
 			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_REMOVEALLITEMS)) {
+				NS_ComponentCombobox.RemoveAllItems(element);
+			}
 		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_COMPONENT_DV)) {
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSELECTEDRECORD)) {
@@ -375,6 +378,11 @@ public class Function {
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_REFRESH)) {
 				NS_ComponentDataview.Refresh(element);
+			}
+		}
+		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_COMPONENT_TF)) {
+			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETTEXT)) {
+				result = NS_ComponentTextField.GetText(element);
 			}
 		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DATE)) {
@@ -440,6 +448,9 @@ public class Function {
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.FILTER)) {
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ADDCRITERIA)) {
 				NS_Filter.AddCriteria(element);
+			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CLEAR)) {
+				NS_Filter.Clear(element);
 			}
 		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.FORM)) {
@@ -521,7 +532,7 @@ public class Function {
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_RUNTIME)) {
 			if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ALERT)) ||
 					(element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ERROR))) {
-				NS_Runtime.Alert(context, element);
+				NS_Runtime.Error(context, element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CONFIRM)) {
 				ConfirmDialog confirmDialog = new ConfirmDialog(element.getElementsByTagName(ScriptTag.PARAMETER), context);
@@ -607,6 +618,12 @@ public class Function {
 			((ArrayList<Object>) varsMap.get(name)).add(operator);
 			((ArrayList<Object>) varsMap.get(name)).add(value);
 			((ArrayList<Object>) varsMap.get(name)).add(link);
+		}
+	}
+	
+	public static void clearFilterByName(String name) {
+		if (varsMap.containsKey(name)) {
+			((ArrayList<Object>) varsMap.get(name)).clear();
 		}
 	}
 	
