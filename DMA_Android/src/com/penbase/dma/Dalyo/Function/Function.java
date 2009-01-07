@@ -376,7 +376,10 @@ public class Function {
 		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DATE)){
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NOW)){
-				result = NS_Date.GetCurrentDate();
+				result = NS_Date.CurrentDate();
+			}
+			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NOWHOUR)){
+				result = NS_Date.CurrentHour();
 			}
 		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB)){

@@ -1,6 +1,7 @@
 package com.penbase.dma.Dalyo.Function.Namespace;
 
 import java.util.ArrayList;
+
 import org.w3c.dom.Element;
 
 import android.util.Log;
@@ -8,6 +9,8 @@ import android.util.Log;
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Function.Function;
+import com.penbase.dma.Dalyo.Function.DateTime.Date;
+import com.penbase.dma.Dalyo.Function.DateTime.Time;
 
 public class NS_List {
 	public static Object GetListItem(Element element){
@@ -36,6 +39,14 @@ public class NS_List {
 		String listName = String.valueOf(Function.getVariableName(element, ScriptTag.PARAMETER, ScriptAttribute.LIST, ScriptAttribute.LIST));
 		Object value = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
 		Log.i("info", "listname "+listName+" value "+value);
-		Function.addVariableValue(listName, value, true);
+		if (value instanceof Date) {
+			Function.addVariableValue(listName, ((Date)value).toString(), true);
+		}
+		else if (value instanceof Time) {
+			Function.addVariableValue(listName, ((Time)value).toString(), true);
+		}
+		else {
+			Function.addVariableValue(listName, value, true);
+		}
 	}
 }

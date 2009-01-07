@@ -1,10 +1,14 @@
 package com.penbase.dma.Dalyo.Function.Namespace;
 
-import java.util.Calendar;
+import com.penbase.dma.Dalyo.Function.DateTime.Date;
+import com.penbase.dma.Dalyo.Function.DateTime.Time;
 
 public class NS_Date {
-	public static Object GetCurrentDate(){
-		Calendar calendar = Calendar.getInstance();
-		return calendar.get(Calendar.DATE)+"/"+(calendar.get(Calendar.MONTH)+1)+"/"+calendar.get(Calendar.YEAR);
+	public static Object CurrentDate() {
+		return new Date();
+	}
+	
+	public static Object CurrentHour() {
+		return new Time();
 	}
 }

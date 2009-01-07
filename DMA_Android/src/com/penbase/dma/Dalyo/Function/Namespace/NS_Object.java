@@ -1,9 +1,12 @@
 package com.penbase.dma.Dalyo.Function.Namespace;
 
 import org.w3c.dom.Element;
+
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Function.Function;
+import com.penbase.dma.Dalyo.Function.DateTime.Date;
+import com.penbase.dma.Dalyo.Function.DateTime.Time;
 import com.penbase.dma.View.ApplicationView;
 
 public class NS_Object {
@@ -13,13 +16,20 @@ public class NS_Object {
 	}
 	
 	public static Integer ToInt(Element element) {
-		if (String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT)).indexOf(".") != -1) {
-			return Double.valueOf(String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT))).intValue();
+		Object value = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
+		if (value instanceof Date) {
+			return ((Date) value).toInt();
+		}
+		else if (value instanceof Time) {
+			return ((Time) value).toInt();
+		}
+		else if (String.valueOf(value).indexOf(".") != -1) {
+			return Double.valueOf(String.valueOf(value)).intValue();
 		}
 		else{
 			Integer result = null;
 			try {
-				result = Integer.valueOf(String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT)));
+				result = Integer.valueOf(String.valueOf(value));
 			}
 			catch (NumberFormatException nfe) {
 				ApplicationView.errorDialog("Check your variable's type (ToInt) !");
@@ -29,13 +39,20 @@ public class NS_Object {
 	}
 	
 	public static Number ToNumeric(Element element) {
-		if (String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT)).indexOf(".") != -1) {
-			return Double.valueOf(String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT)));
+		Object value = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
+		if (value instanceof Date) {
+			return ((Date) value).toInt();
+		}
+		else if (value instanceof Time) {
+			return ((Time) value).toInt();
+		}
+		else if (String.valueOf(value).indexOf(".") != -1) {
+			return Double.valueOf(String.valueOf(value));
 		}
 		else {
 			Integer result = null;
 			try {
-				result = Integer.valueOf(String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT)));
+				result = Integer.valueOf(String.valueOf(value));
 			}
 			catch (NumberFormatException nfe) {
 				ApplicationView.errorDialog("Check your variable's type (ToNumeric) !");
@@ -49,6 +66,15 @@ public class NS_Object {
 	}
 	
 	public static String ToString(Element element) {
-		return String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT));
+		Object value = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
+		if (value instanceof Date) {
+			return ((Date) value).toString();
+		}
+		else if (value instanceof Time) {
+			return ((Time) value).toString();
+		}
+		else {
+			return String.valueOf(value);
+		}
 	}
 }
