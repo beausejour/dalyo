@@ -50,6 +50,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_STOP = "stop";
 	public static final String FUNCTION_SUB = "sub";
 	public static final String FUNCTION_SYNC = "sync";
+	public static final String FUNCTION_TOBOOLEAN = "toBoolean";
 	public static final String FUNCTION_TOINT = "toInt";
 	public static final String FUNCTION_TONUMERIC = "toNumeric";
 	public static final String FUNCTION_TORECORD = "toRecord";

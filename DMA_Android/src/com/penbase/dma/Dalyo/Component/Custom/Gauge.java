@@ -21,6 +21,10 @@ public class Gauge extends SeekBar {
 		return this.getProgress() + minValue;
 	}
 	
+	public void setValue(int value) {
+		this.setProgress(value);
+	}
+	
 	public void setOnChangeFunction(String name) {
 		this.funcName = name;
 		this.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {

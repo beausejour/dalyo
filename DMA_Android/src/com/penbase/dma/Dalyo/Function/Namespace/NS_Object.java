@@ -7,8 +7,13 @@ import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.View.ApplicationView;
 
 public class NS_Object {
-	public static Integer ToInt(Element element){
-		if (String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT)).indexOf(".") != -1){
+	public static boolean ToBoolean(Element element) {
+		Object value = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
+		return Boolean.valueOf(String.valueOf(value));
+	}
+	
+	public static Integer ToInt(Element element) {
+		if (String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT)).indexOf(".") != -1) {
 			return Double.valueOf(String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT))).intValue();
 		}
 		else{
@@ -23,11 +28,11 @@ public class NS_Object {
 		}
 	}
 	
-	public static Number ToNumeric(Element element){
-		if (String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT)).indexOf(".") != -1){
+	public static Number ToNumeric(Element element) {
+		if (String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT)).indexOf(".") != -1) {
 			return Double.valueOf(String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT)));
 		}
-		else{
+		else {
 			Integer result = null;
 			try {
 				result = Integer.valueOf(String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT)));
@@ -39,11 +44,11 @@ public class NS_Object {
 		}
 	}
 	
-	public static Object ToRecord(Element element){
+	public static Object ToRecord(Element element) {
 		return Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
 	}
 	
-	public static String ToString(Element element){
+	public static String ToString(Element element) {
 		return String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT));
 	}
 }

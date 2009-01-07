@@ -487,7 +487,10 @@ public class Function {
 			}
 		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.OBJECT)){
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TOINT)){
+			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TOBOOLEAN)){
+				result = NS_Object.ToBoolean(element);
+			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TOINT)){
 				if (!first){
 					result = NS_Object.ToInt(element);
 				}
@@ -717,9 +720,7 @@ public class Function {
 			Element child = (Element) element.getChildNodes().item(i);
 			//If condition elements
 			if ((child.getNodeName().equals(tag)) && (name == null) && (type == null)){
-				Log.i("info", "child.getChildNodes().getLength() "+child.getChildNodes().getLength());
 				if (child.getChildNodes().getLength() == 1){
-					Log.i("info", "check string "+child.getChildNodes().toString());
 					if (child.getChildNodes().item(0).getNodeType() == Node.ELEMENT_NODE){
 						Element item = (Element) child.getChildNodes().item(0);
 						value = distributeAction(item);
