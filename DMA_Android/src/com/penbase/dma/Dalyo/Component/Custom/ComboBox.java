@@ -110,4 +110,8 @@ public class ComboBox extends Spinner {
 			return records.get(currentPosition);
 		}
 	}
+	
+	public void removeAllItems() {
+		spinnerArrayAdapter.clear();
+	}
 }

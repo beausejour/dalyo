@@ -17,7 +17,7 @@ import android.util.Log;
 public class NS_Runtime {
 	private static ProgressDialog syncProgressDialog;
 	
-	public static void Alert(Context context, Element element) {
+	public static void Error(Context context, Element element) {
 		String message = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_TEXT, ScriptAttribute.STRING));
 		String title = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_CAPTION, ScriptAttribute.STRING));
 		Log.i("info", "message "+message+" title "+title);
@@ -29,7 +29,6 @@ public class NS_Runtime {
 		}
 	}
 	
-	//public static Object Synchronize(Element element){
 	public static boolean Synchronize(Element element) {
 		Object type = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_FACELESS, ScriptAttribute.PARAMETER_TYPE_BOOLEAN);
 		Log.i("info", "synchronize type "+type);
