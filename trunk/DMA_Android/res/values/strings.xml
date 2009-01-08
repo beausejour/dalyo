@@ -5,7 +5,10 @@
     <string name="menu_logout">Logout</string>
     <string name="menu_update">Update application list</string>
     <string name="quit">Quit</string>
-    <string name="back">Back</string>
-    <string name="next">Next</string>
     <string name="about">Dalyo Mobile Agent 0.2.0</string>
+
+<string name="login">Login :</string>
+<string name="pwd">Password :</string>
+<string name="rememberme">Remember me</string>
+<string name="run">Run</string>
 </resources>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Dalyo</string>
+    <string name="menu_about">A propos</string>
+    <string name="menu_logout">Déconnexion</string>
+    <string name="menu_update">Mettre à jour</string>
+    <string name="quit">Quitter</string>
+    <string name="about">Dalyo Mobile Agent 0.2.0</string>
+
+<string name="login">Identifiant :</string>
+<string name="pwd">Mot de passe :</string>
+<string name="rememberme">Se souvenir de moi</string>
+<string name="run">Connexion</string>
+</resources>
