@@ -4,6 +4,7 @@ public class ScriptAttribute {
 	//Function name
 	public static final String FUNCTION_ADD = "add";
 	public static final String FUNCTION_ADDCRITERIA = "addCriteria";
+	public static final String FUNCTION_ADDMINUTES = "addMinutes";
 	public static final String FUNCTION_ALERT = "alert";
 	public static final String FUNCTION_CANCEL = "cancel";
 	public static final String FUNCTION_CANCELNRECORD = "cancelNewRecord";
@@ -14,6 +15,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_CONFIRM = "confirm";
 	public static final String FUNCTION_COUNT = "count";
 	public static final String FUNCTION_DELETERECORD = "deleteRecord";
+	public static final String FUNCTION_DIVISION = "div";
 	public static final String FUNCTION_EDITRECORD = "editRecord";
 	public static final String FUNCTION_ERROR = "error";
 	public static final String FUNCTION_EXPORT = "export";
@@ -45,6 +47,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_REFRESH = "refresh";
 	public static final String FUNCTION_REMOVEALLITEMS = "removeAllItems";
 	public static final String FUNCTION_RESET = "reset";
+	public static final String FUNCTION_ROUND = "round";
 	public static final String FUNCTION_SETCURRENTRECORD = "setCurrentRecord";
 	public static final String FUNCTION_SETENABLED = "setEnabled";
 	public static final String FUNCTION_SETFOCUS = "setFocus";
@@ -85,6 +88,7 @@ public class ScriptAttribute {
 	public static final String PARAMETER_NAME_B = "b";
 	public static final String PARAMETER_NAME_CALLBACK = "callback";
 	public static final String PARAMETER_NAME_CAPTION = "caption";
+	public static final String PARAMETER_NAME_DECIMALS = "decimals";
 	public static final String PARAMETER_NAME_DELAYED = "delayed";
 	public static final String PARAMETER_NAME_DISTINCT = "distinct";
 	public static final String PARAMETER_NAME_ELEMENT = "element";
@@ -97,6 +101,7 @@ public class ScriptAttribute {
 	public static final String PARAMETER_NAME_LINK = "link";		//link the last condition
 	public static final String PARAMETER_NAME_MAX = "max";
 	public static final String PARAMETER_NAME_MIN = "min";
+	public static final String PARAMETER_NAME_MINUTES = "minutes";
 	public static final String PARAMETER_NAME_TABLES = "tables";
 	public static final String PARAMETER_NAME_TEXT = "text";
 	public static final String PARAMETER_NAME_TIMERID = "timer_id";
@@ -112,6 +117,7 @@ public class ScriptAttribute {
 	
 	//Common values
 	public static final String COMPONENT = "component";
+	public static final String DATE = "date";
 	public static final String FIELD = "field";
 	public static final String FILTER = "filter";
 	public static final String FORM = "form";

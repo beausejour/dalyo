@@ -1,5 +1,6 @@
 package com.penbase.dma.Dalyo.Function.Namespace;
 
+import java.math.BigDecimal;
 import java.util.Random;
 
 import org.w3c.dom.Element;
@@ -12,6 +13,12 @@ public class NS_Math {
 	public static int Ceil(Element element) {
 		Object value = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.PARAMETER_TYPE_NUMERIC);
 		return Double.valueOf(Math.ceil(Double.valueOf(String.valueOf(value)))).intValue();
+	}
+	
+	public static double Division(Element element) {
+		Object left = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_A, ScriptAttribute.PARAMETER_TYPE_NUMERIC);
+		Object right = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_B, ScriptAttribute.PARAMETER_TYPE_NUMERIC);
+		return Double.valueOf(String.valueOf(left)) / Double.valueOf(String.valueOf(right));
 	}
 	
 	public static Object Multiple(Element element) {
@@ -37,6 +44,14 @@ public class NS_Math {
 		else {
 			return Double.valueOf(Integer.valueOf(String.valueOf(min)) * Math.random()).intValue(); 
 		}
+	}
+	
+	public static double Round(Element element) {
+		Object value = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.PARAMETER_TYPE_NUMERIC);
+		int decimal = Integer.valueOf(String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_DECIMALS, ScriptAttribute.PARAMETER_TYPE_INT)));
+		BigDecimal bd = new BigDecimal(Double.valueOf(String.valueOf(value)));
+		bd = bd.setScale(decimal, BigDecimal.ROUND_HALF_UP);
+		return bd.doubleValue();
 	}
 	
 	public static Object Subtract(Element element) {
