@@ -2,10 +2,12 @@ package com.penbase.dma.Dalyo.Function;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
 import android.content.Context;
 import android.util.Log;
 
@@ -384,6 +386,9 @@ public class Function {
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETTEXT)) {
 				result = NS_ComponentTextField.GetText(element);
 			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ISEMPTY)) {
+				result = NS_ComponentTextField.IsEmpty(element);
+			}
 		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DATE)) {
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NOW)) {
@@ -485,23 +490,31 @@ public class Function {
 			}
 		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.LIST)) {
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GET)) {
-				result = NS_List.GetListItem(element);
+			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ADD)) {
+				NS_List.AddValue(element);
+			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CLEAR)) {
+				NS_List.Clear(element);
+			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GET)) {
+				result = NS_List.Get(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSIZE)) {
-				result = NS_List.GetSize(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ADD)) {
-				NS_List.ListAddValue(element);
+				result = NS_List.Size(element);
 			}
 		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_MATH)) {
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ADD)) {
 				result = NS_Math.Sum(element);
 			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CEIL)) {
+				result = NS_Math.Ceil(element);
+			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_MULTIPLE)) {
+				result = NS_Math.Multiple(element);
+			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_RANDOM)) {
 				result = NS_Math.Random(element);
-				Log.i("info", "random "+result);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SUB)) {
 				result = NS_Math.Subtract(element);
@@ -640,6 +653,14 @@ public class Function {
 			}
 			else if (!isList) {
 				varsMap.put(name, value);
+			}
+		}
+	}
+	
+	public static void clearListItems(String name) {
+		if (varsMap.containsKey(name)) {
+			if (varsMap.get(name) instanceof ArrayList) {
+				((ArrayList<?>)varsMap.get(name)).clear();
 			}
 		}
 	}
