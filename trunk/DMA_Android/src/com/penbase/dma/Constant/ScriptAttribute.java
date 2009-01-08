@@ -8,6 +8,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_CANCEL = "cancel";
 	public static final String FUNCTION_CANCELNRECORD = "cancelNewRecord";
 	public static final String FUNCTION_CANCELTRANSACTION = "cancelTransaction";
+	public static final String FUNCTION_CEIL = "ceil";
 	public static final String FUNCTION_CLEAR = "clear";
 	public static final String FUNCTION_CONCAT = "concat";
 	public static final String FUNCTION_CONFIRM = "confirm";
@@ -31,9 +32,11 @@ public class ScriptAttribute {
 	public static final String FUNCTION_GETVALUE = "getValue";
 	public static final String FUNCTION_IMPORT = "import";
 	public static final String FUNCTION_INIT = "init";
+	public static final String FUNCTION_ISEMPTY = "isEmpty";
 	public static final String FUNCTION_ISENABLED = "isEnabled";
 	public static final String FUNCTION_ISVISIBLE = "isVisible";
 	public static final String FUNCTION_LENGTH = "length";
+	public static final String FUNCTION_MULTIPLE = "mul";
 	public static final String FUNCTION_NAVIGATE = "navigate";
 	public static final String FUNCTION_NEWRECORD = "newRecord";
 	public static final String FUNCTION_NOW = "now";

@@ -9,6 +9,22 @@ import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Function.Function;
 
 public class NS_Math {
+	public static int Ceil(Element element) {
+		Object value = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.PARAMETER_TYPE_NUMERIC);
+		return Double.valueOf(Math.ceil(Double.valueOf(String.valueOf(value)))).intValue();
+	}
+	
+	public static Object Multiple(Element element) {
+		Object left = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_A, ScriptAttribute.PARAMETER_TYPE_NUMERIC);
+		Object right = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_B, ScriptAttribute.PARAMETER_TYPE_NUMERIC);
+		if ((left.toString().indexOf(".") != -1) || (right.toString().indexOf(".") != -1)) {
+			return (Double.valueOf(left.toString()) * Double.valueOf(right.toString()));
+		}
+		else{
+			return (Integer.valueOf(left.toString()) * Integer.valueOf(right.toString()));
+		}
+	}
+	
 	public static int Random(Element element) {
 		Object max = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_MAX, ScriptAttribute.PARAMETER_TYPE_INT);
 		Object min = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_MIN, ScriptAttribute.PARAMETER_TYPE_INT);

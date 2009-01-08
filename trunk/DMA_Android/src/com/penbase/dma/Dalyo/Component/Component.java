@@ -22,7 +22,7 @@ import android.view.View.OnClickListener;
 import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class Component{
+public class Component {
 	private Context context;
 	private String id;
 	private String type;
