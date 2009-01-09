@@ -21,6 +21,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_EXPORT = "export";
 	public static final String FUNCTION_GET = "get";
 	public static final String FUNCTION_GETFIELDVALUE = "getFieldValue";
+	public static final String FUNCTION_GETFIELDVALUEBYPRIMARYKEY = "getFieldValueByPrimaryKey";
 	public static final String FUNCTION_GETFILTEREDRECORDS = "getFilteredRecords";
 	public static final String FUNCTION_GETLABEL = "getLabel";
 	public static final String FUNCTION_GETLATITUDE = "getLatitude";
@@ -98,6 +99,8 @@ public class ScriptAttribute {
 	public static final String PARAMETER_NAME_FILTERS = "filters";
 	public static final String PARAMETER_NAME_INDEX = "index";
 	public static final String PARAMETER_NAME_INTERVAL = "interval";
+	public static final String PARAMETER_NAME_KEYFIELD = "key_field";
+	public static final String PARAMETER_NAME_KEYVALUE = "key_value";
 	public static final String PARAMETER_NAME_LINK = "link";		//link the last condition
 	public static final String PARAMETER_NAME_MAX = "max";
 	public static final String PARAMETER_NAME_MIN = "min";

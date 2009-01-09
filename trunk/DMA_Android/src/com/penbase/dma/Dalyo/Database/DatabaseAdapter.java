@@ -430,10 +430,7 @@ public class DatabaseAdapter {
 				tidMap.put(key, records);
 				tableNbInt += 1;
 			}
-			if (!cursor.isClosed()) {
-				cursor.deactivate();
-				cursor.close();
-			}
+			DatabaseAdapter.closeCursor(cursor);
 		}
 		Log.i("info", "tidmap "+tidMap.toString());
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -599,11 +596,7 @@ public class DatabaseAdapter {
 		Log.i("info", "add table value "+DatabaseAttribute.TABLE+tableId+" record "+record);
 		Cursor cursorAllRows = selectQuery(String.valueOf(tableId), null, null);
 		int newId = cursorAllRows.getCount()+1;
-		if (!cursorAllRows.isClosed()) {
-			Log.i("info", "cursor is not closed");
-			cursorAllRows.deactivate();
-			cursorAllRows.close();
-		}
+		DatabaseAdapter.closeCursor(cursorAllRows);
 		Log.i("info", "calculated new id "+newId);
 		String idValue = tableId+""+newId;
 		Log.i("info", "idvalue is "+idValue);
@@ -705,12 +698,8 @@ public class DatabaseAdapter {
 					}
 					cursor.moveToNext();
 				}
-				if (!cursor.isClosed()) {
-					cursor.deactivate();
-					cursor.close();
-				}	
+				DatabaseAdapter.closeCursor(cursor);
 			}
-			
 		}
 		sqlite.execSQL("DELETE FROM "+DatabaseAttribute.TABLE+tableId);
 	}
@@ -739,8 +728,7 @@ public class DatabaseAdapter {
 
 	//Add values and check primary key
 	public static void addQuery(int tableId, ArrayList<Integer> fieldsList, ArrayList<Object> record){
-		Log.i("info", "record "+record+" size "+record.size());
-		Log.i("info", "fieldsList "+fieldsList+" size "+fieldsList.size());
+		//record has 1 more element than fieldsList, the first element of record is the new ID
 		int fieldsNb = fieldsList.size();
 		String id = DatabaseAttribute.ID+tableId;
 		String gid = DatabaseAttribute.GID+tableId;
@@ -870,14 +858,7 @@ public class DatabaseAdapter {
 				}
 				result.moveToNext();
 			}
-			if (!result.isClosed()) {
-				Log.i("info", "cursor is not closed");
-				result.deactivate();
-				result.close();
-			}
-			else {
-				Log.i("info", "cursor is closed");
-			}
+			DatabaseAdapter.closeCursor(result);
 		}
 	}
 	
@@ -919,6 +900,12 @@ public class DatabaseAdapter {
 	
 	public static ArrayList<ArrayList<Object>> getBlobRecords() {
 		return blobRecords;
+	}
+	
+	public static void closeCursor(Cursor cursor) {
+		if (cursor != null) {
+			cursor.close(); 
+		}
 	}
 	
 	private static String createWhereClause(String tableId, HashMap<Object, Object> record){

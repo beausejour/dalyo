@@ -443,6 +443,9 @@ public class Function {
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETFIELDVALUE)) {
 				result = NS_DatabaseTable.GetFieldValue(element);
 			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETFIELDVALUEBYPRIMARYKEY)) {
+				result = NS_DatabaseTable.GetFieldValueByPrimaryKey(element);
+			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETFILTEREDRECORDS)) {
 				result = NS_DatabaseTable.GetFilteredRecords(element);
 			}

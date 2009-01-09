@@ -197,10 +197,7 @@ public class DataView extends LinearLayout implements OnGestureListener {
 				}
 				adapter.notifyDataSetChanged();
 			}
-			if (!cursor.isClosed()) {
-				cursor.deactivate();
-				cursor.close();
-			}
+			DatabaseAdapter.closeCursor(cursor);
 		}
 	}
 	
