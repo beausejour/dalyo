@@ -57,7 +57,7 @@ public class Contact {
 				ArrayList<Object> record = new ArrayList<Object>();
 				Cursor allRowsCursor = DatabaseAdapter.selectQuery(tableId, null, null);
 				int newId = allRowsCursor.getCount()+1;
-				closeCursor(allRowsCursor);
+				DatabaseAdapter.closeCursor(allRowsCursor);
 				record.add(newId);
 				String[] contactsColumns = contactsCursor.getColumnNames();
 				setValue(contactsCursor, contactsColumns);
@@ -114,7 +114,7 @@ public class Contact {
 				contactsCursor.moveToNext();
 			}
 		}
-		closeCursor(contactsCursor);
+		DatabaseAdapter.closeCursor(contactsCursor);
 	}
 	
 	private void setValue (Cursor cursor, String[] columns) {
@@ -163,7 +163,7 @@ public class Contact {
 						phonesCursor.moveToNext();
 					}
 				}
-				closeCursor(phonesCursor);
+				DatabaseAdapter.closeCursor(phonesCursor);
 
 				String[] addressesProjection = new String[] {ContactMethods.DATA, ContactMethods.TYPE, ContactMethods.KIND};
 				Cursor addressesCursor = ApplicationView.getCurrentView().managedQuery(Contacts.ContactMethods.CONTENT_URI, addressesProjection, whereClause, null, null);
@@ -204,7 +204,7 @@ public class Contact {
 						addressesCursor.moveToNext();
 					}
 				}
-				closeCursor(addressesCursor);
+				DatabaseAdapter.closeCursor(addressesCursor);
 				
 				String[] organizationsProjection = new String[] {Organizations.COMPANY};
 				Cursor organizationsCursor = ApplicationView.getCurrentView().managedQuery(Contacts.Organizations.CONTENT_URI, organizationsProjection, whereClause, null, null);
@@ -217,14 +217,8 @@ public class Contact {
 						organizationsCursor.moveToNext();
 					}
 				}
-				closeCursor(organizationsCursor);
+				DatabaseAdapter.closeCursor(organizationsCursor);
 			}
-		}
-	}
-	
-	private void closeCursor(Cursor cursor) {
-		if (cursor != null) {
-			cursor.close(); 
 		}
 	}
 }

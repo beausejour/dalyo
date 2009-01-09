@@ -69,10 +69,7 @@ public class ComboBox extends Spinner {
 			records.put(i, record);
 			cursor.moveToNext();
 		}
-		if (!cursor.isClosed()) {
-			cursor.deactivate();
-			cursor.close();
-		}
+		DatabaseAdapter.closeCursor(cursor);
 		spinnerArrayAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, itemsList);
 		this.setAdapter(spinnerArrayAdapter);
 	}
