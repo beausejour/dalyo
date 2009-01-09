@@ -4,6 +4,7 @@ public class ScriptAttribute {
 	//Function name
 	public static final String FUNCTION_ADD = "add";
 	public static final String FUNCTION_ADDCRITERIA = "addCriteria";
+	public static final String FUNCTION_ADDITEM = "addItem";
 	public static final String FUNCTION_ADDMINUTES = "addMinutes";
 	public static final String FUNCTION_ALERT = "alert";
 	public static final String FUNCTION_CANCEL = "cancel";
@@ -29,6 +30,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_GETLOCATION = "getLocation";
 	public static final String FUNCTION_GETLONGITUDE = "getLongitude";
 	public static final String FUNCTION_GETRECORDS = "getRecords";
+	public static final String FUNCTION_GETSELECTEDINDEX = "getSelectedIndex";
 	public static final String FUNCTION_GETSELECTEDRECORD = "getSelectedRecord";
 	public static final String FUNCTION_GETSIZE = "size";
 	public static final String FUNCTION_GETSTATUS = "getStatus";
@@ -53,6 +55,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_SETCURRENTRECORD = "setCurrentRecord";
 	public static final String FUNCTION_SETENABLED = "setEnabled";
 	public static final String FUNCTION_SETFOCUS = "setFocus";
+	public static final String FUNCTION_SETSELECTEDINDEX = "setSelectedIndex";
 	public static final String FUNCTION_SETTEXT = "setText";
 	public static final String FUNCTION_SETTITLE = "setTitle";
 	public static final String FUNCTION_SETVALUE = "setValue";
@@ -89,6 +92,7 @@ public class ScriptAttribute {
 	//Parameters name
 	public static final String PARAMETER_NAME_A = "a";
 	public static final String PARAMETER_NAME_B = "b";
+	public static final String PARAMETER_NAME_BOLD = "bold";
 	public static final String PARAMETER_NAME_CALLBACK = "callback";
 	public static final String PARAMETER_NAME_CAPTION = "caption";
 	public static final String PARAMETER_NAME_DECIMALS = "decimals";
@@ -101,8 +105,10 @@ public class ScriptAttribute {
 	public static final String PARAMETER_NAME_FILTERS = "filters";
 	public static final String PARAMETER_NAME_INDEX = "index";
 	public static final String PARAMETER_NAME_INTERVAL = "interval";
+	public static final String PARAMETER_NAME_ITALIC = "italic";
 	public static final String PARAMETER_NAME_KEYFIELD = "key_field";
 	public static final String PARAMETER_NAME_KEYVALUE = "key_value";
+	public static final String PARAMETER_NAME_LABEL = "label";
 	public static final String PARAMETER_NAME_LINK = "link";		//link the last condition
 	public static final String PARAMETER_NAME_MAX = "max";
 	public static final String PARAMETER_NAME_MIN = "min";
@@ -111,6 +117,7 @@ public class ScriptAttribute {
 	public static final String PARAMETER_NAME_TEXT = "text";
 	public static final String PARAMETER_NAME_TIMERID = "timer_id";
 	public static final String PARAMETER_NAME_TITLE = "title";
+	public static final String PARAMETER_NAME_UNDERLINE = "underline";
 	public static final String PARAMETER_NAME_VALUE = "value";
 	public static final String PARAMETER_NAME_VALUES = "values";
 	public static final String PARAMETER_NAME_VISIBLE = "visible";
