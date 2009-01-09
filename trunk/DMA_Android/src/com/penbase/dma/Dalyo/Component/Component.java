@@ -434,6 +434,9 @@ public class Component {
 		else if (getView() instanceof DoodleView) {
 			result = ((DoodleView)getView()).getImageName();
 		}
+		else if (getView() instanceof ComboBox) {
+			result = ((ComboBox)getView()).getValue();
+		}
 		return result;
 	}
 	
@@ -447,6 +450,9 @@ public class Component {
 		}
 		else if (getView() instanceof TextField) {
 			result = ((TextField)getView()).getValue();
+		}
+		else if (getView() instanceof ComboBox) {
+			result = ((ComboBox)getView()).getLabel();
 		}
 		return result;
 	}

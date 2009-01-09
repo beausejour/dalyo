@@ -364,7 +364,16 @@ public class Function {
 			}
 		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_COMPONENT_CB)) {
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSELECTEDRECORD)) {
+			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ADDITEM)) {
+				NS_ComponentCombobox.AddItem(element);
+			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_COUNT)) {
+				result = NS_ComponentCombobox.Count(element);
+			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSELECTEDINDEX)) {
+				result = NS_ComponentCombobox.GetSelectedIndex(element);
+			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSELECTEDRECORD)) {
 				result = NS_ComponentCombobox.GetSelectedRecord(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_REFRESH)) {
@@ -372,6 +381,9 @@ public class Function {
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_REMOVEALLITEMS)) {
 				NS_ComponentCombobox.RemoveAllItems(element);
+			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETSELECTEDINDEX)) {
+				NS_ComponentCombobox.SetSelectedIndex(element);
 			}
 		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_COMPONENT_DV)) {

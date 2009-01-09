@@ -2,13 +2,14 @@ package com.penbase.dma.Dalyo.Component.Custom;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import com.penbase.dma.Constant.DatabaseAttribute;
 import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
 import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.View.ApplicationView;
+
 import android.content.Context;
 import android.database.Cursor;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -16,7 +17,6 @@ import android.widget.Spinner;
 
 public class ComboBox extends Spinner {
 	private ArrayAdapter<String> spinnerArrayAdapter;
-	private String currentValue = null;
 	private int currentPosition = -1;
 	private ArrayList<String> labelList;
 	private ArrayList<String> valueList;
@@ -35,6 +35,13 @@ public class ComboBox extends Spinner {
 	
 	public ComboBox(Context context, ArrayList<String> il) {
 		super(context);
+		this.labelList = new ArrayList<String>();
+		this.valueList = new ArrayList<String>();
+		this.itemsList = il;
+		for (String s : il) {
+			labelList.add(s);
+			valueList.add(s);
+		}
 		spinnerArrayAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, il);
 		this.setAdapter(spinnerArrayAdapter);	
 	}
@@ -75,7 +82,7 @@ public class ComboBox extends Spinner {
 	}
 	
 	public Object getCurrentValue() {
-		return currentValue;
+		return valueList.get(currentPosition);
 	}
 	
 	public void setOnChangeFunction(String name) {
@@ -83,13 +90,11 @@ public class ComboBox extends Spinner {
 		this.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long arg3) {
-				Function.createFunction(funcName);
-				currentValue = spinnerArrayAdapter.getItem(position).toString();
 				currentPosition = position;
-				Log.i("info", "currentposition "+currentPosition+" formId "+formId);
 				if (formId != null) {
 					setCurrentValue(formId, getCurrentRecord());
 				}
+				Function.createFunction(funcName);
 			}
 
 			@Override
@@ -110,5 +115,46 @@ public class ComboBox extends Spinner {
 	
 	public void removeAllItems() {
 		spinnerArrayAdapter.clear();
+	}
+	
+	public void addItem(String label, String value) {
+		itemsList.add(label);
+		labelList.add(label);
+		valueList.add(value);
+	}
+	
+	public String getValue() {
+		if (currentPosition == -1) {
+			return valueList.get(0);
+		}
+		else {
+			return valueList.get(currentPosition);
+		}
+	}
+	
+	public String getLabel() {
+		if (currentPosition == -1) {
+			return labelList.get(0);
+		}
+		else {
+			return labelList.get(currentPosition);
+		}
+	}
+	
+	public int count() {
+		return itemsList.size();
+	}
+	
+	public int getSelectedIndex() {
+		if (currentPosition == -1) {
+			return 1;
+		}
+		else {
+			return currentPosition + 1;
+		}
+	}
+	
+	public void setSelectedIndex(int index) {
+		this.setSelection(index - 1);
 	}
 }
