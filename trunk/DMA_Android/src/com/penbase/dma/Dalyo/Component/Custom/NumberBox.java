@@ -13,7 +13,7 @@ public class NumberBox extends LinearLayout{
 	private ImageView view_up;
 	private ImageView view_down;
 	
-	public NumberBox(Context c){
+	public NumberBox(Context c) {
 		super(c);
 		act = new AutoCompleteTextView(c);
 		act.setText("0");
@@ -21,9 +21,9 @@ public class NumberBox extends LinearLayout{
 		
 		view_up = new ImageView(c);
 		view_up.setImageResource(R.drawable.arrow_up);
-		view_up.setOnClickListener(new OnClickListener(){
+		view_up.setOnClickListener(new OnClickListener() {
 			@Override
-			public void onClick(View arg0){
+			public void onClick(View arg0) {
 				int value = Integer.valueOf(act.getText().toString()) + 1;
 				act.setText(String.valueOf(value));
 			}
@@ -31,11 +31,11 @@ public class NumberBox extends LinearLayout{
 		
 		view_down = new ImageView(c);
 		view_down.setImageResource(R.drawable.arrow_down);
-		view_down.setOnClickListener(new OnClickListener(){
+		view_down.setOnClickListener(new OnClickListener() {
 			@Override
-			public void onClick(View arg0){
+			public void onClick(View arg0) {
 				int value = Integer.valueOf(act.getText().toString()) - 1;
-				if (value >= 0){
+				if (value >= 0) {
 					act.setText(String.valueOf(value));
 				}
 			}
@@ -49,11 +49,11 @@ public class NumberBox extends LinearLayout{
 				LayoutParams.FILL_PARENT, 5));
 	}
 	
-	public String getValue(){
+	public String getValue() {
 		return act.getText().toString();
 	}
 	
-	public void setValue(Object v){
+	public void setValue(Object v) {
 		act.setText(String.valueOf(v));
 	}
 }

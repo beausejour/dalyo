@@ -69,75 +69,75 @@ public class Component {
 		this.type = t;		
 	}
 	
-	public void setFontSize(String fs){
+	public void setFontSize(String fs) {
 		this.fontSize = fs;
 	}
 	
-	public void setFontType(String ft){
+	public void setFontType(String ft) {
 		this.fontType = ft;
 	}
 	
-	public void setId(String i){
+	public void setId(String i) {
 		this.id = i;
 	}
 	
-	public void setBackGround(int bg){
+	public void setBackGround(int bg) {
 		this.background = bg;
 	}
 	
-	public void setAlign(String align){
+	public void setAlign(String align) {
 		this.align = align;
 	}
 	
-	public void setLabel(String l){
+	public void setLabel(String l) {
 		this.label = l;
 	}
 		
-	public void setTableId(String tid){
+	public void setTableId(String tid) {
 		this.tableID = tid;
 	}
 	
-	public void setFieldId(String fid){
+	public void setFieldId(String fid) {
 		this.fieldID = fid;	
 	}
 	
-	public void setChecked(String check){
+	public void setChecked(String check) {
 		this.checked = check;
 	}
 	
-	public void setExtension(String ext){
+	public void setExtension(String ext) {
 		this.extension = ext;
 	}
 	
-	public void setItemList(ArrayList<String> l){
+	public void setItemList(ArrayList<String> l) {
 		this.itemList = l;
 	}
 	
-	public void setLabelList(ArrayList<String> l){
+	public void setLabelList(ArrayList<String> l) {
 		this.labelList = l;
 	}
 	
-	public void setValueList(ArrayList<String> v){
+	public void setValueList(ArrayList<String> v) {
 		this.valueList = v;
 	}
 	
-	public void setDataviewColumns(ArrayList<ArrayList<String>> l){
+	public void setDataviewColumns(ArrayList<ArrayList<String>> l) {
 		this.columnInfos = l;
 	}
 	
-	public void setDataviewOncalculate(HashMap<Integer, String> onc){
+	public void setDataviewOncalculate(HashMap<Integer, String> onc) {
 		this.onCalculateMap = onc;
 	}
 	
-	public void setMultiLine(String ml){
+	public void setMultiLine(String ml) {
 		this.multiLine = ml;
 	}
 	
-	public void setEditable(boolean editable){
+	public void setEditable(boolean editable) {
 		this.editable = editable;
 	}
 	
-	public void setDateTimeValue(String value){
+	public void setDateTimeValue(String value) {
 		this.dateTimeValue = value;
 	}
 	
@@ -293,8 +293,8 @@ public class Component {
 	}
 	
 	public void setOnclickFunction(final String funcName, final View view) {
-		if (view instanceof DataView){
-			((DataView)view).getListView().setOnItemClickListener(new OnItemClickListener(){
+		if (view instanceof DataView) {
+			((DataView)view).getListView().setOnItemClickListener(new OnItemClickListener() {
 				@Override
 				public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
 					((DataView)view).setCurrentPosition(position);
@@ -303,7 +303,7 @@ public class Component {
 
 			});
 		}
-		else{
+		else {
 			view.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View arg0) {
@@ -468,7 +468,7 @@ public class Component {
 	}
 	
 	public void setEnabled(boolean state) {
-		if (getView() instanceof Button){
+		if (getView() instanceof Button) {
 			((Button)getView()).setEnabled(state);
 		}
 	}
@@ -483,11 +483,11 @@ public class Component {
 		}
 	}
 	
-	public void setVisible(boolean state){
-		if (state){
+	public void setVisible(boolean state) {
+		if (state) {
 			getView().setVisibility(View.VISIBLE);
 		}
-		else{
+		else {
 			getView().setVisibility(View.INVISIBLE);
 		}
 	}

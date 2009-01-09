@@ -9,15 +9,15 @@ import android.widget.BaseAdapter;
 public class DataViewAdapter extends BaseAdapter{
 	private ArrayList<CustomLinearLayout> items = new ArrayList<CustomLinearLayout>();
 	
-	public DataViewAdapter(){
+	public DataViewAdapter() {
 	}
 
 	@Override
-	public int getCount(){
+	public int getCount() {
 		return items.size();
 	}
 
-	public void addItem(CustomLinearLayout cll){
+	public void addItem(CustomLinearLayout cll) {
 		boolean isAdded = false;
 		int count = getCount();
 		for (int i=0; i<count; i++) {
@@ -32,33 +32,33 @@ public class DataViewAdapter extends BaseAdapter{
 	}
 	
 	@Override
-	public Object getItem(int position){
-		if (position < getCount()-1){
+	public Object getItem(int position) {
+		if (position < getCount()-1) {
 			return items.get(position);
 		}
-		else{
+		else {
 			return null;
 		}		
 	}
 
 	@Override
-	public long getItemId(int position){
+	public long getItemId(int position) {
 		return 0;
 	}
 
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent){
+	public View getView(int position, View convertView, ViewGroup parent) {
 		/*CustomLinearLayout layout = null;
 		layout = new CustomLinearLayout(context, items.get(position).getDataList(),
 				items.get(position).getWidthList(),false);*/
 		return items.get(position);
 	}
 	
-	public void removeItems(){
+	public void removeItems() {
 		items.clear();
 	}
 	
-	public ArrayList<CustomLinearLayout> getItems(){
+	public ArrayList<CustomLinearLayout> getItems() {
 		return items;
 	}
 }

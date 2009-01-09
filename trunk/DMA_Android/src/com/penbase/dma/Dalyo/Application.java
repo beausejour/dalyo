@@ -11,59 +11,59 @@ public class Application {
 
 	public Application() {}
 
-	public String getAppId(){
+	public String getAppId() {
 		return AppId;
 	}
 	
-	public void setAppId(String dalyoId){
+	public void setAppId(String dalyoId) {
 		AppId = dalyoId;
 	}
 	
-	public int getIconRes(){
+	public int getIconRes() {
 		return IconRes;
 	}
 	
-	public void setIconRes(int iconRes){
+	public void setIconRes(int iconRes) {
 		IconRes = iconRes;
 	}
 	
-	public String getName(){
+	public String getName() {
 		return Name;
 	}
 	
-	public void setName(String name){
+	public void setName(String name) {
 		Name = name;
 	}
 	
-	public String getAppVer(){
+	public String getAppVer() {
 		return AppVer;
 	}
 	
-	public void setAppVer(String appver){
+	public void setAppVer(String appver) {
 		this.AppVer = appver;
 	}
 	
-	public String getAppBuild(){
+	public String getAppBuild() {
 		return AppBuild;
 	}
 	
-	public void setAppBuild(String appbuild){
+	public void setAppBuild(String appbuild) {
 		this.AppBuild = appbuild;
 	}
 	
-	public String getSubId(){
+	public String getSubId() {
 		return SubId;
 	}
 	
-	public void setSubId(String subid){
+	public void setSubId(String subid) {
 		this.SubId = subid;
 	}
 	
-	public String getDbId(){
+	public String getDbId() {
 		return DbId;
 	}
 	
-	public void setDbId(String dbid){
+	public void setDbId(String dbid) {
 		this.DbId = dbid;
 	}
 }

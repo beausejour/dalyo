@@ -23,27 +23,27 @@ public class ConfirmDialog extends Thread{
 	Function function;
     public Handler mHandler;
 	
-	public ConfirmDialog(NodeList params, Context context){
+	public ConfirmDialog(NodeList params, Context context) {
 		this.context = context;
 		int paramsLen = params.getLength();
-		for (int i=0; i<paramsLen; i++){
+		for (int i=0; i<paramsLen; i++) {
 			Element element = (Element) params.item(i);
 			if ((element.getNodeName().equals(ScriptTag.PARAMETER)) && 
-					(element.getAttribute(ScriptTag.NAME).equals(ScriptAttribute.PARAMETER_NAME_TEXT))){
+					(element.getAttribute(ScriptTag.NAME).equals(ScriptAttribute.PARAMETER_NAME_TEXT))) {
 				Log.i("info", "find message node type "+element.getNodeType());
-				if (element.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE){
+				if (element.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE) {
 					message = element.getChildNodes().item(0).getNodeValue();
 					Log.i("info", "message "+message);
 				}
 			}
 			else if ((element.getNodeName().equals(ScriptTag.PARAMETER)) && 
-					(element.getAttribute(ScriptTag.NAME).equals(ScriptAttribute.PARAMETER_NAME_CAPTION))){
-				if (element.getNodeType() != Node.TEXT_NODE){
+					(element.getAttribute(ScriptTag.NAME).equals(ScriptAttribute.PARAMETER_NAME_CAPTION))) {
+				if (element.getNodeType() != Node.TEXT_NODE) {
 					NodeList children = element.getChildNodes();
 					int childrenLen = children.getLength();
-					for (int j=0; j<childrenLen; j++){
+					for (int j=0; j<childrenLen; j++) {
 						Element child = (Element)children.item(j);
-						if (child.getNodeName().equals(ScriptTag.KEYWORD)){
+						if (child.getNodeName().equals(ScriptTag.KEYWORD)) {
 							title = (String) Function.getKeyWord(child);
 						}
 					}
@@ -52,22 +52,22 @@ public class ConfirmDialog extends Thread{
 		}
 	}
 	
-	public void displayDialog(){
+	public void displayDialog() {
 		Log.i("info", "display dialog");
 		builder = new AlertDialog.Builder(context);
 		builder.setTitle(title);
 		builder.setMessage(message);		
 		//.setIcon(R.drawable.star_big_on)
-		builder.setPositiveButton("Yes", new DialogInterface.OnClickListener(){
-			public void onClick(DialogInterface dialog, int whichButton){
+		builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int whichButton) {
 				value = true;
 				Log.i("info", "end dialog");
 				Looper.myLooper().quit();
 			}
 		});
 		
-		builder.setNegativeButton("No", new DialogInterface.OnClickListener(){
-			public void onClick(DialogInterface dialog, int whichButton){
+		builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int whichButton) {
 				value = false;
 				Log.i("info", "end dialog");
 				Looper.myLooper().quit();
@@ -76,7 +76,7 @@ public class ConfirmDialog extends Thread{
 		builder.show();
 	}
 	
-	public void run(){
+	public void run() {
 		Log.i("info", "prepare");
 		Looper.prepare();
 		Log.i("info", "displaydialog");
@@ -85,8 +85,8 @@ public class ConfirmDialog extends Thread{
 		Looper.loop();
 	}
 	
-	public Object getValue(){
-		while (value == null){
+	public Object getValue() {
+		while (value == null) {
 			builder.show();
 		}
 		return value;

@@ -47,7 +47,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-public class Dma extends Activity implements OnClickListener{
+public class Dma extends Activity implements OnClickListener {
 	public static ArrayList<Application> applicationList = null;
 	private TextView tx_login;
 	private TextView tx_password;
@@ -65,7 +65,7 @@ public class Dma extends Activity implements OnClickListener{
 		boolean rememberMe = settings.getBoolean("RememberMe", false);
 		alertDialog = new AlertDialog.Builder(this).create();
 		alertDialog.setTitle("Error");
-		if (!rememberMe){
+		if (!rememberMe) {
 			if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
 				setContentView(R.layout.login_layout);
 			}
@@ -78,7 +78,7 @@ public class Dma extends Activity implements OnClickListener{
 			tx_password = (TextView) findViewById(R.id.textePasswd);
 			cb_remember_me = (CheckBox) findViewById(R.id.remember_me_cb);
 		}
-		else{
+		else {
 			String xml = settings.getString("ApplicationList", null);
 			GetListApplicationFromXml(xml);
 			this.finish();
@@ -86,11 +86,11 @@ public class Dma extends Activity implements OnClickListener{
 		}
 	}
 
-	public static void GetListApplicationFromXml(String xml){
-		if (applicationList == null){
+	public static void GetListApplicationFromXml(String xml) {
+		if (applicationList == null) {
 			applicationList = new ArrayList<Application>();
 		}
-		else{
+		else {
 			applicationList.clear();
 		}
 		HashMap<String, Application> applicationMap = new HashMap<String, Application>();
@@ -98,29 +98,29 @@ public class Dma extends Activity implements OnClickListener{
 		NodeList root = doc.getElementsByTagName(DesignTag.ROOT);
 		NodeList apps = root.item(0).getChildNodes();
 		int appsLen = apps.getLength();
-		for (int s = 0; s < appsLen; s++){
+		for (int s = 0; s < appsLen; s++) {
 			NodeList els = apps.item(s).getChildNodes();
 			Application app = new Application();
 			int elsLength = els.getLength();
-			for (int t = 0; t < elsLength; t++){
+			for (int t = 0; t < elsLength; t++) {
 				Node noeud = els.item(t);
-				if (noeud.getNodeType() == Node.ELEMENT_NODE){
-					if (noeud.getNodeName().equals(DesignTag.LOGIN_ID)){
+				if (noeud.getNodeType() == Node.ELEMENT_NODE) {
+					if (noeud.getNodeName().equals(DesignTag.LOGIN_ID)) {
 						app.setAppId(noeud.getChildNodes().item(0).getNodeValue());
 					}		
-					else if (noeud.getNodeName().equals(DesignTag.LOGIN_TIT)){
+					else if (noeud.getNodeName().equals(DesignTag.LOGIN_TIT)) {
 						app.setName(noeud.getChildNodes().item(0).getNodeValue());
 					}
-					else if (noeud.getNodeName().equals(DesignTag.LOGIN_BLD)){
+					else if (noeud.getNodeName().equals(DesignTag.LOGIN_BLD)) {
 						app.setAppBuild(noeud.getChildNodes().item(0).getNodeValue());
 					}
-					else if (noeud.getNodeName().equals(DesignTag.LOGIN_SUB)){
+					else if (noeud.getNodeName().equals(DesignTag.LOGIN_SUB)) {
 						app.setSubId(noeud.getChildNodes().item(0).getNodeValue());
 					}
-					else if (noeud.getNodeName().equals(DesignTag.LOGIN_DBID)){
+					else if (noeud.getNodeName().equals(DesignTag.LOGIN_DBID)) {
 						app.setDbId(noeud.getChildNodes().item(0).getNodeValue());
 					}
-					else if (noeud.getNodeName().equals(DesignTag.LOGIN_VER)){
+					else if (noeud.getNodeName().equals(DesignTag.LOGIN_VER)) {
 						app.setAppVer(noeud.getChildNodes().item(0).getNodeValue());
 					}
 				}
@@ -140,10 +140,10 @@ public class Dma extends Activity implements OnClickListener{
 	}
 	
 	@Override
-	public void onClick(View arg0){
+	public void onClick(View arg0) {
 		Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
 		if ("".equals(tx_login.getText().toString())
-				&& "".equals(tx_password.getText().toString())){
+				&& "".equals(tx_password.getText().toString())) {
 			findViewById(R.id.textLogin).startAnimation(shake);
 	        findViewById(R.id.textePasswd).startAnimation(shake);
 	        return;
@@ -159,13 +159,13 @@ public class Dma extends Activity implements OnClickListener{
 		DmaHttpClient client = new DmaHttpClient();
 		final String rep = client.Authentication(tx_login.getText().toString().trim(),
 				tx_password.getText().toString().trim());
-		if (rep == null){
+		if (rep == null) {
 			alertDialog.setMessage("Check your username or password!");
 			alertDialog.show();
 		}
-		else{
+		else {
 			loadApps = ProgressDialog.show(this, "Please wait...", "Loading application list...", true, false);
-			new Thread(){
+			new Thread() {
 				public void run() {
 					try {
 						// save user info
@@ -197,7 +197,7 @@ public class Dma extends Activity implements OnClickListener{
 
 	//@Override
 	public boolean onOptionsItemSelected(int featureId, MenuItem item) {
-		switch (item.getItemId()){
+		switch (item.getItemId()) {
 			case 0:
 				return true;
 			case 1:
@@ -206,14 +206,14 @@ public class Dma extends Activity implements OnClickListener{
 		return super.onMenuItemSelected(featureId, item);
 	}
 	
-	public static String getDeviceID(){
+	public static String getDeviceID() {
 		//Get imei
 		String imei = ((TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
 		return "zfsqsrffusds";
 		//return imei;
 	}
 	
-	public static float getVersion(){
+	public static float getVersion() {
 		float result = (float) 1.0;
 		return result;
 	}

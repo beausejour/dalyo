@@ -46,10 +46,10 @@ public class ApplicationView extends Activity {
 	private ProgressDialog loadingbar;
 	private static String clientLogin;
 	private static String currentFormId;
-	private Handler handler = new Handler(){
+	private Handler handler = new Handler() {
 		@Override
-		public void handleMessage(Message msg){
-			switch (msg.what){
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
 				default:
 					createView();
 					loadingbar.dismiss();
@@ -61,7 +61,7 @@ public class ApplicationView extends Activity {
 	private static int currentOrientation;
 
 	@Override
-	public void onCreate(Bundle icicle){	
+	public void onCreate(Bundle icicle) {	
 		super.onCreate(icicle);
 		ApplicationView.applicationView = this;
 		database = new DatabaseAdapter(this, dbDoc, clientLogin+"_"+ApplicationListView.getApplicationName());
@@ -75,10 +75,10 @@ public class ApplicationView extends Activity {
 		loadingThread.Start();
 	}
 
-	private void display(){
+	private void display() {
 		NodeList generalInfo = designDoc.getElementsByTagName(DesignTag.DESIGN_S_G);
 		final String startFormId = ((Element) generalInfo.item(0)).getAttribute(DesignTag.DESIGN_S_G_FID);
-		if (onLoadFuncMap.containsKey(startFormId)){
+		if (onLoadFuncMap.containsKey(startFormId)) {
 			layoutsMap.get(startFormId).onLoad(onLoadFuncMap.get(startFormId));
 		}
 		setCurrentFormId(startFormId);
@@ -86,7 +86,7 @@ public class ApplicationView extends Activity {
 		setContentView(layoutsMap.get(startFormId));
 	}
 
-	public static void prepareData(int position, String login, String pwd){
+	public static void prepareData(int position, String login, String pwd) {
 		client = new DmaHttpClient();
 		client.checkDownloadFile(position, login, pwd);
 		clientLogin = login;
@@ -111,13 +111,13 @@ public class ApplicationView extends Activity {
 				ApplicationListView.getApplicationsInfo().get("SubId"), login, pwd);
 	}
 
-	private void generalSetup(){
+	private void generalSetup() {
 		Node system = designDoc.getElementsByTagName(DesignTag.DESIGN_S).item(0);
 		int childrenLen = system.getChildNodes().getLength();
-		for (int i=0; i<childrenLen; i++){
+		for (int i=0; i<childrenLen; i++) {
 			Element child = (Element) system.getChildNodes().item(i);
-			if (child.getNodeName().equals(DesignTag.DESIGN_S_G)){
-				if (child.hasAttribute(DesignTag.DESIGN_S_G_OS)){
+			if (child.getNodeName().equals(DesignTag.DESIGN_S_G)) {
+				if (child.hasAttribute(DesignTag.DESIGN_S_G_OS)) {
 					String name = child.getAttribute(DesignTag.DESIGN_S_G_OS);
 					Function.createFunction(name);
 				}
@@ -125,22 +125,22 @@ public class ApplicationView extends Activity {
 		}
 	}
 	
-	private void createView(){
+	private void createView() {
 		generalSetup();
 		layoutsMap = new HashMap<String, Form>();
 		onLoadFuncMap = new HashMap<String, String>();
 		NodeList formsList = designDoc.getElementsByTagName(DesignTag.DESIGN_F);
 		int formsListLen = formsList.getLength();
-		for (int i=0; i<formsListLen; i++){
+		for (int i=0; i<formsListLen; i++) {
 			Form form = new Form(this);
 			Element formElt = (Element) formsList.item(i);
 			String formId = formElt.getAttribute(DesignTag.DESIGN_F_ID);
-			if (!formElt.getAttribute(DesignTag.COMPONENT_COMMON_TABLEID).equals("")){
+			if (!formElt.getAttribute(DesignTag.COMPONENT_COMMON_TABLEID).equals("")) {
 				form.setTableId(formElt.getAttribute(DesignTag.COMPONENT_COMMON_TABLEID));
 			}
 			
 			//Check background of a form
-			if (formElt.hasAttribute(DesignTag.DESIGN_F_BC)){
+			if (formElt.hasAttribute(DesignTag.DESIGN_F_BC)) {
 				String backgourndColor = "#"+formElt.getAttribute(DesignTag.DESIGN_F_BC);
 				form.setBackgroundColor(Color.parseColor(backgourndColor));
 			}
@@ -150,7 +150,7 @@ public class ApplicationView extends Activity {
 			}
 			
 			//Check form's title
-			if (formElt.hasAttribute(DesignTag.DESIGN_F_TITLE)){
+			if (formElt.hasAttribute(DesignTag.DESIGN_F_TITLE)) {
 				String title = formElt.getAttribute(DesignTag.DESIGN_F_TITLE);
 				form.setTitle(title);
 			}
@@ -159,56 +159,56 @@ public class ApplicationView extends Activity {
 			
 			NodeList formEltList = formElt.getChildNodes();
 			int formEltListLen = formEltList.getLength();
-			for (int j=0; j<formEltListLen; j++){
+			for (int j=0; j<formEltListLen; j++) {
 				Element element = (Element) formEltList.item(j);
 				if ((!element.getNodeName().equals(DesignTag.COMPONENT_MENUBAR)) &&
-						(!element.getNodeName().equals(DesignTag.COMPONENT_NAVIBAR))){
+						(!element.getNodeName().equals(DesignTag.COMPONENT_NAVIBAR))) {
 					component = new Component(this, element.getNodeName());
 					
-					if (element.hasAttribute(DesignTag.COMPONENT_COMMON_ID)){
+					if (element.hasAttribute(DesignTag.COMPONENT_COMMON_ID)) {
 						component.setId(element.getAttribute(DesignTag.COMPONENT_COMMON_ID));
 					}
-					if (element.hasAttribute(DesignTag.COMPONENT_COMMON_FONTSIZE)){
+					if (element.hasAttribute(DesignTag.COMPONENT_COMMON_FONTSIZE)) {
 						component.setFontSize(element.getAttribute(DesignTag.COMPONENT_COMMON_FONTSIZE));
 					}
-					if (element.hasAttribute(DesignTag.COMPONENT_COMMON_FONTTYPE)){
+					if (element.hasAttribute(DesignTag.COMPONENT_COMMON_FONTTYPE)) {
 						component.setFontType(element.getAttribute(DesignTag.COMPONENT_COMMON_FONTTYPE));
 					}
-					if (element.hasAttribute(DesignTag.COMPONENT_COMMON_ALIGN)){
+					if (element.hasAttribute(DesignTag.COMPONENT_COMMON_ALIGN)) {
 						component.setAlign(element.getAttribute(DesignTag.COMPONENT_COMMON_ALIGN));
 					}
-					if (element.hasAttribute(DesignTag.COMPONENT_COMMON_LABEL)){
+					if (element.hasAttribute(DesignTag.COMPONENT_COMMON_LABEL)) {
 						component.setLabel(element.getAttribute(DesignTag.COMPONENT_COMMON_LABEL));
 					}
-					if (element.hasAttribute(DesignTag.COMPONENT_COMMON_TABLEID)){
+					if (element.hasAttribute(DesignTag.COMPONENT_COMMON_TABLEID)) {
 						component.setTableId(element.getAttribute(DesignTag.COMPONENT_COMMON_TABLEID));
 					}
-					if (element.hasAttribute(DesignTag.COMPONENT_COMMON_FIELDID)){
+					if (element.hasAttribute(DesignTag.COMPONENT_COMMON_FIELDID)) {
 						component.setFieldId(element.getAttribute(DesignTag.COMPONENT_COMMON_FIELDID));
 					}
-					if (element.hasAttribute(DesignTag.COMPONENT_COMMON_BACKGROUND)){
+					if (element.hasAttribute(DesignTag.COMPONENT_COMMON_BACKGROUND)) {
 						component.setBackGround(Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_COMMON_BACKGROUND)));
 						component.setExtension(resourcesFileMap.get(element.getAttribute(DesignTag.COMPONENT_COMMON_BACKGROUND)));
 					}
-					if (element.hasAttribute(DesignTag.COMPONENT_TEXTFIELD_MULTI)){
+					if (element.hasAttribute(DesignTag.COMPONENT_TEXTFIELD_MULTI)) {
 						component.setMultiLine(element.getAttribute(DesignTag.COMPONENT_TEXTFIELD_MULTI));
 						component.setEditable(element.hasAttribute(DesignTag.COMPONENT_TEXTFIELD_EDIT));
 					}
 					
-					if (element.getNodeName().equals(DesignTag.COMPONENT_CHECKBOX)){
-						if (element.hasAttribute(DesignTag.COMPONENT_CHECKBOX_CHECKED)){
+					if (element.getNodeName().equals(DesignTag.COMPONENT_CHECKBOX)) {
+						if (element.hasAttribute(DesignTag.COMPONENT_CHECKBOX_CHECKED)) {
 							component.setChecked(element.getAttribute(DesignTag.COMPONENT_CHECKBOX_CHECKED));
 						}
 					}
-					else if (element.getNodeName().equals(DesignTag.COMPONENT_COMBOBOX)){
+					else if (element.getNodeName().equals(DesignTag.COMPONENT_COMBOBOX)) {
 						ArrayList<String> itemList = new ArrayList<String>();
 						NodeList nodeItemList = element.getChildNodes();
-						if (nodeItemList.getLength() > 0){
+						if (nodeItemList.getLength() > 0) {
 							int itemLen = nodeItemList.getLength();
-							for (int k=0; k<itemLen; k++){
+							for (int k=0; k<itemLen; k++) {
 								Element item = (Element) nodeItemList.item(k);
 								if ((item.getNodeName().equals(DesignTag.COMPONENT_COMBOBOX_ITEM)) &&
-										(item.hasAttribute(DesignTag.COMPONENT_COMMON_VALUE))){
+										(item.hasAttribute(DesignTag.COMPONENT_COMMON_VALUE))) {
 									String value = item.getAttribute(DesignTag.COMPONENT_COMMON_VALUE);
 									itemList.add(value);
 								}
@@ -218,7 +218,7 @@ public class ApplicationView extends Activity {
 						else if ((element.hasAttribute(DesignTag.COMPONENT_COMBOBOX_LABELTABLE)) &&
 								(element.hasAttribute(DesignTag.COMPONENT_COMBOBOX_LABELFIELD)) &&
 								(element.hasAttribute(DesignTag.COMPONENT_COMBOBOX_VALUETABLE)) &&
-								(element.hasAttribute(DesignTag.COMPONENT_COMBOBOX_VALUEFIELD))){
+								(element.hasAttribute(DesignTag.COMPONENT_COMBOBOX_VALUEFIELD))) {
 							ArrayList<String> labelList = new ArrayList<String>();
 							labelList.add(element.getAttribute(DesignTag.COMPONENT_COMBOBOX_LABELTABLE));
 							labelList.add(element.getAttribute(DesignTag.COMPONENT_COMBOBOX_LABELFIELD));
@@ -231,26 +231,26 @@ public class ApplicationView extends Activity {
 							component.setValueList(valueList);
 						}
 					}
-					else if (element.getNodeName().equals(DesignTag.COMPONENT_DATAVIEW)){
+					else if (element.getNodeName().equals(DesignTag.COMPONENT_DATAVIEW)) {
 						ArrayList<ArrayList<String>> columnInfos = new ArrayList<ArrayList<String>>();
 						HashMap<Integer, String> onCalculateMap = new HashMap<Integer, String>();
 						NodeList nodeItemList = element.getChildNodes();
-						if (nodeItemList.getLength() > 0){
+						if (nodeItemList.getLength() > 0) {
 							int nbColumn = nodeItemList.getLength();
-							for (int k=0; k<nbColumn; k++){
+							for (int k=0; k<nbColumn; k++) {
 								Element column = (Element) element.getChildNodes().item(k);
-								if (column.getNodeName().equals(DesignTag.COMPONENT_DATAVIEW_COLUMN)){
+								if (column.getNodeName().equals(DesignTag.COMPONENT_DATAVIEW_COLUMN)) {
 									ArrayList<String> acolumn = new ArrayList<String>();
 									acolumn.add(column.getAttribute(DesignTag.COMPONENT_COMMON_TABLEID));
 									acolumn.add(column.getAttribute(DesignTag.COMPONENT_COMMON_FIELDID));
 									acolumn.add(column.getAttribute(DesignTag.COMPONENT_DATAVIEW_COLUMN_HEADER));
 									acolumn.add(column.getAttribute(DesignTag.COMPONENT_COMMON_PWIDTH));
 									acolumn.add(column.getAttribute(DesignTag.COMPONENT_COMMON_LWIDTH));
-									if (column.getAttribute(DesignTag.COMPONENT_DATAVIEW_COLUMN_CALC).equals("true")){
-										if (column.hasAttribute(DesignTag.EVENT_ONCALCULATE)){
+									if (column.getAttribute(DesignTag.COMPONENT_DATAVIEW_COLUMN_CALC).equals("true")) {
+										if (column.hasAttribute(DesignTag.EVENT_ONCALCULATE)) {
 											onCalculateMap.put(k, column.getAttribute(DesignTag.EVENT_ONCALCULATE));
 										}
-										else{
+										else {
 											onCalculateMap.put(k, "");
 										}
 									}
@@ -262,21 +262,21 @@ public class ApplicationView extends Activity {
 						component.setDataviewOncalculate(onCalculateMap);
 					}
 					else if ((element.getNodeName().equals(DesignTag.COMPONENT_DATEFIELD)) ||
-							(element.getNodeName().equals(DesignTag.COMPONENT_TIMEFIELD))){
-						if (element.hasAttribute(DesignTag.COMPONENT_COMMON_VALUE)){
+							(element.getNodeName().equals(DesignTag.COMPONENT_TIMEFIELD))) {
+						if (element.hasAttribute(DesignTag.COMPONENT_COMMON_VALUE)) {
 							component.setDateTimeValue(element.getAttribute(DesignTag.COMPONENT_COMMON_VALUE));
 						}
 					}
-					else if (element.getNodeName().equals(DesignTag.COMPONENT_GAUGE)){
-						if (element.hasAttribute(DesignTag.COMPONENT_GAUGE_INIT)){
+					else if (element.getNodeName().equals(DesignTag.COMPONENT_GAUGE)) {
+						if (element.hasAttribute(DesignTag.COMPONENT_GAUGE_INIT)) {
 							component.setInitValue(Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_GAUGE_INIT)));
 						}
-						if (element.hasAttribute(DesignTag.COMPONENT_GAUGE_MIN)){
+						if (element.hasAttribute(DesignTag.COMPONENT_GAUGE_MIN)) {
 							if (!element.getAttribute(DesignTag.COMPONENT_GAUGE_MIN).equals("true") && !element.getAttribute(DesignTag.COMPONENT_GAUGE_MIN).equals("false")) {
 								component.setMinValue(Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_GAUGE_MIN)));
 							}
 						}
-						if (element.hasAttribute(DesignTag.COMPONENT_GAUGE_MAX)){
+						if (element.hasAttribute(DesignTag.COMPONENT_GAUGE_MAX)) {
 							if (!element.getAttribute(DesignTag.COMPONENT_GAUGE_MAX).equals("true") && !element.getAttribute(DesignTag.COMPONENT_GAUGE_MAX).equals("false")) {
 								component.setMaxValue(Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_GAUGE_MAX)));
 							}
@@ -293,10 +293,10 @@ public class ApplicationView extends Activity {
 					component.setView();
 					componentsMap.put(element.getAttribute(DesignTag.COMPONENT_COMMON_ID), component);
 					
-					if (element.hasAttribute(DesignTag.COMPONENT_COMMON_ENABLE)){
+					if (element.hasAttribute(DesignTag.COMPONENT_COMMON_ENABLE)) {
 						component.getView().setEnabled(false);
 					}
-					if (element.hasAttribute(DesignTag.COMPONENT_COMMON_VISIBLE)){
+					if (element.hasAttribute(DesignTag.COMPONENT_COMMON_VISIBLE)) {
 						component.getView().setVisibility(View.INVISIBLE);
 					}
 					
@@ -317,13 +317,13 @@ public class ApplicationView extends Activity {
 					form.addView(component.getView());
 					
 					//Add onclick event
-					if (element.hasAttribute(DesignTag.EVENT_ONCLICK)){
+					if (element.hasAttribute(DesignTag.EVENT_ONCLICK)) {
 						Log.i("info", "onclick function name "+element.getAttribute(DesignTag.EVENT_ONCLICK));
 						component.setOnclickFunction(element.getAttribute(DesignTag.EVENT_ONCLICK), component.getView());
 					}
 					
 					//Add onchange event
-					if (element.hasAttribute(DesignTag.EVENT_ONCHANGE)){
+					if (element.hasAttribute(DesignTag.EVENT_ONCHANGE)) {
 						component.setOnchangeFunction(element.getAttribute(DesignTag.EVENT_ONCHANGE), component.getView());
 					}
 				}
@@ -342,7 +342,7 @@ public class ApplicationView extends Activity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()){
+		switch (item.getItemId()) {
 			case 0:
 				quit();
 				return true;
@@ -354,49 +354,49 @@ public class ApplicationView extends Activity {
 		this.finish();
 	}
 
-	public static int getOrientation(){
+	public static int getOrientation() {
 		return currentOrientation;
 	}
 
-	public static HashMap<String, Component> getComponents(){
+	public static HashMap<String, Component> getComponents() {
 		return componentsMap;
 	}
 
-	public static HashMap<String, Form> getLayoutsMap(){
+	public static HashMap<String, Form> getLayoutsMap() {
 		return layoutsMap;
 	}
 
-	public static DatabaseAdapter getDataBase(){
+	public static DatabaseAdapter getDataBase() {
 		return database;
 	}
 
-	public static DmaHttpClient getCurrentClient(){
+	public static DmaHttpClient getCurrentClient() {
 		return client;
 	}
 
-	public static void refreshComponent(String componentId, Object filter){
-		if (componentsMap.containsKey(componentId)){
+	public static void refreshComponent(String componentId, Object filter) {
+		if (componentsMap.containsKey(componentId)) {
 			componentsMap.get(componentId).refreshComponentContent(filter);
 		}
 	}
 
-	public static ApplicationView getCurrentView(){
+	public static ApplicationView getCurrentView() {
 		return applicationView;
 	}
 
-	public static HashMap<String, String> getOnLoadFuncMap(){
+	public static HashMap<String, String> getOnLoadFuncMap() {
 		return onLoadFuncMap;
 	}
 
-	public static String getCurrentFormId(){
+	public static String getCurrentFormId() {
 		return currentFormId;
 	}
 	
-	public static void setCurrentFormId(String id){
+	public static void setCurrentFormId(String id) {
 		currentFormId = id;
 	}
 	
-	public static void errorDialog(String message){
+	public static void errorDialog(String message) {
 		AlertDialog dialog = new AlertDialog.Builder(applicationView).create();
 		dialog.setMessage(message);
 		dialog.setTitle("Error");

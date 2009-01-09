@@ -20,6 +20,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_ERROR = "error";
 	public static final String FUNCTION_EXPORT = "export";
 	public static final String FUNCTION_GET = "get";
+	public static final String FUNCTION_GETFIELDNAME = "getFieldName";
 	public static final String FUNCTION_GETFIELDVALUE = "getFieldValue";
 	public static final String FUNCTION_GETFIELDVALUEBYPRIMARYKEY = "getFieldValueByPrimaryKey";
 	public static final String FUNCTION_GETFILTEREDRECORDS = "getFilteredRecords";
@@ -76,6 +77,7 @@ public class ScriptAttribute {
 	public static final String NAMESPACE_COMPONENT_TF = "component.textfield";
 	public static final String NAMESPACE_DATE = "date";
 	public static final String NAMESPACE_DB = "database";
+	public static final String NAMESPACE_DB_FIELD = "database.field";
 	public static final String NAMESPACE_DB_TABLE = "database.table";
 	public static final String NAMESPACE_MATH = "math";
 	public static final String NAMESPACE_GPS = "gps";

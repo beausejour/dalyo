@@ -11,10 +11,10 @@ import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.View.ApplicationView;
 
 public class NS_ComponentCombobox {
-	public static HashMap<Object, Object> GetSelectedRecord(Element element){
+	public static HashMap<Object, Object> GetSelectedRecord(Element element) {
 		String componentId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT));
 		HashMap<Object, Object> record = null;
-		if (ApplicationView.getComponents().containsKey(componentId)){
+		if (ApplicationView.getComponents().containsKey(componentId)) {
 			record = ApplicationView.getComponents().get(componentId).getRecord();
 		}
 		return record;

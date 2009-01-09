@@ -17,22 +17,22 @@ public class Form extends AbsoluteLayout{
 	private String tableId;
 	private String title;
 	
-	public Form(Context context){		
+	public Form(Context context) {		
 		super(context);
 		this.setLayoutParams(new AbsoluteLayout.LayoutParams(LayoutParams.FILL_PARENT, 
 				LayoutParams.FILL_PARENT, 0, 0));
 	}
 	
-	public void onLoad(String name){
+	public void onLoad(String name) {
 		//Function.createFunction(name, null);
 		Function.createFunction(name);
 	}
 	
-	public void setTableId(String tableId){
+	public void setTableId(String tableId) {
 		this.tableId = tableId;
 	}
 	
-	public String getTableId(){
+	public String getTableId() {
 		return tableId;
 	}
 	
@@ -44,30 +44,30 @@ public class Form extends AbsoluteLayout{
 		return title;
 	}
 	
-	public void setRecord(String formId, HashMap<Object, Object> record){
+	public void setRecord(String formId, HashMap<Object, Object> record) {
 		Log.i("info", "setrecord in form");
 		int viewLen = this.getChildCount();
-		for (int i=0; i<viewLen; i++){
+		for (int i=0; i<viewLen; i++) {
 			if (this.getChildAt(i) instanceof ComboBox) {
 				((ComboBox)this.getChildAt(i)).setCurrentValue(formId, record);
 			}
-			else if (this.getChildAt(i) instanceof TextField){
+			else if (this.getChildAt(i) instanceof TextField) {
 				((TextField)this.getChildAt(i)).refresh(record);
 			}
-			else if (this.getChildAt(i) instanceof TextZone){
+			else if (this.getChildAt(i) instanceof TextZone) {
 				((TextZone)this.getChildAt(i)).refresh(record);
 			}
 		}
 	}
 	
-	public void refresh(HashMap<Object, Object> record){
-		if (record.size() > 0){
+	public void refresh(HashMap<Object, Object> record) {
+		if (record.size() > 0) {
 			int viewLen = this.getChildCount();
-			for (int i=0; i<viewLen; i++){
-				if (this.getChildAt(i) instanceof TextField){
+			for (int i=0; i<viewLen; i++) {
+				if (this.getChildAt(i) instanceof TextField) {
 					((TextField)this.getChildAt(i)).refresh(record);
 				}
-				else if (this.getChildAt(i) instanceof TextZone){
+				else if (this.getChildAt(i) instanceof TextZone) {
 					((TextZone)this.getChildAt(i)).refresh(record);
 				}
 			}

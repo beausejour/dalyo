@@ -39,7 +39,7 @@ public class DataView extends LinearLayout implements OnGestureListener {
 	private ListView mListView;
 	private GestureDetector mGestureDetector;
 	
-	public DataView(Context c, String tid){
+	public DataView(Context c, String tid) {
 		super(c);
 		borderPaint = new Paint();
 		borderPaint.setARGB(255, 0, 0, 0);
@@ -54,11 +54,11 @@ public class DataView extends LinearLayout implements OnGestureListener {
 		pwidthList = new ArrayList<String>();
 		lwidthList = new ArrayList<String>();
 		mListView.setItemsCanFocus(true);
-		mListView.setOnItemClickListener(new OnItemClickListener(){
+		mListView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View v, int position, long arg3) {
 				currentPosition = position;
-				if (!((CustomLinearLayout) v).hasHeader()){
+				if (!((CustomLinearLayout) v).hasHeader()) {
 					v.setSelected(true);
 				}
 			}
@@ -66,32 +66,32 @@ public class DataView extends LinearLayout implements OnGestureListener {
 	}
 	
 	@Override
-	protected void onDraw(Canvas canvas){
+	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
 		RectF drawRect = new RectF();
 	    drawRect.set(0,0, getMeasuredWidth(), getMeasuredHeight());
 	    canvas.drawRoundRect(drawRect, 0, 0, borderPaint);
 	}
 	
-	public void setText(float fs, Typeface ft){
+	public void setText(float fs, Typeface ft) {
 		fontSize = fs;
 		fontType = ft;
 	}
 	
-	public static float getTextSize(){
+	public static float getTextSize() {
 		return fontSize;
 	}
 	
-	public static Typeface getTextType(){
+	public static Typeface getTextType() {
 		return fontType;
 	}
 	
-	public void setColumnInfo(ArrayList<ArrayList<String>> list){
+	public void setColumnInfo(ArrayList<ArrayList<String>> list) {
 		int width = 0;
-		if (list.size() > 0){
+		if (list.size() > 0) {
 			int listSize = list.size();
 			ArrayList<String> headerList = new ArrayList<String>();
-			for (int i=0; i<listSize; i++){
+			for (int i=0; i<listSize; i++) {
 				ArrayList<String> column = new ArrayList<String>();
 				column.add(list.get(i).get(0));		//tid
 				column.add(list.get(i).get(1));		//fid	
@@ -101,14 +101,14 @@ public class DataView extends LinearLayout implements OnGestureListener {
 				columns.add(column);
 			}
 			
-			if (ApplicationView.getOrientation() == Configuration.ORIENTATION_PORTRAIT){
+			if (ApplicationView.getOrientation() == Configuration.ORIENTATION_PORTRAIT) {
 				CustomLinearLayout header = new CustomLinearLayout(context, headerList, pwidthList, true);
 				mListView.addHeaderView(header, null, false);
 				for (String s : pwidthList) {
 					width += Integer.valueOf(s);
 				}
 			}
-			else{
+			else {
 				CustomLinearLayout header = new CustomLinearLayout(context, headerList, lwidthList, true);
 				mListView.addHeaderView(header, null, false);
 				for (String s : lwidthList) {
@@ -120,24 +120,24 @@ public class DataView extends LinearLayout implements OnGestureListener {
 		this.addView(mListView, new LinearLayout.LayoutParams(width, LayoutParams.FILL_PARENT));
 	}
 	
-	public void setOncalculate(HashMap<Integer, String> onc){
+	public void setOncalculate(HashMap<Integer, String> onc) {
 		this.onCalculateMap = onc;
 	}
 	
-	private ArrayList<String> getPWidthList(){
+	private ArrayList<String> getPWidthList() {
 		return pwidthList;
 	}
 	
-	private ArrayList<String> getLWidthList(){
+	private ArrayList<String> getLWidthList() {
 		return lwidthList;
 	}
 	
-	public void refresh(Object filter){
-		if (tableId == null){
+	public void refresh(Object filter) {
+		if (tableId == null) {
 			ApplicationView.errorDialog("Check your dataview setting");
 		}
-		else{
-			if (adapter.getItems().size() > 1){
+		else {
+			if (adapter.getItems().size() > 1) {
 				adapter.removeItems();
 				adapter = new DataViewAdapter();
 				mListView.setAdapter(adapter);
@@ -145,40 +145,40 @@ public class DataView extends LinearLayout implements OnGestureListener {
 			int columnNb = columns.size();
 			ArrayList<String> tables = new ArrayList<String>();
 			tables.add(tableId);
-			for (int i=0; i<columnNb; i++){
+			for (int i=0; i<columnNb; i++) {
 				ArrayList<String> column = columns.get(i);
-				if ((!tables.contains(column.get(0))) && ((!column.get(0).equals("")) && (!column.get(1).equals("")))){
+				if ((!tables.contains(column.get(0))) && ((!column.get(0).equals("")) && (!column.get(1).equals("")))) {
 					tables.add(column.get(0));
 				}
 			}
 			Cursor cursor = DatabaseAdapter.selectQuery(tables, null, filter);
 			records = new HashMap<Integer, HashMap<Object, Object>>();
 			int count = cursor.getCount();
-			if (count > 0){
+			if (count > 0) {
 				cursor.moveToFirst();
-				for (int i=0; i<count; i++){
+				for (int i=0; i<count; i++) {
 					String[] columnNames = cursor.getColumnNames();
 					ArrayList<String> data = new ArrayList<String>();
 					HashMap<Object, Object> record = new HashMap<Object, Object>();
 					int columnsRecordSize = columnNames.length;
 					int columnsSize = columns.size();
 					int calculateColumn = -1;
-					for (int k=0; k<columnsSize; k++){
-						if (onCalculateMap.containsKey(k)){
+					for (int k=0; k<columnsSize; k++) {
+						if (onCalculateMap.containsKey(k)) {
 							calculateColumn = k;
 							data.add("");
 						}
-						else{
-							for (int j=0; j<columnsRecordSize; j++){
+						else {
+							for (int j=0; j<columnsRecordSize; j++) {
 								String field = DatabaseAttribute.FIELD+columns.get(k).get(1);
-								if (columnNames[j].equals(field)){
+								if (columnNames[j].equals(field)) {
 									data.add(String.valueOf(DatabaseAdapter.getCursorValue(cursor, field)));
 								}
 								record.put(columnNames[j], String.valueOf(DatabaseAdapter.getCursorValue(cursor, columnNames[j])));
 							}	
 						}
 					}
-					if (calculateColumn != -1){
+					if (calculateColumn != -1) {
 						String value = String.valueOf(Function.createCalculateFunction(onCalculateMap.get(calculateColumn), record));
 						data.remove(calculateColumn);
 						data.add(calculateColumn, value);
@@ -201,17 +201,17 @@ public class DataView extends LinearLayout implements OnGestureListener {
 		}
 	}
 	
-	public HashMap<Object, Object> getCurrentRecord(){
-		if (currentPosition < 1){
+	public HashMap<Object, Object> getCurrentRecord() {
+		if (currentPosition < 1) {
 			return null;
 		}
-		else{
+		else {
 			int position = currentPosition;
 			return records.get(position-1);
 		}
 	}
 	
-	public void setCurrentPosition(int position){
+	public void setCurrentPosition(int position) {
 		currentPosition = position;
 	}
 	
@@ -269,7 +269,7 @@ public class DataView extends LinearLayout implements OnGestureListener {
 	}
 	
 	@Override
-	public boolean dispatchTouchEvent(MotionEvent ev){
+	public boolean dispatchTouchEvent(MotionEvent ev) {
 		mGestureDetector.onTouchEvent(ev);
 		return true;
 	}

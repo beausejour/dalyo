@@ -48,7 +48,7 @@ public class Record {
 			}
 			DatabaseAdapter.updateQuery(tableId, fieldList, valueList, record);
 		}
-		else{
+		else {
 			//exception
 		}
 	}

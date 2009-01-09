@@ -101,7 +101,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		mApplicationName.setTypeface(Typeface.DEFAULT_BOLD);
 		layout.addView(mApplicationName, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 		int size = Dma.applicationList.size();
-		for (int i =0; i < size; i++){
+		for (int i =0; i < size; i++) {
 			mAdapter.addApplication(Dma.applicationList.get(i));
 			if (i == 0) {
 				mApplicationName.setText(Dma.applicationList.get(i).getName());
@@ -117,7 +117,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	public class AppsAdapter extends BaseAdapter {
 		private Context mContext;
 		private ArrayList<Integer> mApps = new ArrayList<Integer>();
-		public AppsAdapter(Context context){
+		public AppsAdapter(Context context) {
 			mContext = context;
 		}
 
@@ -201,7 +201,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	//Using the preference data to rebuild application list
 	public void update() {
 		updateProgressDialog = ProgressDialog.show(this, "Please wait...", "Updaing application list...", true, false);
-		new Thread(){
+		new Thread() {
 			public void run() {
 				try {
 					SharedPreferences prefs = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE);
@@ -266,7 +266,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		return applicationInfos;
 	}
 	
-	public static String getApplicationName(){
+	public static String getApplicationName() {
 		return applicationName;
 	}
 }
