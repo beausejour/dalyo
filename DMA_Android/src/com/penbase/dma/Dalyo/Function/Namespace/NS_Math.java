@@ -27,7 +27,7 @@ public class NS_Math {
 		if ((left.toString().indexOf(".") != -1) || (right.toString().indexOf(".") != -1)) {
 			return (Double.valueOf(left.toString()) * Double.valueOf(right.toString()));
 		}
-		else{
+		else {
 			return (Integer.valueOf(left.toString()) * Integer.valueOf(right.toString()));
 		}
 	}
@@ -60,7 +60,7 @@ public class NS_Math {
 		if ((left.toString().indexOf(".") != -1) || (right.toString().indexOf(".") != -1)) {
 			return (Double.valueOf(left.toString()) - Double.valueOf(right.toString()));
 		}
-		else{
+		else {
 			return (Integer.valueOf(left.toString()) - Integer.valueOf(right.toString()));
 		}
 	}
@@ -71,7 +71,7 @@ public class NS_Math {
 		if ((left.toString().indexOf(".") != -1) || (right.toString().indexOf(".") != -1)) {
 			return (Double.valueOf(left.toString()) + Double.valueOf(right.toString()));
 		}
-		else{
+		else {
 			return (Integer.valueOf(left.toString()) + Integer.valueOf(right.toString()));
 		}
 	}

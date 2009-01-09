@@ -26,42 +26,42 @@ public class ComboBox extends Spinner {
 	private HashMap<Integer, HashMap<Object, Object>> records = new HashMap<Integer, HashMap<Object, Object>>();
 	private String funcName;
 	
-	public ComboBox(Context context, ArrayList<String> labelList, ArrayList<String> valueList){
+	public ComboBox(Context context, ArrayList<String> labelList, ArrayList<String> valueList) {
 		super(context);
 		this.context = context;
 		this.labelList = labelList;
 		this.valueList = valueList;
 	}
 	
-	public ComboBox(Context context, ArrayList<String> il){
+	public ComboBox(Context context, ArrayList<String> il) {
 		super(context);
 		spinnerArrayAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, il);
 		this.setAdapter(spinnerArrayAdapter);	
 	}
 	
-	public void setCurrentValue(String fid, HashMap<Object, Object> record){
+	public void setCurrentValue(String fid, HashMap<Object, Object> record) {
 		formId = fid;
-		if ((formId != null) && (record != null)){
+		if ((formId != null) && (record != null)) {
 			ApplicationView.getLayoutsMap().get(formId).refresh(record);
 		}
 	}
 	
-	public void getData(Object filter){
+	public void getData(Object filter) {
 		ArrayList<String> tables = new ArrayList<String>();
 		tables.add(labelList.get(0));
-		if (!tables.contains(valueList.get(0))){
+		if (!tables.contains(valueList.get(0))) {
 			tables.add(valueList.get(0));
 		}		
 		itemsList = new ArrayList<String>();
 		Cursor cursor = DatabaseAdapter.selectQuery(tables, null, filter);
 		cursor.moveToFirst();
 		int cursorCount = cursor.getCount();
-		for (int i=0; i<cursorCount; i++){
+		for (int i=0; i<cursorCount; i++) {
 			String[] columnNames = cursor.getColumnNames();
 			HashMap<Object, Object> record = new HashMap<Object, Object>();
 			int columnsSize = columnNames.length;
-			for (int j=0; j<columnsSize; j++){
-				if (columnNames[j].equals(DatabaseAttribute.FIELD+labelList.get(1))){
+			for (int j=0; j<columnsSize; j++) {
+				if (columnNames[j].equals(DatabaseAttribute.FIELD+labelList.get(1))) {
 					itemsList.add(cursor.getString(j));
 				}
 				record.put(columnNames[j], cursor.getString(j));
@@ -74,7 +74,7 @@ public class ComboBox extends Spinner {
 		this.setAdapter(spinnerArrayAdapter);
 	}
 	
-	public Object getCurrentValue(){
+	public Object getCurrentValue() {
 		return currentValue;
 	}
 	
@@ -87,7 +87,7 @@ public class ComboBox extends Spinner {
 				currentValue = spinnerArrayAdapter.getItem(position).toString();
 				currentPosition = position;
 				Log.i("info", "currentposition "+currentPosition+" formId "+formId);
-				if (formId != null){
+				if (formId != null) {
 					setCurrentValue(formId, getCurrentRecord());
 				}
 			}
@@ -99,11 +99,11 @@ public class ComboBox extends Spinner {
 		});
 	}
 	
-	public HashMap<Object, Object> getCurrentRecord(){
-		if (currentPosition == -1){
+	public HashMap<Object, Object> getCurrentRecord() {
+		if (currentPosition == -1) {
 			return null;
 		}
-		else{
+		else {
 			return records.get(currentPosition);
 		}
 	}

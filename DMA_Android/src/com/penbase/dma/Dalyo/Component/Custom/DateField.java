@@ -16,7 +16,7 @@ public class DateField extends Button implements OnClickListener{
 	private int mDay;
 	private Context context;
 	
-	public DateField(Context c, Typeface tf, float fs, String defaultValue){
+	public DateField(Context c, Typeface tf, float fs, String defaultValue) {
 		super(c);
 		this.context = c;
 		if ((defaultValue != null) && (!defaultValue.equals(""))) {
@@ -39,7 +39,7 @@ public class DateField extends Button implements OnClickListener{
 	}
 
 	@Override
-	public void onClick(View arg0){
+	public void onClick(View arg0) {
 		new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 mYear = year;
@@ -52,12 +52,12 @@ public class DateField extends Button implements OnClickListener{
         }, mYear, mMonth, mDay).show();
 	}
 	
-	public String getDate(){
+	public String getDate() {
 		String date = mDay+"/"+mMonth+"/"+mYear;
 		return date;
 	}
 	
-	public void setDate(String date){
+	public void setDate(String date) {
 		this.setText(date);
 	}
 }

@@ -28,7 +28,7 @@ public class DmaHttpBinarySync {
 	private String cookie = null;
 	private String syncType;
 	
-	public DmaHttpBinarySync(String url, String request, String blobSend, String response, byte[] inputbytes, String syncType){
+	public DmaHttpBinarySync(String url, String request, String blobSend, String response, byte[] inputbytes, String syncType) {
 		this.requestAction = request;
 		this.blobSendAction = blobSend;
 		this.responseAction = response;
@@ -37,7 +37,7 @@ public class DmaHttpBinarySync {
 		this.syncType = syncType;
 	}
 	
-	private byte[] createConnection(String action, byte[] bytes){
+	private byte[] createConnection(String action, byte[] bytes) {
 		byte[] result = null;
 		try{
 			URL newUrl = new URL(urlString+"?"+action);
@@ -53,7 +53,7 @@ public class DmaHttpBinarySync {
 			bos.write("Content-Type: application/octet-stream".getBytes());
 			bos.write("\r\n".getBytes());
 			bos.write("\r\n".getBytes());
-			if (bytes != null){
+			if (bytes != null) {
 				bos.write(bytes);
 			}
 			bos.write("\r\n".getBytes());
@@ -68,7 +68,7 @@ public class DmaHttpBinarySync {
 			connection.setRequestProperty("Content-Type", "multipart/form-data" + "; boundary=" + boundary);
 			connection.setRequestProperty("Content-Length", "" + sbbytes.length);
 			connection.setRequestProperty("Connection", "close");
-			if (cookie != null){
+			if (cookie != null) {
 				connection.setRequestProperty("Cookie", cookie);
 			}
 			connection.setRequestMethod("POST");
@@ -79,22 +79,22 @@ public class DmaHttpBinarySync {
 			dos.close();
 			result = getData(connection);
 		}
-		catch (IOException ioe){
+		catch (IOException ioe) {
 			Log.i("info", "HTTPExample: IOException; " + ioe.getMessage());}
 		return result;
 	}
 	
-	public boolean run(){
+	public boolean run() {
 		boolean wellDone = false;
 		byte[] data = createConnection(requestAction, inputbytes);
 		String codeStr = getErrorCode(data);
 		Log.i("info", "code of action "+requestAction+" : "+Integer.valueOf(codeStr));
-		if (Integer.valueOf(codeStr) == ErrorCode.OK){
+		if (Integer.valueOf(codeStr) == ErrorCode.OK) {
 			int newLength = data.length - codeStr.length() - 1;
 			byte[] result = new byte[newLength];
 			System.arraycopy(data, codeStr.length()+1, result, 0, result.length);
-			if (syncType.equals("Import")){
-				/*if (!DatabaseAdapter.hasStartTransaction()){
+			if (syncType.equals("Import")) {
+				/*if (!DatabaseAdapter.hasStartTransaction()) {
 					Log.i("info", "begin transaction");
 					DatabaseAdapter.beginTransaction();
 				}*/
@@ -103,7 +103,7 @@ public class DmaHttpBinarySync {
 				byte[] responsedata = createConnection(responseAction, returnByte);
 				String codeReportStr = getErrorCode(responsedata);
 				Log.i("info", "report code "+Integer.valueOf(codeReportStr));
-				if (Integer.valueOf(codeReportStr) == ErrorCode.OK){
+				if (Integer.valueOf(codeReportStr) == ErrorCode.OK) {
 					DatabaseAdapter.commitTransaction();
 					wellDone = true;
 				}
@@ -134,7 +134,7 @@ public class DmaHttpBinarySync {
 				byte[] responsedata = createConnection(responseAction, null);
 				String codeResponseStr = getErrorCode(responsedata);
 				Log.i("info", "responsea "+responseAction+" code "+codeResponseStr);
-				if (Integer.valueOf(codeResponseStr) == ErrorCode.OK){
+				if (Integer.valueOf(codeResponseStr) == ErrorCode.OK) {
 					//DatabaseAdapter.cleanTables();
 					wellDone = true;
 				}
@@ -179,7 +179,7 @@ public class DmaHttpBinarySync {
     }
 	
 	private byte[] getData(HttpURLConnection connection) {
-		if (cookie == null){
+		if (cookie == null) {
 			cookie = connection.getHeaderField("Set-Cookie").split(";")[0];
 		}
 		InputStream in;
@@ -188,7 +188,7 @@ public class DmaHttpBinarySync {
 			in = connection.getInputStream();
 			int c;
 			byte[] readByte = new byte[1024];
-			while ((c = in.read(readByte)) > 0){
+			while ((c = in.read(readByte)) > 0) {
 				bos.write(readByte, 0, c);
 			}
 			in.close();
@@ -199,10 +199,10 @@ public class DmaHttpBinarySync {
 		return bos.toByteArray();
 	}
 	
-	private String getErrorCode(byte[] data){
+	private String getErrorCode(byte[] data) {
 		String codeStr = "";
 		int i = 0;
-		while(i < data.length && data[i] != (int)'\n'){
+		while(i < data.length && data[i] != (int)'\n') {
 			codeStr += (char)data[i];
 			i++;
 		}

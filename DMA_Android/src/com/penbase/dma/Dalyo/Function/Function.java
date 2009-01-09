@@ -158,7 +158,7 @@ public class Function {
 					ApplicationView.errorDialog("Check your variable's type !");
 				}
 			}
-			else{
+			else {
 				try {
 					Integer.valueOf(String.valueOf(value));
 				}
@@ -195,12 +195,12 @@ public class Function {
 				result = boolList[i];
 				i = size;
 			}
-			else{
+			else {
 				if (boolList[i] == boolList[j]) {
 					checked++;
 					i++;
 				}
-				else{
+				else {
 					i = size;
 				}
 			}
@@ -229,7 +229,7 @@ public class Function {
 				else if ((left == null) || (right == null)) {
 					result = (left == right);
 				}
-				else{
+				else {
 					result = (left.equals(right));
 				}
 				break;
@@ -417,6 +417,11 @@ public class Function {
 
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_VALIDATETRANSACTION)) {
 				NS_Database.ValidateTransaction();
+			}
+		}
+		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB_FIELD)) {
+			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETFIELDNAME)) {
+				result = NS_DatabaseField.GetFieldName(element);
 			}
 		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB_TABLE)) {
@@ -607,7 +612,7 @@ public class Function {
 				}
 				createFunction(element.getAttribute(ScriptTag.FUNCTION));
 			}
-			else{
+			else {
 				createFunction(element.getAttribute(ScriptTag.FUNCTION));
 			}
 		}
@@ -620,7 +625,7 @@ public class Function {
 		if (varsMap.containsKey(item.getAttribute(ScriptTag.NAME))) {
 			result = varsMap.get(item.getAttribute(ScriptTag.NAME));
 		}
-		else{
+		else {
 			Node parent = item.getParentNode();
 			while (!parent.getNodeName().equals(ScriptTag.FUNCTION)) {
 				parent = parent.getParentNode();
@@ -693,7 +698,7 @@ public class Function {
 			Log.i("info", "1 child "+element.getChildNodes().item(0).getNodeValue());
 			varsMap.put(element.getAttribute(ScriptTag.NAME), element.getChildNodes().item(0).getNodeValue());	
 		}
-		else{
+		else {
 			Log.i("info", "element "+element.getNodeName());
 			Object value = getValue(element, element.getChildNodes().item(0).getNodeName(), "", "");
 			Log.i("info", "prepare to add "+element.getAttribute(ScriptTag.NAME)+" in the var list its value is "+value);

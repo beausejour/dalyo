@@ -12,7 +12,7 @@ public class CustomLinearLayout extends LinearLayout {
 	private ArrayList<String> widthList = new ArrayList<String>();
 	private boolean isHeader;
 	
-	public CustomLinearLayout(Context c, ArrayList<String> dl, ArrayList<String> wl, boolean ish){
+	public CustomLinearLayout(Context c, ArrayList<String> dl, ArrayList<String> wl, boolean ish) {
 		super(c);
 		this.context = c;
 		this.setOrientation(LinearLayout.HORIZONTAL);
@@ -20,9 +20,9 @@ public class CustomLinearLayout extends LinearLayout {
 		this.isHeader = ish;
 		this.widthList = wl;
 		
-		if (isHeader){
+		if (isHeader) {
 			int size = dataList.size();
-			for (int i=0; i<size; i++){
+			for (int i=0; i<size; i++) {
 				CustomTextView ctv = new CustomTextView(context);
 				ctv.setText(dataList.get(i));
 				ctv.setTypeface(Typeface.DEFAULT_BOLD);
@@ -33,9 +33,9 @@ public class CustomLinearLayout extends LinearLayout {
 			}
 			setEnabled(false);
 		}
-		else{
+		else {
 			int size = dataList.size();
-			for (int i=0; i<size; i++){
+			for (int i=0; i<size; i++) {
 				CustomTextView ctv = new CustomTextView(context);
 				ctv.setText(dataList.get(i));
 				ctv.setTextSize(DataView.getTextSize());
@@ -48,15 +48,15 @@ public class CustomLinearLayout extends LinearLayout {
 		}
 	}	
 	
-	public ArrayList<String> getDataList(){
+	public ArrayList<String> getDataList() {
 		return dataList;
 	}
 	
-	public boolean hasHeader(){
+	public boolean hasHeader() {
 		return isHeader;
 	}
 	
-	public ArrayList<String> getWidthList(){
+	public ArrayList<String> getWidthList() {
 		return widthList;
 	}
 }

@@ -21,10 +21,10 @@ public class NS_Runtime {
 		String message = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_TEXT, ScriptAttribute.STRING));
 		String title = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_CAPTION, ScriptAttribute.STRING));
 		Log.i("info", "message "+message+" title "+title);
-		if (!title.equals(ScriptAttribute.CONST_NULL)){
+		if (!title.equals(ScriptAttribute.CONST_NULL)) {
 			new AlertDialog.Builder(context).setMessage(message).setTitle(title).show();
 		}
-		else{
+		else {
 			new AlertDialog.Builder(context).setMessage(message).show();
 		}
 	}
@@ -35,11 +35,11 @@ public class NS_Runtime {
 		boolean showProgress = false;
 		boolean result = false;
 		
-		if ((type == null) || (((Boolean)type).booleanValue())){
+		if ((type == null) || (((Boolean)type).booleanValue())) {
 			//showProgress = true;    ProgressDialog has not done yet.
 		}
 
-		if (showProgress){
+		if (showProgress) {
 			Log.i("info", "showprogress");
 			syncProgressDialog = ProgressDialog.show(Function.getContext(), "Please wait...", "Synchronizing application's data...", true, false);
 			
@@ -59,7 +59,7 @@ public class NS_Runtime {
 			syncProgressDialog.dismiss();
 			return result;
 		}
-		else{
+		else {
 			Log.i("info", "else ");
 			boolean importResult = ApplicationView.getCurrentClient().launchImport(
 					ApplicationListView.getApplicationsInfo().get("AppId"),

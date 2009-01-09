@@ -45,7 +45,7 @@ public class TimeField extends Button implements OnClickListener {
         }, mHour, mMinute, false).show();
 	}
 	
-	public String getTime(){
+	public String getTime() {
 		String time = mHour+":"+mMinute;
 		return time;
 	}

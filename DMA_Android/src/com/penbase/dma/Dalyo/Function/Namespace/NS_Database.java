@@ -15,22 +15,22 @@ public class NS_Database {
 	private static ArrayList<String> tables;
 	private static Object filters;
 	
-	public static void CancelTransaction(){
+	public static void CancelTransaction() {
 		DatabaseAdapter.rollbackTransaction();
 	}
 	
-	public static void Export(Element element){
+	public static void Export(Element element) {
 		
 	}
 	
-	public static void Import(Element element){
+	public static void Import(Element element) {
 		tables = (ArrayList<String>) Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_TABLES, ScriptAttribute.LIST);
 		filters = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_FILTERS, ScriptAttribute.LIST);
 		Object faceless = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_FACELESS, ScriptAttribute.PARAMETER_TYPE_BOOLEAN);
-		if ((faceless == null) || (((Boolean)faceless).booleanValue())){
+		if ((faceless == null) || (((Boolean)faceless).booleanValue())) {
 			//display progress dialog
 			importProgressDialog = ProgressDialog.show(Function.getContext(), "Please wait...", "Synchronizing application's data non uithread...", true, false);
-			new Thread(){
+			new Thread() {
 				public void run() {
 					try {
 						ApplicationView.getCurrentClient().filteredImport(
@@ -46,7 +46,7 @@ public class NS_Database {
 				}
 			}.start();
 		}
-		else{
+		else {
 			ApplicationView.getCurrentClient().filteredImport(
 					ApplicationListView.getApplicationsInfo().get("AppId"),
 					ApplicationListView.getApplicationsInfo().get("DbId"), 
@@ -56,11 +56,11 @@ public class NS_Database {
 		}
 	}
 	
-	public static void StartTransaction(){
+	public static void StartTransaction() {
 		DatabaseAdapter.beginTransaction();
 	}
 	
-	public static void ValidateTransaction(){
+	public static void ValidateTransaction() {
 		DatabaseAdapter.commitTransaction();
 	}
 }

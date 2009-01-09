@@ -26,7 +26,7 @@ public class NS_Object {
 		else if (String.valueOf(value).indexOf(".") != -1) {
 			return Double.valueOf(String.valueOf(value)).intValue();
 		}
-		else{
+		else {
 			Integer result = null;
 			try {
 				result = Integer.valueOf(String.valueOf(value));
