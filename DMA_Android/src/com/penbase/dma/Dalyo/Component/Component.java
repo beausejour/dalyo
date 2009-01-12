@@ -392,22 +392,22 @@ public class Component {
 			((NumberBox)getView()).setValue(value);
 		}
 		if (getView() instanceof TextField) {
-			((TextField)getView()).setText(String.valueOf(value));
+			((TextField)getView()).setText(value.toString());
 		}
 		if (getView() instanceof Label) {
-			((Label)getView()).setText(String.valueOf(value));
+			((Label)getView()).setText(value.toString());
 		}
 		else if (getView() instanceof TextZone) {
-			((TextZone)getView()).setText(String.valueOf(value));
+			((TextZone)getView()).setText(value.toString());
 		}
 		else if (getView() instanceof TimeField) {
-			((TimeField)getView()).setTime(String.valueOf(value));
+			((TimeField)getView()).setTime(value.toString());
 		}
 		else if (getView() instanceof DateField) {
-			((DateField)getView()).setDate(String.valueOf(value));
+			((DateField)getView()).setDate(value.toString());
 		}
 		else if (getView() instanceof Gauge) {
-			((Gauge)getView()).setValue(Integer.valueOf(String.valueOf(value)));
+			((Gauge)getView()).setValue(Integer.valueOf(value.toString()));
 		}
 	}
 	

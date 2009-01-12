@@ -18,8 +18,8 @@ public class NS_Runtime {
 	private static ProgressDialog syncProgressDialog;
 	
 	public static void Error(Context context, Element element) {
-		String message = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_TEXT, ScriptAttribute.STRING));
-		String title = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_CAPTION, ScriptAttribute.STRING));
+		String message = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_TEXT, ScriptAttribute.STRING).toString();
+		String title = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_CAPTION, ScriptAttribute.STRING).toString();
 		Log.i("info", "message "+message+" title "+title);
 		if (!title.equals(ScriptAttribute.CONST_NULL)) {
 			new AlertDialog.Builder(context).setMessage(message).setTitle(title).show();

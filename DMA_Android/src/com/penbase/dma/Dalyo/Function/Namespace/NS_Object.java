@@ -12,7 +12,7 @@ import com.penbase.dma.View.ApplicationView;
 public class NS_Object {
 	public static boolean ToBoolean(Element element) {
 		Object value = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
-		return Boolean.valueOf(String.valueOf(value));
+		return Boolean.valueOf(value.toString());
 	}
 	
 	public static Integer ToInt(Element element) {
@@ -23,13 +23,13 @@ public class NS_Object {
 		else if (value instanceof Time) {
 			return ((Time) value).toInt();
 		}
-		else if (String.valueOf(value).indexOf(".") != -1) {
-			return Double.valueOf(String.valueOf(value)).intValue();
+		else if (value.toString().indexOf(".") != -1) {
+			return Double.valueOf(value.toString()).intValue();
 		}
 		else {
 			Integer result = null;
 			try {
-				result = Integer.valueOf(String.valueOf(value));
+				result = Integer.valueOf(value.toString());
 			}
 			catch (NumberFormatException nfe) {
 				ApplicationView.errorDialog("Check your variable's type (ToInt) !");
@@ -46,13 +46,13 @@ public class NS_Object {
 		else if (value instanceof Time) {
 			return ((Time) value).toInt();
 		}
-		else if (String.valueOf(value).indexOf(".") != -1) {
-			return Double.valueOf(String.valueOf(value));
+		else if (value.toString().indexOf(".") != -1) {
+			return Double.valueOf(value.toString());
 		}
 		else {
 			Integer result = null;
 			try {
-				result = Integer.valueOf(String.valueOf(value));
+				result = Integer.valueOf(value.toString());
 			}
 			catch (NumberFormatException nfe) {
 				ApplicationView.errorDialog("Check your variable's type (ToNumeric) !");
@@ -74,7 +74,7 @@ public class NS_Object {
 			return ((Time) value).toString();
 		}
 		else {
-			return String.valueOf(value);
+			return value.toString();
 		}
 	}
 }

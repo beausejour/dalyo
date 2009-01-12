@@ -9,7 +9,7 @@ import com.penbase.dma.Dalyo.Function.Function;
 
 public class NS_DatabaseField {
 	public static String GetFieldName(Element element) {
-		String fieldId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FIELD, ScriptAttribute.FIELD));
+		String fieldId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FIELD, ScriptAttribute.FIELD).toString();
 		return DatabaseAdapter.getFieldName(fieldId);
 	}
 }

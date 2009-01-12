@@ -11,7 +11,7 @@ import com.penbase.dma.View.ApplicationView;
 
 public class NS_Form {
 	public static void Navigate(Element element) {
-		String formId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FORM, ScriptAttribute.FORM));
+		String formId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FORM, ScriptAttribute.FORM).toString();
 		if (ApplicationView.getOnLoadFuncMap().containsKey(formId)) {
 			ApplicationView.getLayoutsMap().get(formId).onLoad(ApplicationView.getOnLoadFuncMap().get(formId));
 		}
@@ -21,7 +21,7 @@ public class NS_Form {
 	}
 	
 	public static void SetCurrentRecord(Element element) {
-		String formId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FORM, ScriptAttribute.FORM));
+		String formId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FORM, ScriptAttribute.FORM).toString();
 		HashMap<Object, Object> record = (HashMap<Object, Object>) Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.RECORD, ScriptAttribute.RECORD);
 		if (ApplicationView.getLayoutsMap().containsKey(formId)) {
 			ApplicationView.getLayoutsMap().get(formId).setRecord(formId, record);
@@ -29,8 +29,8 @@ public class NS_Form {
 	}
 	
 	public static void SetTitle(Element element) {
-		String formId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FORM, ScriptAttribute.FORM));
-		String title = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_TITLE, ScriptAttribute.STRING));
+		String formId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FORM, ScriptAttribute.FORM).toString();
+		String title = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_TITLE, ScriptAttribute.STRING).toString();
 		ApplicationView.getLayoutsMap().get(formId).setTitle(title);
 	}
 }

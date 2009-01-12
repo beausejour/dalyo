@@ -8,8 +8,8 @@ import com.penbase.dma.Dalyo.Function.Function;
 
 public class NS_String {
 	public static String Concat(Element element) {
-		String left = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_A, ScriptAttribute.STRING));
-		String right = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_B, ScriptAttribute.STRING));
+		String left = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_A, ScriptAttribute.STRING).toString();
+		String right = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_B, ScriptAttribute.STRING).toString();
 		return left+right;
 	}
 	
@@ -19,7 +19,7 @@ public class NS_String {
 			return 0;
 		}
 		else {
-			return String.valueOf(value).length();
+			return value.toString().length();
 		}
 	}
 }

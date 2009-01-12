@@ -12,29 +12,29 @@ import com.penbase.dma.View.ApplicationView;
 
 public class NS_ComponentCombobox {
 	public static void AddItem(Element element) {
-		String componentId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT));
+		String componentId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT).toString();
 		Object value = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
 		Object label = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_LABEL, ScriptAttribute.OBJECT);
 		//
-		/*boolean bold = Boolean.valueOf(String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_BOLD, ScriptAttribute.PARAMETER_TYPE_BOOLEAN)));
-		boolean italic = Boolean.valueOf(String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_ITALIC, ScriptAttribute.PARAMETER_TYPE_BOOLEAN)));
-		boolean underline = Boolean.valueOf(String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_UNDERLINE, ScriptAttribute.PARAMETER_TYPE_BOOLEAN)));*/
-		((ComboBox)ApplicationView.getComponents().get(componentId).getView()).addItem(String.valueOf(label), String.valueOf(value));
+		/*boolean bold = Boolean.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_BOLD, ScriptAttribute.PARAMETER_TYPE_BOOLEAN).toString());
+		boolean italic = Boolean.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_ITALIC, ScriptAttribute.PARAMETER_TYPE_BOOLEAN).toString());
+		boolean underline = Boolean.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_UNDERLINE, ScriptAttribute.PARAMETER_TYPE_BOOLEAN).toString());*/
+		((ComboBox)ApplicationView.getComponents().get(componentId).getView()).addItem(label.toString(), value.toString());
 	}
 	
 	public static int Count(Element element) {
-		String componentId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT));
+		String componentId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT).toString();
 		return ((ComboBox)ApplicationView.getComponents().get(componentId).getView()).count();
 	}
 	
 	public static int GetSelectedIndex(Element element) {
-		String componentId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT));
+		String componentId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT).toString();
 		return ((ComboBox)ApplicationView.getComponents().get(componentId).getView()).getSelectedIndex();
 	}
 	
 	
 	public static HashMap<Object, Object> GetSelectedRecord(Element element) {
-		String componentId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT));
+		String componentId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT).toString();
 		HashMap<Object, Object> record = null;
 		if (ApplicationView.getComponents().containsKey(componentId)) {
 			record = ApplicationView.getComponents().get(componentId).getRecord();
@@ -43,14 +43,14 @@ public class NS_ComponentCombobox {
 	}
 	
 	public static void SetSelectedIndex(Element element) {
-		String componentId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT));
-		int index = Integer.valueOf(String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_INDEX, ScriptAttribute.PARAMETER_TYPE_INT)));
+		String componentId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT).toString();
+		int index = Integer.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_INDEX, ScriptAttribute.PARAMETER_TYPE_INT).toString());
 		((ComboBox)ApplicationView.getComponents().get(componentId).getView()).setSelectedIndex(index);
 	}
 	
 	public static void Refresh(Element element) {
 		//order and distinct are not implemented yet
-		String componentId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT));
+		String componentId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT).toString();
 		Object filter = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FILTER, ScriptAttribute.FILTER);
 		Object order = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.ORDER, ScriptAttribute.ORDER);
 		Object distinct = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_DISTINCT, ScriptAttribute.PARAMETER_TYPE_BOOLEAN);
@@ -58,7 +58,7 @@ public class NS_ComponentCombobox {
 	}
 	
 	public static void RemoveAllItems(Element element) {
-		String componentId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT));
+		String componentId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT).toString();
 		((ComboBox)ApplicationView.getComponents().get(componentId).getView()).removeAllItems();
 	}	
 }
