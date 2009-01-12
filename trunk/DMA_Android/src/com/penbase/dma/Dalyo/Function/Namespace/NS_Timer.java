@@ -12,14 +12,14 @@ public class NS_Timer {
 	private static HashMap<Integer, Timer> timerMap = new HashMap<Integer, Timer>(); 
 	
 	public static void Cancel(Element element) {
-		int timerId = Integer.valueOf(String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_TIMERID, ScriptAttribute.PARAMETER_TYPE_INT)));
+		int timerId = Integer.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_TIMERID, ScriptAttribute.PARAMETER_TYPE_INT).toString());
 		timerMap.get(timerId).cancel();
 	}
 	
 	public static int Start(Element element) {
 		int timerId = 0;
-		final String callback = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_CALLBACK, ScriptAttribute.STRING));
-		int interval = Integer.valueOf(String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_INTERVAL, ScriptAttribute.PARAMETER_TYPE_INT)));
+		final String callback = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_CALLBACK, ScriptAttribute.STRING).toString();
+		int interval = Integer.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_INTERVAL, ScriptAttribute.PARAMETER_TYPE_INT).toString());
 		Object delayed = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_DELAYED, ScriptAttribute.PARAMETER_TYPE_BOOLEAN);
 		long delayedValue;
 		if ((delayed == null) || (!((Boolean)delayed).booleanValue())) {

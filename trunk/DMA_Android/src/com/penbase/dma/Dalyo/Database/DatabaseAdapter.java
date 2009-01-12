@@ -404,7 +404,7 @@ public class DatabaseAdapter {
 					for (int column=0; column<columnsNb; column++) {
 						Log.i("info", "column name "+columns[column]+" its value "+getCursorValue(cursor, columns[column]));
 						record.put(columns[column], getCursorValue(cursor, columns[column]));
-						if ((columns[column].equals(DatabaseAttribute.STATE)) && (Integer.valueOf(String.valueOf(getCursorValue(cursor, columns[column]))) == DatabaseAttribute.SYNCHRONIZED)) {
+						if ((columns[column].equals(DatabaseAttribute.STATE)) && (Integer.valueOf(getCursorValue(cursor, columns[column]).toString()) == DatabaseAttribute.SYNCHRONIZED)) {
 							checkSyncType = false;
 						}
 					}
@@ -449,17 +449,17 @@ public class DatabaseAdapter {
 			for (int k=0; k<recordsNbInt; k++) {
 				HashMap<Object, Object> record = tidMap.get(tidKey).get(k);
 				//syncType
-				int syncTypeInt = Integer.valueOf(String.valueOf(record.get(DatabaseAttribute.STATE)));
+				int syncTypeInt = Integer.valueOf(record.get(DatabaseAttribute.STATE).toString());
 				byte[] syncType = Binary.typeToByteArray(syncTypeInt);
 				bos.write(syncType, 0, syncType.length);
 
 				//local id
-				int localIdInt = Integer.valueOf(String.valueOf(record.get(DatabaseAttribute.ID+tidKey)));
+				int localIdInt = Integer.valueOf(record.get(DatabaseAttribute.ID+tidKey).toString());
 				byte[] localId = Binary.intToByteArray(localIdInt);
 				bos.write(localId, 0, localId.length);
 
 				//global id is
-				int globalIdInt = Integer.valueOf(String.valueOf(record.get(DatabaseAttribute.GID+tidKey)));
+				int globalIdInt = Integer.valueOf(record.get(DatabaseAttribute.GID+tidKey).toString());
 				byte[] globalId = Binary.intToByteArray(globalIdInt);
 				bos.write(globalId, 0, globalId.length);
 
@@ -593,7 +593,7 @@ public class DatabaseAdapter {
 		int fieldsNb = fieldsList.size();
 		for (int i=0; i<fieldsNb; i++) {
 			//check field's type
-			if (fieldsTypeMap.get(String.valueOf(fieldsList.get(i))).equals(DatabaseAttribute.BLOB)) {
+			if (fieldsTypeMap.get(fieldsList.get(i).toString()).equals(DatabaseAttribute.BLOB)) {
 				ByteArrayOutputStream bos = new ByteArrayOutputStream();
 				ObjectOutputStream oos;
 				try {
@@ -758,7 +758,7 @@ public class DatabaseAdapter {
 		String table = DatabaseAttribute.TABLE+tableId;
 		int newState = DatabaseAttribute.ADDVALUE;
 		if ((record.containsKey(DatabaseAttribute.STATE)) && (record.get(DatabaseAttribute.STATE) != null)) {
-			if (Integer.valueOf(String.valueOf(record.get(DatabaseAttribute.STATE))) == DatabaseAttribute.SYNCHRONIZED) {
+			if (Integer.valueOf(record.get(DatabaseAttribute.STATE).toString()) == DatabaseAttribute.SYNCHRONIZED) {
 				newState = DatabaseAttribute.UPDATEVALUE;
 			}
 			record.remove(DatabaseAttribute.STATE);
@@ -767,7 +767,7 @@ public class DatabaseAdapter {
 		values.put(DatabaseAttribute.STATE, newState);
 		int listSize = fieldList.size();
 		for (int i=0; i<listSize; i++) {
-			values.put(DatabaseAttribute.FIELD+String.valueOf(fieldList.get(i)), String.valueOf(valueList.get(i)));
+			values.put(DatabaseAttribute.FIELD+fieldList.get(i).toString(), valueList.get(i).toString());
 			record.remove(DatabaseAttribute.FIELD+fieldList.get(i));
 		}
 		Log.i("info", "values "+values);
@@ -781,7 +781,7 @@ public class DatabaseAdapter {
 		if (record.containsKey(DatabaseAttribute.STATE)) {
 			String table = DatabaseAttribute.TABLE+tableId;
 			String whereClause = createWhereClause(tableId, record);
-			if (Integer.valueOf(String.valueOf(record.get(DatabaseAttribute.STATE))) == DatabaseAttribute.SYNCHRONIZED) {
+			if (Integer.valueOf(record.get(DatabaseAttribute.STATE).toString()) == DatabaseAttribute.SYNCHRONIZED) {
 				ContentValues values = new ContentValues();
 				values.put(DatabaseAttribute.STATE, DatabaseAttribute.DELETEVALUE);
 				Log.i("info", "whereclause "+whereClause+" values "+values);
@@ -854,7 +854,7 @@ public class DatabaseAdapter {
 	
 	public static Object getCursorValue(Cursor cursor, String field) {
 		if (field.indexOf(DatabaseAttribute.FIELD) != -1) {
-			String fieldId = String.valueOf(Integer.valueOf(field.split("_")[1]));
+			String fieldId = Integer.valueOf(field.split("_")[1]).toString();
 			if (fieldsTypeMap.get(fieldId).equals(DatabaseAttribute.INTEGER)) {
 				return cursor.getInt(cursor.getColumnIndexOrThrow(field));
 			}

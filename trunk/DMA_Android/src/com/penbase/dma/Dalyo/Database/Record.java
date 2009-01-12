@@ -16,7 +16,7 @@ public class Record {
 			valueList.add(newId);
 			int size = fList.size();
 			for (int i=0; i<size; i++) {
-				fieldList.add(Integer.valueOf(String.valueOf(fList.get(i))));
+				fieldList.add(Integer.valueOf((fList.get(i)).toString()));
 				valueList.add(vList.get(i));
 			}
 			DatabaseAdapter.addQuery(Integer.valueOf(tableId), fieldList, valueList);
@@ -43,7 +43,7 @@ public class Record {
 		if (fList.size() == vList.size()) {
 			int size = fList.size();
 			for (int i=0; i<size; i++) {
-				fieldList.add(Integer.valueOf(String.valueOf(fList.get(i))));
+				fieldList.add(Integer.valueOf(fList.get(i).toString()));
 				valueList.add(vList.get(i));
 			}
 			DatabaseAdapter.updateQuery(tableId, fieldList, valueList, record);

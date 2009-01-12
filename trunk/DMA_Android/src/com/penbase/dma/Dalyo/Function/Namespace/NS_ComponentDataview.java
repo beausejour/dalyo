@@ -10,7 +10,7 @@ import com.penbase.dma.View.ApplicationView;
 
 public class NS_ComponentDataview {
 	public static HashMap<Object, Object> GetSelectedRecord(Element element) {
-		String componentId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT));
+		String componentId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT).toString();
 		HashMap<Object, Object> record = null;
 		Log.i("info", "getselectedrecord in dataview");
 		if (ApplicationView.getComponents().containsKey(componentId)) {
@@ -21,7 +21,7 @@ public class NS_ComponentDataview {
 	}
 	
 	public static void Refresh(Element element) {
-		String componentId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT));
+		String componentId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT).toString();
 		Object filter = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FILTER, ScriptAttribute.FILTER);
 		if (filter != null) {
 			Log.i("info", "filter in dataview refresh "+filter.toString());	

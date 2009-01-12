@@ -172,14 +172,14 @@ public class DataView extends LinearLayout implements OnGestureListener {
 							for (int j=0; j<columnsRecordSize; j++) {
 								String field = DatabaseAttribute.FIELD+columns.get(k).get(1);
 								if (columnNames[j].equals(field)) {
-									data.add(String.valueOf(DatabaseAdapter.getCursorValue(cursor, field)));
+									data.add(DatabaseAdapter.getCursorValue(cursor, field).toString());
 								}
-								record.put(columnNames[j], String.valueOf(DatabaseAdapter.getCursorValue(cursor, columnNames[j])));
+								record.put(columnNames[j], DatabaseAdapter.getCursorValue(cursor, columnNames[j]).toString());
 							}	
 						}
 					}
 					if (calculateColumn != -1) {
-						String value = String.valueOf(Function.createCalculateFunction(onCalculateMap.get(calculateColumn), record));
+						String value = Function.createCalculateFunction(onCalculateMap.get(calculateColumn), record).toString();
 						data.remove(calculateColumn);
 						data.add(calculateColumn, value);
 					}

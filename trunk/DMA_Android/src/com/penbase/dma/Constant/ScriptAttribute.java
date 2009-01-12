@@ -2,6 +2,7 @@ package com.penbase.dma.Constant;
 
 public class ScriptAttribute {	
 	//Function name
+	public static final String FUNCTION_ABS = "abs";
 	public static final String FUNCTION_ADD = "add";
 	public static final String FUNCTION_ADDCRITERIA = "addCriteria";
 	public static final String FUNCTION_ADDITEM = "addItem";
@@ -20,6 +21,8 @@ public class ScriptAttribute {
 	public static final String FUNCTION_EDITRECORD = "editRecord";
 	public static final String FUNCTION_ERROR = "error";
 	public static final String FUNCTION_EXPORT = "export";
+	public static final String FUNCTION_FLOOR = "floor";
+	public static final String FUNCTION_FORMAT = "format";
 	public static final String FUNCTION_GET = "get";
 	public static final String FUNCTION_GETFIELDNAME = "getFieldName";
 	public static final String FUNCTION_GETFIELDVALUE = "getFieldValue";
@@ -47,6 +50,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_NEWRECORD = "newRecord";
 	public static final String FUNCTION_NOW = "now";
 	public static final String FUNCTION_NOWHOUR = "nowH";
+	public static final String FUNCTION_PERCANTAGE = "percentage";
 	public static final String FUNCTION_RANDOM = "rand";
 	public static final String FUNCTION_REFRESH = "refresh";
 	public static final String FUNCTION_REMOVEALLITEMS = "removeAllItems";
@@ -113,8 +117,10 @@ public class ScriptAttribute {
 	public static final String PARAMETER_NAME_MAX = "max";
 	public static final String PARAMETER_NAME_MIN = "min";
 	public static final String PARAMETER_NAME_MINUTES = "minutes";
+	public static final String PARAMETER_NAME_PERCENT = "percent";
 	public static final String PARAMETER_NAME_TABLES = "tables";
 	public static final String PARAMETER_NAME_TEXT = "text";
+	public static final String PARAMETER_NAME_THOUSANDSSEP = "thousands_separator";
 	public static final String PARAMETER_NAME_TIMERID = "timer_id";
 	public static final String PARAMETER_NAME_TITLE = "title";
 	public static final String PARAMETER_NAME_UNDERLINE = "underline";

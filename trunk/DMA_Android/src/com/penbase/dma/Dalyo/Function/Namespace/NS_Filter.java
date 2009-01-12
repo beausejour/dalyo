@@ -10,9 +10,9 @@ import com.penbase.dma.Dalyo.Function.Function;
 
 public class NS_Filter {
 	public static void AddCriteria(Element element) {
-		String varName = String.valueOf(Function.getVariableName(element, ScriptTag.PARAMETER, ScriptAttribute.FILTER, ScriptAttribute.FILTER));
-		String field = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_ELEMENT, ScriptAttribute.OBJECT));
-		String operator = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.OPERATOR, ScriptAttribute.OPERATOR));
+		String varName = Function.getVariableName(element, ScriptTag.PARAMETER, ScriptAttribute.FILTER, ScriptAttribute.FILTER).toString();
+		String field = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_ELEMENT, ScriptAttribute.OBJECT).toString();
+		String operator = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.OPERATOR, ScriptAttribute.OPERATOR).toString();
 		Object value = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
 		Object link = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_LINK, ScriptAttribute.OPERATOR);
 		Log.i("info", "field "+field+" operator "+operator+" value "+value+" link "+link);
@@ -20,7 +20,7 @@ public class NS_Filter {
 	}
 	
 	public static void Clear(Element element) {
-		String varName = String.valueOf(Function.getVariableName(element, ScriptTag.PARAMETER, ScriptAttribute.FILTER, ScriptAttribute.FILTER));
+		String varName = Function.getVariableName(element, ScriptTag.PARAMETER, ScriptAttribute.FILTER, ScriptAttribute.FILTER).toString();
 		Function.clearFilterByName(varName);
 	}
 }

@@ -448,9 +448,9 @@ public class DmaHttpClient{
 					ask += "&ff"+i+"="+fid;
 					Object operator = Function.getOperator(((ArrayList<?>)filters).get(4*i+3));
 					Log.i("info", "operator "+operator);
-					ask += "&fo"+i+"="+urlEncode(String.valueOf(operator));
+					ask += "&fo"+i+"="+urlEncode(operator.toString());
 					Object value = ((ArrayList<?>)filters).get(4*i+4);
-					ask += "&fv"+i+"="+String.valueOf(value);
+					ask += "&fv"+i+"="+value.toString();
 				}
 			}
 		}

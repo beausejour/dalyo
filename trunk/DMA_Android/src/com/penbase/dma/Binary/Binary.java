@@ -183,35 +183,35 @@ public class Binary {
 				result = stringToByteArray("");	
 			}
 			else {
-				result = stringToByteArray(String.valueOf(value));
+				result = stringToByteArray(value.toString());
 			}
 		}
 		else if (type.equals("BOOLEAN")) {
-			result = boolToByteArray(Integer.valueOf(String.valueOf(value)));
+			result = boolToByteArray(Integer.valueOf(value.toString()));
 		}
 		else if (type.equals("INTEGER")) {
 			if (value == null) {
 				result = intToByteArray(0);
 			}
 			else {
-				result = intToByteArray(Integer.valueOf(String.valueOf(value)));
+				result = intToByteArray(Integer.valueOf(value.toString()));
 			}
 		}
 		else if (type.equals("TIME")) {
-			result = timeToByteArray(String.valueOf(value));
+			result = timeToByteArray(value.toString());
 		}
 		else if (type.equals("DATE")) {
-			result = dateToByteArray(String.valueOf(value));
+			result = dateToByteArray(value.toString());
 		}
 		else if (type.equals("DATETIME")) {
-			result = dateToByteArray(String.valueOf(value));
+			result = dateToByteArray(value.toString());
 		}		
 		else if (type.equals("DOUBLE")) {
 			if (value == null) {
 				result = intToByteArray(0);
 			}
 			else {
-				result = doubleToByteArray(Double.valueOf(String.valueOf(value)));
+				result = doubleToByteArray(Double.valueOf(value.toString()));
 			}
 		}
 		else if (type.equals("BLOB")) {
@@ -219,7 +219,7 @@ public class Binary {
 				result = stringToByteArray("");	
 			}
 			else {
-				result = stringToByteArray(String.valueOf(value));
+				result = stringToByteArray(value.toString());
 			}
 		}
 		return result;

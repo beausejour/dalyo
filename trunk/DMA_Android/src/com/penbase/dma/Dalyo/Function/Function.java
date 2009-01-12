@@ -149,9 +149,9 @@ public class Function {
 	private static boolean checkValueType(String type, Object value) {
 		boolean result = true;
 		if (type.equals("numeric")) {
-			if (String.valueOf(value).indexOf(".") != -1) {
+			if (value.toString().indexOf(".") != -1) {
 				try {
-					Double.valueOf(String.valueOf(value));
+					Double.valueOf(value.toString());
 				}
 				catch (NumberFormatException nfe) {
 					result = false;
@@ -160,7 +160,7 @@ public class Function {
 			}
 			else {
 				try {
-					Integer.valueOf(String.valueOf(value));
+					Integer.valueOf(value.toString());
 				}
 				catch (NumberFormatException nfe) {
 					result = false;
@@ -214,17 +214,17 @@ public class Function {
 	//Compare the left value and the right value
 	private static boolean checkCondition(Object left, Object operator, Object right) {
 		boolean result = false;
-		switch (Integer.valueOf(String.valueOf(operator))) {
+		switch (Integer.valueOf(operator.toString())) {
 			case ScriptAttribute.AND:
 				if (left == right) {
-					if (String.valueOf(left).equals(Constant.TRUE)) {
+					if (left.toString().equals(Constant.TRUE)) {
 						result = true;
 					}
 				}
 				break;
 			case ScriptAttribute.EQUALS:
 				if ((left instanceof Integer) || (right instanceof Integer)) {
-					result = (Integer.valueOf(String.valueOf(left)) == (Integer.valueOf(String.valueOf(right))));
+					result = (Integer.valueOf(left.toString()) == (Integer.valueOf(right.toString())));
 				}
 				else if ((left == null) || (right == null)) {
 					result = (left == right);
@@ -235,14 +235,14 @@ public class Function {
 				break;
 			case ScriptAttribute.GREATERTHAN:
 				if ((left != null) && (right != null)) {
-					result = (Integer.valueOf(String.valueOf(left)) > Integer.valueOf(String.valueOf(right)));	
+					result = (Integer.valueOf(left.toString()) > Integer.valueOf(right.toString()));	
 				}
 				break;
 			case ScriptAttribute.NOTEQUALS:
 				result = (left != right);
 				break;
 			case ScriptAttribute.OR:
-				if (Boolean.getBoolean(String.valueOf(left)) || Boolean.getBoolean(String.valueOf(right))) {
+				if (Boolean.getBoolean(left.toString()) || Boolean.getBoolean(right.toString())) {
 					result = true;
 				}
 				break;
@@ -527,7 +527,10 @@ public class Function {
 			}
 		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_MATH)) {
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ADD)) {
+			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ABS)) {
+				result = NS_Math.Abs(element);
+			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ADD)) {
 				result = NS_Math.Sum(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CEIL)) {
@@ -535,9 +538,18 @@ public class Function {
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_DIVISION)) {
 				result = NS_Math.Division(element);
-			}			
+			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_FLOOR)) {
+				result = NS_Math.Floor(element);
+			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_FORMAT)) {
+				result = NS_Math.Format(element);
+			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_MULTIPLE)) {
 				result = NS_Math.Multiple(element);
+			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_PERCANTAGE)) {
+				result = NS_Math.Percentage(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_RANDOM)) {
 				result = NS_Math.Random(element);

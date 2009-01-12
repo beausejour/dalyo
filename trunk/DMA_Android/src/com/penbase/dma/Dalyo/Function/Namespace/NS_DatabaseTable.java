@@ -17,19 +17,19 @@ import com.penbase.dma.Dalyo.Function.Function;
 
 public class NS_DatabaseTable {
 	public static Integer Count(Element element) {
-		String tableId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE));
+		String tableId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
 		Object filter = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FILTER, ScriptAttribute.FILTER);
 		return Record.countRecord(tableId, filter);
 	}
 	
 	public static void Clear(Element element) {
-		String tableId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE));
+		String tableId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
 		Object filter = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FILTER, ScriptAttribute.FILTER);
 		DatabaseAdapter.clearTable(tableId);
 	}
 	
 	public static HashMap<Object, Object> CreateNewRecord(Element element) {
-		String tableId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE));
+		String tableId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
 		ArrayList<Object> fieldsList = (ArrayList<Object>) Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_FIELDS, ScriptAttribute.LIST);
 		ArrayList<Object> valuesList = (ArrayList<Object>) Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUES, ScriptAttribute.LIST);
 		Log.i("info", "flist "+fieldsList+" vlist "+valuesList);
@@ -37,13 +37,13 @@ public class NS_DatabaseTable {
 	}
 	
 	public static void DeleteRecord(Element element) {
-		String tableId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE));
+		String tableId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
 		HashMap<Object, Object> record = (HashMap<Object, Object>) Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.RECORD, ScriptAttribute.RECORD);
 		Record.deleteRecord(tableId, record);
 	}
 	
 	public static void EditRecord(Element element) {
-		String tableId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE));
+		String tableId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
 		HashMap<Object, Object> record = (HashMap<Object, Object>) Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.RECORD, ScriptAttribute.RECORD);
 		ArrayList<Object> fieldList = (ArrayList<Object>) Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_FIELDS, ScriptAttribute.LIST);
 		ArrayList<Object> valueList = (ArrayList<Object>) Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUES, ScriptAttribute.LIST);
@@ -52,9 +52,9 @@ public class NS_DatabaseTable {
 	
 	public static Object GetFieldValue(Element element) {
 		Object value = null;
-		String tableId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE));
+		String tableId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
 		HashMap<Object, Object> record = (HashMap<Object, Object>)Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.RECORD, ScriptAttribute.RECORD);
-		String fieldId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FIELD, ScriptAttribute.FIELD));
+		String fieldId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FIELD, ScriptAttribute.FIELD).toString();
 		if (record != null) {
 			value = record.get(DatabaseAttribute.FIELD+fieldId);
 		}
@@ -63,10 +63,10 @@ public class NS_DatabaseTable {
 	
 	public static Object GetFieldValueByPrimaryKey(Element element) {
 		Object value = null;
-		String tableId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE));
-		String keyField = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_KEYFIELD, ScriptAttribute.FIELD));
+		String tableId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
+		String keyField = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_KEYFIELD, ScriptAttribute.FIELD).toString();
 		Object keyValue = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_KEYVALUE, ScriptAttribute.OBJECT);
-		String field = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FIELD, ScriptAttribute.FIELD));
+		String field = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FIELD, ScriptAttribute.FIELD).toString();
 		ArrayList<Integer> fieldList = new ArrayList<Integer>();
 		ArrayList<Object> valueList = new ArrayList<Object>();
 		fieldList.add(Integer.valueOf(keyField));
@@ -88,15 +88,15 @@ public class NS_DatabaseTable {
 	}
 	
 	public static ArrayList<HashMap<Object, Object>> GetFilteredRecords(Element element) {
-		String tableId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE));
+		String tableId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
 		Object filter = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FILTER, ScriptAttribute.FILTER);
 		return getRecords(tableId, filter);
 	}
 	
 	public static ArrayList<HashMap<Object, Object>> GetRecords(Element element) {
-		String tableId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE));
+		String tableId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
 		Log.i("info", "tableid "+tableId);
-		String fieldId = String.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FIELD, ScriptAttribute.FIELD));
+		String fieldId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FIELD, ScriptAttribute.FIELD).toString();
 		Log.i("info", "tableid "+fieldId);
 		Object value = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
 		Log.i("info", "tableid "+tableId+" fieldid "+fieldId+" value "+value);
