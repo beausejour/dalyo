@@ -353,7 +353,8 @@ public class Function {
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETFOCUS)) {
 				NS_Component.SetFocus(element);
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETTEXT)) {
+			else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETTEXT)) || 
+					(element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETLABEL))) {
 				NS_Component.SetText(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETVISIBLE)) {
@@ -422,6 +423,9 @@ public class Function {
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_IMPORT)) {
 				NS_Database.Import(element);
+			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETTABLEBYNAME)) {
+				result = NS_Database.GetTableByName(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_STARTTRANSACTION)) {
 				NS_Database.StartTransaction();

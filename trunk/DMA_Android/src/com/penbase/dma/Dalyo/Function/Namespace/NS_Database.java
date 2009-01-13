@@ -1,8 +1,11 @@
 package com.penbase.dma.Dalyo.Function.Namespace;
 
 import java.util.ArrayList;
+
 import org.w3c.dom.Element;
+
 import android.app.ProgressDialog;
+
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
@@ -21,6 +24,17 @@ public class NS_Database {
 	
 	public static void Export(Element element) {
 		
+	}
+	
+	/*
+	 * 			<c f="getTableByName" ns="database">
+				<p n="tablename" t="string">Table_0</p>
+			</c>
+	 * */
+	public static String GetTableByName(Element element) {
+		String tableName = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_TABLENAME, ScriptAttribute.STRING).toString();
+		//return table id
+		return DatabaseAdapter.getTableIdByName(tableName);
 	}
 	
 	public static void Import(Element element) {

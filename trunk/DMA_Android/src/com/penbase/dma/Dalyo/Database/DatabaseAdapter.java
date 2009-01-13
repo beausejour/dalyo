@@ -34,6 +34,7 @@ public class DatabaseAdapter {
 	private final Context context;
 	private static SQLiteDatabase sqlite = null;
 	private static HashMap<String, ArrayList<String>> tablesMap;
+	private static HashMap<String, String> tablesNameMap;
 	private static HashMap<String, String> fieldsTypeMap;
 	private static HashMap<String, String> fieldsNameMap;
 	private static HashMap<String, String> fieldsPKMap;
@@ -51,6 +52,7 @@ public class DatabaseAdapter {
 		this.TABLEPREF = dbName+"_"+TABLEPREF;
 		this.FIELDPREF = dbName+"_"+FIELDPREF;
 		tablesMap = new HashMap<String, ArrayList<String>>();		//{tid, [tablename, fieldnames...]}
+		tablesNameMap = new HashMap<String, String>();
 		fieldsTypeMap = new HashMap<String, String>();
 		fieldsNameMap = new HashMap<String, String>();
 		fieldsPKMap = new HashMap<String, String>();
@@ -97,6 +99,7 @@ public class DatabaseAdapter {
 	private boolean checkDatabaseExists() {
 		boolean result = true;
 		HashMap<String, ArrayList<String>> tsMap = new HashMap<String, ArrayList<String>>();
+		HashMap<String, String> tnMap = new HashMap<String, String>();
 		HashMap<String, String> fsMap = new HashMap<String, String>();
 		HashMap<String, String> fNMap = new HashMap<String, String>();
 		HashMap<String, String> fsPkMap = new HashMap<String, String>();
@@ -109,6 +112,8 @@ public class DatabaseAdapter {
 		while (i < tableLen) {
 			Element table = (Element) tableList.item(i);
 			String tableId = table.getAttribute(DatabaseTag.TABLE_ID);
+			String tableName = table.getAttribute(DatabaseTag.TABLE_NAME);
+			tnMap.put(tableName, tableId);
 			if (!tablePref.getString(tableId, "null").equals("")) {
 				result = false;
 				i = tableLen;
@@ -165,6 +170,7 @@ public class DatabaseAdapter {
 		}
 		if (result) {
 			tablesMap = tsMap;
+			tablesNameMap = tnMap;
 			fieldsNameMap = fNMap;
 			fieldsTypeMap = fsMap;
 			fieldsPKMap = fsPkMap;
@@ -183,6 +189,8 @@ public class DatabaseAdapter {
 			Element table = (Element) tableList.item(i);
 			String typeSync = table.getAttribute(DatabaseTag.TABLE_SYNC);
 			String tableId = table.getAttribute(DatabaseTag.TABLE_ID);
+			String tableOriginalName = table.getAttribute(DatabaseTag.TABLE_NAME);
+			tablesNameMap.put(tableOriginalName, tableId);
 			editorTablePref.putString(tableId, "");
 			String tableName = DatabaseAttribute.TABLE+tableId;
 			ArrayList<String> tableElements = new ArrayList<String>();
@@ -808,6 +816,14 @@ public class DatabaseAdapter {
 			result = fieldsNameMap.get(fieldId);
 		}
 		return result;
+	}
+	
+	public static String getTableIdByName(String name) {
+		return tablesNameMap.get(name);
+	}
+	
+	public static HashMap<String, String> getFieldsNameMap() {
+		return fieldsNameMap;
 	}
 	
 	public static void beginTransaction() {

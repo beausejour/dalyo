@@ -327,34 +327,36 @@ public class DmaHttpClient{
 		"&appbuild="+AppBuild+"&subid="+SubId+"&did="+Dma.getDeviceID()+"&login="+login+"&passwd_md5="+md5(pwd)+"&useragent=ANDROID";
 		String resourcesStream = SendPost(getResources, STRING);
 		Document resourceDocument = CreateParseDocument(resourcesStream, null);
-		NodeList resourceList = resourceDocument.getElementsByTagName(RessourceTag.RESOURCES_RL).item(0).getChildNodes();
-		int resourceLen = resourceList.getLength();
-		
-		for (int i=0; i<resourceLen; i++) {
-			Element resource = (Element) resourceList.item(i);
-			if (resource.hasAttribute(RessourceTag.RESOURCES_R_ID)) {
-				String resourceId = resource.getAttribute(RessourceTag.RESOURCES_R_ID);
-				String fileName = imageFilePath+resource.getAttribute(RessourceTag.RESOURCES_R_ID)+"."+
-				resource.getAttribute(RessourceTag.RESOURCES_R_EXT);
-				String getResource = "act=getresource&from=runtime&appid="+AppId+"&appversion="+AppVer+
-				"&appbuild="+AppBuild+"&subid="+SubId+"&did="+Dma.getDeviceID()+"&resourceid="+
-				resource.getAttribute(RessourceTag.RESOURCES_R_ID)+"&login="+login+"&passwd_md5="+md5(pwd)+"&useragent=ANDROID";
-				if ((resourceMapFile.containsKey(resourceId)) && (checkFileExist(fileName))) {
-					if (!resourceMapFile.get(resourceId).equals(resource.getAttribute(RessourceTag.RESOURCES_R_HASHCODE))) {
-						Log.i("info", "download repalce image");
-						new File(fileName).delete();
+		if (resourceDocument.getElementsByTagName(RessourceTag.RESOURCES_RL).getLength() > 0) {
+			NodeList resourceList = resourceDocument.getElementsByTagName(RessourceTag.RESOURCES_RL).item(0).getChildNodes();
+			int resourceLen = resourceList.getLength();
+			
+			for (int i=0; i<resourceLen; i++) {
+				Element resource = (Element) resourceList.item(i);
+				if (resource.hasAttribute(RessourceTag.RESOURCES_R_ID)) {
+					String resourceId = resource.getAttribute(RessourceTag.RESOURCES_R_ID);
+					String fileName = imageFilePath+resource.getAttribute(RessourceTag.RESOURCES_R_ID)+"."+
+					resource.getAttribute(RessourceTag.RESOURCES_R_EXT);
+					String getResource = "act=getresource&from=runtime&appid="+AppId+"&appversion="+AppVer+
+					"&appbuild="+AppBuild+"&subid="+SubId+"&did="+Dma.getDeviceID()+"&resourceid="+
+					resource.getAttribute(RessourceTag.RESOURCES_R_ID)+"&login="+login+"&passwd_md5="+md5(pwd)+"&useragent=ANDROID";
+					if ((resourceMapFile.containsKey(resourceId)) && (checkFileExist(fileName))) {
+						if (!resourceMapFile.get(resourceId).equals(resource.getAttribute(RessourceTag.RESOURCES_R_HASHCODE))) {
+							Log.i("info", "download repalce image");
+							new File(fileName).delete();
+							String resourceStream = SendPost(getResource, IMAGE);
+							StreamToFile(resourceStream, fileName);
+						}
+					}
+					else {
+						Log.i("info", "download image");
 						String resourceStream = SendPost(getResource, IMAGE);
 						StreamToFile(resourceStream, fileName);
 					}
 				}
-				else {
-					Log.i("info", "download image");
-					String resourceStream = SendPost(getResource, IMAGE);
-					StreamToFile(resourceStream, fileName);
-				}
 			}
+			StreamToFile(resourcesStream, resources_XML);
 		}
-		StreamToFile(resourcesStream, resources_XML);
 	}
 	
 	//Get the DB of an application
