@@ -37,6 +37,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_GETSELECTEDRECORD = "getSelectedRecord";
 	public static final String FUNCTION_GETSIZE = "size";
 	public static final String FUNCTION_GETSTATUS = "getStatus";
+	public static final String FUNCTION_GETTABLEBYNAME = "getTableByName";
 	public static final String FUNCTION_GETTEXT = "getText";
 	public static final String FUNCTION_GETVALUE = "getValue";
 	public static final String FUNCTION_IMPORT = "import";
@@ -59,6 +60,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_SETCURRENTRECORD = "setCurrentRecord";
 	public static final String FUNCTION_SETENABLED = "setEnabled";
 	public static final String FUNCTION_SETFOCUS = "setFocus";
+	public static final String FUNCTION_SETLABEL = "setLabel";	
 	public static final String FUNCTION_SETSELECTEDINDEX = "setSelectedIndex";
 	public static final String FUNCTION_SETTEXT = "setText";
 	public static final String FUNCTION_SETTITLE = "setTitle";
@@ -118,6 +120,7 @@ public class ScriptAttribute {
 	public static final String PARAMETER_NAME_MIN = "min";
 	public static final String PARAMETER_NAME_MINUTES = "minutes";
 	public static final String PARAMETER_NAME_PERCENT = "percent";
+	public static final String PARAMETER_NAME_TABLENAME = "tablename";
 	public static final String PARAMETER_NAME_TABLES = "tables";
 	public static final String PARAMETER_NAME_TEXT = "text";
 	public static final String PARAMETER_NAME_THOUSANDSSEP = "thousands_separator";
