@@ -81,8 +81,6 @@ public class DmaHttpClient{
 	//Image file's path
 	private String imageFilePath;
 	
-	private boolean syncResult = false;
-	
 	public DmaHttpClient() {
 		createFilesPath();
 		try{
