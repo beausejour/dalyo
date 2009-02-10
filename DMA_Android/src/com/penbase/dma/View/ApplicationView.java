@@ -25,12 +25,15 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
-import android.view.*;
-import android.widget.*;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AbsoluteLayout;
 import android.graphics.Color;
 
 public class ApplicationView extends Activity {
+	private ArrayList<String> menuItemNameList;
+	private ArrayList<String> menuItemOnClickList;
 	private static ApplicationView applicationView;	
 	private static DmaHttpClient client;
 	private static HashMap<String, Form> layoutsMap;
@@ -64,6 +67,8 @@ public class ApplicationView extends Activity {
 	public void onCreate(Bundle icicle) {	
 		super.onCreate(icicle);
 		ApplicationView.applicationView = this;
+		menuItemNameList = new ArrayList<String>();
+		menuItemOnClickList = new ArrayList<String>();
 		database = new DatabaseAdapter(this, dbDoc, clientLogin+"_"+ApplicationListView.getApplicationName());
 		resourcesFileMap = client.getResourceMap("ext");
 		componentsMap = new HashMap<String, Component>();
@@ -161,8 +166,39 @@ public class ApplicationView extends Activity {
 			int formEltListLen = formEltList.getLength();
 			for (int j=0; j<formEltListLen; j++) {
 				Element element = (Element) formEltList.item(j);
-				if ((!element.getNodeName().equals(DesignTag.COMPONENT_MENUBAR)) &&
-						(!element.getNodeName().equals(DesignTag.COMPONENT_NAVIBAR))) {
+				if (element.getNodeName().equals(DesignTag.COMPONENT_MENUBAR)) {
+					NodeList menuList = element.getChildNodes();
+					if (menuList.getLength() > 0) {
+						int menuLen = menuList.getLength();
+						for (int k=0; k<menuLen; k++) {
+							Element menu = (Element) menuList.item(k);
+							if (menu.getNodeName().equals(DesignTag.COMPONENT_MENU)) {
+								NodeList menuItemList = menu.getChildNodes();
+								if (menuItemList.getLength() > 0) {
+									int menuItemLen = menuItemList.getLength();
+									for (int l=0; l<menuItemLen; l++) {
+										Element menuItem = (Element) menuItemList.item(l);
+										if (menuItem.getNodeName().equals(DesignTag.COMPONENT_MENUITEM)) {
+											if (menuItem.hasAttribute(DesignTag.COMPONENT_COMMON_NAME)) {
+												menuItemNameList.add(menuItem.getAttribute(DesignTag.COMPONENT_COMMON_NAME));
+												if (menuItem.hasAttribute(DesignTag.EVENT_ONCLICK)) {
+													menuItemOnClickList.add(menuItem.getAttribute(DesignTag.EVENT_ONCLICK));
+												}
+												else {
+													menuItemOnClickList.add("");
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				else if (element.getNodeName().equals(DesignTag.COMPONENT_NAVIBAR)) {
+					
+				}
+				else {
 					component = new Component(this, element.getNodeName());
 					
 					if (element.hasAttribute(DesignTag.COMPONENT_COMMON_ID)) {
@@ -318,7 +354,6 @@ public class ApplicationView extends Activity {
 					
 					//Add onclick event
 					if (element.hasAttribute(DesignTag.EVENT_ONCLICK)) {
-						Log.i("info", "onclick function name "+element.getAttribute(DesignTag.EVENT_ONCLICK));
 						component.setOnclickFunction(element.getAttribute(DesignTag.EVENT_ONCLICK), component.getView());
 					}
 					
@@ -336,16 +371,18 @@ public class ApplicationView extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		boolean result = super.onCreateOptionsMenu(menu);
-		menu.add("Quit");
+		if (menuItemNameList.size() > 0) {
+			for (int i=0; i<menuItemNameList.size(); i++) {
+				menu.add(Menu.NONE, i, Menu.NONE, menuItemNameList.get(i));
+			}
+		}
 		return result;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case 0:
-				quit();
-				return true;
+		if (!menuItemOnClickList.get(item.getItemId()).equals("")) {
+			Function.createFunction(menuItemOnClickList.get(item.getItemId()));
 		}
 		return super.onOptionsItemSelected(item);
 	}

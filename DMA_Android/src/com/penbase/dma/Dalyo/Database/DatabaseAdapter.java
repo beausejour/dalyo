@@ -356,20 +356,23 @@ public class DatabaseAdapter {
 				int globalIdInt = Binary.byteArrayToInt(globalId);
 				valueList.add(String.valueOf(globalIdInt));
 				bos.write(globalId, 0, globalId.length);
-				//Get each record's information
-				for (int l=0; l<fieldsNbInt; l++) {
-					//Get length of value
-					byte[] valueLength = new byte[Binary.INTBYTE];
-					bis.read(valueLength, 0, valueLength.length);
-					int valueLengthInt = Binary.byteArrayToInt(valueLength);
-					//Get value
-					byte[] value = new byte[valueLengthInt];
-					bis.read(value, 0, value.length);
-					Object valueObject = Binary.byteArrayToObject(value, fieldsTypeMap.get(String.valueOf(fieldList.get(l))));
-					valueList.add(valueObject);
-				}
-				if (syncTypeInt != DatabaseAttribute.SYNCHRONIZED) {
-					recordsList.add(valueList);
+				
+				if (syncTypeInt != DatabaseAttribute.DELETEVALUE) {
+					//Get each record's information
+					for (int l=0; l<fieldsNbInt; l++) {
+						//Get length of value
+						byte[] valueLength = new byte[Binary.INTBYTE];
+						bis.read(valueLength, 0, valueLength.length);
+						int valueLengthInt = Binary.byteArrayToInt(valueLength);
+						//Get value
+						byte[] value = new byte[valueLengthInt];
+						bis.read(value, 0, value.length);
+						Object valueObject = Binary.byteArrayToObject(value, fieldsTypeMap.get(String.valueOf(fieldList.get(l))));
+						valueList.add(valueObject);
+					}
+					if (syncTypeInt != DatabaseAttribute.SYNCHRONIZED) {
+						recordsList.add(valueList);
+					}
 				}
 			}
 			updateTable(tableIdInt, fieldList, syncTypeList, recordsList);

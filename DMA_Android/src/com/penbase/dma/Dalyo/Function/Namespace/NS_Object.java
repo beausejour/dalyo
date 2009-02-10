@@ -73,6 +73,9 @@ public class NS_Object {
 		else if (value instanceof Time) {
 			return ((Time) value).toString();
 		}
+		else if (value == null) {
+			return "";
+		}
 		else {
 			return value.toString();
 		}

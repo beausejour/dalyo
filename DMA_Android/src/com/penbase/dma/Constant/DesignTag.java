@@ -55,7 +55,9 @@ public class DesignTag {
 	public static final String COMPONENT_GAUGE_MIN = "v";
 	public static final String COMPONENT_IMAGE = "i";   
 	public static final String COMPONENT_LABEL = "l";
+	public static final String COMPONENT_MENU = "m";
 	public static final String COMPONENT_MENUBAR = "mb";
+	public static final String COMPONENT_MENUITEM = "mi";
 	public static final String COMPONENT_NAVIBAR = "nb";
 	public static final String COMPONENT_NUMBERBOX = "nbox";
 	public static final String COMPONENT_PICTUREBOX = "pb";
@@ -80,6 +82,7 @@ public class DesignTag {
 	public static final String COMPONENT_COMMON_LCOORDY = "y2";
 	public static final String COMPONENT_COMMON_LHEIGHT = "h2";
 	public static final String COMPONENT_COMMON_LWIDTH = "w2";
+	public static final String COMPONENT_COMMON_NAME = "n";
 	public static final String COMPONENT_COMMON_PCOORDX = "x";
 	public static final String COMPONENT_COMMON_PCOORDY = "y";
 	public static final String COMPONENT_COMMON_PHEIGHT = "h";
