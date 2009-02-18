@@ -2,22 +2,28 @@ package com.penbase.dma.Dalyo.Component.Custom.Dataview;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import com.penbase.dma.Constant.DatabaseAttribute;
 import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
 import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.View.ApplicationView;
+
 import android.content.Context;
 import android.content.res.Configuration;
+
 import android.database.Cursor;
+
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.Paint.Style;
+
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.GestureDetector.OnGestureListener;
+
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -38,9 +44,11 @@ public class DataView extends LinearLayout implements OnGestureListener {
 	private HashMap<Integer, String> onCalculateMap = new HashMap<Integer, String>();
 	private ListView mListView;
 	private GestureDetector mGestureDetector;
+	private boolean hasHeader;
 	
 	public DataView(Context c, String tid) {
 		super(c);
+		hasHeader = true;
 		borderPaint = new Paint();
 		borderPaint.setARGB(255, 0, 0, 0);
 		borderPaint.setAntiAlias(true);
@@ -58,7 +66,7 @@ public class DataView extends LinearLayout implements OnGestureListener {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View v, int position, long arg3) {
 				currentPosition = position;
-				if (!((CustomLinearLayout) v).hasHeader()) {
+				if (!((CustomLinearLayout) v).isHeader()) {
 					v.setSelected(true);
 				}
 			}
@@ -94,23 +102,29 @@ public class DataView extends LinearLayout implements OnGestureListener {
 			for (int i=0; i<listSize; i++) {
 				ArrayList<String> column = new ArrayList<String>();
 				column.add(list.get(i).get(0));		//tid
-				column.add(list.get(i).get(1));		//fid	
+				column.add(list.get(i).get(1));		//fid
+				if (list.get(i).get(2).equals("")) {
+					hasHeader = false;
+				}
 				headerList.add(list.get(i).get(2));
 				pwidthList.add(list.get(i).get(3));
 				lwidthList.add(list.get(i).get(4));
 				columns.add(column);
 			}
-			
 			if (ApplicationView.getOrientation() == Configuration.ORIENTATION_PORTRAIT) {
-				CustomLinearLayout header = new CustomLinearLayout(context, headerList, pwidthList, true);
-				mListView.addHeaderView(header, null, false);
+				if (hasHeader){
+					CustomLinearLayout header = new CustomLinearLayout(context, headerList, pwidthList, true);
+					mListView.addHeaderView(header, null, false);
+				}
 				for (String s : pwidthList) {
 					width += Integer.valueOf(s);
 				}
 			}
 			else {
-				CustomLinearLayout header = new CustomLinearLayout(context, headerList, lwidthList, true);
-				mListView.addHeaderView(header, null, false);
+				if (hasHeader){
+					CustomLinearLayout header = new CustomLinearLayout(context, headerList, lwidthList, true);
+					mListView.addHeaderView(header, null, false);
+				}
 				for (String s : lwidthList) {
 					width += Integer.valueOf(s);
 				}

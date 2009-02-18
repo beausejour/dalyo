@@ -4,6 +4,8 @@ import java.util.HashMap;
 
 import org.w3c.dom.Element;
 
+import android.util.Log;
+
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Function.Function;
@@ -16,6 +18,7 @@ public class NS_Form {
 			ApplicationView.getLayoutsMap().get(formId).onLoad(ApplicationView.getOnLoadFuncMap().get(formId));
 		}
 		ApplicationView.setCurrentFormId(formId);
+		Log.i("info", "navigate form id "+formId);
 		ApplicationView.getCurrentView().setTitle(ApplicationView.getLayoutsMap().get(formId).getTitle());
 		ApplicationView.getCurrentView().setContentView(ApplicationView.getLayoutsMap().get(formId));
 	}

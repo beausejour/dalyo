@@ -52,7 +52,7 @@ public class CustomLinearLayout extends LinearLayout {
 		return dataList;
 	}
 	
-	public boolean hasHeader() {
+	public boolean isHeader() {
 		return isHeader;
 	}
 	

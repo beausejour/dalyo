@@ -13,7 +13,7 @@ public class CustomTextView extends TextView{
 	
 	public CustomTextView(Context context) {
 		super(context);
-		this.setGravity(Gravity.CENTER);
+		this.setGravity(Gravity.LEFT);
 		borderPaint = new Paint();
 		borderPaint.setARGB(255, 223, 217, 217);
 		borderPaint.setAntiAlias(true);

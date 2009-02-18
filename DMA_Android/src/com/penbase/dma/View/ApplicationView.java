@@ -25,16 +25,17 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.MenuItem.OnMenuItemClickListener;
 import android.widget.AbsoluteLayout;
 import android.graphics.Color;
 
 public class ApplicationView extends Activity {
-	private ArrayList<String> menuItemNameList;
-	private ArrayList<String> menuItemOnClickList;
-	private static ApplicationView applicationView;	
+	private static Menu currentMenu;
+	private static ApplicationView applicationView;
 	private static DmaHttpClient client;
 	private static HashMap<String, Form> layoutsMap;
 	private static HashMap<String, String> onLoadFuncMap;	
@@ -67,8 +68,6 @@ public class ApplicationView extends Activity {
 	public void onCreate(Bundle icicle) {	
 		super.onCreate(icicle);
 		ApplicationView.applicationView = this;
-		menuItemNameList = new ArrayList<String>();
-		menuItemOnClickList = new ArrayList<String>();
 		database = new DatabaseAdapter(this, dbDoc, clientLogin+"_"+ApplicationListView.getApplicationName());
 		resourcesFileMap = client.getResourceMap("ext");
 		componentsMap = new HashMap<String, Component>();
@@ -86,7 +85,7 @@ public class ApplicationView extends Activity {
 		if (onLoadFuncMap.containsKey(startFormId)) {
 			layoutsMap.get(startFormId).onLoad(onLoadFuncMap.get(startFormId));
 		}
-		setCurrentFormId(startFormId);
+		currentFormId = startFormId;
 		setTitle(layoutsMap.get(startFormId).getTitle());
 		setContentView(layoutsMap.get(startFormId));
 	}
@@ -167,6 +166,10 @@ public class ApplicationView extends Activity {
 			for (int j=0; j<formEltListLen; j++) {
 				Element element = (Element) formEltList.item(j);
 				if (element.getNodeName().equals(DesignTag.COMPONENT_MENUBAR)) {
+					//Menu item name list and onclick event list
+					ArrayList<String> menuItemNameList = new ArrayList<String>(); 
+					ArrayList<String> menuItemOnClickList = new ArrayList<String>();
+					
 					NodeList menuList = element.getChildNodes();
 					if (menuList.getLength() > 0) {
 						int menuLen = menuList.getLength();
@@ -191,9 +194,20 @@ public class ApplicationView extends Activity {
 										}
 									}
 								}
+								else {
+									menuItemNameList.add(menu.getAttribute(DesignTag.COMPONENT_COMMON_NAME));
+									if (menu.hasAttribute(DesignTag.EVENT_ONCLICK)) {
+										menuItemOnClickList.add(menu.getAttribute(DesignTag.EVENT_ONCLICK));
+									}
+									else {
+										menuItemOnClickList.add("");
+									}
+								}
 							}
 						}
 					}
+					form.setMenuItemNameList(menuItemNameList);
+					form.setMenuItemOnClickList(menuItemOnClickList);
 				}
 				else if (element.getNodeName().equals(DesignTag.COMPONENT_NAVIBAR)) {
 					
@@ -370,21 +384,10 @@ public class ApplicationView extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		boolean result = super.onCreateOptionsMenu(menu);
-		if (menuItemNameList.size() > 0) {
-			for (int i=0; i<menuItemNameList.size(); i++) {
-				menu.add(Menu.NONE, i, Menu.NONE, menuItemNameList.get(i));
-			}
-		}
+		currentMenu = menu;
+		boolean result = super.onCreateOptionsMenu(currentMenu);
+		setCurrentFormId(currentFormId);
 		return result;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		if (!menuItemOnClickList.get(item.getItemId()).equals("")) {
-			Function.createFunction(menuItemOnClickList.get(item.getItemId()));
-		}
-		return super.onOptionsItemSelected(item);
 	}
 
 	private void quit() {
@@ -431,6 +434,23 @@ public class ApplicationView extends Activity {
 	
 	public static void setCurrentFormId(String id) {
 		currentFormId = id;
+		ArrayList<String> menuItemNameList = layoutsMap.get(currentFormId).getMenuItemNameList();
+		currentMenu.clear();
+		int itemsSize = menuItemNameList.size();
+		if (itemsSize > 0) {
+			for (int i=0; i<itemsSize; i++) {
+				currentMenu.add(Menu.NONE, i, Menu.NONE, menuItemNameList.get(i)).setOnMenuItemClickListener(new OnMenuItemClickListener() {
+					@Override
+					public boolean onMenuItemClick(MenuItem item) {
+						ArrayList<String> menuItemOnClickList = layoutsMap.get(currentFormId).getMenuItemOnClickList();
+						if (!menuItemOnClickList.get(item.getItemId()).equals("")) {
+							Function.createFunction(menuItemOnClickList.get(item.getItemId()));
+						}
+						return false;
+					}
+				});
+			}
+		}
 	}
 	
 	public static void errorDialog(String message) {

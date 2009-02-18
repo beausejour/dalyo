@@ -330,7 +330,7 @@ public class Function {
 	//Check element's name and namespace to call the right function 
 	public static Object distributeCall(Element element) {
 		Object result = null;
-		Log.i("info", "function name "+element.getAttribute(ScriptTag.FUNCTION));
+		Log.i("info", "namespace "+element.getAttribute(ScriptTag.NAMESPACE)+" function name "+element.getAttribute(ScriptTag.FUNCTION));
 		if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.COMPONENT)) {
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETLABEL)) {
 				result = NS_Component.GetLabel(element);
@@ -638,11 +638,8 @@ public class Function {
 						parametersMap.put(element.getAttribute(ScriptTag.FUNCTION)+"_"+child.getAttribute(ScriptTag.NAME), child.getChildNodes().item(0).getNodeValue());
 					}
 				}
-				createFunction(element.getAttribute(ScriptTag.FUNCTION));
 			}
-			else {
-				createFunction(element.getAttribute(ScriptTag.FUNCTION));
-			}
+			createFunction(element.getAttribute(ScriptTag.FUNCTION));
 		}
 		return result;
 	}
@@ -681,7 +678,9 @@ public class Function {
 	
 	public static void clearFilterByName(String name) {
 		if (varsMap.containsKey(name)) {
-			((ArrayList<Object>) varsMap.get(name)).clear();
+			if (varsMap.get(name) != null) {
+				((ArrayList<Object>) varsMap.get(name)).clear();
+			}
 		}
 	}
 	

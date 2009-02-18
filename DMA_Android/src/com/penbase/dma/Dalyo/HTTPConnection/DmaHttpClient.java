@@ -218,7 +218,6 @@ public class DmaHttpClient{
 	//Check if we need to download all xml files
 	public void checkDownloadFile(int position, String login, String pwd) {
 		String loginStream = SendPost("act=login&login="+login+"&passwd_md5="+md5(pwd)+"&useragent=ANDROID", STRING);
-		Log.i("info", "loginstream "+loginStream);
 		StreamToFile(loginStream, login_XML);
 		Document parserLogin = CreateParseDocument(loginStream, null);
 		NodeList list = parserLogin.getElementsByTagName("a");
