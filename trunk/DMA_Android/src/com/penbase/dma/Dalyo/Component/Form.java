@@ -1,6 +1,7 @@
 package com.penbase.dma.Dalyo.Component;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -16,9 +17,13 @@ import com.penbase.dma.Dalyo.Function.Function;
 public class Form extends AbsoluteLayout{
 	private String tableId;
 	private String title;
+	private ArrayList<String> menuItemNameList;
+	private ArrayList<String> menuItemOnClickList;
 	
 	public Form(Context context) {		
 		super(context);
+		menuItemNameList = new ArrayList<String>();
+		menuItemOnClickList = new ArrayList<String>();
 		this.setLayoutParams(new AbsoluteLayout.LayoutParams(LayoutParams.FILL_PARENT, 
 				LayoutParams.FILL_PARENT, 0, 0));
 	}
@@ -26,6 +31,22 @@ public class Form extends AbsoluteLayout{
 	public void onLoad(String name) {
 		//Function.createFunction(name, null);
 		Function.createFunction(name);
+	}
+	
+	public ArrayList<String> getMenuItemNameList() {
+		return menuItemNameList;
+	}
+	
+	public void setMenuItemNameList(ArrayList<String> nameList) {
+		menuItemNameList = nameList;
+	}
+	
+	public ArrayList<String> getMenuItemOnClickList() {
+		return menuItemOnClickList;
+	}
+	
+	public void setMenuItemOnClickList(ArrayList<String> onClickList) {
+		menuItemOnClickList = onClickList;
 	}
 	
 	public void setTableId(String tableId) {

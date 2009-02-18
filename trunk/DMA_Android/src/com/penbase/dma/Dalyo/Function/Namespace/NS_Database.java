@@ -26,11 +26,6 @@ public class NS_Database {
 		
 	}
 	
-	/*
-	 * 			<c f="getTableByName" ns="database">
-				<p n="tablename" t="string">Table_0</p>
-			</c>
-	 * */
 	public static String GetTableByName(Element element) {
 		String tableName = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_TABLENAME, ScriptAttribute.STRING).toString();
 		//return table id
