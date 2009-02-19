@@ -3,15 +3,19 @@ package com.penbase.dma.Dalyo.Component;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.widget.AbsoluteLayout;
+import android.widget.ImageView.ScaleType;
+
 import com.penbase.dma.Constant.Constant;
 import com.penbase.dma.Dalyo.Component.Custom.ComboBox;
 import com.penbase.dma.Dalyo.Component.Custom.TextField;
 import com.penbase.dma.Dalyo.Component.Custom.TextZone;
 import com.penbase.dma.Dalyo.Component.Custom.Doodle.DoodleView;
+import com.penbase.dma.Dalyo.Component.Custom.PictureBox.PictureBoxView;
 import com.penbase.dma.Dalyo.Function.Function;
 
 public class Form extends AbsoluteLayout{
@@ -29,7 +33,6 @@ public class Form extends AbsoluteLayout{
 	}
 	
 	public void onLoad(String name) {
-		//Function.createFunction(name, null);
 		Function.createFunction(name);
 	}
 	
@@ -65,8 +68,19 @@ public class Form extends AbsoluteLayout{
 		return title;
 	}
 	
+	public void clear() {
+		int viewLen = this.getChildCount();
+		for (int i=0; i<viewLen; i++) {
+			if (this.getChildAt(i) instanceof TextField) {
+				((TextField)this.getChildAt(i)).clear();
+			}
+			else if (this.getChildAt(i) instanceof PictureBoxView) {
+				((PictureBoxView)this.getChildAt(i)).clear();
+			}
+		}
+	}
+	
 	public void setRecord(String formId, HashMap<Object, Object> record) {
-		Log.i("info", "setrecord in form");
 		int viewLen = this.getChildCount();
 		for (int i=0; i<viewLen; i++) {
 			if (this.getChildAt(i) instanceof ComboBox) {
@@ -99,14 +113,29 @@ public class Form extends AbsoluteLayout{
 		int viewLen = this.getChildCount();
 		for (int i=0; i<viewLen; i++) {
 			if (this.getChildAt(i) instanceof DoodleView) {
-				String path = Constant.PACKAGENAME+((DoodleView)this.getChildAt(i)).getImageName();
-				File file = new File(path);
-				if (file.exists()) {
-					((DoodleView)this.getChildAt(i)).setText("");
-					((DoodleView)this.getChildAt(i)).setBackgroundDrawable(Drawable.createFromPath(path));
+				String fileName = ((DoodleView)this.getChildAt(i)).getImageName();
+				if (!fileName.equals("")) {
+					String path = Constant.PACKAGENAME + fileName;
+					File file = new File(path);
+					if (file.exists()) {
+						((DoodleView)this.getChildAt(i)).setText("");
+						((BitmapDrawable)((DoodleView)this.getChildAt(i)).getBackground()).getBitmap().recycle();
+						((DoodleView)this.getChildAt(i)).setBackgroundDrawable(Drawable.createFromPath(path));
+					}	
 				}
 			}
-			//check picturebox
+			else if (this.getChildAt(i) instanceof PictureBoxView) {
+				String fileName = ((PictureBoxView)this.getChildAt(i)).getPhotoName();
+				if (!fileName.equals("")) {
+					String path = Constant.PACKAGENAME + fileName;
+					File file = new File(path);
+					if (file.exists()) {
+						((BitmapDrawable)((PictureBoxView)this.getChildAt(i)).getDrawable()).getBitmap().recycle();
+						((PictureBoxView)this.getChildAt(i)).setImageDrawable(Drawable.createFromPath(path));
+						((PictureBoxView)this.getChildAt(i)).setScaleType(ScaleType.FIT_XY);
+					}
+				}
+			}
 		}
 	}
 }

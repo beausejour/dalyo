@@ -40,6 +40,10 @@ public class TextField extends AutoCompleteTextView {
 		}
 	}
 	
+	public void clear() {
+		this.setText("");
+	}
+	
 	public String getValue() {
 		return this.getText().toString();
 	}

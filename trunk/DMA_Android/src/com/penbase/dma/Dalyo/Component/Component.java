@@ -249,14 +249,7 @@ public class Component {
 			view = numberbox;
 		}
 		else if(type.equals(DesignTag.COMPONENT_PICTUREBOX)) {
-			PictureBoxView pictureBox = new PictureBoxView(context);
-			pictureBox.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					Intent myIntent = new Intent(context, PictureBox.class);
-					context.startActivity(myIntent);
-				}
-			});
+			PictureBoxView pictureBox = new PictureBoxView(context, id);
 			view = pictureBox;
 		}
 		else if(type.equals(DesignTag.COMPONENT_IMAGE)) {

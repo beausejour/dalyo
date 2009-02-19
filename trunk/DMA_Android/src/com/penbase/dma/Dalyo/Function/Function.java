@@ -486,7 +486,13 @@ public class Function {
 			}
 		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.FORM)) {
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NAVIGATE)) {
+			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CLEAR)) {
+				NS_Form.Clear(element);
+			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETCURRENTFORM)) {
+				result = NS_Form.GetCurrentForm(element);
+			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NAVIGATE)) {
 				NS_Form.Navigate(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETCURRENTRECORD)) {

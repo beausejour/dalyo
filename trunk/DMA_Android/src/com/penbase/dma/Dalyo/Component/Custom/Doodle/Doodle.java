@@ -43,6 +43,7 @@ public class Doodle extends Activity implements ColorPickerDialog.OnColorChanged
         doodleView = new DoodlePanelView(this);
         id = this.getIntent().getStringExtra("ID");
         setContentView(doodleView);
+        setTitle("Doodle");
     }
     
    public class DoodlePanelView extends View {
