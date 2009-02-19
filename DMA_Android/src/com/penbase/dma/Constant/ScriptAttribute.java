@@ -24,6 +24,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_FLOOR = "floor";
 	public static final String FUNCTION_FORMAT = "format";
 	public static final String FUNCTION_GET = "get";
+	public static final String FUNCTION_GETCURRENTFORM = "getCurrentForm";
 	public static final String FUNCTION_GETFIELDNAME = "getFieldName";
 	public static final String FUNCTION_GETFIELDVALUE = "getFieldValue";
 	public static final String FUNCTION_GETFIELDVALUEBYPRIMARYKEY = "getFieldValueByPrimaryKey";

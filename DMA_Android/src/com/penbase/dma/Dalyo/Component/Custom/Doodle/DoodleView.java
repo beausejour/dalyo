@@ -6,7 +6,7 @@ import android.view.View;
 import android.widget.Button;
 
 public class DoodleView extends Button {
-	private static String imageName;
+	private String imageName;
 	private Context context;
 	private String id;
 	
@@ -14,6 +14,7 @@ public class DoodleView extends Button {
 		super(c);
 		this.context = c;
 		this.id = i;
+		this.imageName = "";
 		this.setText("Open Doodle");
 		this.setOnClickListener(new OnClickListener() {
 			@Override

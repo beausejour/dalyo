@@ -177,9 +177,11 @@ public class DmaHttpClient{
 			}
 		}
 		catch (ProtocolException pe) {
-			Log.i("info", "HTTPExample: ProtocolException; " + pe.getMessage());}
+			Log.i("info", "HTTPExample: ProtocolException; " + pe.getMessage());
+		}
 		catch (IOException ioe) {
-			Log.i("info", "HTTPExample: IOException; " + ioe.getMessage()+" "+ioe.toString());}
+			Log.i("info", "HTTPExample: IOException; " + ioe.getMessage());
+		}
 
 		Log.i("info", "Server returned: " + errorCode);
 

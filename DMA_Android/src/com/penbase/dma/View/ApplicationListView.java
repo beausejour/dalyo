@@ -33,6 +33,7 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -255,7 +256,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 				catch(Exception e)
 				{e.printStackTrace();}
 				
-				loadProgressDialog.dismiss();
+				//loadProgressDialog.dismiss();
 				//ApplicationListView.this.finish();
 				startActivityForResult(i, 0);
 			}
@@ -269,4 +270,15 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	public static String getApplicationName() {
 		return applicationName;
 	}
+
+	@Override
+	protected void onStop() {
+		if (loadProgressDialog != null) {
+			loadProgressDialog.dismiss();
+			loadProgressDialog = null;
+		}
+		super.onStop();
+	}
+
+
 }
