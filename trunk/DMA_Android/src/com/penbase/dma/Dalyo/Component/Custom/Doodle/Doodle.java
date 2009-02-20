@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
 import com.penbase.dma.Constant.Constant;
+import com.penbase.dma.View.ApplicationListView;
 import com.penbase.dma.View.ApplicationView;
 
 import android.app.Activity;
@@ -153,7 +154,7 @@ public class Doodle extends Activity implements ColorPickerDialog.OnColorChanged
    private void saveImage() {
 	   //save bitmap
 	   String imageName = System.currentTimeMillis()+".jpg";
-       File file = new File(Constant.PACKAGENAME+imageName);
+       File file = new File(Constant.PACKAGENAME+ApplicationListView.getApplicationName()+"/"+imageName);
        FileOutputStream fos;
        try{
                fos = new FileOutputStream(file);

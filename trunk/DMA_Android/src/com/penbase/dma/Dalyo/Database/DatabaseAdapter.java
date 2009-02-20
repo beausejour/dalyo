@@ -725,9 +725,7 @@ public class DatabaseAdapter {
 	public static Cursor selectQuery(String tableId, ArrayList<Integer> fieldList, ArrayList<Object> valueList) {
 		Cursor result = null;
 		String table = DatabaseAttribute.TABLE+tableId;
-		Log.i("info", "tableid "+table);
 		String selection = createSelectionString(fieldList, valueList);
-		Log.i("info", "selection "+selection);
 		result = sqlite.query(table, null, selection, null, null, null, null);
 		return result;
 	}
@@ -736,18 +734,14 @@ public class DatabaseAdapter {
 	public static Cursor selectQuery(ArrayList<String> tables, ArrayList<ArrayList<String>> columns, Object filter, Object order, Object distinct) {
 		Cursor result = null;
 		String table = createTableString(tables);
-		Log.i("info", "table "+table);
 		String[] projectionIn = createProjectionStrings(columns);
-		Log.i("info", "projectionIn "+projectionIn);
 		String selection = createSelectionString(tables, filter);
 		Log.i("info", "selection selectQuery "+selection);
 		String orderBy = null;
 		if (order != null) {
-			Log.i("info", "order "+order);
 			String filedId = ((ArrayList<Object>)order).get(0).toString();
 			orderBy = DatabaseAttribute.FIELD + filedId;
 			if (!((ArrayList<Object>)order).get(1).toString().equals("true")) {
-				Log.i("info", "order desc");
 				orderBy += " DESC";
 			}
 		}

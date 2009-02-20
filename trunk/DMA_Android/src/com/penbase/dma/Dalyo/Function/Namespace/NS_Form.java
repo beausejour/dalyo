@@ -4,6 +4,8 @@ import java.util.HashMap;
 
 import org.w3c.dom.Element;
 
+import android.util.Log;
+
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Function.Function;
@@ -22,8 +24,10 @@ public class NS_Form {
 	public static void Navigate(Element element) {
 		String formId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FORM, ScriptAttribute.FORM).toString();
 		if (ApplicationView.getOnLoadFuncMap().containsKey(formId)) {
+			Log.i("info", "load "+ApplicationView.getOnLoadFuncMap().get(formId));
 			ApplicationView.getLayoutsMap().get(formId).onLoad(ApplicationView.getOnLoadFuncMap().get(formId));
 		}
+		Log.i("info"," formId "+formId);
 		ApplicationView.setCurrentFormId(formId);
 		ApplicationView.getCurrentView().setTitle(ApplicationView.getLayoutsMap().get(formId).getTitle());
 		ApplicationView.getCurrentView().setContentView(ApplicationView.getLayoutsMap().get(formId));

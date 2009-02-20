@@ -8,6 +8,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_ADDITEM = "addItem";
 	public static final String FUNCTION_ADDMINUTES = "addMinutes";
 	public static final String FUNCTION_ALERT = "alert";
+	public static final String FUNCTION_BROWSE = "browse";
 	public static final String FUNCTION_CANCEL = "cancel";
 	public static final String FUNCTION_CANCELNRECORD = "cancelNewRecord";
 	public static final String FUNCTION_CANCELTRANSACTION = "cancelTransaction";
@@ -20,6 +21,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_DIVISION = "div";
 	public static final String FUNCTION_EDITRECORD = "editRecord";
 	public static final String FUNCTION_ERROR = "error";
+	public static final String FUNCTION_EXIT = "exit";
 	public static final String FUNCTION_EXPORT = "export";
 	public static final String FUNCTION_FLOOR = "floor";
 	public static final String FUNCTION_FORMAT = "format";
@@ -71,6 +73,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_SETVISIBLE = "setVisible";
 	public static final String FUNCTION_SIZE = "size";
 	public static final String FUNCTION_START = "start";
+	public static final String FUNCTION_STARTAPP = "startApp";
 	public static final String FUNCTION_STARTNEWRECORD = "startNewRecord";
 	public static final String FUNCTION_STARTTRANSACTION = "startTransaction";
 	public static final String FUNCTION_STOP = "stop";
@@ -123,6 +126,7 @@ public class ScriptAttribute {
 	public static final String PARAMETER_NAME_MAX = "max";
 	public static final String PARAMETER_NAME_MIN = "min";
 	public static final String PARAMETER_NAME_MINUTES = "minutes";
+	public static final String PARAMETER_NAME_PATH = "path";
 	public static final String PARAMETER_NAME_PERCENT = "percent";
 	public static final String PARAMETER_NAME_TABLENAME = "tablename";
 	public static final String PARAMETER_NAME_TABLES = "tables";
@@ -131,6 +135,7 @@ public class ScriptAttribute {
 	public static final String PARAMETER_NAME_TIMERID = "timer_id";
 	public static final String PARAMETER_NAME_TITLE = "title";
 	public static final String PARAMETER_NAME_UNDERLINE = "underline";
+	public static final String PARAMETER_NAME_URL = "url";
 	public static final String PARAMETER_NAME_VALUE = "value";
 	public static final String PARAMETER_NAME_VALUES = "values";
 	public static final String PARAMETER_NAME_VISIBLE = "visible";

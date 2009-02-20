@@ -389,7 +389,7 @@ public class ApplicationView extends Activity {
 		return result;
 	}
 
-	private void quit() {
+	public void quit() {
 		this.finish();
 	}
 

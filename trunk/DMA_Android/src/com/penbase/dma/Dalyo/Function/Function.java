@@ -61,7 +61,6 @@ public class Function {
 	}
 	
 	public static void createFunction(String name) {
-		Log.i("info", "createFunction");
 		NodeList funcList = behaviorDocument.getElementsByTagName(ScriptTag.FUNCTION);
 		if (funcsMap.containsKey(name)) {
 			final Element funcElement = (Element) funcList.item(Integer.valueOf(funcsMap.get(name).get(0)));
@@ -96,14 +95,12 @@ public class Function {
 			forEach(element);
 		}
 		else if (element.getNodeName().equals(ScriptTag.IF)) {
-			Log.i("info", "there is if condition in then");
 			result = ifCondition(element);
 		}
 		else if (element.getNodeName().equals(ScriptTag.KEYWORD)) {
 			result = Function.getKeyWord(element);
 		}
 		else if (element.getNodeName().equals(ScriptTag.RETURN)) {
-			Log.i("info", "return value");
 			result = getReturnValue(element);
 		}
 		else if (element.getNodeName().equals(ScriptTag.SET)) {
@@ -111,7 +108,6 @@ public class Function {
 		}
 		else if (element.getNodeName().equals(ScriptTag.VAR)) {
 			//use only one format to save all types of variale's value
-			Log.i("info", "distributeAction");
 			result = getVariableValue(element);
 		}
 		return result;
@@ -616,6 +612,12 @@ public class Function {
 					(element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ERROR))) {
 				NS_Runtime.Error(context, element);
 			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_EXIT)) {
+				NS_Runtime.Exit(element);
+			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_BROWSE)) {
+				NS_Runtime.Browse(element);
+			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CONFIRM)) {
 				ConfirmDialog confirmDialog = new ConfirmDialog(element.getElementsByTagName(ScriptTag.PARAMETER), context);
 				confirmDialog.start();
@@ -631,6 +633,9 @@ public class Function {
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETCURRENTUSER)) {
 				result = NS_Runtime.GetCurrentUser(element);
+			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_STARTAPP)) {
+				NS_Runtime.StartApp(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SYNC)) {
 				if (!isFirstTime) {
@@ -691,15 +696,10 @@ public class Function {
 	}
 	
 	private static void setVariable(Element element) {
-		/*
-		 * Each varable has a list of value, the two first values are its type and its default value,
-		 * for the list, its added values which start at the third position
-		 * */
 		if (varsMap.containsKey(element.getAttribute(ScriptTag.NAME))) {
 			varsMap.remove(element.getAttribute(ScriptTag.NAME));
 		}
 		if (!element.hasChildNodes()) {
-			Log.i("info", "add variable "+element.getAttribute(ScriptTag.NAME));
 			//Add an empty ArrayList for Filter, List, Order
 			if ((element.getAttribute(ScriptTag.TYPE).equals(ScriptAttribute.FILTER)) ||
 					(element.getAttribute(ScriptTag.TYPE).equals(ScriptAttribute.LIST)) ||
