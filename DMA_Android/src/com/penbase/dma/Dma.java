@@ -179,11 +179,12 @@ public class Dma extends Activity implements OnClickListener {
 						editorPrefs.commit();
 						Dma.GetListApplicationFromXml(serverResponse);
 					}
-					catch(Exception e)
-					{e.printStackTrace();}
-					Dma.this.finish();
+					catch(Exception e) {
+						e.printStackTrace();
+					}
 					loadApps.dismiss();
 					startActivityForResult(new Intent(Dma.this, ApplicationListView.class), 0);
+					Dma.this.finish();
 				}
 			}.start();
 		}

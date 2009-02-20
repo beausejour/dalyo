@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import com.penbase.dma.R;
 import com.penbase.dma.Constant.Constant;
+import com.penbase.dma.View.ApplicationListView;
 import com.penbase.dma.View.ApplicationView;
 
 import android.app.Activity;
@@ -117,7 +118,7 @@ public class PictureBox extends Activity implements SurfaceHolder.Callback {
 					new Thread() {
 						public void run() {
 							String photoName = System.currentTimeMillis()+".jpg";
-							File file = new File(Constant.PACKAGENAME+photoName);
+							File file = new File(Constant.PACKAGENAME+ApplicationListView.getApplicationName()+"/"+photoName);
 							FileOutputStream fos = null;
 							try{
 								fos = new FileOutputStream(file);

@@ -12,17 +12,23 @@ import com.penbase.dma.View.ApplicationView;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.util.Log;
 
 
 public class NS_Runtime {
 	private static ProgressDialog syncProgressDialog;
 	
+	public static void Browse(Element element) {
+		String url = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_URL, ScriptAttribute.STRING).toString();
+		ApplicationView.getCurrentView().startActivityForResult(new Intent(Intent.ACTION_VIEW, Uri.parse(url)), 0);
+	}
+	
 	public static void Error(Context context, Element element) {
 		String message = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_TEXT, ScriptAttribute.STRING).toString();
 		String title = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_CAPTION, ScriptAttribute.STRING).toString();
-		Log.i("info", "message "+message+" title "+title);
 		if (!title.equals(ScriptAttribute.CONST_NULL)) {
 			new AlertDialog.Builder(context).setMessage(message).setTitle(title).show();
 		}
@@ -31,9 +37,26 @@ public class NS_Runtime {
 		}
 	}
 	
+	public static void Exit(Element element) {
+		ApplicationView.getCurrentView().quit();
+	}
+	
 	public static String GetCurrentUser(Element element) {
 		SharedPreferences prefs = ApplicationView.getCurrentView().getSharedPreferences(Constant.PREFNAME, Context.MODE_PRIVATE);
 		return prefs.getString("Username", "");
+	}
+	
+	public static void StartApp(Element element) {
+		String path = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_PATH, ScriptAttribute.STRING).toString();
+		if (path.contains("http://")) {
+			ApplicationView.getCurrentView().startActivityForResult(new Intent(Intent.ACTION_VIEW, Uri.parse(path)), 0);
+		}
+		else if (path.contains("tel:")) {
+			ApplicationView.getCurrentView().startActivityForResult(new Intent(Intent.ACTION_DIAL, Uri.parse(path)), 0);
+		}
+		else {
+			//Different types of file
+		}
 	}
 	
 	public static boolean Synchronize(Element element) {
