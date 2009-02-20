@@ -429,6 +429,9 @@ public class Component {
 		else if (getView() instanceof ComboBox) {
 			result = ((ComboBox)getView()).getValue();
 		}
+		else if (getView() instanceof PictureBoxView) {
+			result = ((PictureBoxView)getView()).getPhotoName();
+		}
 		return result;
 	}
 	

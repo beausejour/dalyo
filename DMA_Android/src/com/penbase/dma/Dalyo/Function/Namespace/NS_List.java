@@ -15,15 +15,6 @@ public class NS_List {
 	public static void AddValue(Element element) {
 		String listName = Function.getVariableName(element, ScriptTag.PARAMETER, ScriptAttribute.LIST, ScriptAttribute.LIST).toString();
 		Object value = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
-		/*if (value instanceof Date) {
-			Function.addVariableValue(listName, ((Date)value).toString(), true);
-		}
-		else if (value instanceof Time) {
-			Function.addVariableValue(listName, ((Time)value).toString(), true);
-		}
-		else {
-			Function.addVariableValue(listName, value, true);
-		}*/
 		if (value instanceof Date) {
 			((ArrayList<Object>)Function.getVariablesMap().get(listName)).add(((Date)value).toString());
 		}
@@ -38,7 +29,6 @@ public class NS_List {
 	@SuppressWarnings("unchecked")
 	public static void Clear(Element element) {
 		String listName = Function.getVariableName(element, ScriptTag.PARAMETER, ScriptAttribute.LIST, ScriptAttribute.LIST).toString();
-		//Function.clearListItems(listName);
 		((ArrayList<Object>)Function.getVariablesMap().get(listName)).clear();
 	}
 	
