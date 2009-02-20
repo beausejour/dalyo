@@ -2,6 +2,7 @@ package com.penbase.dma.Dalyo.Function.Namespace;
 
 import org.w3c.dom.Element;
 
+import com.penbase.dma.Constant.Constant;
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Function.Function;
@@ -11,6 +12,7 @@ import com.penbase.dma.View.ApplicationView;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 
@@ -27,6 +29,11 @@ public class NS_Runtime {
 		else {
 			new AlertDialog.Builder(context).setMessage(message).show();
 		}
+	}
+	
+	public static String GetCurrentUser(Element element) {
+		SharedPreferences prefs = ApplicationView.getCurrentView().getSharedPreferences(Constant.PREFNAME, Context.MODE_PRIVATE);
+		return prefs.getString("Username", "");
 	}
 	
 	public static boolean Synchronize(Element element) {

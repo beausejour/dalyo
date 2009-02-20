@@ -411,6 +411,7 @@ public class Function {
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NOW)) {
 				result = NS_Date.CurrentDate();
+				Log.i("info", "current date "+result);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NOWHOUR)) {
 				result = NS_Date.CurrentHour();
@@ -456,11 +457,6 @@ public class Function {
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_COUNT)) {
 				result = NS_DatabaseTable.Count(element);
 			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NEWRECORD)) {
-				if (!isFirstTime) {
-					result = NS_DatabaseTable.CreateNewRecord(element);
-				}
-			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_DELETERECORD)) {
 				NS_DatabaseTable.DeleteRecord(element);
 			}
@@ -476,8 +472,16 @@ public class Function {
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETFILTEREDRECORDS)) {
 				result = NS_DatabaseTable.GetFilteredRecords(element);
 			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETRECORD)) {
+				result = NS_DatabaseTable.GetRecord(element);
+			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETRECORDS)) {
 				result = NS_DatabaseTable.GetRecords(element);
+			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NEWRECORD)) {
+				if (!isFirstTime) {
+					result = NS_DatabaseTable.CreateNewRecord(element);
+				}
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_STARTNEWRECORD)) {
 
@@ -624,6 +628,9 @@ public class Function {
 				result = confirmDialog.getValue();
 				//Cancel the thread, because the stop() method is deprecated
 				//confirmDialog = null;
+			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETCURRENTUSER)) {
+				result = NS_Runtime.GetCurrentUser(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SYNC)) {
 				if (!isFirstTime) {

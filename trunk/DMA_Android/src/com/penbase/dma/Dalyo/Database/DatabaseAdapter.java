@@ -662,9 +662,24 @@ public class DatabaseAdapter {
 		return result;
 	}
 	
-	public static void clearTable(String tableId) {
+	@SuppressWarnings("unchecked")
+	public static void clearTable(String tableId, Object filters) {
+		String selectionString = null;
+		if (filters != null) {
+			int filtersNb = ((ArrayList<Object>)filters).size();
+			for (int i=0; i<filtersNb; i++) {
+				ArrayList<Object> filter = (ArrayList<Object>) ((ArrayList<Object>)filters).get(i);
+				if (i != 0) {
+					//Add link
+				}
+				selectionString += DatabaseAttribute.FIELD+filter.get(0).toString();
+				selectionString += " "+Function.getOperator(filter.get(1))+" ";
+				selectionString += "\'"+filter.get(2)+"\'";
+			}
+		}
+		
 		//Check if table has blob data
-		Cursor cursor = sqlite.query(DatabaseAttribute.TABLE+tableId, null, null, null, null, null, null);
+		Cursor cursor = sqlite.query(DatabaseAttribute.TABLE+tableId, null, selectionString, null, null, null, null);
 		if (cursor.getCount() != 0) {
 			String[] columnsNames = cursor.getColumnNames();
 			boolean hasBlob = false;
@@ -698,7 +713,13 @@ public class DatabaseAdapter {
 				DatabaseAdapter.closeCursor(cursor);
 			}
 		}
-		sqlite.execSQL("DELETE FROM "+DatabaseAttribute.TABLE+tableId);
+		
+		if (selectionString == null) {
+			sqlite.execSQL("DELETE FROM "+DatabaseAttribute.TABLE+tableId);
+		}
+		else {
+			sqlite.execSQL("DELETE FROM "+DatabaseAttribute.TABLE+tableId+" WHERE "+selectionString);
+		}
 	}
 	
 	public static Cursor selectQuery(String tableId, ArrayList<Integer> fieldList, ArrayList<Object> valueList) {

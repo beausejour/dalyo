@@ -25,6 +25,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_FORMAT = "format";
 	public static final String FUNCTION_GET = "get";
 	public static final String FUNCTION_GETCURRENTFORM = "getCurrentForm";
+	public static final String FUNCTION_GETCURRENTUSER = "getCurrentUser";
 	public static final String FUNCTION_GETFIELDNAME = "getFieldName";
 	public static final String FUNCTION_GETFIELDVALUE = "getFieldValue";
 	public static final String FUNCTION_GETFIELDVALUEBYPRIMARYKEY = "getFieldValueByPrimaryKey";
@@ -33,6 +34,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_GETLATITUDE = "getLatitude";
 	public static final String FUNCTION_GETLOCATION = "getLocation";
 	public static final String FUNCTION_GETLONGITUDE = "getLongitude";
+	public static final String FUNCTION_GETRECORD = "getRecord";
 	public static final String FUNCTION_GETRECORDS = "getRecords";
 	public static final String FUNCTION_GETSELECTEDINDEX = "getSelectedIndex";
 	public static final String FUNCTION_GETSELECTEDRECORD = "getSelectedRecord";

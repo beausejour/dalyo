@@ -23,10 +23,9 @@ public class NS_DatabaseTable {
 	}
 	
 	public static void Clear(Element element) {
-		//Implement clear table with filter
 		String tableId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
 		Object filter = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FILTER, ScriptAttribute.FILTER);
-		DatabaseAdapter.clearTable(tableId);
+		DatabaseAdapter.clearTable(tableId, filter);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -96,6 +95,15 @@ public class NS_DatabaseTable {
 		String tableId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
 		Object filter = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FILTER, ScriptAttribute.FILTER);
 		return getRecords(tableId, filter);
+	}
+	
+	public static HashMap<Object, Object> GetRecord(Element element) {
+		if (NS_DatabaseTable.GetRecords(element).size() > 0) {
+			return NS_DatabaseTable.GetRecords(element).get(0);
+		}
+		else {
+			return null;
+		}
 	}
 	
 	public static ArrayList<HashMap<Object, Object>> GetRecords(Element element) {
