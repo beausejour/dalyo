@@ -23,7 +23,7 @@ public class Function {
 	private static Context context;
 	private static HashMap<String, Object> varsMap;
 	private static HashMap<String, ArrayList<String>> funcsMap;
-	private static boolean first = true;
+	private static boolean isFirstTime = true;
 	private static HashMap<String, String> parametersMap;
 	
 	public Function(Context c, Document document) {
@@ -57,7 +57,7 @@ public class Function {
 				}
 			}
 		}
-		first = false;
+		isFirstTime = false;
 	}
 	
 	public static void createFunction(String name) {
@@ -111,6 +111,7 @@ public class Function {
 		}
 		else if (element.getNodeName().equals(ScriptTag.VAR)) {
 			//use only one format to save all types of variale's value
+			Log.i("info", "distributeAction");
 			result = getVariableValue(element);
 		}
 		return result;
@@ -134,7 +135,8 @@ public class Function {
 			else if (child.getNodeName().equals(ScriptTag.DO)) {
 				for (Object eachValue : list) {
 					if (checkValueType(cursorType, eachValue)) {
-						addVariableValue(cursorName, eachValue, false);
+						//addVariableValue(cursorName, eachValue, false);
+						varsMap.put(cursorName, eachValue);
 						int actionsNb = child.getChildNodes().getLength();
 						for (int j=0; j<actionsNb; j++) {
 							Element grandChild = (Element)child.getChildNodes().item(j);
@@ -419,10 +421,14 @@ public class Function {
 				NS_Database.CancelTransaction();
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_EXPORT)) {
-				NS_Database.Export(element);
+				if (!isFirstTime) {
+					NS_Database.Export(element);
+				}
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_IMPORT)) {
-				NS_Database.Import(element);
+				if (!isFirstTime) {
+					NS_Database.Import(element);
+				}
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETTABLEBYNAME)) {
 				result = NS_Database.GetTableByName(element);
@@ -451,7 +457,7 @@ public class Function {
 				result = NS_DatabaseTable.Count(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NEWRECORD)) {
-				if (!first) {
+				if (!isFirstTime) {
 					result = NS_DatabaseTable.CreateNewRecord(element);
 				}
 			}
@@ -577,12 +583,12 @@ public class Function {
 				result = NS_Object.ToBoolean(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TOINT)) {
-				if (!first) {
+				if (!isFirstTime) {
 					result = NS_Object.ToInt(element);
 				}
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TONUMERIC)) {
-				if (!first) {
+				if (!isFirstTime) {
 					result = NS_Object.ToNumeric(element);
 				}
 			}
@@ -591,6 +597,14 @@ public class Function {
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TORECORD)) {
 				result = NS_Object.ToRecord(element);
+			}
+		}
+		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.ORDER)) {
+			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ADDCRITERIA)) {
+				NS_Order.AddCriteria(element);
+			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CLEAR)) {
+				//NS_Order.Clear(element);
 			}
 		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_RUNTIME)) {
@@ -612,7 +626,7 @@ public class Function {
 				//confirmDialog = null;
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SYNC)) {
-				if (!first) {
+				if (!isFirstTime) {
 					result = NS_Runtime.Synchronize(element);
 				}
 			}
@@ -630,7 +644,7 @@ public class Function {
 				NS_Timer.Cancel(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_START)) {
-				if (!first) {
+				if (!isFirstTime) {
 					result = NS_Timer.Start(element);
 				}
 			}
@@ -669,52 +683,6 @@ public class Function {
 		return result;
 	}
 	
-	public static void addFilterValues(String name, String field, String operator, Object value, Object link) {
-		if (varsMap.containsKey(name)) {
-			if (varsMap.get(name) == null) {
-				varsMap.remove(name);
-				varsMap.put(name, new ArrayList<Object>());
-			}
-			((ArrayList<Object>) varsMap.get(name)).add(field);
-			((ArrayList<Object>) varsMap.get(name)).add(operator);
-			((ArrayList<Object>) varsMap.get(name)).add(value);
-			((ArrayList<Object>) varsMap.get(name)).add(link);
-		}
-	}
-	
-	public static void clearFilterByName(String name) {
-		if (varsMap.containsKey(name)) {
-			if (varsMap.get(name) != null) {
-				((ArrayList<Object>) varsMap.get(name)).clear();
-			}
-		}
-	}
-	
-	public static void addVariableValue(String name, Object value, boolean isList) {
-		if (varsMap.containsKey(name)) {
-			if (varsMap.get(name) == null) {
-				if (isList) {
-					varsMap.remove(name);
-					varsMap.put(name, new ArrayList<Object>());
-				}
-			}
-			if (isList) {
-				((ArrayList<Object>) varsMap.get(name)).add(value);
-			}
-			else if (!isList) {
-				varsMap.put(name, value);
-			}
-		}
-	}
-	
-	public static void clearListItems(String name) {
-		if (varsMap.containsKey(name)) {
-			if (varsMap.get(name) instanceof ArrayList) {
-				((ArrayList<?>)varsMap.get(name)).clear();
-			}
-		}
-	}
-	
 	private static void setVariable(Element element) {
 		/*
 		 * Each varable has a list of value, the two first values are its type and its default value,
@@ -725,14 +693,21 @@ public class Function {
 		}
 		if (!element.hasChildNodes()) {
 			Log.i("info", "add variable "+element.getAttribute(ScriptTag.NAME));
-			varsMap.put(element.getAttribute(ScriptTag.NAME), null);
+			//Add an empty ArrayList for Filter, List, Order
+			if ((element.getAttribute(ScriptTag.TYPE).equals(ScriptAttribute.FILTER)) ||
+					(element.getAttribute(ScriptTag.TYPE).equals(ScriptAttribute.LIST)) ||
+					(element.getAttribute(ScriptTag.TYPE).equals(ScriptAttribute.ORDER))) {
+				varsMap.put(element.getAttribute(ScriptTag.NAME), new ArrayList<Object>());
+			}
+			else {
+				varsMap.put(element.getAttribute(ScriptTag.NAME), null);
+			}
 		}
 		else if ((element.getChildNodes().getLength() == 1) && (element.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE)) {
 			Log.i("info", "1 child "+element.getChildNodes().item(0).getNodeValue());
 			varsMap.put(element.getAttribute(ScriptTag.NAME), element.getChildNodes().item(0).getNodeValue());	
 		}
 		else {
-			Log.i("info", "element "+element.getNodeName());
 			Object value = getValue(element, element.getChildNodes().item(0).getNodeName(), "", "");
 			Log.i("info", "prepare to add "+element.getAttribute(ScriptTag.NAME)+" in the var list its value is "+value);
 			varsMap.put(element.getAttribute(ScriptTag.NAME), value);
@@ -802,7 +777,6 @@ public class Function {
 						Element item = (Element) child.getChildNodes().item(0);
 						if (item.getNodeName().equals(ScriptTag.VAR)) {
 							value = item.getAttribute(ScriptTag.NAME);
-							Log.i("info", "value of variable "+value);
 						}
 					}
 					else if (child.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE) {
@@ -852,5 +826,9 @@ public class Function {
 			}
 		}
 		return value;
+	}
+	
+	public static HashMap<String, Object> getVariablesMap() {
+		return varsMap;
 	}
 }

@@ -29,6 +29,7 @@ public class NS_Form {
 		ApplicationView.getCurrentView().setContentView(ApplicationView.getLayoutsMap().get(formId));
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static void SetCurrentRecord(Element element) {
 		String formId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FORM, ScriptAttribute.FORM).toString();
 		HashMap<Object, Object> record = (HashMap<Object, Object>) Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.RECORD, ScriptAttribute.RECORD);

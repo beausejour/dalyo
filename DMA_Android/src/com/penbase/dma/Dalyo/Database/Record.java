@@ -64,7 +64,7 @@ public class Record {
 	public static int countRecord(String table, Object filter) {
 		ArrayList<String> tables = new ArrayList<String>();
 		tables.add(table);
-		Cursor cursor = DatabaseAdapter.selectQuery(tables, null, filter);
+		Cursor cursor = DatabaseAdapter.selectQuery(tables, null, filter, null, null);
 		return cursor.getCount();
 	}
 }

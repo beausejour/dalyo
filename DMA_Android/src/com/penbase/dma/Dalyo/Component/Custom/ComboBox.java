@@ -53,14 +53,15 @@ public class ComboBox extends Spinner {
 		}
 	}
 	
-	public void getData(Object filter) {
+	public void getData(Object filter, Object order, Object distinct) {
+		//need to implement distinct
 		ArrayList<String> tables = new ArrayList<String>();
 		tables.add(labelList.get(0));
 		if (!tables.contains(valueList.get(0))) {
 			tables.add(valueList.get(0));
 		}		
 		itemsList = new ArrayList<String>();
-		Cursor cursor = DatabaseAdapter.selectQuery(tables, null, filter);
+		Cursor cursor = DatabaseAdapter.selectQuery(tables, null, filter, order, distinct);
 		cursor.moveToFirst();
 		int cursorCount = cursor.getCount();
 		for (int i=0; i<cursorCount; i++) {

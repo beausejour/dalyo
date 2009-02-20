@@ -23,11 +23,13 @@ public class NS_DatabaseTable {
 	}
 	
 	public static void Clear(Element element) {
+		//Implement clear table with filter
 		String tableId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
 		Object filter = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FILTER, ScriptAttribute.FILTER);
 		DatabaseAdapter.clearTable(tableId);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static HashMap<Object, Object> CreateNewRecord(Element element) {
 		String tableId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
 		ArrayList<Object> fieldsList = (ArrayList<Object>) Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_FIELDS, ScriptAttribute.LIST);
@@ -36,12 +38,14 @@ public class NS_DatabaseTable {
 		return new Record(tableId, fieldsList, valuesList).getRecord();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static void DeleteRecord(Element element) {
 		String tableId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
 		HashMap<Object, Object> record = (HashMap<Object, Object>) Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.RECORD, ScriptAttribute.RECORD);
 		Record.deleteRecord(tableId, record);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static void EditRecord(Element element) {
 		String tableId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
 		HashMap<Object, Object> record = (HashMap<Object, Object>) Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.RECORD, ScriptAttribute.RECORD);
@@ -50,6 +54,7 @@ public class NS_DatabaseTable {
 		Record.editRecord(tableId, record, fieldList, valueList);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static Object GetFieldValue(Element element) {
 		Object value = null;
 		String tableId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
@@ -127,7 +132,7 @@ public class NS_DatabaseTable {
 		ArrayList<HashMap<Object, Object>> records = new ArrayList<HashMap<Object, Object>>();
 		ArrayList<String> tables = new ArrayList<String>();
 		tables.add(tableId);
-		Cursor cursor = DatabaseAdapter.selectQuery(tables, null, filter);
+		Cursor cursor = DatabaseAdapter.selectQuery(tables, null, filter, null, null);
 		cursor.moveToFirst();
 		int cursorCount = cursor.getCount(); 
 		for (int i=0; i<cursorCount; i++) {

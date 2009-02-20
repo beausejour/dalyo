@@ -711,7 +711,8 @@ public class DatabaseAdapter {
 		return result;
 	}
 	
-	public static Cursor selectQuery(ArrayList<String> tables, ArrayList<ArrayList<String>> columns, Object filter) {
+	@SuppressWarnings("unchecked")
+	public static Cursor selectQuery(ArrayList<String> tables, ArrayList<ArrayList<String>> columns, Object filter, Object order, Object distinct) {
 		Cursor result = null;
 		String table = createTableString(tables);
 		Log.i("info", "table "+table);
@@ -719,7 +720,23 @@ public class DatabaseAdapter {
 		Log.i("info", "projectionIn "+projectionIn);
 		String selection = createSelectionString(tables, filter);
 		Log.i("info", "selection selectQuery "+selection);
-		result = sqlite.query(table, projectionIn, selection, null, null, null, null);
+		String orderBy = null;
+		if (order != null) {
+			Log.i("info", "order "+order);
+			String filedId = ((ArrayList<Object>)order).get(0).toString();
+			orderBy = DatabaseAttribute.FIELD + filedId;
+			if (!((ArrayList<Object>)order).get(1).toString().equals("true")) {
+				Log.i("info", "order desc");
+				orderBy += " DESC";
+			}
+		}
+		boolean isDisctinct = false;
+		if (distinct != null) {
+			if (distinct.toString().equals("true")) {
+				isDisctinct = true;
+			}
+		}
+		result = sqlite.query(isDisctinct, table, projectionIn, selection, null, null, null, orderBy, null);
 		return result;
 	}
 
@@ -955,70 +972,41 @@ public class DatabaseAdapter {
 		}
 	}
 	
-	private static String createSelectionString(ArrayList<String> tables, Object filter) {
+	@SuppressWarnings("unchecked")
+	private static String createSelectionString(ArrayList<String> tables, Object filters) {
 		String result = "";
-		if (filter == null) {
-			int tablesSize = tables.size();
-			for (int i=0; i<tablesSize; i++) {
-				if (i == 0) {
-					result +=  DatabaseAttribute.TABLE+tables.get(i)+".STATE != "+DatabaseAttribute.DELETEVALUE;
-				}
-				else {
-					result +=  " AND "+DatabaseAttribute.TABLE+tables.get(i)+".STATE != "+DatabaseAttribute.DELETEVALUE;
-				}
+		int tablesSize = tables.size();
+		for (int i=0; i<tablesSize; i++) {
+			if (i != 0) {
+				result +=  " AND ";
 			}
-			if (!createSelectionFKString(tables).equals("")) {
-				result += " AND "+createSelectionFKString(tables);	
-			}
-			return result;
+			result +=  DatabaseAttribute.TABLE+tables.get(i)+".STATE != "+DatabaseAttribute.DELETEVALUE;
 		}
-		else {
-			int filterSize = ((ArrayList<?>)filter).size();
-			int filterNb = filterSize / 4;
-			for (int i=0; i<filterNb; i++) {
-				//Link is considered as AND
-				if (i == 0) {
-					String field = (String)DatabaseAttribute.FIELD+((ArrayList<?>)filter).get(4*i);
-					Set<String> keySet = tablesMap.keySet();
-					String tableName = null;
-					for (String s : keySet) {
-						if (tablesMap.get(s).contains(field)) {
-							tableName = DatabaseAttribute.TABLE+s;
-							result += tableName+"."+field;
-						}
-					}
-					Object operator = Function.getOperator(((ArrayList<?>)filter).get(4*i+1));
-					result += " "+operator+" ";
-					Object value = "\'"+((ArrayList<?>)filter).get(4*i+2)+"\'";
-					result += value+" AND "+tableName+".STATE != "+DatabaseAttribute.DELETEVALUE;
-				}
-				else {
-					result += " AND ";
-					String field = (String) DatabaseAttribute.FIELD+((ArrayList<?>)filter).get(4*i);
-					Set<String> keySet = tablesMap.keySet();
-					String tableName = null;
-					for (String s : keySet) {
-						if (tablesMap.get(s).contains(field)) {
-							tableName = DatabaseAttribute.TABLE+s;
-							result += tableName+"."+field;
-						}
-					}
-					Object operator = Function.getOperator(((ArrayList<?>)filter).get(4*i+1));
-					result += " "+operator+" ";
-					Object value = "\'"+((ArrayList<?>)filter).get(4*i+2)+"\'";
-					result += value+" AND "+tableName+".STATE != "+DatabaseAttribute.DELETEVALUE;
-				}
-			}
-			if (!createSelectionFKString(tables).equals("")) {
-				if (result.equals("")) {
-					result += createSelectionFKString(tables);	
-				}
-				else {
-					result += " AND "+createSelectionFKString(tables);
-				}
-			}
-			return result;	
+		if (!createSelectionFKString(tables).equals("")) {
+			result += " AND "+createSelectionFKString(tables);	
 		}
+		if (filters != null) {
+			int filtersNb = ((ArrayList<Object>)filters).size();
+			for (int i=0; i<filtersNb; i++) {
+				ArrayList<Object> filter = (ArrayList<Object>) ((ArrayList<Object>)filters).get(i);
+				if (i == 0) {
+					result +=  " AND ";
+				}
+				else {
+					//Add link
+				}
+				/*
+				 * 		filter.add(field);
+						filter.add(operator);
+						filter.add(value);
+						filter.add(link);
+				 * */
+				result += DatabaseAttribute.FIELD+filter.get(0).toString();
+				result += " "+Function.getOperator(filter.get(1))+" ";
+				result += "\'"+filter.get(2)+"\'";
+			}
+		}
+		return result;
 	}
 	
 	private static String createSelectionString(ArrayList<Integer> fieldList, ArrayList<Object> valueList) {

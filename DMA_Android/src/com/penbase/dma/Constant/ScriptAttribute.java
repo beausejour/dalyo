@@ -98,6 +98,7 @@ public class ScriptAttribute {
 	
 	//Parameters name
 	public static final String PARAMETER_NAME_A = "a";
+	public static final String PARAMETER_NAME_ASCENDING = "ascending";
 	public static final String PARAMETER_NAME_B = "b";
 	public static final String PARAMETER_NAME_BOLD = "bold";
 	public static final String PARAMETER_NAME_CALLBACK = "callback";

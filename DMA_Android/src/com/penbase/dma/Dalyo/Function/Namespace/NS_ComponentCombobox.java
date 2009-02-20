@@ -54,7 +54,9 @@ public class NS_ComponentCombobox {
 		Object filter = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FILTER, ScriptAttribute.FILTER);
 		Object order = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.ORDER, ScriptAttribute.ORDER);
 		Object distinct = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_DISTINCT, ScriptAttribute.PARAMETER_TYPE_BOOLEAN);
-		ApplicationView.refreshComponent(componentId, filter);
+		if (ApplicationView.getComponents().containsKey(componentId)) {
+			ApplicationView.getComponents().get(componentId).refreshComponentContent(filter, order, distinct);
+		}
 	}
 	
 	public static void RemoveAllItems(Element element) {

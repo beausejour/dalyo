@@ -146,7 +146,7 @@ public class DataView extends LinearLayout implements OnGestureListener {
 		return lwidthList;
 	}
 	
-	public void refresh(Object filter) {
+	public void refresh(Object filter, Object order) {
 		if (tableId == null) {
 			ApplicationView.errorDialog("Check your dataview setting");
 		}
@@ -165,7 +165,7 @@ public class DataView extends LinearLayout implements OnGestureListener {
 					tables.add(column.get(0));
 				}
 			}
-			Cursor cursor = DatabaseAdapter.selectQuery(tables, null, filter);
+			Cursor cursor = DatabaseAdapter.selectQuery(tables, null, filter, order, null);
 			records = new HashMap<Integer, HashMap<Object, Object>>();
 			int count = cursor.getCount();
 			if (count > 0) {

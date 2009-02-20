@@ -13,7 +13,6 @@ import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.view.Gravity;
@@ -360,12 +359,12 @@ public class Component {
 		return fontType;
 	}
 	
-	public void refreshComponentContent(Object filter) {
+	public void refreshComponentContent(Object filter, Object order, Object distinct) {
 		if (getView() instanceof DataView) {
-			((DataView)getView()).refresh(filter);
+			((DataView)getView()).refresh(filter, order);
 		}
 		else if (getView() instanceof ComboBox) {
-			((ComboBox)getView()).getData(filter);
+			((ComboBox)getView()).getData(filter, order, distinct);
 		}
 	}
 	
