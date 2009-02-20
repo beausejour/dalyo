@@ -11,9 +11,7 @@ import com.penbase.dma.View.ApplicationView;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.hardware.Camera;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,7 +22,6 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 public class PictureBox extends Activity implements SurfaceHolder.Callback {
-	private Context context;
 	private Camera camera;
 	private SurfaceView mSurfaceView;
 	private SurfaceHolder mHolder;

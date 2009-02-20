@@ -11,10 +11,11 @@ import com.penbase.dma.Dalyo.Function.DateTime.Date;
 import com.penbase.dma.Dalyo.Function.DateTime.Time;
 
 public class NS_List {
+	@SuppressWarnings("unchecked")
 	public static void AddValue(Element element) {
 		String listName = Function.getVariableName(element, ScriptTag.PARAMETER, ScriptAttribute.LIST, ScriptAttribute.LIST).toString();
 		Object value = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
-		if (value instanceof Date) {
+		/*if (value instanceof Date) {
 			Function.addVariableValue(listName, ((Date)value).toString(), true);
 		}
 		else if (value instanceof Time) {
@@ -22,12 +23,23 @@ public class NS_List {
 		}
 		else {
 			Function.addVariableValue(listName, value, true);
+		}*/
+		if (value instanceof Date) {
+			((ArrayList<Object>)Function.getVariablesMap().get(listName)).add(((Date)value).toString());
+		}
+		else if (value instanceof Time) {
+			((ArrayList<Object>)Function.getVariablesMap().get(listName)).add(((Time)value).toString());
+		}
+		else {
+			((ArrayList<Object>)Function.getVariablesMap().get(listName)).add(value);
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static void Clear(Element element) {
 		String listName = Function.getVariableName(element, ScriptTag.PARAMETER, ScriptAttribute.LIST, ScriptAttribute.LIST).toString();
-		Function.clearListItems(listName);
+		//Function.clearListItems(listName);
+		((ArrayList<Object>)Function.getVariablesMap().get(listName)).clear();
 	}
 	
 	public static Object Get(Element element) {

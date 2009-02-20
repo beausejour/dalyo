@@ -28,6 +28,9 @@ public class NS_ComponentDataview {
 		}
 		//Order is not implemented yet
 		Object order = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.ORDER, ScriptAttribute.ORDER);
-		ApplicationView.refreshComponent(componentId, filter);
+		//ApplicationView.refreshComponent(componentId, filter, order);
+		if (ApplicationView.getComponents().containsKey(componentId)) {
+			ApplicationView.getComponents().get(componentId).refreshComponentContent(filter, order, null);
+		}
 	}
 }

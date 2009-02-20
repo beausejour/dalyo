@@ -4,6 +4,7 @@ import com.penbase.dma.R;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.view.View;
 import android.widget.ImageButton;
 
@@ -29,6 +30,7 @@ public class PictureBoxView extends ImageButton {
 	}
 	
 	public void clear() {
+		((BitmapDrawable)this.getDrawable()).getBitmap().recycle();
 		this.setImageResource(R.drawable.camera);
 	}
 	

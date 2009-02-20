@@ -413,12 +413,6 @@ public class ApplicationView extends Activity {
 		return client;
 	}
 
-	public static void refreshComponent(String componentId, Object filter) {
-		if (componentsMap.containsKey(componentId)) {
-			componentsMap.get(componentId).refreshComponentContent(filter);
-		}
-	}
-
 	public static ApplicationView getCurrentView() {
 		return applicationView;
 	}
@@ -469,9 +463,8 @@ public class ApplicationView extends Activity {
 	@Override
 	protected void onRestart() {
 		super.onRestart();
-		//Check if there is doodle image
+		//Check if there is doodle image or picturebox
 		getLayoutsMap().get(getCurrentFormId()).setPreview();
-		//Check if there is a picturebox
 	}
 
 	@Override

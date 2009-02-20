@@ -53,8 +53,9 @@ public class Dma extends Activity implements OnClickListener {
 	private TextView tx_password;
 	private CheckBox cb_remember_me;
 	private AlertDialog alertDialog;
-	private ProgressDialog loadApps;
+	private ProgressDialog loadApps = null;
 	private static Context context;
+	private String serverResponse = null;
 	
 	@Override
 	public void onCreate(Bundle icicle) {
@@ -156,10 +157,11 @@ public class Dma extends Activity implements OnClickListener {
 			findViewById(R.id.textePasswd).startAnimation(shake);
 			return;
 		}
+		
 		DmaHttpClient client = new DmaHttpClient();
-		final String rep = client.Authentication(tx_login.getText().toString().trim(),
+		serverResponse = client.Authentication(tx_login.getText().toString().trim(),
 				tx_password.getText().toString().trim());
-		if (rep == null) {
+		if (serverResponse == null) {
 			alertDialog.setMessage("Check your username or password!");
 			alertDialog.show();
 		}
@@ -173,9 +175,9 @@ public class Dma extends Activity implements OnClickListener {
 						editorPrefs.putBoolean("RememberMe", cb_remember_me.isChecked());
 						editorPrefs.putString("Username", tx_login.getText().toString());
 						editorPrefs.putString("Userpassword", tx_password.getText().toString());
-						editorPrefs.putString("ApplicationList", rep);
+						editorPrefs.putString("ApplicationList", serverResponse);
 						editorPrefs.commit();
-						Dma.GetListApplicationFromXml(rep);
+						Dma.GetListApplicationFromXml(serverResponse);
 					}
 					catch(Exception e)
 					{e.printStackTrace();}

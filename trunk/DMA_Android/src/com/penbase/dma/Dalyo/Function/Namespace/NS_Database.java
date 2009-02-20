@@ -32,6 +32,7 @@ public class NS_Database {
 		return DatabaseAdapter.getTableIdByName(tableName);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static void Import(Element element) {
 		tables = (ArrayList<String>) Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_TABLES, ScriptAttribute.LIST);
 		filters = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_FILTERS, ScriptAttribute.LIST);
