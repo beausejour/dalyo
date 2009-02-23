@@ -7,7 +7,7 @@ import org.w3c.dom.Element;
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Function.Function;
-import com.penbase.dma.Dalyo.Function.DateTime.Date;
+import com.penbase.dma.Dalyo.Function.DateTime.DalyoDate;
 import com.penbase.dma.Dalyo.Function.DateTime.Time;
 
 public class NS_List {
@@ -15,8 +15,8 @@ public class NS_List {
 	public static void AddValue(Element element) {
 		String listName = Function.getVariableName(element, ScriptTag.PARAMETER, ScriptAttribute.LIST, ScriptAttribute.LIST).toString();
 		Object value = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
-		if (value instanceof Date) {
-			((ArrayList<Object>)Function.getVariablesMap().get(listName)).add(((Date)value).toString());
+		if (value instanceof DalyoDate) {
+			((ArrayList<Object>)Function.getVariablesMap().get(listName)).add(((DalyoDate)value).toString());
 		}
 		else if (value instanceof Time) {
 			((ArrayList<Object>)Function.getVariablesMap().get(listName)).add(((Time)value).toString());

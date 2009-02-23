@@ -405,6 +405,9 @@ public class Function {
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ADDMINUTES)) {
 				result = NS_Date.AddMinutes(element);
 			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_FORMAT)) {
+				result = NS_Date.Format(element);
+			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NOW)) {
 				result = NS_Date.CurrentDate();
 				Log.i("info", "current date "+result);
@@ -581,6 +584,9 @@ public class Function {
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.OBJECT)) {
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TOBOOLEAN)) {
 				result = NS_Object.ToBoolean(element);
+			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TODATE)) {
+				result = NS_Object.ToDate(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TOINT)) {
 				if (!isFirstTime) {

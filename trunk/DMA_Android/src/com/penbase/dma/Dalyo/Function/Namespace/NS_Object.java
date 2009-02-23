@@ -1,11 +1,13 @@
 package com.penbase.dma.Dalyo.Function.Namespace;
 
+import java.util.Date;
+
 import org.w3c.dom.Element;
 
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Function.Function;
-import com.penbase.dma.Dalyo.Function.DateTime.Date;
+import com.penbase.dma.Dalyo.Function.DateTime.DalyoDate;
 import com.penbase.dma.Dalyo.Function.DateTime.Time;
 import com.penbase.dma.View.ApplicationView;
 
@@ -15,10 +17,15 @@ public class NS_Object {
 		return Boolean.valueOf(value.toString());
 	}
 	
+	public static Date ToDate(Element element) {
+		Object value = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
+		return ((DalyoDate)value).toDate();
+	}
+	
 	public static Integer ToInt(Element element) {
 		Object value = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
-		if (value instanceof Date) {
-			return ((Date) value).toInt();
+		if (value instanceof DalyoDate) {
+			return ((DalyoDate) value).toInt();
 		}
 		else if (value instanceof Time) {
 			return ((Time) value).toInt();
@@ -40,8 +47,8 @@ public class NS_Object {
 	
 	public static Number ToNumeric(Element element) {
 		Object value = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
-		if (value instanceof Date) {
-			return ((Date) value).toInt();
+		if (value instanceof DalyoDate) {
+			return ((DalyoDate) value).toInt();
 		}
 		else if (value instanceof Time) {
 			return ((Time) value).toInt();
@@ -67,8 +74,8 @@ public class NS_Object {
 	
 	public static String ToString(Element element) {
 		Object value = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
-		if (value instanceof Date) {
-			return ((Date) value).toString();
+		if (value instanceof DalyoDate) {
+			return ((DalyoDate) value).toString();
 		}
 		else if (value instanceof Time) {
 			return ((Time) value).toString();

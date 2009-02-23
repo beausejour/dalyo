@@ -80,6 +80,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_SUB = "sub";
 	public static final String FUNCTION_SYNC = "sync";
 	public static final String FUNCTION_TOBOOLEAN = "toBoolean";
+	public static final String FUNCTION_TODATE = "toDate";
 	public static final String FUNCTION_TOINT = "toInt";
 	public static final String FUNCTION_TONUMERIC = "toNumeric";
 	public static final String FUNCTION_TORECORD = "toRecord";
@@ -116,6 +117,7 @@ public class ScriptAttribute {
 	public static final String PARAMETER_NAME_FACELESS = "faceless";
 	public static final String PARAMETER_NAME_FIELDS = "fields";
 	public static final String PARAMETER_NAME_FILTERS = "filters";
+	public static final String PARAMETER_NAME_FORMAT = "format";
 	public static final String PARAMETER_NAME_INDEX = "index";
 	public static final String PARAMETER_NAME_INTERVAL = "interval";
 	public static final String PARAMETER_NAME_ITALIC = "italic";
