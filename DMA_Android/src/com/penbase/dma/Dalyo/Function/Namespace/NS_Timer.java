@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 import org.w3c.dom.Element;
+
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Function.Function;
@@ -26,7 +27,7 @@ public class NS_Timer {
 			delayedValue = 0;
 		}
 		else {
-			delayedValue = interval;
+			delayedValue = interval * 1000;
 		}
 		Timer timer = new Timer();
 		timerId = timer.hashCode();

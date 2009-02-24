@@ -46,6 +46,7 @@ import org.xml.sax.SAXException;
 import com.penbase.dma.Dma;
 import com.penbase.dma.Binary.Binary;
 import com.penbase.dma.Constant.Constant;
+import com.penbase.dma.Constant.DatabaseAttribute;
 import com.penbase.dma.Constant.DatabaseTag;
 import com.penbase.dma.Constant.ErrorCode;
 import com.penbase.dma.Constant.RessourceTag;
@@ -280,8 +281,7 @@ public class DmaHttpClient{
 	//Get the design of an application
 	public Document getDesign(String AppId, String AppVer, String AppBuild, String SubId, String login, String pwd) {
 		if (sendDesign) {
-			String getDesign = "act=getdesign&from=runtime&appid="+AppId+"&appversion="+AppVer+"&appbuild="+
-			AppBuild+"&subid="+SubId+"&login="+login+"&passwd_md5="+md5(pwd)+"&useragent=ANDROID";
+			String getDesign = "act=getdesign" + this.generateRegularUrlRequest(AppId, AppVer, AppBuild, SubId, login, pwd);
 			String designStream = SendPost(getDesign, STRING);
 			Log.i("info", "get design ");
 			StreamToFile(designStream, design_XML);
@@ -322,8 +322,7 @@ public class DmaHttpClient{
 	//Get the resources of an application
 	public void getResources(String AppId, String AppVer, String AppBuild, String SubId, String login, String pwd) {
 		HashMap<String, String> resourceMapFile = getResourceMap("hashcode");
-		String getResources = "act=getresources&from=runtime&appid="+AppId+"&appversion="+AppVer+
-		"&appbuild="+AppBuild+"&subid="+SubId+"&did="+Dma.getDeviceID()+"&login="+login+"&passwd_md5="+md5(pwd)+"&useragent=ANDROID";
+		String getResources = "act=getresources" + this.generateRegularUrlRequest(AppId, AppVer, AppBuild, SubId, login, pwd);
 		String resourcesStream = SendPost(getResources, STRING);
 		Document resourceDocument = CreateParseDocument(resourcesStream, null);
 		if (resourceDocument.getElementsByTagName(RessourceTag.RESOURCES_RL).getLength() > 0) {
@@ -336,9 +335,8 @@ public class DmaHttpClient{
 					String resourceId = resource.getAttribute(RessourceTag.RESOURCES_R_ID);
 					String fileName = imageFilePath+resource.getAttribute(RessourceTag.RESOURCES_R_ID)+"."+
 					resource.getAttribute(RessourceTag.RESOURCES_R_EXT);
-					String getResource = "act=getresource&from=runtime&appid="+AppId+"&appversion="+AppVer+
-					"&appbuild="+AppBuild+"&subid="+SubId+"&did="+Dma.getDeviceID()+"&resourceid="+
-					resource.getAttribute(RessourceTag.RESOURCES_R_ID)+"&login="+login+"&passwd_md5="+md5(pwd)+"&useragent=ANDROID";
+					String getResource = "act=getresource" + this.generateRegularUrlRequest(AppId, AppVer, AppBuild, SubId, login, pwd) + "&resourceid="+
+					resource.getAttribute(RessourceTag.RESOURCES_R_ID);
 					if ((resourceMapFile.containsKey(resourceId)) && (checkFileExist(fileName))) {
 						if (!resourceMapFile.get(resourceId).equals(resource.getAttribute(RessourceTag.RESOURCES_R_HASHCODE))) {
 							Log.i("info", "download repalce image");
@@ -362,8 +360,7 @@ public class DmaHttpClient{
 	public Document getDB(String AppId, String AppVer, String AppBuild, String SubId, String login, String pwd) {
 		Log.i("info", "sendDb "+sendDb);
 		if (sendDb) {
-			String getDB = "act=getdb&from=runtime&appid="+AppId+"&appversion="+AppVer+"&appbuild="+
-			AppBuild+"&subid="+SubId+"&login="+login+"&passwd_md5="+md5(pwd)+"&useragent=ANDROID";
+			String getDB = "act=getdb" + this.generateRegularUrlRequest(AppId, AppVer, AppBuild, SubId, login, pwd);
 			String dbStream = SendPost(getDB, STRING);
 			Log.i("info", "dbstream ");
 			StreamToFile(dbStream, db_XML);
@@ -377,9 +374,7 @@ public class DmaHttpClient{
 	//Get the behavior of an application
 	public Document getBehavior(String AppId, String AppVer, String AppBuild, String SubId, String login, String pwd) {
 		if (sendBehavior) {
-			String getBehavior = "act=getbehavior&from=runtime&appid="+AppId+"&appversion="+AppVer+
-			"&appbuild="+AppBuild+"&subid="+SubId+"&did="+Dma.getDeviceID()+"&login="+login+"&passwd_md5="+md5(pwd)+"&useragent=ANDROID";
-			Log.i("info", "getbehavior ");
+			String getBehavior = "act=getbehavior" + this.generateRegularUrlRequest(AppId, AppVer, AppBuild, SubId, login, pwd);
 			String behaviorStream = SendPost(getBehavior, STRING);
 			StreamToFile(behaviorStream, behavior_XML);
 			return CreateParseDocument(behaviorStream, null);
@@ -389,25 +384,47 @@ public class DmaHttpClient{
 		}
 	}
 	
-	//Import server data
-	public boolean launchImport(String AppId, String DbId, String login, String pwd) {
+	//Import data
+	@SuppressWarnings("unchecked")
+	public boolean importData(String AppId, String DbId, String login, String pwd, ArrayList<String> tables, Object filters) {
 		boolean result = false;
-		final String ask = "act=ask&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd_md5="+md5(pwd)+
-		"&stream=1&useragent=ANDROID&did="+Dma.getDeviceID();
-		String report = "act=rep&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd_md5="+md5(pwd)+
-		"&stream=1&useragent=ANDROID&did="+Dma.getDeviceID();
+		String ask = "act=ask" + this.generateSyncUrlRequest(AppId, DbId, login, pwd);
+		String getBlob = "act=getblob" + this.generateSyncUrlRequest(AppId, DbId, login, pwd);
+		String report = "act=rep" + this.generateSyncUrlRequest(AppId, DbId, login, pwd);
 		
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		try {
-			bos.write(Binary.intToByteArray(DatabaseAdapter.getTableNb()));
-			for (String s : DatabaseAdapter.getTableIds()) {
-				bos.write(Binary.intToByteArray(Integer.valueOf(s)));
+		if (filters != null) {
+			int filtersSize = ((ArrayList<?>)filters).size();
+			if (filtersSize > 0) {
+				ask += "&fcount="+filtersSize;
+				for (int i=0; i<filtersSize; i++) {
+					ArrayList<Object> filter = (ArrayList<Object>)((ArrayList<Object>)filters).get(i);
+					ask += "&ff"+i+"="+filter.get(0).toString();
+					Object operator = Function.getOperator(((ArrayList<?>)filters).get(1));
+					ask += "&fo"+i+"="+urlEncode(operator.toString());
+					ask += "&fv"+i+"="+filter.get(2).toString();
+				}
 			}
-			byte[] inputbytes = bos.toByteArray();
-			result = new DmaHttpBinarySync(url.toString(), ask, null, report, inputbytes, "Import").run();
-			/*if (importResult) {
-				result = launchExport(AppId, DbId, login, pwd);
-			}*/
+		}
+		Log.i("info", "action ask "+ask);
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		DmaHttpBinarySync importSync = null;
+		try {
+			if (tables != null) {
+				int tablesNb = tables.size();
+				baos.write(Binary.intToByteArray(tablesNb));
+				for (int i=0; i<tablesNb; i++) {
+					baos.write(Binary.intToByteArray(Integer.valueOf(tables.get(i))));
+				}
+			}
+			else {
+				baos.write(Binary.intToByteArray(DatabaseAdapter.getTableNb()));
+				for (String s : DatabaseAdapter.getTableIds()) {
+					baos.write(Binary.intToByteArray(Integer.valueOf(s)));
+				}
+			}
+			byte[] inputbytes = baos.toByteArray();
+			importSync = new DmaHttpBinarySync(url.toString(), ask, getBlob, report, inputbytes, "Import");
+			result = importSync.run();
 		}
 		catch (IOException e) {
 			e.printStackTrace();
@@ -416,62 +433,15 @@ public class DmaHttpClient{
 	}
 	
 	//Export local data to server
-	//public
-	public boolean launchExport(String AppId, String DbId, String login, String pwd) {
-		String sync = "act=sync&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd_md5="+md5(pwd)+
-		"&stream=1&useragent=ANDROID&did="+Dma.getDeviceID();
-		String send = "act=send&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd_md5="+md5(pwd)+
-		"&stream=1&useragent=ANDROID&did="+Dma.getDeviceID();
-		String commit = "act=commit&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd_md5="+md5(pwd)+
-		"&stream=1&useragent=ANDROID&did="+Dma.getDeviceID();
+	public boolean launchExport(String AppId, String DbId, String login, String pwd, ArrayList<String> tables, Object filters) {
+		String sync = "act=sync" + this.generateSyncUrlRequest(AppId, DbId, login, pwd);
+		String send = "act=send" + this.generateSyncUrlRequest(AppId, DbId, login, pwd);
+		String commit = "act=commit" + this.generateSyncUrlRequest(AppId, DbId, login, pwd);
 		
-		byte[] exportData = ApplicationView.getDataBase().syncExportTable();
+		byte[] exportData = ApplicationView.getDataBase().syncExportTable(tables, filters);
 		Log.i("info", "exportData "+exportData.length);
 		DmaHttpBinarySync exportSync = new DmaHttpBinarySync(url.toString(), sync, send, commit, exportData, "Export");
 		return exportSync.run();
-	}
-	
-	public void filteredImport(String AppId, String DbId, String login, String pwd, ArrayList<String> tables, Object filters) {
-		String ask = "act=ask&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd_md5="+md5(pwd)+
-		"&stream=1&useragent=ANDROID&did="+Dma.getDeviceID();
-		String report = "act=rep&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd_md5="+md5(pwd)+
-		"&stream=1&useragent=ANDROID&did="+Dma.getDeviceID();
-		
-		if (filters != null) {
-			int filtersSize = ((ArrayList<?>)filters).size();
-			if (filtersSize > 2) {
-				Log.i("info", "filtersize > 2");
-				int filterNb = (filtersSize - 2) / 4;
-				Log.i("info", "check how many filters "+filterNb);
-				ask += "&fcount="+filterNb;
-				for (int i=0; i<filterNb; i++) {
-					String fid = (String) ((ArrayList<?>)filters).get(4*i+2);
-					ask += "&ff"+i+"="+fid;
-					Object operator = Function.getOperator(((ArrayList<?>)filters).get(4*i+3));
-					Log.i("info", "operator "+operator);
-					ask += "&fo"+i+"="+urlEncode(operator.toString());
-					Object value = ((ArrayList<?>)filters).get(4*i+4);
-					ask += "&fv"+i+"="+value.toString();
-				}
-			}
-		}
-		Log.i("info", "action ask "+ask);
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		DmaHttpBinarySync importSync = null;
-		try {
-			int tablesNb = tables.size();
-			bos.write(Binary.intToByteArray(tablesNb));
-			for (int i=0; i<tablesNb; i++) {
-				bos.write(Binary.intToByteArray(Integer.valueOf(tables.get(i))));
-			}
-			byte[] inputbytes = bos.toByteArray();
-			importSync = new DmaHttpBinarySync(url.toString(), ask, null, report, inputbytes, "Import");
-			importSync.run();
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-		
 	}
 	
 	private String urlEncode(String s) {
@@ -482,6 +452,14 @@ public class DmaHttpClient{
 			e.printStackTrace();
 		}
 		return result;
+	}
+	
+	private String generateSyncUrlRequest(String AppId, String DbId, String login, String pwd) {
+		return "&from=runtime&appid="+AppId+"&dataid="+DbId+"&login="+login+"&passwd_md5="+md5(pwd)+"&stream=1&useragent=ANDROID&did="+Dma.getDeviceID();
+	}
+	
+	private String generateRegularUrlRequest(String AppId, String AppVer, String AppBuild, String SubId, String login, String pwd) {
+		return "&from=runtime&appid="+AppId+"&appversion="+AppVer+"&appbuild="+AppBuild+"&subid="+SubId+"&did="+Dma.getDeviceID()+"&login="+login+"&passwd_md5="+md5(pwd)+"&useragent=ANDROID";
 	}
 	
 	//Save the downloaded xml stream to file

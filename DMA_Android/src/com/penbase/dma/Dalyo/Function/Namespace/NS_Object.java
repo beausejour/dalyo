@@ -1,8 +1,11 @@
 package com.penbase.dma.Dalyo.Function.Namespace;
 
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import org.w3c.dom.Element;
+
+import android.util.Log;
 
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
@@ -19,7 +22,37 @@ public class NS_Object {
 	
 	public static Date ToDate(Element element) {
 		Object value = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
-		return ((DalyoDate)value).toDate();
+		Log.i("info", "value "+value);
+		if (value instanceof DalyoDate) {
+			return ((DalyoDate)value).toDate();
+		}
+		else {
+			if (value.toString().contains(" ")) {
+				//DateTime
+				String dateString = value.toString().split(" ")[0];
+				String timeString = value.toString().split(" ")[1];
+				int year = Integer.valueOf(dateString.split("/")[2]);
+				int month = Integer.valueOf(dateString.split("/")[1]);
+				int day = Integer.valueOf(dateString.split("/")[0]);
+				
+				int hour = Integer.valueOf(timeString.split(":")[0]);
+				int minute = Integer.valueOf(timeString.split(":")[1]);
+				int second = Integer.valueOf(timeString.split(":")[2]);
+				
+				return new Date(new GregorianCalendar(year, month, day, hour, minute, second).getTimeInMillis());
+			}
+			else if (value.toString().contains("/")) {
+				//Date
+				int year = Integer.valueOf(value.toString().split("/")[2]);
+				int month = Integer.valueOf(value.toString().split("/")[1]);
+				int day = Integer.valueOf(value.toString().split("/")[0]);
+				return new Date(new GregorianCalendar(year, month, day).getTimeInMillis());
+			}
+			else {
+				//Time
+				return null;
+			}
+		}
 	}
 	
 	public static Integer ToInt(Element element) {
@@ -47,6 +80,7 @@ public class NS_Object {
 	
 	public static Number ToNumeric(Element element) {
 		Object value = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
+		Log.i("info", "value "+value);
 		if (value instanceof DalyoDate) {
 			return ((DalyoDate) value).toInt();
 		}

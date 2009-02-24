@@ -74,34 +74,34 @@ public class NS_Runtime {
 			syncProgressDialog = ProgressDialog.show(Function.getContext(), "Please wait...", "Synchronizing application's data...", true, false);
 			
 			
-			boolean importResult = ApplicationView.getCurrentClient().launchImport(
+			boolean importResult = ApplicationView.getCurrentClient().importData(
 					ApplicationListView.getApplicationsInfo().get("AppId"),
 					ApplicationListView.getApplicationsInfo().get("DbId"), 
 					ApplicationListView.getApplicationsInfo().get("Username"),
-					ApplicationListView.getApplicationsInfo().get("Userpassword"));
+					ApplicationListView.getApplicationsInfo().get("Userpassword"), null, null);
 			if (importResult) {
 				result = ApplicationView.getCurrentClient().launchExport(
 						ApplicationListView.getApplicationsInfo().get("AppId"),
 						ApplicationListView.getApplicationsInfo().get("DbId"), 
 						ApplicationListView.getApplicationsInfo().get("Username"),
-						ApplicationListView.getApplicationsInfo().get("Userpassword"));
+						ApplicationListView.getApplicationsInfo().get("Userpassword"), null, null);
 			}
 			syncProgressDialog.dismiss();
 			return result;
 		}
 		else {
 			Log.i("info", "else ");
-			boolean importResult = ApplicationView.getCurrentClient().launchImport(
+			boolean importResult = ApplicationView.getCurrentClient().importData(
 					ApplicationListView.getApplicationsInfo().get("AppId"),
 					ApplicationListView.getApplicationsInfo().get("DbId"), 
 					ApplicationListView.getApplicationsInfo().get("Username"),
-					ApplicationListView.getApplicationsInfo().get("Userpassword"));
+					ApplicationListView.getApplicationsInfo().get("Userpassword"), null, null);
 			if (importResult) {
 				result = ApplicationView.getCurrentClient().launchExport(
 						ApplicationListView.getApplicationsInfo().get("AppId"),
 						ApplicationListView.getApplicationsInfo().get("DbId"), 
 						ApplicationListView.getApplicationsInfo().get("Username"),
-						ApplicationListView.getApplicationsInfo().get("Userpassword"));
+						ApplicationListView.getApplicationsInfo().get("Userpassword"), null, null);
 			}
 			return result;
 		}

@@ -3,11 +3,14 @@ package com.penbase.dma.Dalyo.Database;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.w3c.dom.Document;
@@ -20,6 +23,7 @@ import com.penbase.dma.Constant.DatabaseAttribute;
 import com.penbase.dma.Constant.DatabaseTag;
 import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
+import com.penbase.dma.View.ApplicationListView;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -64,6 +68,7 @@ public class DatabaseAdapter {
 	}
 	
 	private void createDatabase(String database) throws SQLException{
+		Log.i("info", "dbName "+dbName);
 		try{
 			if (!databaseExists(database)) {
 				Log.i("info", "the database doesn't exist");
@@ -298,6 +303,9 @@ public class DatabaseAdapter {
 	}
 
 	public byte[] syncImportTable(byte[] bytes) {
+		if (blobRecords.size() > 0) {
+			blobRecords.clear();
+		}
 		ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		byte[] tableNb = new byte[Binary.INTBYTE];
@@ -360,6 +368,7 @@ public class DatabaseAdapter {
 				if (syncTypeInt != DatabaseAttribute.DELETEVALUE) {
 					//Get each record's information
 					for (int l=0; l<fieldsNbInt; l++) {
+						String valueType = fieldsTypeMap.get(String.valueOf(fieldList.get(l)));
 						//Get length of value
 						byte[] valueLength = new byte[Binary.INTBYTE];
 						bis.read(valueLength, 0, valueLength.length);
@@ -367,8 +376,17 @@ public class DatabaseAdapter {
 						//Get value
 						byte[] value = new byte[valueLengthInt];
 						bis.read(value, 0, value.length);
-						Object valueObject = Binary.byteArrayToObject(value, fieldsTypeMap.get(String.valueOf(fieldList.get(l))));
+						Object valueObject = Binary.byteArrayToObject(value, valueType);
 						valueList.add(valueObject);
+						
+						//Check if there is a blob data
+						if (valueType.equals(DatabaseAttribute.BLOB)) {
+							ArrayList<Object> blobData = new ArrayList<Object>();
+							blobData.add(tableIdInt);
+							blobData.add(fieldList.get(l));
+							blobData.add(valueObject);
+							blobRecords.add(blobData);
+						}
 					}
 					if (syncTypeInt != DatabaseAttribute.SYNCHRONIZED) {
 						recordsList.add(valueList);
@@ -388,20 +406,62 @@ public class DatabaseAdapter {
 		return result;
 	}
 	
-	public byte[] syncExportTable() {
+	public void saveBlobData(byte[] data, int index) {
+		File file = new File(Constant.PACKAGENAME+ApplicationListView.getApplicationName()+"/"+blobRecords.get(index).get(2).toString());
+		FileOutputStream fos = null;
+		try {
+			fos = new FileOutputStream(file);
+			fos.write(data);
+			Log.i("info", "blob saved "+file.getPath());
+		}
+		catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public byte[] syncExportTable(ArrayList<String> tables, Object filters) {
+		if (blobRecords.size() > 0) {
+			blobRecords.clear();
+		}
 		Log.i("info", "syncExportTable ");
 		int tableNbInt = 0;
-		Set<String> keys = tablesMap.keySet();
+		Set<String> keys = null;
+		if (tables == null) {
+			keys = tablesMap.keySet();
+		}
+		else {
+			keys = new HashSet<String>(tables);
+		}
+		//Set<String> keys = tablesMap.keySet();
 		Log.i("info", "tablesmap keys "+keys.toString());
 		HashMap<String, ArrayList<HashMap<Object, Object>>> tidMap = 
 			new HashMap<String, ArrayList<HashMap<Object, Object>>>();
+		int count = 0;
 		for (String key : keys) {
 			String table = DatabaseAttribute.TABLE+key;
 			//String selection = table+".STATE != "+DatabaseField.SYNCHRONIZED;
 			String selection = "STATE != "+DatabaseAttribute.SYNCHRONIZED;
 			Log.i("info", "selection "+selection);
+			
+			if ((filters != null) && (((ArrayList<Object>)filters).get(count) != null)) {
+				ArrayList<Object> filter = (ArrayList<Object>) ((ArrayList<Object>)filters).get(count);
+				if (count == 0) {
+					selection +=  " AND ";
+				}
+				else {
+					selection += Function.getOperator(filter.get(3)).toString();
+				}
+				selection += DatabaseAttribute.FIELD+filter.get(0).toString();
+				selection += " "+Function.getOperator(filter.get(1))+" ";
+				selection += "\'"+filter.get(2)+"\'";
+			}
+			
 			Cursor cursor = sqlite.query(table, null, selection, null, null, null, null);
-			//Cursor cursor = selectQuery(key, null, null);
+			
 			Log.i("info", "cursor count "+cursor.getCount());
 			if (cursor.getCount() > 0) {
 				int cursorCount = cursor.getCount();
@@ -594,9 +654,7 @@ public class DatabaseAdapter {
 		Cursor cursorAllRows = selectQuery(String.valueOf(tableId), null, null);
 		int newId = cursorAllRows.getCount()+1;
 		DatabaseAdapter.closeCursor(cursorAllRows);
-		Log.i("info", "calculated new id "+newId);
 		String idValue = tableId+""+newId;
-		Log.i("info", "idvalue is "+idValue);
 		ContentValues values = new ContentValues();
 		values.put(DatabaseAttribute.ID+tableId, idValue);
 		values.put(DatabaseAttribute.GID+tableId, (String)record.get(1));
@@ -604,7 +662,7 @@ public class DatabaseAdapter {
 		int fieldsNb = fieldsList.size();
 		for (int i=0; i<fieldsNb; i++) {
 			//check field's type
-			if (fieldsTypeMap.get(fieldsList.get(i).toString()).equals(DatabaseAttribute.BLOB)) {
+			/*if (fieldsTypeMap.get(fieldsList.get(i).toString()).equals(DatabaseAttribute.BLOB)) {
 				ByteArrayOutputStream bos = new ByteArrayOutputStream();
 				ObjectOutputStream oos;
 				try {
@@ -618,7 +676,8 @@ public class DatabaseAdapter {
 			}
 			else {
 				values.put(DatabaseAttribute.FIELD+fieldsList.get(i), (String)record.get(i+2));
-			}
+			}*/
+			values.put(DatabaseAttribute.FIELD+fieldsList.get(i), (String)record.get(i+2));
 		}
 		String tableName = DatabaseAttribute.TABLE+tableId;
 		long insertResult = sqlite.insert(tableName, null, values);
@@ -745,6 +804,7 @@ public class DatabaseAdapter {
 				orderBy += " DESC";
 			}
 		}
+		Log.i("info", "orderBy "+orderBy);
 		boolean isDisctinct = false;
 		if (distinct != null) {
 			if (distinct.toString().equals("true")) {
@@ -912,7 +972,7 @@ public class DatabaseAdapter {
 			else if (fieldsTypeMap.get(fieldId).equals(DatabaseAttribute.DOUBLE)) {
 				return cursor.getDouble(cursor.getColumnIndexOrThrow(field));
 			}
-			else if (fieldsTypeMap.get(fieldId).equals(DatabaseAttribute.BLOB)) {
+			/*else if (fieldsTypeMap.get(fieldId).equals(DatabaseAttribute.BLOB)) {
 				String result = null;
 				if (cursor.isNull(cursor.getColumnIndex(field))) {
 					result = "";
@@ -929,9 +989,16 @@ public class DatabaseAdapter {
 					}
 				}
 				return result;
-			}
+			}*/
 			else {
-				return cursor.getString(cursor.getColumnIndexOrThrow(field));
+				String value = cursor.getString(cursor.getColumnIndexOrThrow(field));
+				if (value == null) {
+					return "";
+				}
+				else {
+					return value;
+				}
+				//return cursor.getString(cursor.getColumnIndexOrThrow(field));
 			}
 		}
 		else {
@@ -1008,14 +1075,8 @@ public class DatabaseAdapter {
 					result +=  " AND ";
 				}
 				else {
-					//Add link
+					result += Function.getOperator(filter.get(3)).toString();
 				}
-				/*
-				 * 		filter.add(field);
-						filter.add(operator);
-						filter.add(value);
-						filter.add(link);
-				 * */
 				result += DatabaseAttribute.FIELD+filter.get(0).toString();
 				result += " "+Function.getOperator(filter.get(1))+" ";
 				result += "\'"+filter.get(2)+"\'";
