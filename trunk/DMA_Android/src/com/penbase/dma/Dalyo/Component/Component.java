@@ -383,10 +383,10 @@ public class Component {
 		if (getView() instanceof NumberBox) {
 			((NumberBox)getView()).setValue(value);
 		}
-		if (getView() instanceof TextField) {
+		else if (getView() instanceof TextField) {
 			((TextField)getView()).setText(value.toString());
 		}
-		if (getView() instanceof Label) {
+		else if (getView() instanceof Label) {
 			((Label)getView()).setText(value.toString());
 		}
 		else if (getView() instanceof TextZone) {
@@ -400,6 +400,10 @@ public class Component {
 		}
 		else if (getView() instanceof Gauge) {
 			((Gauge)getView()).setValue(Integer.valueOf(value.toString()));
+		}
+		else if (getView() instanceof ImageView) {
+			Drawable d = Drawable.createFromPath(DmaHttpClient.getFilesPath()+value.toString());
+			((ImageView)getView()).setBackgroundDrawable(d);
 		}
 	}
 	

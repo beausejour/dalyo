@@ -14,15 +14,15 @@ import com.penbase.dma.View.ApplicationListView;
 import com.penbase.dma.View.ApplicationView;
 
 public class NS_Database {
-	private static ProgressDialog importProgressDialog = null;
-	private static ArrayList<String> tables;
-	private static Object filters;
-	
 	public static void CancelTransaction() {
 		DatabaseAdapter.rollbackTransaction();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static void Export(Element element) {
+		final ArrayList<String> tables = (ArrayList<String>) Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_TABLES, ScriptAttribute.LIST);
+		final Object filters = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_FILTERS, ScriptAttribute.LIST);
+		Object faceless = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_FACELESS, ScriptAttribute.PARAMETER_TYPE_BOOLEAN);
 		
 	}
 	
@@ -34,16 +34,16 @@ public class NS_Database {
 	
 	@SuppressWarnings("unchecked")
 	public static void Import(Element element) {
-		tables = (ArrayList<String>) Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_TABLES, ScriptAttribute.LIST);
-		filters = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_FILTERS, ScriptAttribute.LIST);
+		final ArrayList<String> tables = (ArrayList<String>) Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_TABLES, ScriptAttribute.LIST);
+		final Object filters = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_FILTERS, ScriptAttribute.LIST);
 		Object faceless = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_FACELESS, ScriptAttribute.PARAMETER_TYPE_BOOLEAN);
 		if ((faceless == null) || (((Boolean)faceless).booleanValue())) {
 			//display progress dialog
-			importProgressDialog = ProgressDialog.show(Function.getContext(), "Please wait...", "Synchronizing application's data non uithread...", true, false);
+			final ProgressDialog importProgressDialog = ProgressDialog.show(Function.getContext(), "Please wait...", "Importing application's data...", true, false);
 			new Thread() {
 				public void run() {
 					try {
-						ApplicationView.getCurrentClient().filteredImport(
+						ApplicationView.getCurrentClient().importData(
 								ApplicationListView.getApplicationsInfo().get("AppId"),
 								ApplicationListView.getApplicationsInfo().get("DbId"), 
 								ApplicationListView.getApplicationsInfo().get("Username"),
@@ -57,7 +57,7 @@ public class NS_Database {
 			}.start();
 		}
 		else {
-			ApplicationView.getCurrentClient().filteredImport(
+			ApplicationView.getCurrentClient().importData(
 					ApplicationListView.getApplicationsInfo().get("AppId"),
 					ApplicationListView.getApplicationsInfo().get("DbId"), 
 					ApplicationListView.getApplicationsInfo().get("Username"),

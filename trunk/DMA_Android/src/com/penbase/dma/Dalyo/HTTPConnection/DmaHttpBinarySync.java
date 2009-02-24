@@ -22,15 +22,15 @@ import com.penbase.dma.View.ApplicationView;
 public class DmaHttpBinarySync {
 	private String requestAction;
 	private String responseAction;
-	private String blobSendAction;
+	private String blobAction;
 	private byte[] inputbytes;
 	private String urlString;
 	private String cookie = null;
 	private String syncType;
 	
-	public DmaHttpBinarySync(String url, String request, String blobSend, String response, byte[] inputbytes, String syncType) {
+	public DmaHttpBinarySync(String url, String request, String blob, String response, byte[] inputbytes, String syncType) {
 		this.requestAction = request;
-		this.blobSendAction = blobSend;
+		this.blobAction = blob;
 		this.responseAction = response;
 		this.inputbytes = inputbytes;
 		this.urlString = url;
@@ -89,17 +89,42 @@ public class DmaHttpBinarySync {
 		byte[] data = createConnection(requestAction, inputbytes);
 		String codeStr = getErrorCode(data);
 		Log.i("info", "code of action "+requestAction+" : "+Integer.valueOf(codeStr));
-		if (Integer.valueOf(codeStr) == ErrorCode.OK) {
+		if ((Integer.valueOf(codeStr) == ErrorCode.OK) || (Integer.valueOf(codeStr) == ErrorCode.CONTINUE)) {
 			int newLength = data.length - codeStr.length() - 1;
 			byte[] result = new byte[newLength];
 			System.arraycopy(data, codeStr.length()+1, result, 0, result.length);
 			if (syncType.equals("Import")) {
-				/*if (!DatabaseAdapter.hasStartTransaction()) {
-					Log.i("info", "begin transaction");
-					DatabaseAdapter.beginTransaction();
-				}*/
 				DatabaseAdapter.beginTransaction();
 				byte[] returnByte = ApplicationView.getDataBase().syncImportTable(result);
+				
+				//Check if there is blob data
+				ArrayList<ArrayList<Object>> blobs = DatabaseAdapter.getBlobRecords();
+				int blobNb = blobs.size();
+				if (blobNb > 0) {
+					for(int i=0; i<blobNb; i++) {
+						ArrayList<Object> blob = blobs.get(i);
+						String getBlobAction = blobAction;
+						getBlobAction += "&table="+blob.get(0);
+						getBlobAction += "&fieldid="+blob.get(1);
+						Log.i("info", "blob.get(2).toString() "+blob.get(2).toString());
+						String recordId = blob.get(2).toString().split("_")[4].split("\\.")[0];
+						getBlobAction += "&record="+recordId;
+						
+						byte[] responsedata = createConnection(getBlobAction, null);
+						String codeResponseStr = getErrorCode(responsedata);
+						Log.i("info", "responsea "+getBlobAction+" code "+codeResponseStr);
+						
+						if (Integer.valueOf(codeResponseStr) == ErrorCode.OK) {
+							//Save picture
+							int blobDataLength = responsedata.length - codeResponseStr.length() - 1;
+							byte[] blobData = new byte[blobDataLength];
+							System.arraycopy(responsedata, codeResponseStr.length()+1, blobData, 0, blobData.length);
+							ApplicationView.getDataBase().saveBlobData(blobData, i);
+						}
+					}
+				}
+				
+				//Get response
 				byte[] responsedata = createConnection(responseAction, returnByte);
 				String codeReportStr = getErrorCode(responsedata);
 				Log.i("info", "report code "+Integer.valueOf(codeReportStr));
@@ -111,6 +136,12 @@ public class DmaHttpBinarySync {
 					Log.i("info", "cancel transaction");
 					DatabaseAdapter.rollbackTransaction();
 				}
+				
+				if (Integer.valueOf(codeStr) == ErrorCode.CONTINUE) {
+					Log.i("info", "continue import action");
+					//continue to receive
+					wellDone = new DmaHttpBinarySync(urlString, requestAction, blobAction, responseAction, inputbytes, "Import").run();
+				}
 			}
 			else if (syncType.equals("Export")) {
 				//check if there is blob data to send
@@ -118,7 +149,7 @@ public class DmaHttpBinarySync {
 				int blobNb = blobs.size();
 				if (blobNb > 0) {
 					for (ArrayList<Object> blob : blobs) {
-						String sendAction = blobSendAction;
+						String sendAction = blobAction;
 						sendAction += "&fieldid="+blob.get(0);
 						sendAction += "&blob="+blob.get(1);
 						sendAction += "&format=jpg";
@@ -128,9 +159,8 @@ public class DmaHttpBinarySync {
 						Log.i("info", "responsea "+sendAction+" code "+codeResponseStr);
 					}
 				}
-				Log.i("info", "update ids");
 				DatabaseAdapter.updateIds(result);
-				Log.i("info", "get data");
+				
 				byte[] responsedata = createConnection(responseAction, null);
 				String codeResponseStr = getErrorCode(responsedata);
 				Log.i("info", "responsea "+responseAction+" code "+codeResponseStr);
@@ -138,12 +168,16 @@ public class DmaHttpBinarySync {
 					//DatabaseAdapter.cleanTables();
 					wellDone = true;
 				}
+				
+				if (Integer.valueOf(codeStr) == ErrorCode.CONTINUE) {
+					//continue to receive
+					wellDone = new DmaHttpBinarySync(urlString, requestAction, blobAction, responseAction, result, "EXport").run();
+				}
 			}
 		}
 		return wellDone;
 	}
 	
-    //private byte[] getBytesFromFile(File file) throws IOException {
 	private byte[] getBytesFromFile(File file) {
         InputStream is;
         byte[] bytes = null;

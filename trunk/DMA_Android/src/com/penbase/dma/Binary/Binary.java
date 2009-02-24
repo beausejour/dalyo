@@ -4,7 +4,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
-import android.util.Log;
 
 public class Binary {
 	public static int INTBYTE = 4;	
@@ -84,7 +83,7 @@ public class Binary {
 	
 	public static Object byteArrayToObject(byte[] bytes, String type) {
 		Object result = null;
-		if ((type.equals("VARCHAR")) || (type.equals("KEY")) || (type.equals("CHAR")) || (type.equals("TEXT"))) {
+		if ((type.equals("VARCHAR")) || (type.equals("KEY")) || (type.equals("CHAR")) || (type.equals("TEXT")) || (type.equals("BLOB"))) {
 			result = byteArrayToString(bytes);
 		}
 		else if (type.equals("BOOLEAN")) {
@@ -104,10 +103,6 @@ public class Binary {
 		}		
 		else if (type.equals("DOUBLE")) {
 			result = String.valueOf(byteArrayToDouble(bytes));
-		}
-		else if (type.equals("BLOB")) {
-			result = new byte[bytes.length];
-			System.arraycopy(bytes, 0, result, 0, bytes.length);
 		}
 		return result;
 	}
@@ -176,7 +171,6 @@ public class Binary {
 	}
 	
 	public static byte[] objectToByteArray (Object value, String type) {
-		Log.i("info", "value "+value+" type "+type);
 		byte[] result = null;
 		if ((type.equals("VARCHAR")) || (type.equals("KEY")) || (type.equals("CHAR")) || (type.equals("TEXT"))) {
 			if (value == null) {

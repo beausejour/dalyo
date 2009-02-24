@@ -221,7 +221,7 @@ public class DataView extends LinearLayout implements OnGestureListener {
 		}
 		else {
 			int position = currentPosition;
-			return records.get(position-1);
+			return records.get(position);
 		}
 	}
 	

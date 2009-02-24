@@ -25,6 +25,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -70,7 +71,9 @@ public class ApplicationView extends Activity {
 		database = new DatabaseAdapter(this, dbDoc, clientLogin+"_"+ApplicationListView.getApplicationName());
 		resourcesFileMap = client.getResourceMap("ext");
 		componentsMap = new HashMap<String, Component>();
+		Log.i("info", "parsing function document");
 		new Function(this, behaviorDocument);
+		Log.i("info", "end of parsing");
 		setContentView(R.layout.loading);
 		loadingbar = ProgressDialog.show(this, "Please wait...", "Building application ...", true, false);
 		loadingThread = new LoadingThread(handler);
@@ -87,6 +90,7 @@ public class ApplicationView extends Activity {
 		currentFormId = startFormId;
 		setTitle(layoutsMap.get(startFormId).getTitle());
 		setContentView(layoutsMap.get(startFormId));
+		Log.i("info", "end of load first function");
 	}
 
 	public static void prepareData(int position, String login, String pwd) {
@@ -122,10 +126,12 @@ public class ApplicationView extends Activity {
 			if (child.getNodeName().equals(DesignTag.DESIGN_S_G)) {
 				if (child.hasAttribute(DesignTag.DESIGN_S_G_OS)) {
 					String name = child.getAttribute(DesignTag.DESIGN_S_G_OS);
+					Log.i("info", "on start function");
 					Function.createFunction(name);
 				}
 			}
 		}
+		Log.i("info"," end of general setup");
 	}
 	
 	private void createView() {
@@ -428,20 +434,22 @@ public class ApplicationView extends Activity {
 	public static void setCurrentFormId(String id) {
 		currentFormId = id;
 		ArrayList<String> menuItemNameList = layoutsMap.get(currentFormId).getMenuItemNameList();
-		currentMenu.clear();
-		int itemsSize = menuItemNameList.size();
-		if (itemsSize > 0) {
-			for (int i=0; i<itemsSize; i++) {
-				currentMenu.add(Menu.NONE, i, Menu.NONE, menuItemNameList.get(i)).setOnMenuItemClickListener(new OnMenuItemClickListener() {
-					@Override
-					public boolean onMenuItemClick(MenuItem item) {
-						ArrayList<String> menuItemOnClickList = layoutsMap.get(currentFormId).getMenuItemOnClickList();
-						if (!menuItemOnClickList.get(item.getItemId()).equals("")) {
-							Function.createFunction(menuItemOnClickList.get(item.getItemId()));
+		if (currentMenu != null) {
+			currentMenu.clear();
+			int itemsSize = menuItemNameList.size();
+			if (itemsSize > 0) {
+				for (int i=0; i<itemsSize; i++) {
+					currentMenu.add(Menu.NONE, i, Menu.NONE, menuItemNameList.get(i)).setOnMenuItemClickListener(new OnMenuItemClickListener() {
+						@Override
+						public boolean onMenuItemClick(MenuItem item) {
+							ArrayList<String> menuItemOnClickList = layoutsMap.get(currentFormId).getMenuItemOnClickList();
+							if (!menuItemOnClickList.get(item.getItemId()).equals("")) {
+								Function.createFunction(menuItemOnClickList.get(item.getItemId()));
+							}
+							return false;
 						}
-						return false;
-					}
-				});
+					});
+				}
 			}
 		}
 	}

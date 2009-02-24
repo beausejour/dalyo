@@ -69,7 +69,7 @@ public class Function {
 		
 			for (int i=0; i<nodeLen; i++) {
 				Element element = (Element) nodeList.item(i);
-				if (element.getNodeName().equals(ScriptTag.PARAMETER)) {
+				/*if (element.getNodeName().equals(ScriptTag.PARAMETER)) {
 					//save parameters
 					String paramName = funcElement.getAttribute(ScriptTag.NAME)+"_"+element.getAttribute(ScriptTag.NAME);
 					if (parametersMap.containsKey(paramName)) {
@@ -78,7 +78,8 @@ public class Function {
 				}
 				else {
 					distributeAction(element);
-				}
+				}*/
+				distributeAction(element);
 			}
 		}
 	}
@@ -672,9 +673,12 @@ public class Function {
 				int childrenLen = element.getChildNodes().getLength();
 				for (int i=0; i<childrenLen; i++) {
 					Element child = (Element)element.getChildNodes().item(i);
-					if ((child.getNodeName().equals(ScriptTag.PARAMETER)) && (child.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE)) {
-						parametersMap.put(element.getAttribute(ScriptTag.FUNCTION)+"_"+child.getAttribute(ScriptTag.NAME), child.getChildNodes().item(0).getNodeValue());
+					if (child.getNodeName().equals(ScriptTag.PARAMETER)) {
+						setVariable(child);
 					}
+					/*if ((child.getNodeName().equals(ScriptTag.PARAMETER)) && (child.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE)) {
+						parametersMap.put(element.getAttribute(ScriptTag.FUNCTION)+"_"+child.getAttribute(ScriptTag.NAME), child.getChildNodes().item(0).getNodeValue());
+					}*/
 				}
 			}
 			createFunction(element.getAttribute(ScriptTag.FUNCTION));
@@ -702,9 +706,10 @@ public class Function {
 	}
 	
 	private static void setVariable(Element element) {
-		if (varsMap.containsKey(element.getAttribute(ScriptTag.NAME))) {
+		/*if (varsMap.containsKey(element.getAttribute(ScriptTag.NAME))) {
+			Log.i("info", "remove var "+element.getAttribute(ScriptTag.NAME));
 			varsMap.remove(element.getAttribute(ScriptTag.NAME));
-		}
+		}*/
 		if (!element.hasChildNodes()) {
 			//Add an empty ArrayList for Filter, List, Order
 			if ((element.getAttribute(ScriptTag.TYPE).equals(ScriptAttribute.FILTER)) ||
@@ -758,6 +763,12 @@ public class Function {
 				break;
 			case ScriptAttribute.NOTEQUALS:
 				result = "!=";
+				break;
+			case ScriptAttribute.AND:
+				result = " AND ";
+				break;
+			case ScriptAttribute.OR:
+				result = " OR ";
 				break;
 		}
 		return result;
