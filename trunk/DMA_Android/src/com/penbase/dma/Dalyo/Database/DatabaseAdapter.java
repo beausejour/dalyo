@@ -702,7 +702,11 @@ public class DatabaseAdapter {
 	}
 	
 	private void deleteValues(int tableId, ArrayList<Integer> fieldsList, ArrayList<Object> record) {
-		String delete = "DELETE FROM "+DatabaseAttribute.TABLE+tableId+" WHERE "+DatabaseAttribute.GID+tableId+"=\'"+record.get(1)+"\';";
+		String selectionString = DatabaseAttribute.GID+tableId+"=\'"+record.get(1)+"\'";
+		//Check if table has blob data
+		DatabaseAdapter.deleteBlobFiles(String.valueOf(tableId), selectionString);
+		String delete = "DELETE FROM "+DatabaseAttribute.TABLE+tableId+" WHERE "+selectionString+";";
+		//String delete = "DELETE FROM "+DatabaseAttribute.TABLE+tableId+" WHERE "+DatabaseAttribute.GID+tableId+"=\'"+record.get(1)+"\';";
 		sqlite.execSQL(delete);
 	}
 	
@@ -736,47 +740,44 @@ public class DatabaseAdapter {
 		}
 		
 		//Check if table has blob data
+		DatabaseAdapter.deleteBlobFiles(tableId, selectionString);
+		
+		if (selectionString == null) {
+			sqlite.execSQL("DELETE FROM "+DatabaseAttribute.TABLE+tableId+";");
+		}
+		else {
+			sqlite.execSQL("DELETE FROM "+DatabaseAttribute.TABLE+tableId+" WHERE "+selectionString+";");
+		}
+	}
+	
+	private static void deleteBlobFiles(String tableId, String selectionString) {
 		Cursor cursor = sqlite.query(DatabaseAttribute.TABLE+tableId, null, selectionString, null, null, null, null);
 		if (cursor.getCount() != 0) {
 			String[] columnsNames = cursor.getColumnNames();
-			boolean hasBlob = false;
-			int check = 0;
-			while (check < columnsNames.length) {
-				if (columnsNames[check].contains(DatabaseAttribute.FIELD)) {
-					if (fieldsTypeMap.get(columnsNames[check].split("_")[1]).equals(DatabaseAttribute.BLOB)) {
-						hasBlob = true;
-						check = columnsNames.length;
+			ArrayList<Integer> blobColumnArray = new ArrayList<Integer>();
+			int columnsNameNb = columnsNames.length;
+			for (int i=0; i<columnsNameNb; i++) {
+				if (columnsNames[i].contains(DatabaseAttribute.FIELD)) {
+					if (fieldsTypeMap.get(columnsNames[i].split("_")[1]).equals(DatabaseAttribute.BLOB)) {
+						blobColumnArray.add(i);
 					}
 				}
-				check ++;
 			}
-			if (hasBlob) {
+			int blobColumnArraySize = blobColumnArray.size();
+			if (blobColumnArraySize > 0) {
 				int cursorCount = cursor.getCount();
 				cursor.moveToFirst();
 				for (int i=0; i<cursorCount; i++) {
-					String[] columns = cursor.getColumnNames();
-					int columnsNb = columns.length;
-					for (int column=0; column<columnsNb; column++) {
-						if (columnsNames[column].contains(DatabaseAttribute.FIELD)) {
-							if (fieldsTypeMap.get(columns[column].split("_")[1]).equals(DatabaseAttribute.BLOB)) {
-								String imageName = (String)getCursorValue(cursor, columns[column]);
-								//Delete the image
-								new File(Constant.PACKAGENAME+imageName).delete();
-							}
-						}
+					for (int j=0; j<blobColumnArraySize; j++) {
+						String imageName = (String)getCursorValue(cursor, columnsNames[blobColumnArray.get(j)]);
+						//Delete the image
+						new File(Constant.PACKAGENAME+ApplicationListView.getApplicationName()+"/"+imageName).delete();
 					}
 					cursor.moveToNext();
 				}
-				DatabaseAdapter.closeCursor(cursor);
 			}
 		}
-		
-		if (selectionString == null) {
-			sqlite.execSQL("DELETE FROM "+DatabaseAttribute.TABLE+tableId);
-		}
-		else {
-			sqlite.execSQL("DELETE FROM "+DatabaseAttribute.TABLE+tableId+" WHERE "+selectionString);
-		}
+		DatabaseAdapter.closeCursor(cursor);
 	}
 	
 	public static Cursor selectQuery(String tableId, ArrayList<Integer> fieldList, ArrayList<Object> valueList) {

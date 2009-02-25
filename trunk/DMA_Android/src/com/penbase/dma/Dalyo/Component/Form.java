@@ -17,6 +17,7 @@ import com.penbase.dma.Dalyo.Component.Custom.TextZone;
 import com.penbase.dma.Dalyo.Component.Custom.Doodle.DoodleView;
 import com.penbase.dma.Dalyo.Component.Custom.PictureBox.PictureBoxView;
 import com.penbase.dma.Dalyo.Function.Function;
+import com.penbase.dma.View.ApplicationListView;
 
 public class Form extends AbsoluteLayout{
 	private String tableId;
@@ -115,7 +116,7 @@ public class Form extends AbsoluteLayout{
 			if (this.getChildAt(i) instanceof DoodleView) {
 				String fileName = ((DoodleView)this.getChildAt(i)).getImageName();
 				if (!fileName.equals("")) {
-					String path = Constant.PACKAGENAME + fileName;
+					String path = Constant.PACKAGENAME + ApplicationListView.getApplicationName() + "/" + fileName;
 					File file = new File(path);
 					if (file.exists()) {
 						((DoodleView)this.getChildAt(i)).setText("");
@@ -127,7 +128,7 @@ public class Form extends AbsoluteLayout{
 			else if (this.getChildAt(i) instanceof PictureBoxView) {
 				String fileName = ((PictureBoxView)this.getChildAt(i)).getPhotoName();
 				if (!fileName.equals("")) {
-					String path = Constant.PACKAGENAME + fileName;
+					String path = Constant.PACKAGENAME + ApplicationListView.getApplicationName() + "/" + fileName;
 					File file = new File(path);
 					if (file.exists()) {
 						((BitmapDrawable)((PictureBoxView)this.getChildAt(i)).getDrawable()).getBitmap().recycle();
