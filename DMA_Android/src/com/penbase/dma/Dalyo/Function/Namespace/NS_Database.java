@@ -24,6 +24,33 @@ public class NS_Database {
 		final Object filters = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_FILTERS, ScriptAttribute.LIST);
 		Object faceless = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_FACELESS, ScriptAttribute.PARAMETER_TYPE_BOOLEAN);
 		
+		if ((faceless == null) || (((Boolean)faceless).booleanValue())) {
+			//display progress dialog
+			final ProgressDialog exportProgressDialog = ProgressDialog.show(Function.getContext(), "Please wait...", "Importing application's data...", true, false);
+			new Thread() {
+				public void run() {
+					try {
+						ApplicationView.getCurrentClient().exportData(
+								ApplicationListView.getApplicationsInfo().get("AppId"),
+								ApplicationListView.getApplicationsInfo().get("DbId"), 
+								ApplicationListView.getApplicationsInfo().get("Username"),
+								ApplicationListView.getApplicationsInfo().get("Userpassword"),
+								tables, filters);
+					}
+					catch(Exception e)
+					{e.printStackTrace();}
+					exportProgressDialog.dismiss();
+				}
+			}.start();
+		}
+		else {
+			ApplicationView.getCurrentClient().exportData(
+					ApplicationListView.getApplicationsInfo().get("AppId"),
+					ApplicationListView.getApplicationsInfo().get("DbId"), 
+					ApplicationListView.getApplicationsInfo().get("Username"),
+					ApplicationListView.getApplicationsInfo().get("Userpassword"),
+					tables, filters);
+		}
 	}
 	
 	public static String GetTableByName(Element element) {

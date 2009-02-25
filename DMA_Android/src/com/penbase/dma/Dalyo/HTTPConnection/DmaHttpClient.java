@@ -433,7 +433,8 @@ public class DmaHttpClient{
 	}
 	
 	//Export local data to server
-	public boolean launchExport(String AppId, String DbId, String login, String pwd, ArrayList<String> tables, Object filters) {
+	public boolean exportData(String AppId, String DbId, String login, String pwd, ArrayList<String> tables, Object filters) {
+	//public boolean launchExport(String AppId, String DbId, String login, String pwd, ArrayList<String> tables, Object filters) {
 		String sync = "act=sync" + this.generateSyncUrlRequest(AppId, DbId, login, pwd);
 		String send = "act=send" + this.generateSyncUrlRequest(AppId, DbId, login, pwd);
 		String commit = "act=commit" + this.generateSyncUrlRequest(AppId, DbId, login, pwd);

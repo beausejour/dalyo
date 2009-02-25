@@ -80,7 +80,7 @@ public class NS_Runtime {
 					ApplicationListView.getApplicationsInfo().get("Username"),
 					ApplicationListView.getApplicationsInfo().get("Userpassword"), null, null);
 			if (importResult) {
-				result = ApplicationView.getCurrentClient().launchExport(
+				result = ApplicationView.getCurrentClient().exportData(
 						ApplicationListView.getApplicationsInfo().get("AppId"),
 						ApplicationListView.getApplicationsInfo().get("DbId"), 
 						ApplicationListView.getApplicationsInfo().get("Username"),
@@ -97,7 +97,7 @@ public class NS_Runtime {
 					ApplicationListView.getApplicationsInfo().get("Username"),
 					ApplicationListView.getApplicationsInfo().get("Userpassword"), null, null);
 			if (importResult) {
-				result = ApplicationView.getCurrentClient().launchExport(
+				result = ApplicationView.getCurrentClient().exportData(
 						ApplicationListView.getApplicationsInfo().get("AppId"),
 						ApplicationListView.getApplicationsInfo().get("DbId"), 
 						ApplicationListView.getApplicationsInfo().get("Username"),
