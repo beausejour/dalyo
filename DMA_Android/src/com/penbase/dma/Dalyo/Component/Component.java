@@ -329,15 +329,15 @@ public class Component {
 	}
 	
 	private float getFontSize(String fs) {
-		float fontSize = 12;
+		float fontSize = 14;
 		if (fs.equals(Constant.SMALL)) {
-			fontSize = 10;
+			fontSize = 12;
 		}
 		else if (fs.equals(Constant.BIG)) {
-			fontSize = 14;
+			fontSize = 16;
 		}
 		else if (fs.equals(Constant.EXTRA)) {
-			fontSize = 16;
+			fontSize = 18;
 		}
 		return fontSize;
 	}

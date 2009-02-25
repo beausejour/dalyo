@@ -48,9 +48,6 @@ public class DataViewAdapter extends BaseAdapter{
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		/*CustomLinearLayout layout = null;
-		layout = new CustomLinearLayout(context, items.get(position).getDataList(),
-				items.get(position).getWidthList(),false);*/
 		return items.get(position);
 	}
 	
