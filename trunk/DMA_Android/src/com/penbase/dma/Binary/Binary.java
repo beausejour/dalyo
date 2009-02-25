@@ -155,6 +155,18 @@ public class Binary {
 		return bytes;
 	}
 	
+	private static  byte[] dateTimeToByteArray (String d) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.DAY_OF_MONTH, Integer.valueOf(d.split(" ")[0].split("/")[0]));
+		calendar.set(Calendar.MONTH, Integer.valueOf(d.split(" ")[0].split("/")[1])-1);
+		calendar.set(Calendar.YEAR, Integer.valueOf(d.split(" ")[0].split("/")[2]));
+		
+		calendar.set(Calendar.HOUR_OF_DAY, Integer.valueOf(d.split(" ")[1].split(":")[0]));
+		calendar.set(Calendar.MINUTE, Integer.valueOf(d.split(" ")[1].split(":")[1]));
+		calendar.set(Calendar.SECOND, Integer.valueOf(d.split(" ")[1].split(":")[2]));
+		return longToByteArray(calendar.getTimeInMillis()/1000);
+	}
+	
 	private static  byte[] dateToByteArray (String d) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.DAY_OF_MONTH, Integer.valueOf(d.split("/")[0]));
@@ -165,8 +177,8 @@ public class Binary {
 	
 	private static  byte[] timeToByteArray (String d) {
 		Calendar calendar = Calendar.getInstance();
-		calendar.set(Calendar.HOUR_OF_DAY, Integer.valueOf(d.split("/")[0]));
-		calendar.set(Calendar.MINUTE, Integer.valueOf(d.split("/")[1]));
+		calendar.set(Calendar.HOUR_OF_DAY, Integer.valueOf(d.split(":")[0]));
+		calendar.set(Calendar.MINUTE, Integer.valueOf(d.split(":")[1]));
 		return longToByteArray(calendar.getTimeInMillis()/1000);
 	}
 	
@@ -198,7 +210,7 @@ public class Binary {
 			result = dateToByteArray(value.toString());
 		}
 		else if (type.equals("DATETIME")) {
-			result = dateToByteArray(value.toString());
+			result = dateTimeToByteArray(value.toString());
 		}		
 		else if (type.equals("DOUBLE")) {
 			if (value == null) {
