@@ -83,7 +83,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		textView.setText("Application list:");
 		textView.setTextColor(Color.BLACK);
 		layout.addView(textView, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-		
+
 		gridView = new GridView(this);
 		gridView.setVerticalScrollBarEnabled(false);
 		gridView.setPadding(10, 10, 10, 10);

@@ -157,10 +157,11 @@ public class Dma extends Activity implements OnClickListener {
 			findViewById(R.id.textePasswd).startAnimation(shake);
 			return;
 		}
-		
+		ProgressDialog connection = ProgressDialog.show(this, "Please wait...", "Connecting to server...", true, false);
 		DmaHttpClient client = new DmaHttpClient();
 		serverResponse = client.Authentication(tx_login.getText().toString().trim(),
 				tx_password.getText().toString().trim());
+		connection.dismiss();
 		if (serverResponse == null) {
 			alertDialog.setMessage("Check your username or password!");
 			alertDialog.show();
