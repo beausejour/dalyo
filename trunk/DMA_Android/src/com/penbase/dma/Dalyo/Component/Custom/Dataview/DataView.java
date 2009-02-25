@@ -14,6 +14,7 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Typeface;
@@ -62,6 +63,8 @@ public class DataView extends LinearLayout implements OnGestureListener {
 		pwidthList = new ArrayList<String>();
 		lwidthList = new ArrayList<String>();
 		mListView.setItemsCanFocus(true);
+		mListView.setCacheColorHint(Color.TRANSPARENT);
+		mListView.setScrollBarStyle(SCROLLBARS_OUTSIDE_INSET);
 		mListView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View v, int position, long arg3) {
@@ -240,10 +243,6 @@ public class DataView extends LinearLayout implements OnGestureListener {
 
 	@Override
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-		//lv.scrollBy((int) (velocityX / 10), 0);
-		/*if (e1.getY() == e2.getY()) {
-			tv.scrollBy((int) (velocityX / 10), 0);
-		}*/
 		return true;
 	}
 
@@ -285,6 +284,7 @@ public class DataView extends LinearLayout implements OnGestureListener {
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent ev) {
 		mGestureDetector.onTouchEvent(ev);
+		super.dispatchTouchEvent(ev);
 		return true;
 	}
 }

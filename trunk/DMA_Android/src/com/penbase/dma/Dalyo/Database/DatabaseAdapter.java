@@ -6,8 +6,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -795,7 +793,6 @@ public class DatabaseAdapter {
 		String table = createTableString(tables);
 		String[] projectionIn = createProjectionStrings(columns);
 		String selection = createSelectionString(tables, filter);
-		Log.i("info", "selection selectQuery "+selection);
 		String orderBy = null;
 		if (order != null) {
 			String filedId = ((ArrayList<Object>)order).get(0).toString();
@@ -804,7 +801,6 @@ public class DatabaseAdapter {
 				orderBy += " DESC";
 			}
 		}
-		Log.i("info", "orderBy "+orderBy);
 		boolean isDisctinct = false;
 		if (distinct != null) {
 			if (distinct.toString().equals("true")) {
@@ -927,13 +923,17 @@ public class DatabaseAdapter {
 	}
 	
 	public static void rollbackTransaction() {
-		STARTTRANSACTION = false;
-		sqlite.execSQL("ROLLBACK TRANSACTION;");
+		if (STARTTRANSACTION) {
+			sqlite.execSQL("ROLLBACK TRANSACTION;");
+			STARTTRANSACTION = false;
+		}
 	}
 	
 	public static void commitTransaction() {
-		STARTTRANSACTION = false;
-		sqlite.execSQL("COMMIT TRANSACTION;");
+		if (STARTTRANSACTION) {
+			sqlite.execSQL("COMMIT TRANSACTION;");
+			STARTTRANSACTION = false;
+		}
 	}
 	
 	public static boolean hasStartTransaction() {

@@ -27,7 +27,7 @@ public class CustomLinearLayout extends LinearLayout {
 				CustomTextView ctv = new CustomTextView(context);
 				ctv.setText(dataList.get(i));
 				ctv.setTypeface(Typeface.DEFAULT_BOLD);
-				ctv.setGravity(Gravity.CENTER_VERTICAL);
+				ctv.setGravity(Gravity.CENTER);
 				String fond = "#8F3600";
 				ctv.setBackgroundColor(Color.parseColor(fond));
 				int width = Integer.valueOf(widthList.get(i));
@@ -40,7 +40,7 @@ public class CustomLinearLayout extends LinearLayout {
 			for (int i=0; i<size; i++) {
 				CustomTextView ctv = new CustomTextView(context);
 				ctv.setText(dataList.get(i));
-				//ctv.setTextSize(DataView.getTextSize());
+				ctv.setTextSize(DataView.getTextSize());
 				ctv.setTypeface(DataView.getTextType());
 				ctv.setGravity(Gravity.CENTER_VERTICAL);
 				int width = Integer.valueOf(widthList.get(i));
