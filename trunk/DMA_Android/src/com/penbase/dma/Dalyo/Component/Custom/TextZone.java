@@ -34,6 +34,10 @@ public class TextZone extends EditText {
 		return fieldId;
 	}
 	
+	public void clear() {
+		this.setText("");
+	}
+	
 	public void refresh(HashMap<Object, Object> record) {
 		if ((!getFieldId().equals("")) && (record != null)) {
 			TextZone.this.setText((String)record.get(DatabaseAttribute.FIELD+getFieldId()));

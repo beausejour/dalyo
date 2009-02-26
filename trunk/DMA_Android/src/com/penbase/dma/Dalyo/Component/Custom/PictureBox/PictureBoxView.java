@@ -30,6 +30,7 @@ public class PictureBoxView extends ImageButton {
 	
 	public void clear() {
 		this.setImageResource(R.drawable.camera);
+		this.setScaleType(ScaleType.CENTER);
 	}
 	
 	public void setPhotoName(String name) {

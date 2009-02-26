@@ -7,6 +7,7 @@ import java.util.HashMap;
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.widget.AbsoluteLayout;
 import android.widget.ImageView.ScaleType;
 
@@ -72,8 +73,12 @@ public class Form extends AbsoluteLayout{
 	public void clear() {
 		int viewLen = this.getChildCount();
 		for (int i=0; i<viewLen; i++) {
+			Log.i("info", "this.getChildAt(i) "+this.getChildAt(i));
 			if (this.getChildAt(i) instanceof TextField) {
 				((TextField)this.getChildAt(i)).clear();
+			}
+			else if (this.getChildAt(i) instanceof TextZone) {
+				((TextZone)this.getChildAt(i)).clear();
 			}
 			else if (this.getChildAt(i) instanceof PictureBoxView) {
 				((PictureBoxView)this.getChildAt(i)).clear();
