@@ -82,6 +82,7 @@ public class ApplicationView extends Activity {
 	}
 
 	private void display() {
+		generalSetup();
 		NodeList generalInfo = designDoc.getElementsByTagName(DesignTag.DESIGN_S_G);
 		final String startFormId = ((Element) generalInfo.item(0)).getAttribute(DesignTag.DESIGN_S_G_FID);
 		if (onLoadFuncMap.containsKey(startFormId)) {
@@ -131,11 +132,9 @@ public class ApplicationView extends Activity {
 				}
 			}
 		}
-		Log.i("info"," end of general setup");
 	}
 	
 	private void createView() {
-		generalSetup();
 		layoutsMap = new HashMap<String, Form>();
 		onLoadFuncMap = new HashMap<String, String>();
 		NodeList formsList = designDoc.getElementsByTagName(DesignTag.DESIGN_F);
