@@ -14,12 +14,15 @@ import com.penbase.dma.View.ApplicationListView;
 import com.penbase.dma.View.ApplicationView;
 
 public class NS_Database {
+	private static boolean exportResult = false;
+	private static boolean importResult = false;
+	
 	public static void CancelTransaction() {
 		DatabaseAdapter.rollbackTransaction();
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static void Export(Element element) {
+	public static boolean Export(Element element) {
 		final ArrayList<String> tables = (ArrayList<String>) Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_TABLES, ScriptAttribute.LIST);
 		final Object filters = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_FILTERS, ScriptAttribute.LIST);
 		Object faceless = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_FACELESS, ScriptAttribute.PARAMETER_TYPE_BOOLEAN);
@@ -30,7 +33,7 @@ public class NS_Database {
 			new Thread() {
 				public void run() {
 					try {
-						ApplicationView.getCurrentClient().exportData(
+						exportResult = ApplicationView.getCurrentClient().exportData(
 								ApplicationListView.getApplicationsInfo().get("AppId"),
 								ApplicationListView.getApplicationsInfo().get("DbId"), 
 								ApplicationListView.getApplicationsInfo().get("Username"),
@@ -44,13 +47,14 @@ public class NS_Database {
 			}.start();
 		}
 		else {
-			ApplicationView.getCurrentClient().exportData(
+			exportResult = ApplicationView.getCurrentClient().exportData(
 					ApplicationListView.getApplicationsInfo().get("AppId"),
 					ApplicationListView.getApplicationsInfo().get("DbId"), 
 					ApplicationListView.getApplicationsInfo().get("Username"),
 					ApplicationListView.getApplicationsInfo().get("Userpassword"),
 					tables, filters);
 		}
+		return exportResult;
 	}
 	
 	public static String GetTableByName(Element element) {
@@ -60,7 +64,7 @@ public class NS_Database {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static void Import(Element element) {
+	public static boolean Import(Element element) {
 		final ArrayList<String> tables = (ArrayList<String>) Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_TABLES, ScriptAttribute.LIST);
 		final Object filters = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_FILTERS, ScriptAttribute.LIST);
 		Object faceless = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_FACELESS, ScriptAttribute.PARAMETER_TYPE_BOOLEAN);
@@ -70,7 +74,7 @@ public class NS_Database {
 			new Thread() {
 				public void run() {
 					try {
-						ApplicationView.getCurrentClient().importData(
+						importResult = ApplicationView.getCurrentClient().importData(
 								ApplicationListView.getApplicationsInfo().get("AppId"),
 								ApplicationListView.getApplicationsInfo().get("DbId"), 
 								ApplicationListView.getApplicationsInfo().get("Username"),
@@ -84,13 +88,14 @@ public class NS_Database {
 			}.start();
 		}
 		else {
-			ApplicationView.getCurrentClient().importData(
+			importResult = ApplicationView.getCurrentClient().importData(
 					ApplicationListView.getApplicationsInfo().get("AppId"),
 					ApplicationListView.getApplicationsInfo().get("DbId"), 
 					ApplicationListView.getApplicationsInfo().get("Username"),
 					ApplicationListView.getApplicationsInfo().get("Userpassword"),
 					tables, filters);
 		}
+		return importResult;
 	}
 	
 	public static void StartTransaction() {
