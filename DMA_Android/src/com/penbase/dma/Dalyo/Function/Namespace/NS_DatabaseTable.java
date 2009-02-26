@@ -6,7 +6,6 @@ import java.util.HashMap;
 import org.w3c.dom.Element;
 
 import android.database.Cursor;
-import android.util.Log;
 
 import com.penbase.dma.Constant.DatabaseAttribute;
 import com.penbase.dma.Constant.ScriptAttribute;
@@ -33,7 +32,6 @@ public class NS_DatabaseTable {
 		String tableId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
 		ArrayList<Object> fieldsList = (ArrayList<Object>) Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_FIELDS, ScriptAttribute.LIST);
 		ArrayList<Object> valuesList = (ArrayList<Object>) Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUES, ScriptAttribute.LIST);
-		Log.i("info", "flist "+fieldsList+" vlist "+valuesList);
 		return new Record(tableId, fieldsList, valuesList).getRecord();
 	}
 	
@@ -108,11 +106,8 @@ public class NS_DatabaseTable {
 	
 	public static ArrayList<HashMap<Object, Object>> GetRecords(Element element) {
 		String tableId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
-		Log.i("info", "tableid "+tableId);
 		String fieldId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FIELD, ScriptAttribute.FIELD).toString();
-		Log.i("info", "tableid "+fieldId);
 		Object value = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
-		Log.i("info", "tableid "+tableId+" fieldid "+fieldId+" value "+value);
 		ArrayList<Integer> fieldList = new ArrayList<Integer>();
 		fieldList.add(Integer.valueOf(fieldId));
 		ArrayList<Object> valueList = new ArrayList<Object>();
@@ -132,7 +127,6 @@ public class NS_DatabaseTable {
 			cursor.moveToNext();
 		}
 		DatabaseAdapter.closeCursor(cursor);
-		Log.i("info", "records "+records);
 		return records;
 	}
 	

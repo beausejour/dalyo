@@ -536,7 +536,6 @@ public class DatabaseAdapter {
 				if (syncTypeInt != DatabaseAttribute.DELETEVALUE) {
 					for (int fid=0; fid<fieldsNbInt; fid++) {
 						String valueType = fieldsTypeMap.get(fields.get(fid).split("_")[1]);
-						Log.i("info", "valueType "+valueType);
 						byte[] value = null;
 						byte[] valueLenth = null;
 						

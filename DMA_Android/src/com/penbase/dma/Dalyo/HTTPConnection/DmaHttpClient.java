@@ -46,7 +46,6 @@ import org.xml.sax.SAXException;
 import com.penbase.dma.Dma;
 import com.penbase.dma.Binary.Binary;
 import com.penbase.dma.Constant.Constant;
-import com.penbase.dma.Constant.DatabaseAttribute;
 import com.penbase.dma.Constant.DatabaseTag;
 import com.penbase.dma.Constant.ErrorCode;
 import com.penbase.dma.Constant.RessourceTag;

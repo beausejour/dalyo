@@ -172,7 +172,7 @@ public class DmaHttpBinarySync {
 				
 				if (Integer.valueOf(codeStr) == ErrorCode.CONTINUE) {
 					//continue to receive
-					wellDone = new DmaHttpBinarySync(urlString, requestAction, blobAction, responseAction, result, "EXport").run();
+					wellDone = new DmaHttpBinarySync(urlString, requestAction, blobAction, responseAction, result, "Export").run();
 				}
 			}
 		}
@@ -210,6 +210,7 @@ public class DmaHttpBinarySync {
 		catch (IOException e) {
 			e.printStackTrace();
 		}
+		Log.i("info", "bytes length "+bytes.length);
         return bytes;
     }
 	

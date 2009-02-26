@@ -423,12 +423,12 @@ public class Function {
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_EXPORT)) {
 				if (!isFirstTime) {
-					NS_Database.Export(element);
+					result = NS_Database.Export(element);
 				}
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_IMPORT)) {
 				if (!isFirstTime) {
-					NS_Database.Import(element);
+					result =  NS_Database.Import(element);
 				}
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETTABLEBYNAME)) {
