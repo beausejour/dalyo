@@ -36,6 +36,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.telephony.TelephonyManager;
 import android.view.Menu;
 import android.view.View;
@@ -56,6 +58,17 @@ public class Dma extends Activity implements OnClickListener {
 	private ProgressDialog loadApps = null;
 	private static Context context;
 	private String serverResponse = null;
+	private Handler handler = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+				case 0:
+					loadApps.dismiss();
+					buildAppsList();
+					break;
+			}
+		}
+	};
 	
 	@Override
 	public void onCreate(Bundle icicle) {
@@ -157,12 +170,19 @@ public class Dma extends Activity implements OnClickListener {
 			findViewById(R.id.textePasswd).startAnimation(shake);
 			return;
 		}
-		ProgressDialog connection = ProgressDialog.show(this, "Please wait...", "Connecting to server...", true, false);
-		DmaHttpClient client = new DmaHttpClient();
-		serverResponse = client.Authentication(tx_login.getText().toString().trim(),
-				tx_password.getText().toString().trim());
-		connection.dismiss();
+		loadApps = ProgressDialog.show(this, "Please wait...", "Connecting to server...", true, false);
+		final DmaHttpClient client = new DmaHttpClient();
+		
+		ConnectThread connectThread = new ConnectThread(client, handler);
+		connectThread.start();
+	}
+	
+	public void buildAppsList() {
 		if (serverResponse == null) {
+			alertDialog.setMessage("Connection failed!");
+			alertDialog.show();
+		}
+		else if (serverResponse.equals("error")) {
 			alertDialog.setMessage("Check your username or password!");
 			alertDialog.show();
 		}
@@ -199,7 +219,6 @@ public class Dma extends Activity implements OnClickListener {
 		return r;
 	}
 
-	//@Override
 	public boolean onOptionsItemSelected(int featureId, MenuItem item) {
 		switch (item.getItemId()) {
 			case 0:
@@ -220,5 +239,25 @@ public class Dma extends Activity implements OnClickListener {
 	public static float getVersion() {
 		float result = (float) 1.0;
 		return result;
+	}
+	
+	public class ConnectThread extends Thread {
+		private DmaHttpClient client;
+		private Handler handler;
+		Thread m_thread = null;
+		
+		public ConnectThread(DmaHttpClient c, Handler h) {
+			this.client = c;
+			this.handler = h;
+		}
+		
+		@Override
+		public void run() {
+			if (handler != null) {
+				serverResponse = client.Authentication(tx_login.getText().toString().trim(),
+						tx_password.getText().toString().trim());
+				handler.sendEmptyMessage(0);
+			}
+		}
 	}
 }

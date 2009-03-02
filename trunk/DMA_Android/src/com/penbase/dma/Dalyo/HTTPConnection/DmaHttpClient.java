@@ -24,7 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
@@ -136,13 +136,13 @@ public class DmaHttpClient{
 		StringBuilder response = null;
 		HttpURLConnection connection = null;
 		try{
-			//HttpURLConnection connection = null;
 			connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestMethod("POST");
 			connection.setDoOutput(true);
 			connection.setDoInput(true);
-			PrintStream out = new PrintStream(connection.getOutputStream());
-			out.print(parameters);
+			connection.connect();
+			OutputStream out = connection.getOutputStream();
+			out.write(parameters.getBytes());
 			out.close();
 			
 			// Get the input stream and read response
@@ -175,18 +175,20 @@ public class DmaHttpClient{
 				errorCode = Integer.parseInt(result.substring(0, result.indexOf('\n')));
 				result = result.substring(result.indexOf('\n') + 1, result.length());
 			}
+			if (connection != null) {
+				connection.disconnect();
+			}
 		}
 		catch (ProtocolException pe) {
 			Log.i("info", "HTTPExample: ProtocolException; " + pe.getMessage());
 		}
 		catch (IOException ioe) {
 			Log.i("info", "HTTPExample: IOException; " + ioe.getMessage());
+			ioe.printStackTrace();
 		}
 
-		Log.i("info", "Server returned: " + errorCode);
-
 		if (errorCode != ErrorCode.OK) {
-			return null;
+			return "error";
 		}
 		else {
 			return result;

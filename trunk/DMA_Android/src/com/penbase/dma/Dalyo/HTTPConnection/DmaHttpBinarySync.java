@@ -81,7 +81,8 @@ public class DmaHttpBinarySync {
 			result = getData(connection);
 		}
 		catch (IOException ioe) {
-			Log.i("info", "HTTPExample: IOException; " + ioe.getMessage());}
+			Log.i("info", "HTTPExample: IOException; " + ioe.getMessage());
+		}
 		return result;
 	}
 	
