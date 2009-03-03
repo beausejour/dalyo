@@ -13,6 +13,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_CANCELNRECORD = "cancelNewRecord";
 	public static final String FUNCTION_CANCELTRANSACTION = "cancelTransaction";
 	public static final String FUNCTION_CEIL = "ceil";
+	public static final String FUNCTION_CHECK = "check";	
 	public static final String FUNCTION_CLEAR = "clear";
 	public static final String FUNCTION_CONCAT = "concat";
 	public static final String FUNCTION_CONFIRM = "confirm";
@@ -50,6 +51,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_IMPORT = "import";
 	public static final String FUNCTION_INDEXOF = "indexOf";
 	public static final String FUNCTION_INIT = "init";
+	public static final String FUNCTION_ISCHECKED = "isChecked";
 	public static final String FUNCTION_ISEMPTY = "isEmpty";
 	public static final String FUNCTION_ISENABLED = "isEnabled";
 	public static final String FUNCTION_ISVISIBLE = "isVisible";
@@ -96,6 +98,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_VALIDATETRANSACTION = "validateTransaction";
 	
 	//Namespace
+	public static final String NAMESPACE_COMPONENT_CHECK = "component.checkbox";
 	public static final String NAMESPACE_COMPONENT_CB = "component.combobox";
 	public static final String NAMESPACE_COMPONENT_DV = "component.dataview";
 	public static final String NAMESPACE_COMPONENT_TF = "component.textfield";
@@ -145,6 +148,7 @@ public class ScriptAttribute {
 	public static final String PARAMETER_NAME_SEARCH = "search";
 	public static final String PARAMETER_NAME_SOURCE = "source";
 	public static final String PARAMETER_NAME_START = "start";
+	public static final String PARAMETER_NAME_STATE = "state";
 	public static final String PARAMETER_NAME_TABLENAME = "tablename";
 	public static final String PARAMETER_NAME_TABLES = "tables";
 	public static final String PARAMETER_NAME_TEXT = "text";
