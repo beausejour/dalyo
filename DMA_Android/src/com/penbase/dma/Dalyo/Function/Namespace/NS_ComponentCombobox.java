@@ -15,10 +15,6 @@ public class NS_ComponentCombobox {
 		String componentId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT).toString();
 		Object value = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
 		Object label = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_LABEL, ScriptAttribute.OBJECT);
-		//
-		/*boolean bold = Boolean.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_BOLD, ScriptAttribute.PARAMETER_TYPE_BOOLEAN).toString());
-		boolean italic = Boolean.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_ITALIC, ScriptAttribute.PARAMETER_TYPE_BOOLEAN).toString());
-		boolean underline = Boolean.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_UNDERLINE, ScriptAttribute.PARAMETER_TYPE_BOOLEAN).toString());*/
 		((ComboBox)ApplicationView.getComponents().get(componentId).getView()).addItem(label.toString(), value.toString());
 	}
 	
@@ -49,7 +45,6 @@ public class NS_ComponentCombobox {
 	}
 	
 	public static void Refresh(Element element) {
-		//order and distinct are not implemented yet
 		String componentId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT).toString();
 		Object filter = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FILTER, ScriptAttribute.FILTER);
 		Object order = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.ORDER, ScriptAttribute.ORDER);

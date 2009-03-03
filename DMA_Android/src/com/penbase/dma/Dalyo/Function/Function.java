@@ -363,6 +363,14 @@ public class Function {
 				NS_Component.SetValue(element);
 			}
 		}
+		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_COMPONENT_CHECK)) {
+			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CHECK)) {
+				NS_ComponentCheckbox.Check(element);
+			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ISCHECKED)) {
+				result = NS_ComponentCheckbox.IsChecked(element);
+			}
+		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_COMPONENT_CB)) {
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ADDITEM)) {
 				NS_ComponentCombobox.AddItem(element);
