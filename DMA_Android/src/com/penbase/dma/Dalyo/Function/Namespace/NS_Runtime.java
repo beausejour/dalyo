@@ -106,6 +106,4 @@ public class NS_Runtime {
 			return result;
 		}
 	}
-	
-	//<c f="getCurrentUser" ns="runtime"/>
 }

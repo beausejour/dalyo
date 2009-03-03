@@ -22,6 +22,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_EDITRECORD = "editRecord";
 	public static final String FUNCTION_ERROR = "error";
 	public static final String FUNCTION_EXIT = "exit";
+	public static final String FUNCTION_EXPLODE = "explode";
 	public static final String FUNCTION_EXPORT = "export";
 	public static final String FUNCTION_FLOOR = "floor";
 	public static final String FUNCTION_FORMAT = "format";
@@ -45,7 +46,9 @@ public class ScriptAttribute {
 	public static final String FUNCTION_GETTABLEBYNAME = "getTableByName";
 	public static final String FUNCTION_GETTEXT = "getText";
 	public static final String FUNCTION_GETVALUE = "getValue";
+	public static final String FUNCTION_IMPLODE = "implode";
 	public static final String FUNCTION_IMPORT = "import";
+	public static final String FUNCTION_INDEXOF = "indexOf";
 	public static final String FUNCTION_INIT = "init";
 	public static final String FUNCTION_ISEMPTY = "isEmpty";
 	public static final String FUNCTION_ISENABLED = "isEnabled";
@@ -60,6 +63,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_RANDOM = "rand";
 	public static final String FUNCTION_REFRESH = "refresh";
 	public static final String FUNCTION_REMOVEALLITEMS = "removeAllItems";
+	public static final String FUNCTION_REPLACE = "replace";
 	public static final String FUNCTION_RESET = "reset";
 	public static final String FUNCTION_ROUND = "round";
 	public static final String FUNCTION_SETCURRENTRECORD = "setCurrentRecord";
@@ -78,13 +82,17 @@ public class ScriptAttribute {
 	public static final String FUNCTION_STARTTRANSACTION = "startTransaction";
 	public static final String FUNCTION_STOP = "stop";
 	public static final String FUNCTION_SUB = "sub";
+	public static final String FUNCTION_SUBSTRING = "substring";
 	public static final String FUNCTION_SYNC = "sync";
 	public static final String FUNCTION_TOBOOLEAN = "toBoolean";
 	public static final String FUNCTION_TODATE = "toDate";
 	public static final String FUNCTION_TOINT = "toInt";
+	public static final String FUNCTION_TOLOWER = "toLower";
 	public static final String FUNCTION_TONUMERIC = "toNumeric";
 	public static final String FUNCTION_TORECORD = "toRecord";
 	public static final String FUNCTION_TOSTRING = "toString";
+	public static final String FUNCTION_TOUPPER = "toUpper";
+	public static final String FUNCTION_TRIM = "trim";
 	public static final String FUNCTION_VALIDATETRANSACTION = "validateTransaction";
 	
 	//Namespace
@@ -111,13 +119,16 @@ public class ScriptAttribute {
 	public static final String PARAMETER_NAME_CAPTION = "caption";
 	public static final String PARAMETER_NAME_DECIMALS = "decimals";
 	public static final String PARAMETER_NAME_DELAYED = "delayed";
+	public static final String PARAMETER_NAME_DELIMITER = "delimiter";
 	public static final String PARAMETER_NAME_DISTINCT = "distinct";
 	public static final String PARAMETER_NAME_ELEMENT = "element";
 	public static final String PARAMETER_NAME_ENABLE = "enable";
+	public static final String PARAMETER_NAME_END = "end";
 	public static final String PARAMETER_NAME_FACELESS = "faceless";
 	public static final String PARAMETER_NAME_FIELDS = "fields";
 	public static final String PARAMETER_NAME_FILTERS = "filters";
 	public static final String PARAMETER_NAME_FORMAT = "format";
+	public static final String PARAMETER_NAME_GLUE = "glue";
 	public static final String PARAMETER_NAME_INDEX = "index";
 	public static final String PARAMETER_NAME_INTERVAL = "interval";
 	public static final String PARAMETER_NAME_ITALIC = "italic";
@@ -130,12 +141,17 @@ public class ScriptAttribute {
 	public static final String PARAMETER_NAME_MINUTES = "minutes";
 	public static final String PARAMETER_NAME_PATH = "path";
 	public static final String PARAMETER_NAME_PERCENT = "percent";
+	public static final String PARAMETER_NAME_REPLACEMENT = "replacement";
+	public static final String PARAMETER_NAME_SEARCH = "search";
+	public static final String PARAMETER_NAME_SOURCE = "source";
+	public static final String PARAMETER_NAME_START = "start";
 	public static final String PARAMETER_NAME_TABLENAME = "tablename";
 	public static final String PARAMETER_NAME_TABLES = "tables";
 	public static final String PARAMETER_NAME_TEXT = "text";
 	public static final String PARAMETER_NAME_THOUSANDSSEP = "thousands_separator";
 	public static final String PARAMETER_NAME_TIMERID = "timer_id";
 	public static final String PARAMETER_NAME_TITLE = "title";
+	public static final String PARAMETER_NAME_TOKEN = "token";
 	public static final String PARAMETER_NAME_UNDERLINE = "underline";
 	public static final String PARAMETER_NAME_URL = "url";
 	public static final String PARAMETER_NAME_VALUE = "value";
