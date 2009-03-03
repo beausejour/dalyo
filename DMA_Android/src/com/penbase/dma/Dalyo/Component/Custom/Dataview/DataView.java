@@ -20,10 +20,12 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.Paint.Style;
 
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.GestureDetector.OnGestureListener;
+import android.view.View.OnFocusChangeListener;
 
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
@@ -49,6 +51,7 @@ public class DataView extends LinearLayout implements OnGestureListener {
 	
 	public DataView(Context c, String tid) {
 		super(c);
+		records = new HashMap<Integer, HashMap<Object, Object>>();
 		hasHeader = true;
 		borderPaint = new Paint();
 		borderPaint.setARGB(255, 0, 0, 0);
@@ -68,9 +71,19 @@ public class DataView extends LinearLayout implements OnGestureListener {
 		mListView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View v, int position, long arg3) {
+				Log.i("info", "position "+position);
 				currentPosition = position;
 				if (!((CustomLinearLayout) v).isHeader()) {
 					v.setSelected(true);
+				}
+			}
+		});
+		
+		mListView.setOnFocusChangeListener(new OnFocusChangeListener() {
+			@Override
+			public void onFocusChange(View arg0, boolean arg1) {
+				if (!arg1) {
+					currentPosition = -1;
 				}
 			}
 		});
@@ -169,7 +182,6 @@ public class DataView extends LinearLayout implements OnGestureListener {
 				}
 			}
 			Cursor cursor = DatabaseAdapter.selectQuery(tables, null, filter, order, null);
-			records = new HashMap<Integer, HashMap<Object, Object>>();
 			int count = cursor.getCount();
 			if (count > 0) {
 				cursor.moveToFirst();
@@ -234,6 +246,49 @@ public class DataView extends LinearLayout implements OnGestureListener {
 	
 	public ListView getListView() {
 		return mListView;
+	}
+	
+	public Object getCellValue(int row, int column) {
+		String culumnName = DatabaseAttribute.FIELD+columns.get(column - 1).get(1);
+		if (records.size() > 0) {
+			return records.get(row - 1).get(culumnName);
+		}
+		else {
+			return null;
+		}
+	}
+	
+	public int getColumnIndex(String fieldId) {
+		int result = -1;
+		int columnsNb = columns.size();
+		int i = 0;
+		while (i < columnsNb) {
+			if (columns.get(i).get(1).equals(fieldId)) {
+				result = i;
+				i = columnsNb;
+			}
+		}
+		if (result != -1) {
+			result += 1;
+		}
+		return result;
+	}
+	
+	public int getSelectedRow() {
+		if (currentPosition < 1) {
+			return 0;
+		}
+		else {
+			return currentPosition;
+		}
+	}
+	
+	public int getRowCount() {
+		return records.size();
+	}
+	
+	public void setNumericFormat(int column, int decimals) {
+		
 	}
 	
 	@Override
