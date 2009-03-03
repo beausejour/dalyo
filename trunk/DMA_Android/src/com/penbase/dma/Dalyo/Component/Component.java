@@ -292,7 +292,6 @@ public class Component {
 					((DataView)view).setCurrentPosition(position);
 					Function.createFunction(funcName);
 				}
-
 			});
 		}
 		else {
@@ -357,26 +356,6 @@ public class Component {
 			fontType = Typeface.create(Typeface.SERIF, Typeface.BOLD_ITALIC);
 		}
 		return fontType;
-	}
-	
-	public void refreshComponentContent(Object filter, Object order, Object distinct) {
-		if (getView() instanceof DataView) {
-			((DataView)getView()).refresh(filter, order);
-		}
-		else if (getView() instanceof ComboBox) {
-			((ComboBox)getView()).getData(filter, order, distinct);
-		}
-	}
-	
-	public HashMap<Object, Object> getRecord() {
-		HashMap<Object, Object> result = null;
-		if (getView() instanceof ComboBox) {
-			result = ((ComboBox)getView()).getCurrentRecord();
-		}
-		if (getView() instanceof DataView) {
-			result = ((DataView)getView()).getCurrentRecord();
-		}
-		return result;
 	}
 	
 	public void setValue(Object value) {

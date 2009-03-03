@@ -28,6 +28,8 @@ public class ScriptAttribute {
 	public static final String FUNCTION_FLOOR = "floor";
 	public static final String FUNCTION_FORMAT = "format";
 	public static final String FUNCTION_GET = "get";
+	public static final String FUNCTION_GETCELLVALUE = "getCellValue";
+	public static final String FUNCTION_GETCOLUMNINDEX = "getColumnIndex";
 	public static final String FUNCTION_GETCURRENTFORM = "getCurrentForm";
 	public static final String FUNCTION_GETCURRENTUSER = "getCurrentUser";
 	public static final String FUNCTION_GETFIELDNAME = "getFieldName";
@@ -40,8 +42,10 @@ public class ScriptAttribute {
 	public static final String FUNCTION_GETLONGITUDE = "getLongitude";
 	public static final String FUNCTION_GETRECORD = "getRecord";
 	public static final String FUNCTION_GETRECORDS = "getRecords";
+	public static final String FUNCTION_GETROWCOUNT = "getRowCount";
 	public static final String FUNCTION_GETSELECTEDINDEX = "getSelectedIndex";
 	public static final String FUNCTION_GETSELECTEDRECORD = "getSelectedRecord";
+	public static final String FUNCTION_GETSELECTEDROW = "getSelectedRow";
 	public static final String FUNCTION_GETSIZE = "size";
 	public static final String FUNCTION_GETSTATUS = "getStatus";
 	public static final String FUNCTION_GETTABLEBYNAME = "getTableByName";
@@ -71,7 +75,8 @@ public class ScriptAttribute {
 	public static final String FUNCTION_SETCURRENTRECORD = "setCurrentRecord";
 	public static final String FUNCTION_SETENABLED = "setEnabled";
 	public static final String FUNCTION_SETFOCUS = "setFocus";
-	public static final String FUNCTION_SETLABEL = "setLabel";	
+	public static final String FUNCTION_SETLABEL = "setLabel";
+	public static final String FUNCTION_SETNUMERICFORMAT = "setNumericFormat";
 	public static final String FUNCTION_SETSELECTEDINDEX = "setSelectedIndex";
 	public static final String FUNCTION_SETTEXT = "setText";
 	public static final String FUNCTION_SETTITLE = "setTitle";
@@ -120,6 +125,7 @@ public class ScriptAttribute {
 	public static final String PARAMETER_NAME_BOLD = "bold";
 	public static final String PARAMETER_NAME_CALLBACK = "callback";
 	public static final String PARAMETER_NAME_CAPTION = "caption";
+	public static final String PARAMETER_NAME_COLUMN = "col";
 	public static final String PARAMETER_NAME_DECIMALS = "decimals";
 	public static final String PARAMETER_NAME_DELAYED = "delayed";
 	public static final String PARAMETER_NAME_DELIMITER = "delimiter";
@@ -145,6 +151,7 @@ public class ScriptAttribute {
 	public static final String PARAMETER_NAME_PATH = "path";
 	public static final String PARAMETER_NAME_PERCENT = "percent";
 	public static final String PARAMETER_NAME_REPLACEMENT = "replacement";
+	public static final String PARAMETER_NAME_ROW = "row";
 	public static final String PARAMETER_NAME_SEARCH = "search";
 	public static final String PARAMETER_NAME_SOURCE = "source";
 	public static final String PARAMETER_NAME_START = "start";

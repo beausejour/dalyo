@@ -53,7 +53,7 @@ public class ComboBox extends Spinner {
 		}
 	}
 	
-	public void getData(Object filter, Object order, Object distinct) {
+	public void refresh(Object filter, Object order, Object distinct) {
 		//need to implement distinct
 		ArrayList<String> tables = new ArrayList<String>();
 		tables.add(labelList.get(0));

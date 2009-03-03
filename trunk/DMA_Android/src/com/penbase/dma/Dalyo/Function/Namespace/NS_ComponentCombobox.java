@@ -31,11 +31,7 @@ public class NS_ComponentCombobox {
 	
 	public static HashMap<Object, Object> GetSelectedRecord(Element element) {
 		String componentId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT).toString();
-		HashMap<Object, Object> record = null;
-		if (ApplicationView.getComponents().containsKey(componentId)) {
-			record = ApplicationView.getComponents().get(componentId).getRecord();
-		}
-		return record;
+		return ((ComboBox)ApplicationView.getComponents().get(componentId).getView()).getCurrentRecord();
 	}
 	
 	public static void SetSelectedIndex(Element element) {
@@ -49,9 +45,7 @@ public class NS_ComponentCombobox {
 		Object filter = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FILTER, ScriptAttribute.FILTER);
 		Object order = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.ORDER, ScriptAttribute.ORDER);
 		Object distinct = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_DISTINCT, ScriptAttribute.PARAMETER_TYPE_BOOLEAN);
-		if (ApplicationView.getComponents().containsKey(componentId)) {
-			ApplicationView.getComponents().get(componentId).refreshComponentContent(filter, order, distinct);
-		}
+		((ComboBox)ApplicationView.getComponents().get(componentId).getView()).refresh(filter, order, distinct);
 	}
 	
 	public static void RemoveAllItems(Element element) {
