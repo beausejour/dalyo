@@ -245,6 +245,9 @@ public class Component {
 		}
 		else if(type.equals(DesignTag.COMPONENT_NUMBERBOX)) {
 			NumberBox numberbox = new NumberBox(context);
+			numberbox.setInitialValue(initialValue);
+			numberbox.setMaxValue(maxValue);
+			numberbox.setMinValue(minValue);
 			view = numberbox;
 		}
 		else if(type.equals(DesignTag.COMPONENT_PICTUREBOX)) {

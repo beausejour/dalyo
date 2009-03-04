@@ -420,6 +420,14 @@ public class Function {
 				NS_ComponentDataview.SetSelectedRow(element);
 			}
 		}
+		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_COMPONENT_NB)) {
+			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETMAX)) {
+				NS_ComponentNumberBox.SetMax(element);
+			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETMIN)) {
+				NS_ComponentNumberBox.SetMin(element);
+			}
+		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_COMPONENT_TF)) {
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETTEXT)) {
 				result = NS_ComponentTextField.GetText(element);
@@ -610,10 +618,14 @@ public class Function {
 		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.OBJECT)) {
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TOBOOLEAN)) {
-				result = NS_Object.ToBoolean(element);
+				if (!isFirstTime) {
+					result = NS_Object.ToBoolean(element);
+				}
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TODATE)) {
-				result = NS_Object.ToDate(element);
+				if (!isFirstTime) {
+					result = NS_Object.ToDate(element);
+				}
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TOINT)) {
 				if (!isFirstTime) {
