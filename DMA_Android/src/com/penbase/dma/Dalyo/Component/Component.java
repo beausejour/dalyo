@@ -8,7 +8,7 @@ import com.penbase.dma.Constant.DesignTag;
 import com.penbase.dma.Dalyo.Component.Custom.*;
 import com.penbase.dma.Dalyo.Component.Custom.Dataview.DataView;
 import com.penbase.dma.Dalyo.Component.Custom.Doodle.DoodleView;
-import com.penbase.dma.Dalyo.Component.Custom.PictureBox.*;
+import com.penbase.dma.Dalyo.Component.Custom.PictureBox.PictureBoxView;
 import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
 
@@ -18,7 +18,11 @@ import android.graphics.drawable.Drawable;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.*;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class Component {
@@ -237,10 +241,10 @@ public class Component {
 			view = textzone;
 		}
 		else if(type.equals(DesignTag.COMPONENT_RADIOBUTTON)) {
-			RadioButton radiobutton = new RadioButton(context);
-			radiobutton.setText(label);
-			radiobutton.setTypeface(getFontType(fontType));
-			radiobutton.setTextSize(getFontSize(fontSize));
+			Radiobutton radiobutton = new Radiobutton(context);
+			radiobutton.getTextView().setText(label);
+			radiobutton.getTextView().setTypeface(getFontType(fontType));
+			radiobutton.getTextView().setTextSize(getFontSize(fontSize));
 			view = radiobutton;
 		}
 		else if(type.equals(DesignTag.COMPONENT_NUMBERBOX)) {
