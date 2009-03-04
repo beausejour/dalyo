@@ -78,6 +78,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_SETLABEL = "setLabel";
 	public static final String FUNCTION_SETNUMERICFORMAT = "setNumericFormat";
 	public static final String FUNCTION_SETSELECTEDINDEX = "setSelectedIndex";
+	public static final String FUNCTION_SETSELECTEDROW = "setSelectedRow";
 	public static final String FUNCTION_SETTEXT = "setText";
 	public static final String FUNCTION_SETTITLE = "setTitle";
 	public static final String FUNCTION_SETVALUE = "setValue";

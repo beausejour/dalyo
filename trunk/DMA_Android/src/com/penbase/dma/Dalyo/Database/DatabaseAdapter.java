@@ -435,7 +435,6 @@ public class DatabaseAdapter {
 			keys = new HashSet<String>(tables);
 		}
 		//Set<String> keys = tablesMap.keySet();
-		Log.i("info", "tablesmap keys "+keys.toString());
 		HashMap<String, ArrayList<HashMap<Object, Object>>> tidMap = 
 			new HashMap<String, ArrayList<HashMap<Object, Object>>>();
 		int count = 0;
@@ -917,6 +916,10 @@ public class DatabaseAdapter {
 		return fieldsNameMap;
 	}
 	
+	public static HashMap<String, String> getFieldsTypeMap() {
+		return fieldsTypeMap;
+	}
+	
 	public static void beginTransaction() {
 		STARTTRANSACTION = true;
 		sqlite.execSQL("BEGIN TRANSACTION;");
@@ -1025,7 +1028,6 @@ public class DatabaseAdapter {
 	}
 	
 	private static String createTableString(ArrayList<String> tables) {
-		Log.i("info", "tables "+tables);
 		String result = "";
 		int size = tables.size();
 		for (int i=0; i<size; i++) {

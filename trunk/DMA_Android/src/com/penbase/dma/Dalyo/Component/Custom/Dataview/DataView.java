@@ -1,5 +1,6 @@
 package com.penbase.dma.Dalyo.Component.Custom.Dataview;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -20,12 +21,10 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.Paint.Style;
 
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.GestureDetector.OnGestureListener;
-import android.view.View.OnFocusChangeListener;
 
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
@@ -48,6 +47,7 @@ public class DataView extends LinearLayout implements OnGestureListener {
 	private ListView mListView;
 	private GestureDetector mGestureDetector;
 	private boolean hasHeader;
+	private HashMap<String, DecimalFormat> formatsMap = new HashMap<String, DecimalFormat>();
 	
 	public DataView(Context c, String tid) {
 		super(c);
@@ -71,7 +71,6 @@ public class DataView extends LinearLayout implements OnGestureListener {
 		mListView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View v, int position, long arg3) {
-				Log.i("info", "position "+position);
 				currentPosition = position;
 				if (!((CustomLinearLayout) v).isHeader()) {
 					v.setSelected(true);
@@ -201,7 +200,22 @@ public class DataView extends LinearLayout implements OnGestureListener {
 							for (int j=0; j<columnsRecordSize; j++) {
 								String field = DatabaseAttribute.FIELD+columns.get(k).get(1);
 								if (columnNames[j].equals(field)) {
-									data.add(DatabaseAdapter.getCursorValue(cursor, field).toString());
+									//Check numeric format
+									Object cursorValue = DatabaseAdapter.getCursorValue(cursor, field);
+									if (formatsMap.containsKey(columns.get(k).get(1))) {
+										String formatResult = "";
+										if (cursorValue.toString().indexOf(",") != -1) {
+											formatResult = formatsMap.get(columns.get(k).get(1)).format(Double.parseDouble(cursorValue.toString().replace(",", ".")));
+										}
+										else {
+											formatResult = formatsMap.get(columns.get(k).get(1)).format(Double.parseDouble(cursorValue.toString()));
+											formatResult = formatResult.replace(",", ".");
+										}
+										data.add(formatResult);
+									}
+									else {
+										data.add(cursorValue.toString());
+									}
 								}
 								record.put(columnNames[j], DatabaseAdapter.getCursorValue(cursor, columnNames[j]).toString());
 							}	
@@ -288,7 +302,21 @@ public class DataView extends LinearLayout implements OnGestureListener {
 	}
 	
 	public void setNumericFormat(int column, int decimals) {
-		
+		String decimalString = "";
+		if (decimals > 0) {
+			decimalString = "0.";
+			for (int i=0; i<decimals; i++) {
+				decimalString += "0";
+			}
+		}
+		formatsMap.put(columns.get(column - 1).get(1), new DecimalFormat(decimalString));
+	}
+	
+	public void setSelectedRow(int row) {
+		if (mListView.getChildCount() >= row) {
+			mListView.getChildAt(currentPosition).setSelected(false);
+			mListView.getChildAt(row).setSelected(true);
+		}
 	}
 	
 	@Override

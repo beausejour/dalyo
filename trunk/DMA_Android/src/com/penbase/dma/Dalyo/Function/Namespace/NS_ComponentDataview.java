@@ -45,18 +45,17 @@ public class NS_ComponentDataview {
 		Object order = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.ORDER, ScriptAttribute.ORDER);
 		((DataView)ApplicationView.getComponents().get(componentId).getView()).refresh(filter, order);
 	}
-	
-	/*
-	 * <c f="setNumericFormat" ns="component.dataview">
-	<p n="component" t="component"><elt id="1" t="component"/></p>
-	<p n="col" t="int">3</p>
-	<p n="decimals" t="int">2</p>
-</c>
-	 * */
+
 	public static void SetNumericFormat(Element element) {
 		String componentId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT).toString();
 		Object col = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_COLUMN, ScriptAttribute.PARAMETER_TYPE_INT);
 		Object decimal = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_DECIMALS, ScriptAttribute.PARAMETER_TYPE_INT);
 		((DataView)ApplicationView.getComponents().get(componentId).getView()).setNumericFormat(Integer.valueOf(col.toString()), Integer.valueOf(decimal.toString()));
+	}
+	
+	public static void SetSelectedRow(Element element) {
+		String componentId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT).toString();
+		Object row = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_ROW, ScriptAttribute.PARAMETER_TYPE_INT);
+		((DataView)ApplicationView.getComponents().get(componentId).getView()).setSelectedRow(Integer.valueOf(row.toString()));
 	}
 }
