@@ -58,6 +58,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_ISCHECKED = "isChecked";
 	public static final String FUNCTION_ISEMPTY = "isEmpty";
 	public static final String FUNCTION_ISENABLED = "isEnabled";
+	public static final String FUNCTION_ISSELECTED = "isSelected";
 	public static final String FUNCTION_ISVISIBLE = "isVisible";
 	public static final String FUNCTION_LENGTH = "length";
 	public static final String FUNCTION_MULTIPLE = "mul";
@@ -110,6 +111,7 @@ public class ScriptAttribute {
 	public static final String NAMESPACE_COMPONENT_CB = "component.combobox";
 	public static final String NAMESPACE_COMPONENT_DV = "component.dataview";
 	public static final String NAMESPACE_COMPONENT_NB = "component.numberbox";
+	public static final String NAMESPACE_COMPONENT_RB = "component.radiobutton";
 	public static final String NAMESPACE_COMPONENT_TF = "component.textfield";
 	public static final String NAMESPACE_DATE = "date";
 	public static final String NAMESPACE_DB = "database";

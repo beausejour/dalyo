@@ -428,6 +428,11 @@ public class Function {
 				NS_ComponentNumberBox.SetMin(element);
 			}
 		}
+		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_COMPONENT_RB)) {
+			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ISSELECTED)) {
+				result = NS_ComponentRadioButton.IsSelected(element);
+			}
+		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_COMPONENT_TF)) {
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETTEXT)) {
 				result = NS_ComponentTextField.GetText(element);
