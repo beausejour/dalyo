@@ -321,19 +321,22 @@ public class ApplicationView extends Activity {
 							component.setDateTimeValue(element.getAttribute(DesignTag.COMPONENT_COMMON_VALUE));
 						}
 					}
-					else if (element.getNodeName().equals(DesignTag.COMPONENT_GAUGE)) {
-						if (element.hasAttribute(DesignTag.COMPONENT_GAUGE_INIT)) {
-							component.setInitValue(Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_GAUGE_INIT)));
+					else if ((element.getNodeName().equals(DesignTag.COMPONENT_GAUGE)) ||
+							(element.getNodeName().equals(DesignTag.COMPONENT_NUMBERBOX))) {
+						if (element.hasAttribute(DesignTag.COMPONENT_INIT)) {
+							component.setInitValue(Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_INIT)));
 						}
-						if (element.hasAttribute(DesignTag.COMPONENT_GAUGE_MIN)) {
-							if (!element.getAttribute(DesignTag.COMPONENT_GAUGE_MIN).equals("true") && !element.getAttribute(DesignTag.COMPONENT_GAUGE_MIN).equals("false")) {
-								component.setMinValue(Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_GAUGE_MIN)));
-							}
+						if (element.hasAttribute(DesignTag.COMPONENT_MIN)) {
+							/*if (!element.getAttribute(DesignTag.COMPONENT_MIN).equals("true") && !element.getAttribute(DesignTag.COMPONENT_MIN).equals("false")) {
+								component.setMinValue(Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_MIN)));
+							}*/
+							component.setMinValue(Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_MIN)));
 						}
-						if (element.hasAttribute(DesignTag.COMPONENT_GAUGE_MAX)) {
-							if (!element.getAttribute(DesignTag.COMPONENT_GAUGE_MAX).equals("true") && !element.getAttribute(DesignTag.COMPONENT_GAUGE_MAX).equals("false")) {
-								component.setMaxValue(Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_GAUGE_MAX)));
-							}
+						if (element.hasAttribute(DesignTag.COMPONENT_MAX)) {
+							/*if (!element.getAttribute(DesignTag.COMPONENT_MAX).equals("true") && !element.getAttribute(DesignTag.COMPONENT_MAX).equals("false")) {
+								component.setMaxValue(Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_MAX)));
+							}*/
+							component.setMaxValue(Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_MAX)));
 						}
 					}
 					

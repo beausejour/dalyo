@@ -76,6 +76,8 @@ public class ScriptAttribute {
 	public static final String FUNCTION_SETENABLED = "setEnabled";
 	public static final String FUNCTION_SETFOCUS = "setFocus";
 	public static final String FUNCTION_SETLABEL = "setLabel";
+	public static final String FUNCTION_SETMAX = "setMax";
+	public static final String FUNCTION_SETMIN = "setMin";
 	public static final String FUNCTION_SETNUMERICFORMAT = "setNumericFormat";
 	public static final String FUNCTION_SETSELECTEDINDEX = "setSelectedIndex";
 	public static final String FUNCTION_SETSELECTEDROW = "setSelectedRow";
@@ -107,6 +109,7 @@ public class ScriptAttribute {
 	public static final String NAMESPACE_COMPONENT_CHECK = "component.checkbox";
 	public static final String NAMESPACE_COMPONENT_CB = "component.combobox";
 	public static final String NAMESPACE_COMPONENT_DV = "component.dataview";
+	public static final String NAMESPACE_COMPONENT_NB = "component.numberbox";
 	public static final String NAMESPACE_COMPONENT_TF = "component.textfield";
 	public static final String NAMESPACE_DATE = "date";
 	public static final String NAMESPACE_DB = "database";
