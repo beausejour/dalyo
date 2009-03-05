@@ -65,6 +65,8 @@ public class Record {
 		ArrayList<String> tables = new ArrayList<String>();
 		tables.add(table);
 		Cursor cursor = DatabaseAdapter.selectQuery(tables, null, filter, null, null);
-		return cursor.getCount();
+		int result = cursor.getCount();
+		DatabaseAdapter.closeCursor(cursor);
+		return result;
 	}
 }

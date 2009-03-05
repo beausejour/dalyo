@@ -69,16 +69,6 @@ public class Function {
 		
 			for (int i=0; i<nodeLen; i++) {
 				Element element = (Element) nodeList.item(i);
-				/*if (element.getNodeName().equals(ScriptTag.PARAMETER)) {
-					//save parameters
-					String paramName = funcElement.getAttribute(ScriptTag.NAME)+"_"+element.getAttribute(ScriptTag.NAME);
-					if (parametersMap.containsKey(paramName)) {
-						varsMap.put(paramName, parametersMap.get(paramName));
-					}
-				}
-				else {
-					distributeAction(element);
-				}*/
 				distributeAction(element);
 			}
 		}
@@ -116,13 +106,13 @@ public class Function {
 	
 	private static void forEach(Element element) {
 		int elementsNb = element.getChildNodes().getLength();
-		ArrayList<?> list = null;
+		Object list = null;
 		String cursorName = null;
 		String cursorType = null;
 		for (int i=0; i<elementsNb; i++) {
 			Element child = (Element)element.getChildNodes().item(i);
 			if (child.getNodeName().equals(ScriptTag.LIST)) {
-				list = (ArrayList<?>)getVariableValue(((Element)child.getChildNodes().item(0)));
+				list = distributeAction((Element)child.getChildNodes().item(0));
 			}
 			else if (child.getNodeName().equals(ScriptTag.CURSOR)) {
 				cursorName = child.getAttribute(ScriptTag.NAME);
@@ -130,9 +120,8 @@ public class Function {
 				setVariable(child);
 			}
 			else if (child.getNodeName().equals(ScriptTag.DO)) {
-				for (Object eachValue : list) {
+				for (Object eachValue : (ArrayList<?>)list) {
 					if (checkValueType(cursorType, eachValue)) {
-						//addVariableValue(cursorName, eachValue, false);
 						varsMap.put(cursorName, eachValue);
 						int actionsNb = child.getChildNodes().getLength();
 						for (int j=0; j<actionsNb; j++) {
@@ -479,6 +468,15 @@ public class Function {
 
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_VALIDATETRANSACTION)) {
 				NS_Database.ValidateTransaction();
+			}
+		}
+		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB_DATASET)) {
+			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETVALUE)) {
+				result = NS_DatabaseDataset.GetValue(element);
+				Log.i("info", "result "+result);
+			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SELECT)) {
+				result = NS_DatabaseDataset.Select(element);
 			}
 		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB_FIELD)) {
