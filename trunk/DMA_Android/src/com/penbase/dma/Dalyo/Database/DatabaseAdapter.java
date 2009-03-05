@@ -227,7 +227,6 @@ public class DatabaseAdapter {
 						createquery += fieldNewName+" "+fieldType+" UNIQUE, ";
 						fieldTypeValue += " UNIQUE, ";
 					}
-					
 					else if ((field.hasAttribute(DatabaseTag.FIELD_FORIEIGNTABLE)) &&
 							(field.hasAttribute(DatabaseTag.FIELD_FORIEIGNFIELD))) {
 						String foreignTableId = field.getAttribute(DatabaseTag.FIELD_FORIEIGNTABLE);
@@ -898,6 +897,10 @@ public class DatabaseAdapter {
 	
 	public static Set<String> getTableIds() {
 		return tablesMap.keySet();
+	}
+	
+	public static HashMap<String, ArrayList<String>> getTablesMap() {
+		return tablesMap;
 	}
 	
 	public static String getFieldName(String fieldId) {

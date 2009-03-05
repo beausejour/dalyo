@@ -73,6 +73,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_REPLACE = "replace";
 	public static final String FUNCTION_RESET = "reset";
 	public static final String FUNCTION_ROUND = "round";
+	public static final String FUNCTION_SELECT = "select";
 	public static final String FUNCTION_SETCURRENTRECORD = "setCurrentRecord";
 	public static final String FUNCTION_SETENABLED = "setEnabled";
 	public static final String FUNCTION_SETFOCUS = "setFocus";
@@ -115,6 +116,7 @@ public class ScriptAttribute {
 	public static final String NAMESPACE_COMPONENT_TF = "component.textfield";
 	public static final String NAMESPACE_DATE = "date";
 	public static final String NAMESPACE_DB = "database";
+	public static final String NAMESPACE_DB_DATASET = "database.dataset";
 	public static final String NAMESPACE_DB_FIELD = "database.field";
 	public static final String NAMESPACE_DB_TABLE = "database.table";
 	public static final String NAMESPACE_MATH = "math";
@@ -182,6 +184,7 @@ public class ScriptAttribute {
 	
 	//Common values
 	public static final String COMPONENT = "component";
+	public static final String DATASET = "dataset";
 	public static final String DATE = "date";
 	public static final String FIELD = "field";
 	public static final String FILTER = "filter";
