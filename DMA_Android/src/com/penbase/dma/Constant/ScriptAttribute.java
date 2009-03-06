@@ -8,6 +8,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_ADDITEM = "addItem";
 	public static final String FUNCTION_ADDMINUTES = "addMinutes";
 	public static final String FUNCTION_ALERT = "alert";
+	public static final String FUNCTION_AVERAGE = "avg";
 	public static final String FUNCTION_BROWSE = "browse";
 	public static final String FUNCTION_CANCEL = "cancel";
 	public static final String FUNCTION_CANCELNRECORD = "cancelNewRecord";
