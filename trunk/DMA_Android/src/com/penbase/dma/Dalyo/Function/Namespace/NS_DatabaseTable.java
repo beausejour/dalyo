@@ -15,6 +15,18 @@ import com.penbase.dma.Dalyo.Database.Record;
 import com.penbase.dma.Dalyo.Function.Function;
 
 public class NS_DatabaseTable {
+	public static String Average(Element element) {
+		String tableId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
+		String fieldId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FIELD, ScriptAttribute.FIELD).toString();
+		Object filter = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FILTER, ScriptAttribute.FILTER);
+		Cursor cursor = DatabaseAdapter.selectQuery(tableId, fieldId, filter, "AVG");
+		cursor.moveToFirst();
+		String result = cursor.getString(0);
+		cursor.moveToLast();
+		DatabaseAdapter.closeCursor(cursor);
+		return result; 
+	}
+	
 	public static Integer Count(Element element) {
 		String tableId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
 		Object filter = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FILTER, ScriptAttribute.FILTER);

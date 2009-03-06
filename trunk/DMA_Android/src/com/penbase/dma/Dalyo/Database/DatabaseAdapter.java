@@ -785,6 +785,16 @@ public class DatabaseAdapter {
 		return result;
 	}
 	
+	public static Cursor selectQuery(String tableId, String fieldId, Object filter, String type) {
+		Cursor result = null;
+		String projectionIn = type + "(" + DatabaseAttribute.FIELD + fieldId +")";
+		ArrayList<String> tables = new ArrayList<String>();
+		tables.add(tableId);
+		String selection = createSelectionString(tables, filter);
+		result = sqlite.query(DatabaseAttribute.TABLE + tableId, new String[]{projectionIn}, selection, null, null, null, null);
+		return result;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public static Cursor selectQuery(ArrayList<String> tables, ArrayList<ArrayList<String>> columns, Object filter, Object order, Object distinct) {
 		Cursor result = null;
