@@ -62,6 +62,8 @@ public class ScriptAttribute {
 	public static final String FUNCTION_ISSELECTED = "isSelected";
 	public static final String FUNCTION_ISVISIBLE = "isVisible";
 	public static final String FUNCTION_LENGTH = "length";
+	public static final String FUNCTION_MAX = "max";
+	public static final String FUNCTION_MIN = "min";
 	public static final String FUNCTION_MULTIPLE = "mul";
 	public static final String FUNCTION_NAVIGATE = "navigate";
 	public static final String FUNCTION_NEWRECORD = "newRecord";
