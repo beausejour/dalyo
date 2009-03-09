@@ -142,6 +142,30 @@ public class NS_DatabaseTable {
 		return records;
 	}
 	
+	public static String Max(Element element) {
+		String tableId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
+		String fieldId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FIELD, ScriptAttribute.FIELD).toString();
+		Object filter = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FILTER, ScriptAttribute.FILTER);
+		Cursor cursor = DatabaseAdapter.selectQuery(tableId, fieldId, filter, "MAX");
+		cursor.moveToFirst();
+		String result = cursor.getString(0);
+		cursor.moveToLast();
+		DatabaseAdapter.closeCursor(cursor);
+		return result; 
+	}
+	
+	public static String Min(Element element) {
+		String tableId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
+		String fieldId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FIELD, ScriptAttribute.FIELD).toString();
+		Object filter = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FILTER, ScriptAttribute.FILTER);
+		Cursor cursor = DatabaseAdapter.selectQuery(tableId, fieldId, filter, "MIN");
+		cursor.moveToFirst();
+		String result = cursor.getString(0);
+		cursor.moveToLast();
+		DatabaseAdapter.closeCursor(cursor);
+		return result; 
+	}
+	
 	private static ArrayList<HashMap<Object, Object>> getRecords(String tableId, Object filter) {
 		ArrayList<HashMap<Object, Object>> records = new ArrayList<HashMap<Object, Object>>();
 		ArrayList<String> tables = new ArrayList<String>();
