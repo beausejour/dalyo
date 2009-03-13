@@ -24,13 +24,13 @@ public class Function {
 	private static HashMap<String, Object> varsMap;
 	private static HashMap<String, ArrayList<String>> funcsMap;
 	private static boolean isFirstTime = true;
-	private static HashMap<String, String> parametersMap;
+	//private static HashMap<String, String> parametersMap;
 	
 	public Function(Context c, Document document) {
 		context = c;
 		varsMap = new HashMap<String, Object>();
 		funcsMap = new HashMap<String, ArrayList<String>>();
-		parametersMap = new HashMap<String, String>();
+		//parametersMap = new HashMap<String, String>();
 		behaviorDocument = document;
 		createMaps();
 	}
@@ -394,7 +394,9 @@ public class Function {
 				result = NS_ComponentDataview.GetRowCount(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSELECTEDRECORD)) {
-				result = NS_ComponentDataview.GetSelectedRecord(element);
+				if (!isFirstTime) {
+					result = NS_ComponentDataview.GetSelectedRecord(element);
+				}
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSELECTEDROW)) {
 				result = NS_ComponentDataview.GetSelectedRow(element);
@@ -532,6 +534,9 @@ public class Function {
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_STARTNEWRECORD)) {
 
 			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SUM)) {
+				result = NS_DatabaseTable.Sum(element);
+			}
 		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.FILTER)) {
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ADDCRITERIA)) {
@@ -559,7 +564,10 @@ public class Function {
 			}
 		}
 		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_GPS)) {
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETLATITUDE)) {
+			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETALTITUDE)) {
+				result = NS_Gps.GetAltitude(element);
+			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETLATITUDE)) {
 				result = NS_Gps.GetLatitude(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETLOCATION)) {
@@ -567,6 +575,9 @@ public class Function {
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETLONGITUDE)) {
 				result = NS_Gps.GetLogitude(element);
+			}
+			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSPEED)) {
+				result = NS_Gps.GetSpeed(element);
 			}
 			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSTATUS)) {
 				result = NS_Gps.GetStatus();
