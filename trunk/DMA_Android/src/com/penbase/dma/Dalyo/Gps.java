@@ -1,56 +1,57 @@
 package com.penbase.dma.Dalyo;
 
-import java.util.List;
 import android.content.Context;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
-import android.util.Log;
+import android.location.LocationProvider;
+import android.os.Bundle;
 
 public class Gps{
-	private Context context;
-	private String providerName;
+	private static final String providerName = "gps";
 	private LocationManager locationManager;
-	private boolean hasProvider = false;
+    private Location location = null;
+    private LocationListener locationListener;
+    private int status = LocationProvider.OUT_OF_SERVICE;
 	
-	public Gps(Context c) {
-		this.context = c;
-		providerName = "gps";
+	public Gps(Context context) {
 		locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-		//List<LocationProvider> providers = locationManager.getProviders();
-		List<String> providers = locationManager.getAllProviders();
-		int size = providers.size();
-        for (int i=0; i<size; i++) {
-        	/*if (providers.get(i).getName().equals(providerName)) {
-        		hasProvider = true;
-        	}*/
-        }
+        locationListener = new MyLocationListener();
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+        location = locationManager.getLastKnownLocation(providerName);
 	}
 	
-	public int GetStatus() {
-		if (hasProvider) {
-			//return locationManager.getProviderStatus(providerName);
-			//return locationManager.getProvider(providerName);
-			return 1;
-		}
-		else {
-			return 0;
-		}
+	public int getStatus() {
+		return status;
 	}
 	
 	public Location getLocation() {
-		//return locationManager.getCurrentLocation(providerName);
-		return locationManager.getLastKnownLocation(providerName);
-	}
-	
-	public double getLogitude(Location location) {
-		return location.getLongitude();
-	}
-	
-	public double getLatitude(Location location) {
-		return location.getLatitude();
+		return location;
 	}
 	
 	public void stop() {
-		hasProvider = false;
+		locationManager.removeUpdates(locationListener);
 	}
+	
+    private class MyLocationListener implements LocationListener {
+        public void onLocationChanged(Location loc) {
+        	// Called when the location has changed.
+        	if (loc != null) {
+        		location = loc;
+        	}
+        }
+
+        public void onProviderDisabled(String provider) {
+        	// Called when the provider is disabled by the user.
+        }
+
+        public void onProviderEnabled(String provider) {
+        	// Called when the provider is enabled by the user.
+        }
+
+        public void onStatusChanged(String provider, int s, Bundle extras) {
+        	// Called when the provider status changes.
+        	status = s;
+        }
+    }
 }

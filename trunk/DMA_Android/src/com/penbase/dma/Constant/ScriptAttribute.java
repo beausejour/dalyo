@@ -29,6 +29,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_FLOOR = "floor";
 	public static final String FUNCTION_FORMAT = "format";
 	public static final String FUNCTION_GET = "get";
+	public static final String FUNCTION_GETALTITUDE = "getAltitude";
 	public static final String FUNCTION_GETCELLVALUE = "getCellValue";
 	public static final String FUNCTION_GETCOLUMNINDEX = "getColumnIndex";
 	public static final String FUNCTION_GETCURRENTFORM = "getCurrentForm";
@@ -48,6 +49,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_GETSELECTEDRECORD = "getSelectedRecord";
 	public static final String FUNCTION_GETSELECTEDROW = "getSelectedRow";
 	public static final String FUNCTION_GETSIZE = "size";
+	public static final String FUNCTION_GETSPEED = "getSpeed";
 	public static final String FUNCTION_GETSTATUS = "getStatus";
 	public static final String FUNCTION_GETTABLEBYNAME = "getTableByName";
 	public static final String FUNCTION_GETTEXT = "getText";
@@ -98,6 +100,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_STOP = "stop";
 	public static final String FUNCTION_SUB = "sub";
 	public static final String FUNCTION_SUBSTRING = "substring";
+	public static final String FUNCTION_SUM = "sum";
 	public static final String FUNCTION_SYNC = "sync";
 	public static final String FUNCTION_TOBOOLEAN = "toBoolean";
 	public static final String FUNCTION_TODATE = "toDate";

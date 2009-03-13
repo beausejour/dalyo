@@ -23,8 +23,10 @@ public class NumberBox extends LinearLayout{
 	
 	public NumberBox(Context c) {
 		super(c);
+		this.setGravity(Gravity.CENTER_VERTICAL);
 		act = new AutoCompleteTextView(c);
 		act.setGravity(Gravity.CENTER);
+		act.setEnabled(false);
         act.setKeyListener(new NumberKeyListener() {
 			@Override
 			protected char[] getAcceptedChars() {
@@ -51,7 +53,7 @@ public class NumberBox extends LinearLayout{
         });
 		
 		view_up = new ImageView(c);
-		view_up.setImageResource(R.drawable.arrow_up);
+		view_up.setImageResource(R.drawable.plus);
 		view_up.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
@@ -63,7 +65,7 @@ public class NumberBox extends LinearLayout{
 		});
 		
 		view_down = new ImageView(c);
-		view_down.setImageResource(R.drawable.arrow_down);
+		view_down.setImageResource(R.drawable.minus);
 		view_down.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
@@ -76,11 +78,11 @@ public class NumberBox extends LinearLayout{
 		
 
 		this.addView(act, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
-				LayoutParams.FILL_PARENT, 90));
+				LayoutParams.WRAP_CONTENT, 90));
 		this.addView(view_up, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
-				LayoutParams.FILL_PARENT, 10));
+				LayoutParams.WRAP_CONTENT));
 		this.addView(view_down, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
-				LayoutParams.FILL_PARENT, 10));
+				LayoutParams.WRAP_CONTENT));
 	}
 	
     private boolean hasChar(char c) {
