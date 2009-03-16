@@ -36,8 +36,10 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup.LayoutParams;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -83,11 +85,12 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		textView.setText("Application list:");
 		textView.setTextColor(Color.BLACK);
 		layout.addView(textView, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-
+		
 		gridView = new GridView(this);
+		gridView.setCacheColorHint(Color.TRANSPARENT);
 		gridView.setVerticalScrollBarEnabled(false);
-		gridView.setPadding(10, 10, 10, 10);
-		gridView.setVerticalSpacing(10);
+		gridView.setScrollingCacheEnabled(false);
+		gridView.setVerticalSpacing(5);
 		gridView.setHorizontalSpacing(10);
 		gridView.setNumColumns(GridView.AUTO_FIT);
 		gridView.setColumnWidth(60);
@@ -107,16 +110,33 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 				mApplicationName.setText(Dma.applicationList.get(i).getName());
 			}
 		}
+		
+		gridView.setOnTouchListener(new OnTouchListener() {
+			@Override
+			public boolean onTouch(View arg0, MotionEvent arg1) {
+				switch (arg1.getAction()) {
+					case MotionEvent.ACTION_UP:
+						gridView.setVerticalScrollBarEnabled(false);
+						break;
+					default:
+						gridView.setVerticalScrollBarEnabled(true);
+						break;
+				}
+				return false;
+			}
+		});		
+		
 		gridView.setAdapter(mAdapter);
 		gridView.setOnItemClickListener(this);
 		gridView.setOnItemSelectedListener(this);
-		layout.addView(gridView, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+		layout.addView(gridView, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 		setContentView(layout);
 	}
 
 	public class AppsAdapter extends BaseAdapter {
 		private Context mContext;
 		private ArrayList<Integer> mApps = new ArrayList<Integer>();
+		
 		public AppsAdapter(Context context) {
 			mContext = context;
 		}
@@ -126,22 +146,22 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 			layout.setOrientation(LinearLayout.VERTICAL);
 			layout.setGravity(Gravity.CENTER);
 			
-			ImageView i = new ImageView(mContext);		// Make an ImageView to show a photo
+			ImageView i = new ImageView(mContext);
 			i.setImageResource(mApps.get(position));
 			i.setAdjustViewBounds(true);
 			i.setScaleType(ImageView.ScaleType.FIT_CENTER);
             i.setLayoutParams(new GridView.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-			i.setBackgroundResource(android.R.drawable.picture_frame);		// Give it a nice background
+			i.setBackgroundResource(android.R.drawable.picture_frame);
 			
 			TextView tv = new TextView(mContext);
 			tv.setText(Dma.applicationList.get(position).getName());
 			tv.setTextSize(10);
+			tv.setTextColor(Color.BLACK);
+			tv.setGravity(Gravity.CENTER_HORIZONTAL);
 			
-			//layout.addView(i, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-			layout.addView(i, new LinearLayout.LayoutParams(48, 48));
-			layout.addView(tv, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+			layout.addView(i, new LinearLayout.LayoutParams(60, 60));
+			layout.addView(tv, new LinearLayout.LayoutParams(60, 30));
 			return layout;
-			//return i;
 		}
 
 		public final int getCount() {
@@ -149,7 +169,6 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		}
 
 		public final Object getItem(int position) {
-			//return position;
 			return mApps.get(position);
 		}
 
@@ -207,12 +226,11 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 					SharedPreferences prefs = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE);
 					String appsList = dmahttpclient.Authentication(prefs.getString("Username", ""),
 							prefs.getString("Userpassword", ""));
-					Dma.GetListApplicationFromXml(appsList);
+					dmahttpclient.update(appsList);
 					SharedPreferences.Editor editorPrefs = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE).edit();
 					editorPrefs.remove("ApplicationList");
 					editorPrefs.putString("ApplicationList", appsList);
 					editorPrefs.commit();
-					DmaHttpClient.update();
 				}
 				catch(Exception e)
 				{e.printStackTrace();}
@@ -243,7 +261,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		applicationInfos.put("AppBuild", Dma.applicationList.get(position).getAppBuild());
 		applicationInfos.put("SubId", Dma.applicationList.get(position).getSubId());
 		applicationInfos.put("DbId", Dma.applicationList.get(position).getDbId());
-		loadProgressDialog = ProgressDialog.show(this, "Please wait...", "Downloading application...", true, false);
+		loadProgressDialog = ProgressDialog.show(this, "Please wait...", "Preparing application...", true, false);
 		i = new Intent(this, ApplicationView.class);
 		
 		new Thread() {
@@ -255,8 +273,6 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 				catch(Exception e)
 				{e.printStackTrace();}
 				
-				//loadProgressDialog.dismiss();
-				//ApplicationListView.this.finish();
 				startActivityForResult(i, 0);
 			}
 		}.start();
@@ -278,6 +294,9 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		}
 		super.onStop();
 	}
-
-
+	
+	static class ViewHolder {
+        TextView text;
+        ImageView icon;
+    }
 }

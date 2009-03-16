@@ -63,7 +63,6 @@ public class Dma extends Activity implements OnClickListener {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 				case 0:
-					loadApps.dismiss();
 					buildAppsList();
 					break;
 			}
@@ -101,12 +100,12 @@ public class Dma extends Activity implements OnClickListener {
 	}
 
 	public static void GetListApplicationFromXml(String xml) {
-		if (applicationList == null) {
+		/*if (applicationList == null) {
 			applicationList = new ArrayList<Application>();
 		}
 		else {
 			applicationList.clear();
-		}
+		}*/
 		HashMap<String, Application> applicationMap = new HashMap<String, Application>();
 		Document doc = DmaHttpClient.CreateParseDocument(xml, null);
 		NodeList root = doc.getElementsByTagName(DesignTag.ROOT);
@@ -144,10 +143,28 @@ public class Dma extends Activity implements OnClickListener {
 			//app.setIconRes(R.drawable.icon);
 		}
 		
-		ArrayList<String> tempList = new ArrayList<String>();
+		
+		buildApplicationsList(applicationMap);
+		/*ArrayList<String> tempList = new ArrayList<String>();
 		tempList.addAll(applicationMap.keySet());
 		Collections.sort(tempList);
 		
+		for (int i=0; i<appsLen; i++) {
+			applicationList.add(applicationMap.get(tempList.get(i)));
+		}*/
+	}
+	
+	public static void buildApplicationsList(HashMap<String, Application> applicationMap) {
+		if (applicationList == null) {
+			applicationList = new ArrayList<Application>();
+		}
+		else {
+			applicationList.clear();
+		}
+		ArrayList<String> tempList = new ArrayList<String>();
+		tempList.addAll(applicationMap.keySet());
+		Collections.sort(tempList);
+		int appsLen = applicationMap.size();
 		for (int i=0; i<appsLen; i++) {
 			applicationList.add(applicationMap.get(tempList.get(i)));
 		}
@@ -179,15 +196,17 @@ public class Dma extends Activity implements OnClickListener {
 	
 	public void buildAppsList() {
 		if (serverResponse == null) {
+			loadApps.dismiss();
 			alertDialog.setMessage("Connection failed!");
 			alertDialog.show();
 		}
 		else if (serverResponse.equals("error")) {
+			loadApps.dismiss();
 			alertDialog.setMessage("Check your username or password!");
 			alertDialog.show();
 		}
 		else {
-			loadApps = ProgressDialog.show(this, "Please wait...", "Loading application list...", true, false);
+			loadApps.setMessage("Loading application list...");
 			new Thread() {
 				public void run() {
 					try {
@@ -203,7 +222,7 @@ public class Dma extends Activity implements OnClickListener {
 					catch(Exception e) {
 						e.printStackTrace();
 					}
-					loadApps.dismiss();
+
 					startActivityForResult(new Intent(Dma.this, ApplicationListView.class), 0);
 					Dma.this.finish();
 				}
@@ -230,7 +249,6 @@ public class Dma extends Activity implements OnClickListener {
 	}
 	
 	public static String getDeviceID() {
-		//Get imei
 		String imei = ((TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
 		return "zfikn";
 		//return imei;
@@ -259,5 +277,17 @@ public class Dma extends Activity implements OnClickListener {
 				handler.sendEmptyMessage(0);
 			}
 		}
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		if (loadApps != null) {
+			loadApps.dismiss();
+		}
+	}
+	
+	public static ArrayList<Application> getApplications() {
+		return applicationList;
 	}
 }

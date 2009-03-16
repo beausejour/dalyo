@@ -1,6 +1,7 @@
 package com.penbase.dma.Dalyo.Component.Custom;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.widget.TextView;
 
@@ -9,5 +10,6 @@ public class Label extends TextView{
 		super(context);
 		this.setTypeface(tf);
 		this.setTextSize(fs);
+		this.setTextColor(Color.BLACK);
 	}
 }

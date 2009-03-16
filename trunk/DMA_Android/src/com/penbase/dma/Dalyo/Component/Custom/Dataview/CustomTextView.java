@@ -2,6 +2,7 @@ package com.penbase.dma.Dalyo.Component.Custom.Dataview;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Paint.Style;
@@ -14,6 +15,7 @@ public class CustomTextView extends TextView{
 	public CustomTextView(Context context) {
 		super(context);
 		this.setGravity(Gravity.LEFT);
+		this.setTextColor(Color.BLACK);
 		borderPaint = new Paint();
 		borderPaint.setARGB(255, 223, 217, 217);
 		borderPaint.setAntiAlias(true);

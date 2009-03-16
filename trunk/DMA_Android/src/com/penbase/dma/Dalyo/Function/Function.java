@@ -23,7 +23,7 @@ public class Function {
 	private static Context context;
 	private static HashMap<String, Object> varsMap;
 	private static HashMap<String, ArrayList<String>> funcsMap;
-	private static boolean isFirstTime = true;
+	private static boolean isFirstTime;
 	//private static HashMap<String, String> parametersMap;
 	
 	public Function(Context c, Document document) {
@@ -32,6 +32,7 @@ public class Function {
 		funcsMap = new HashMap<String, ArrayList<String>>();
 		//parametersMap = new HashMap<String, String>();
 		behaviorDocument = document;
+		isFirstTime = true;
 		createMaps();
 	}
 	
