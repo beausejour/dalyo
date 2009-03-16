@@ -71,9 +71,7 @@ public class ApplicationView extends Activity {
 		database = new DatabaseAdapter(this, dbDoc, clientLogin+"_"+ApplicationListView.getApplicationName());
 		resourcesFileMap = client.getResourceMap("ext");
 		componentsMap = new HashMap<String, Component>();
-		Log.i("info", "parsing function document");
 		new Function(this, behaviorDocument);
-		Log.i("info", "end of parsing");
 		setContentView(R.layout.loading);
 		loadingbar = ProgressDialog.show(this, "Please wait...", "Building application ...", true, false);
 		loadingThread = new LoadingThread(handler);
@@ -96,7 +94,7 @@ public class ApplicationView extends Activity {
 
 	public static void prepareData(int position, String login, String pwd) {
 		client = new DmaHttpClient();
-		client.checkDownloadFile(position, login, pwd);
+		client.checkXmlFiles();
 		clientLogin = login;
 		behaviorDocument = client.getBehavior(ApplicationListView.getApplicationsInfo().get("AppId"),
 				ApplicationListView.getApplicationsInfo().get("AppVer"),
@@ -127,7 +125,6 @@ public class ApplicationView extends Activity {
 			if (child.getNodeName().equals(DesignTag.DESIGN_S_G)) {
 				if (child.hasAttribute(DesignTag.DESIGN_S_G_OS)) {
 					String name = child.getAttribute(DesignTag.DESIGN_S_G_OS);
-					Log.i("info", "on start function");
 					Function.createFunction(name);
 				}
 			}

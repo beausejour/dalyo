@@ -40,16 +40,19 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.penbase.dma.Dma;
+import com.penbase.dma.R;
 import com.penbase.dma.Binary.Binary;
 import com.penbase.dma.Constant.Constant;
 import com.penbase.dma.Constant.DatabaseTag;
 import com.penbase.dma.Constant.ErrorCode;
 import com.penbase.dma.Constant.RessourceTag;
 import com.penbase.dma.Constant.DesignTag;
+import com.penbase.dma.Dalyo.Application;
 import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
 import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.View.ApplicationListView;
@@ -63,7 +66,7 @@ public class DmaHttpClient{
 	private int errorCode = 0;
 	private static final String STRING="string";
 	private static final String IMAGE="image";
-	private static boolean updated = false;
+	private boolean updated = false;
 	
 	//Booleans of sending requests
 	private boolean sendBehavior = true;
@@ -83,7 +86,7 @@ public class DmaHttpClient{
 	
 	public DmaHttpClient() {
 		createFilesPath();
-		try{
+		try {
 			url = new URL(Constant.LOCAL);
 			//url = new URL("http://emvista.com/server/com.penbase.arbiter.Arbiter");
 		}
@@ -219,58 +222,122 @@ public class DmaHttpClient{
 		return document;
 	}
 	
-	//Check if we need to download all xml files
-	public void checkDownloadFile(int position, String login, String pwd) {
-		String loginStream = SendPost("act=login&login="+login+"&passwd_md5="+md5(pwd)+"&useragent=ANDROID", STRING);
-		StreamToFile(loginStream, login_XML);
-		Document parserLogin = CreateParseDocument(loginStream, null);
-		NodeList list = parserLogin.getElementsByTagName("a");
-		Element element = (Element) list.item(position);
-		NodeList idList = element.getChildNodes();
-		int idLen = idList.getLength();
-		int AppId = 0;
-		int AppVer = 0;
-		int AppBuild = 0;
-		int SubId = 0;
-		int DbId = 0;
-		
-		for (int i=0; i<idLen; i++) {
-			if (idList.item(i).getNodeName().equals(DesignTag.LOGIN_ID)) {
-				AppId = Integer.parseInt(idList.item(i).getChildNodes().item(0).getNodeValue().trim());
+	public void update(String appList) {
+		HashMap<String, Application> applicationMap = new HashMap<String, Application>();
+		Document doc = DmaHttpClient.CreateParseDocument(appList, null);
+		NodeList root = doc.getElementsByTagName(DesignTag.ROOT);
+		NodeList apps = root.item(0).getChildNodes();
+		int appsLen = apps.getLength();
+		for (int s = 0; s < appsLen; s++) {
+			NodeList els = apps.item(s).getChildNodes();
+			int elsLength = els.getLength();
+			String appId = "";
+			String title = "";
+			String appVer = "";
+			String appBuild = "";
+			String subId = "";
+			String dbId = "";
+			for (int t = 0; t < elsLength; t++) {
+				Node noeud = els.item(t);
+				if (noeud.getNodeType() == Node.ELEMENT_NODE) {
+					if (noeud.getNodeName().equals(DesignTag.LOGIN_ID)) {
+						appId = noeud.getChildNodes().item(0).getNodeValue();
+					}		
+					else if (noeud.getNodeName().equals(DesignTag.LOGIN_TIT)) {
+						title = noeud.getChildNodes().item(0).getNodeValue();
+					}
+					else if (noeud.getNodeName().equals(DesignTag.LOGIN_VER)) {
+						appVer = noeud.getChildNodes().item(0).getNodeValue();
+					}
+					else if (noeud.getNodeName().equals(DesignTag.LOGIN_BLD)) {
+						appBuild = noeud.getChildNodes().item(0).getNodeValue();
+					}
+					else if (noeud.getNodeName().equals(DesignTag.LOGIN_SUB)) {
+						subId = noeud.getChildNodes().item(0).getNodeValue();
+					}
+					else if (noeud.getNodeName().equals(DesignTag.LOGIN_DBID)) {
+						dbId = noeud.getChildNodes().item(0).getNodeValue();
+					}
+				}
 			}
-			else if (idList.item(i).getNodeName().equals(DesignTag.LOGIN_VER)) {
-				AppVer =  Integer.parseInt(idList.item(i).getChildNodes().item(0).getNodeValue().trim());
+			ArrayList<Application> applications = Dma.getApplications();
+			int currentApplicationsNb = applications.size();
+			int deleteIndex = -1;
+			for (int i=0; i<currentApplicationsNb; i++) {
+				Application application = applications.get(i);
+				if (application.getAppId().equals(appId)) {
+					if (!(application.getAppVer().equals(appVer)) || !(application.getAppBuild().equals(appBuild)) ||
+							!(application.getSubId().equals(subId)) || !(application.getDbId().equals(dbId))) {
+						deleteIndex = i;
+					}
+				}
 			}
-			else if (idList.item(i).getNodeName().equals(DesignTag.LOGIN_BLD)) {
-				AppBuild = Integer.parseInt(idList.item(i).getChildNodes().item(0).getNodeValue().trim());
+			
+			if (deleteIndex != -1) {
+				String applicationName = Dma.getApplications().get(deleteIndex).getName();
+				if (applicationName.indexOf("(") != -1) {
+					applicationName = applicationName.replace("(", "");
+				}
+				if (applicationName.indexOf(")") != -1) {
+					applicationName = applicationName.replace(")", "");
+				}
+				if (applicationName.indexOf("<") != -1) {
+					applicationName = applicationName.replace("<", "");
+				}
+				if (applicationName.indexOf(">") != -1) {
+					applicationName = applicationName.replace(">", "");
+				}
+				String folderPath = Constant.PACKAGENAME+applicationName+"/";
+				File folder = new File(folderPath);
+				if (folder.exists() && folder.isDirectory()) {
+					//Delete all the files
+					String[] children = folder.list();
+					int childrenNb = children.length;
+		            for (int i=0; i<childrenNb; i++) {
+		            	new File(folder, children[i]).delete();
+		            }
+				}
+				Dma.getApplications().remove(deleteIndex);
 			}
-			else if (idList.item(i).getNodeName().equals(DesignTag.LOGIN_SUB)) {
-				SubId = Integer.parseInt(idList.item(i).getChildNodes().item(0).getNodeValue().trim());
-			}
-			else if (idList.item(i).getNodeName().equals(DesignTag.LOGIN_DBID)) {
-				DbId = Integer.parseInt(idList.item(i).getChildNodes().item(0).getNodeValue().trim());
-			}
+			//add current application
+			Application newApplication = new Application();
+			newApplication.setAppId(appId);
+			newApplication.setName(title);
+			newApplication.setAppVer(appVer);
+			newApplication.setAppBuild(appBuild);
+			newApplication.setSubId(subId);
+			newApplication.setDbId(dbId);
+			newApplication.setIconRes(R.drawable.splash);
+			applicationMap.put(newApplication.getName(), newApplication);
 		}
-		if ((AppId == Integer.valueOf(Dma.applicationList.get(position).getAppId())) &&
-				(SubId == Integer.valueOf(Dma.applicationList.get(position).getSubId())) &&
-				(!updated) && (new File(db_XML).exists()) && (AppId == getIdDb(new File(db_XML)))) {
-			if ((AppBuild == Integer.valueOf(Dma.applicationList.get(position).getAppBuild())) &&
-					(AppVer == Integer.valueOf(Dma.applicationList.get(position).getAppVer()))) {
-				this.sendDesign = false;
-				Log.i("info", "don't send design request");
-				this.sendBehavior = false;
-				Log.i("info", "don't send behavior request");
-			}
-			if (DbId == Integer.valueOf(Dma.applicationList.get(position).getDbId())) {
-				sendDb = false;
-				Log.i("info", "don't send database request");
-			}
+		
+		//add other apps in map
+		ArrayList<Application> applicationsUnchanged = Dma.getApplications();
+		int applicationsUnchangedNb = applicationsUnchanged.size();
+		for (int i=0; i<applicationsUnchangedNb; i++) {
+			Application appUnchanged = applicationsUnchanged.get(i);
+			applicationMap.put(appUnchanged.getName(), appUnchanged);
+		}
+		
+		Dma.buildApplicationsList(applicationMap);
+	}
+	
+	public void checkXmlFiles() {
+		//Design
+		if (new File(design_XML).exists()) {
+			this.sendDesign = false;
+		}
+		if (new File(db_XML).exists()) {
+			this.sendDb = false;
+		}
+		if (new File(behavior_XML).exists()) {
+			this.sendBehavior = false;
 		}
 	}
 	
-	public static boolean update() {
+	/*public boolean update() {
 		return updated = true;
-	}
+	}*/
 	
 	public int getIdDb(File dbXml) {
 		Log.i("info", "getiddb");
@@ -282,6 +349,7 @@ public class DmaHttpClient{
 	//Get the design of an application
 	public Document getDesign(String AppId, String AppVer, String AppBuild, String SubId, String login, String pwd) {
 		if (sendDesign) {
+			Log.i("info", "download design xml");
 			String getDesign = "act=getdesign" + this.generateRegularUrlRequest(AppId, AppVer, AppBuild, SubId, login, pwd);
 			String designStream = SendPost(getDesign, STRING);
 			Log.i("info", "get design ");
