@@ -6,9 +6,9 @@
     <string name="menu_update">Mettre à jour</string>
     <string name="quit">Quitter</string>
     <string name="about">Dalyo Mobile Agent 0.2.0</string>
-
-<string name="login">Identifiant :</string>
-<string name="pwd">Mot de passe :</string>
-<string name="rememberme">Se souvenir de moi</string>
-<string name="run">Connexion</string>
+	<string name="login">Identifiant :</string>
+	<string name="pwd">Mot de passe :</string>
+	<string name="rememberme">Se souvenir de moi</string>
+	<string name="run">Connexion</string>
+	<string name="applist">Liste des applications: </string>
 </resources>
