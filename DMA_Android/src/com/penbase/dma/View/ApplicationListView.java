@@ -84,11 +84,11 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		mApplicationName = (TextView)findViewById(R.id.appnametv);
 		mAdapter = new AppsAdapter(this);
 
-		int size = Dma.applicationList.size();
+		int size = Dma.getApplications().size();
 		for (int i =0; i < size; i++) {
-			mAdapter.addApplication(Dma.applicationList.get(i));
+			mAdapter.addApplication(Dma.getApplications().get(i));
 			if (i == 0) {
-				mApplicationName.setText(Dma.applicationList.get(i).getName());
+				mApplicationName.setText(Dma.getApplications().get(i).getName());
 			}
 		}
 		
@@ -142,7 +142,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 			i.setBackgroundResource(android.R.drawable.picture_frame);
 			
 			TextView tv = new TextView(mContext);
-			tv.setText(Dma.applicationList.get(position).getName());
+			tv.setText(Dma.getApplications().get(position).getName());
 			tv.setTextSize(11);
 			tv.setTextColor(Color.BLACK);
 			tv.setGravity(Gravity.CENTER_HORIZONTAL);
@@ -232,7 +232,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View v, int position, long id) {
-		mApplicationName.setText(Dma.applicationList.get(position).getName());
+		mApplicationName.setText(Dma.getApplications().get(position).getName());
 	}
 
 	@Override
@@ -244,14 +244,14 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	@Override
 	public void onItemClick(AdapterView<?> parent, View v, final int position, long id) {
 		SharedPreferences prefs = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE);
-		sApplicationName = Dma.applicationList.get(position).getName();
+		sApplicationName = Dma.getApplications().get(position).getName();
 		sApplicationInfos.put("Username", prefs.getString("Username", ""));
 		sApplicationInfos.put("Userpassword", prefs.getString("Userpassword", ""));
-		sApplicationInfos.put("AppId", Dma.applicationList.get(position).getAppId());
-		sApplicationInfos.put("AppVer", Dma.applicationList.get(position).getAppVer());
-		sApplicationInfos.put("AppBuild", Dma.applicationList.get(position).getAppBuild());
-		sApplicationInfos.put("SubId", Dma.applicationList.get(position).getSubId());
-		sApplicationInfos.put("DbId", Dma.applicationList.get(position).getDbId());
+		sApplicationInfos.put("AppId", Dma.getApplications().get(position).getAppId());
+		sApplicationInfos.put("AppVer", Dma.getApplications().get(position).getAppVer());
+		sApplicationInfos.put("AppBuild", Dma.getApplications().get(position).getAppBuild());
+		sApplicationInfos.put("SubId", Dma.getApplications().get(position).getSubId());
+		sApplicationInfos.put("DbId", Dma.getApplications().get(position).getDbId());
 		sLoadProgressDialog = ProgressDialog.show(this, "Please wait...", "Preparing application...", true, false);
 		mIntent = new Intent(this, ApplicationView.class);
 		

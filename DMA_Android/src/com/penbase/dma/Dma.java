@@ -14,20 +14,6 @@
  */
 package com.penbase.dma;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-import com.penbase.dma.Constant.Constant;
-import com.penbase.dma.Constant.DesignTag;
-import com.penbase.dma.Dalyo.Application;
-import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
-import com.penbase.dma.View.ApplicationListView;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -49,21 +35,39 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import com.penbase.dma.Constant.Constant;
+import com.penbase.dma.Constant.DesignTag;
+import com.penbase.dma.Constant.ErrorCode;
+import com.penbase.dma.Dalyo.Application;
+import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
+import com.penbase.dma.View.ApplicationListView;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+
+/**
+ * Authentication interface of DMA
+ */
 public class Dma extends Activity implements OnClickListener {
-	public static ArrayList<Application> applicationList = null;
-	private TextView tx_login;
-	private TextView tx_password;
-	private CheckBox cb_remember_me;
-	private AlertDialog alertDialog;
-	private ProgressDialog loadApps = null;
-	private static Context context;
-	private String serverResponse = null;
-	private Handler handler = new Handler() {
+	private static ArrayList<Application> sApplicationList = null;
+	private TextView mTx_login;
+	private TextView mTx_password;
+	private CheckBox mCb_remember_me;
+	private AlertDialog mAlertDialog;
+	private ProgressDialog mLoadApps = null;
+	private String mServerResponse = null;
+	private static String sDeviceId = null;
+	private Handler mHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 				case 0:
-					buildAppsList();
+					callApplicationListView();
 					break;
 			}
 		}
@@ -71,41 +75,36 @@ public class Dma extends Activity implements OnClickListener {
 	
 	@Override
 	public void onCreate(Bundle icicle) {
-		context = this;
 		super.onCreate(icicle);
-		
+		sDeviceId = ((TelephonyManager)this.getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
 		SharedPreferences settings = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE);
 		boolean rememberMe = settings.getBoolean("RememberMe", false);
-		alertDialog = new AlertDialog.Builder(this).create();
-		alertDialog.setTitle("Error");
+		mAlertDialog = new AlertDialog.Builder(this).create();
+		mAlertDialog.setTitle("Error");
 		if (!rememberMe) {
 			if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
 				setContentView(R.layout.login_layout);
-			}
-			else if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+			} else if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
 				setContentView(R.layout.login_layout_landscape);
 			}
 			Button bt = (Button) findViewById(R.id.ok);
 			bt.setOnClickListener(this);
-			tx_login = (TextView) findViewById(R.id.textLogin);
-			tx_password = (TextView) findViewById(R.id.textePasswd);
-			cb_remember_me = (CheckBox) findViewById(R.id.remember_me_cb);
-		}
-		else {
+			mTx_login = (TextView) findViewById(R.id.textLogin);
+			mTx_password = (TextView) findViewById(R.id.textePasswd);
+			mCb_remember_me = (CheckBox) findViewById(R.id.remember_me_cb);
+		} else {
 			String xml = settings.getString("ApplicationList", null);
-			GetListApplicationFromXml(xml);
+			createApplicationListFromXml(xml);
 			this.finish();
 			startActivityForResult(new Intent(this, ApplicationListView.class), 0);
 		}
 	}
 
-	public static void GetListApplicationFromXml(String xml) {
-		/*if (applicationList == null) {
-			applicationList = new ArrayList<Application>();
-		}
-		else {
-			applicationList.clear();
-		}*/
+	/**
+	 * Parses the given xml to get the necessary values and creates applications
+	 * @param xml Xml which contains application information
+	 */
+	private void createApplicationListFromXml(String xml) {
 		HashMap<String, Application> applicationMap = new HashMap<String, Application>();
 		Document doc = DmaHttpClient.CreateParseDocument(xml, null);
 		NodeList root = doc.getElementsByTagName(DesignTag.ROOT);
@@ -120,104 +119,98 @@ public class Dma extends Activity implements OnClickListener {
 				if (noeud.getNodeType() == Node.ELEMENT_NODE) {
 					if (noeud.getNodeName().equals(DesignTag.LOGIN_ID)) {
 						app.setAppId(noeud.getChildNodes().item(0).getNodeValue());
-					}		
-					else if (noeud.getNodeName().equals(DesignTag.LOGIN_TIT)) {
+					} else if (noeud.getNodeName().equals(DesignTag.LOGIN_TIT)) {
 						app.setName(noeud.getChildNodes().item(0).getNodeValue());
-					}
-					else if (noeud.getNodeName().equals(DesignTag.LOGIN_BLD)) {
+					} else if (noeud.getNodeName().equals(DesignTag.LOGIN_BLD)) {
 						app.setAppBuild(noeud.getChildNodes().item(0).getNodeValue());
-					}
-					else if (noeud.getNodeName().equals(DesignTag.LOGIN_SUB)) {
+					} else if (noeud.getNodeName().equals(DesignTag.LOGIN_SUB)) {
 						app.setSubId(noeud.getChildNodes().item(0).getNodeValue());
-					}
-					else if (noeud.getNodeName().equals(DesignTag.LOGIN_DBID)) {
+					} else if (noeud.getNodeName().equals(DesignTag.LOGIN_DBID)) {
 						app.setDbId(noeud.getChildNodes().item(0).getNodeValue());
-					}
-					else if (noeud.getNodeName().equals(DesignTag.LOGIN_VER)) {
+					} else if (noeud.getNodeName().equals(DesignTag.LOGIN_VER)) {
 						app.setAppVer(noeud.getChildNodes().item(0).getNodeValue());
 					}
 				}
 			}
 			app.setIconRes(R.drawable.splash);
 			applicationMap.put(app.getName(), app);
-			//app.setIconRes(R.drawable.icon);
 		}
 		
-		
-		buildApplicationsList(applicationMap);
-		/*ArrayList<String> tempList = new ArrayList<String>();
-		tempList.addAll(applicationMap.keySet());
-		Collections.sort(tempList);
-		
-		for (int i=0; i<appsLen; i++) {
-			applicationList.add(applicationMap.get(tempList.get(i)));
-		}*/
+		sortApplicationsList(applicationMap);
 	}
 	
-	public static void buildApplicationsList(HashMap<String, Application> applicationMap) {
-		if (applicationList == null) {
-			applicationList = new ArrayList<Application>();
-		}
-		else {
-			applicationList.clear();
+	/**
+	 * Sorts the applications list in alphabetical order
+	 * @param applicationMap The application hashmap, key is application's name and value is application
+	 */
+	public static void sortApplicationsList(HashMap<String, Application> applicationMap) {
+		if (sApplicationList == null) {
+			sApplicationList = new ArrayList<Application>();
+		} else {
+			sApplicationList.clear();
 		}
 		ArrayList<String> tempList = new ArrayList<String>();
 		tempList.addAll(applicationMap.keySet());
 		Collections.sort(tempList);
 		int appsLen = applicationMap.size();
 		for (int i=0; i<appsLen; i++) {
-			applicationList.add(applicationMap.get(tempList.get(i)));
+			sApplicationList.add(applicationMap.get(tempList.get(i)));
 		}
 	}
 	
 	@Override
 	public void onClick(View arg0) {
 		Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
-		if ("".equals(tx_login.getText().toString())
-				&& "".equals(tx_password.getText().toString())) {
+		if ("".equals(mTx_login.getText().toString())
+				&& "".equals(mTx_password.getText().toString())) {
 			findViewById(R.id.textLogin).startAnimation(shake);
 	        findViewById(R.id.textePasswd).startAnimation(shake);
 	        return;
-		}
-		else if ("".equals(tx_login.getText().toString())) {
+		} else if ("".equals(mTx_login.getText().toString())) {
 			findViewById(R.id.textLogin).startAnimation(shake);
 			return;
-		}
-		else if ("".equals(tx_password.getText().toString())) {
+		} else if ("".equals(mTx_password.getText().toString())) {
 			findViewById(R.id.textePasswd).startAnimation(shake);
 			return;
 		}
-		loadApps = ProgressDialog.show(this, "Please wait...", "Connecting to server...", true, false);
-		final DmaHttpClient client = new DmaHttpClient();
-		
-		ConnectThread connectThread = new ConnectThread(client, handler);
-		connectThread.start();
+		mLoadApps = ProgressDialog.show(this, "Please wait...", "Connecting to server...", true, false);
+
+		new Thread(){
+			public void run() {
+				if (mHandler != null) {
+					mServerResponse = new DmaHttpClient().Authentication(mTx_login.getText().toString().trim(),
+							mTx_password.getText().toString().trim());
+					mHandler.sendEmptyMessage(0);
+				}
+			}
+		}.start();
 	}
 	
-	public void buildAppsList() {
-		if (serverResponse == null) {
-			loadApps.dismiss();
-			alertDialog.setMessage("Connection failed!");
-			alertDialog.show();
-		}
-		else if (serverResponse.equals("error")) {
-			loadApps.dismiss();
-			alertDialog.setMessage("Check your username or password!");
-			alertDialog.show();
-		}
-		else {
-			loadApps.setMessage("Loading application list...");
+	/**
+	 * Checks the result of authentication, display the ApplicationListView if authentication success
+	 */
+	private void callApplicationListView() {
+		if (mServerResponse == null) {
+			mLoadApps.dismiss();
+			mAlertDialog.setMessage("Connection failed!");
+			mAlertDialog.show();
+		} else if (mServerResponse.equals(String.valueOf(ErrorCode.UNAUTHORIZED))) {
+			mLoadApps.dismiss();
+			mAlertDialog.setMessage("Check your username or password!");
+			mAlertDialog.show();
+		} else {
+			mLoadApps.setMessage("Loading application list...");
 			new Thread() {
 				public void run() {
 					try {
 						// save user info
 						SharedPreferences.Editor editorPrefs = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE).edit();
-						editorPrefs.putBoolean("RememberMe", cb_remember_me.isChecked());
-						editorPrefs.putString("Username", tx_login.getText().toString());
-						editorPrefs.putString("Userpassword", tx_password.getText().toString());
-						editorPrefs.putString("ApplicationList", serverResponse);
+						editorPrefs.putBoolean("RememberMe", mCb_remember_me.isChecked());
+						editorPrefs.putString("Username", mTx_login.getText().toString());
+						editorPrefs.putString("Userpassword", mTx_password.getText().toString());
+						editorPrefs.putString("ApplicationList", mServerResponse);
 						editorPrefs.commit();
-						Dma.GetListApplicationFromXml(serverResponse);
+						createApplicationListFromXml(mServerResponse);
 					}
 					catch(Exception e) {
 						e.printStackTrace();
@@ -241,53 +234,33 @@ public class Dma extends Activity implements OnClickListener {
 	public boolean onOptionsItemSelected(int featureId, MenuItem item) {
 		switch (item.getItemId()) {
 			case 0:
-				return true;
+				mAlertDialog.setMessage("DMA Android version "+getVersion());
+				mAlertDialog.show();
+				break;
 			case 1:
 				this.finish();
+				break;
 		}
 		return super.onMenuItemSelected(featureId, item);
 	}
 	
 	public static String getDeviceID() {
-		String imei = ((TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
-		return "zfikn";
-		//return imei;
+		return sDeviceId;
 	}
 	
-	public static float getVersion() {
-		float result = (float) 1.0;
-		return result;
-	}
-	
-	public class ConnectThread extends Thread {
-		private DmaHttpClient client;
-		private Handler handler;
-		Thread m_thread = null;
-		
-		public ConnectThread(DmaHttpClient c, Handler h) {
-			this.client = c;
-			this.handler = h;
-		}
-		
-		@Override
-		public void run() {
-			if (handler != null) {
-				serverResponse = client.Authentication(tx_login.getText().toString().trim(),
-						tx_password.getText().toString().trim());
-				handler.sendEmptyMessage(0);
-			}
-		}
+	public static String getVersion() {
+		return "1.0";
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		if (loadApps != null) {
-			loadApps.dismiss();
+		if (mLoadApps != null) {
+			mLoadApps.dismiss();
 		}
 	}
 	
 	public static ArrayList<Application> getApplications() {
-		return applicationList;
+		return sApplicationList;
 	}
 }
