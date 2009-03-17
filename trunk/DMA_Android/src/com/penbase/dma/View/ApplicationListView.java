@@ -22,7 +22,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.Menu;
@@ -72,40 +71,19 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	protected void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		Animation animation = AnimationUtils.loadAnimation(this, R.anim.wave_scale);
-		LinearLayout layout = new LinearLayout(this);
-		layout.setOrientation(LinearLayout.VERTICAL);
-		layout.setBackgroundColor(Color.WHITE);
-		ImageView imageView = new ImageView(this);
+		setContentView(R.layout.applicationlist);
+		
+		ImageView imageView = (ImageView)findViewById(R.id.banner);
 		if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
 			imageView.setBackgroundResource(R.drawable.banniere_dalyo);
 		}
 		else if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
 			imageView.setBackgroundResource(R.drawable.banniere_dalyo1);
 		}
-		layout.addView(imageView, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 		
-		TextView textView = new TextView(this);
-		textView.setText("Application list:");
-		textView.setTextColor(Color.BLACK);
-		layout.addView(textView, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-		
-		mGridView = new GridView(this);
-		mGridView.setCacheColorHint(Color.TRANSPARENT);
-		mGridView.setVerticalScrollBarEnabled(false);
-		mGridView.setScrollingCacheEnabled(false);
-		mGridView.setVerticalSpacing(5);
-		mGridView.setHorizontalSpacing(10);
-		mGridView.setNumColumns(GridView.AUTO_FIT);
-		mGridView.setColumnWidth(60);
-		mGridView.setStretchMode(GridView.STRETCH_COLUMN_WIDTH);
-		mGridView.setGravity(Gravity.CENTER);
-		mGridView.setLayoutAnimation(new LayoutAnimationController(animation));
-		mAdapter = new AppsAdapter(this);		
-		mApplicationName = new TextView(this);
-		mApplicationName.setGravity(Gravity.CENTER);
-		mApplicationName.setTextColor(Color.BLACK);
-		mApplicationName.setTypeface(Typeface.DEFAULT_BOLD);
-		layout.addView(mApplicationName, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+		mApplicationName = (TextView)findViewById(R.id.appnametv);
+		mAdapter = new AppsAdapter(this);
+
 		int size = Dma.applicationList.size();
 		for (int i =0; i < size; i++) {
 			mAdapter.addApplication(Dma.applicationList.get(i));
@@ -114,6 +92,10 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 			}
 		}
 		
+		mGridView = (GridView)findViewById(R.id.appsgv);
+		mGridView.setVerticalScrollBarEnabled(false);
+		mGridView.setScrollingCacheEnabled(false);
+		mGridView.setLayoutAnimation(new LayoutAnimationController(animation));
 		mGridView.setOnTouchListener(new OnTouchListener() {
 			@Override
 			public boolean onTouch(View arg0, MotionEvent arg1) {
@@ -128,12 +110,9 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 				return false;
 			}
 		});
-		
 		mGridView.setAdapter(mAdapter);
 		mGridView.setOnItemClickListener(this);
 		mGridView.setOnItemSelectedListener(this);
-		layout.addView(mGridView, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-		setContentView(layout);
 	}
 
 	/**
@@ -164,7 +143,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 			
 			TextView tv = new TextView(mContext);
 			tv.setText(Dma.applicationList.get(position).getName());
-			tv.setTextSize(10);
+			tv.setTextSize(11);
 			tv.setTextColor(Color.BLACK);
 			tv.setGravity(Gravity.CENTER_HORIZONTAL);
 			
@@ -235,18 +214,14 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		sUpdateProgressDialog = ProgressDialog.show(this, "Please wait...", "Updaing application list...", true, false);
 		new Thread() {
 			public void run() {
-				try {
-					SharedPreferences prefs = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE);
-					String appsList = mDmahttpclient.Authentication(prefs.getString("Username", ""),
-							prefs.getString("Userpassword", ""));
-					mDmahttpclient.update(appsList);
-					SharedPreferences.Editor editorPrefs = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE).edit();
-					editorPrefs.remove("ApplicationList");
-					editorPrefs.putString("ApplicationList", appsList);
-					editorPrefs.commit();
-				}
-				catch(Exception e)
-				{e.printStackTrace();}
+				SharedPreferences prefs = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE);
+				String appsList = mDmahttpclient.Authentication(prefs.getString("Username", ""),
+						prefs.getString("Userpassword", ""));
+				mDmahttpclient.update(appsList);
+				SharedPreferences.Editor editorPrefs = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE).edit();
+				editorPrefs.remove("ApplicationList");
+				editorPrefs.putString("ApplicationList", appsList);
+				editorPrefs.commit();
 				
 				sUpdateProgressDialog.dismiss();
 				ApplicationListView.this.finish();
@@ -282,13 +257,8 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		
 		new Thread() {
 			public void run() {
-				try {
-					ApplicationView.prepareData(position, sApplicationInfos.get("Username"),
-							sApplicationInfos.get("Userpassword"));
-				}	
-				catch(Exception e)
-				{e.printStackTrace();}
-				
+				ApplicationView.prepareData(position, sApplicationInfos.get("Username"),
+						sApplicationInfos.get("Userpassword"));
 				startActivityForResult(mIntent, 0);
 			}
 		}.start();
