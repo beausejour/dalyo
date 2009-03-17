@@ -319,7 +319,7 @@ public class DmaHttpClient{
 			applicationMap.put(appUnchanged.getName(), appUnchanged);
 		}
 		
-		Dma.buildApplicationsList(applicationMap);
+		Dma.sortApplicationsList(applicationMap);
 	}
 	
 	public void checkXmlFiles() {
