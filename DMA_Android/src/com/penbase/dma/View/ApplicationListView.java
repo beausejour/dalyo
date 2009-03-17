@@ -14,15 +14,6 @@
  */
 package com.penbase.dma.View;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import com.penbase.dma.Dma;
-import com.penbase.dma.R;
-import com.penbase.dma.Constant.Constant;
-import com.penbase.dma.Dalyo.Application;
-import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -53,17 +44,29 @@ import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 
+import com.penbase.dma.Dma;
+import com.penbase.dma.R;
+import com.penbase.dma.Constant.Constant;
+import com.penbase.dma.Dalyo.Application;
+import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+/**
+ * Displays a GridView which contains all applications' icons
+ */
 public class ApplicationListView extends Activity implements OnItemSelectedListener, OnItemClickListener {
 
 	private AppsAdapter mAdapter;
 	private TextView mApplicationName;
-	private static ProgressDialog loadProgressDialog = null;
-	private static ProgressDialog updateProgressDialog = null;
-	private Intent i = null;
-	private static HashMap<String, String> applicationInfos = new HashMap<String, String>();
-	private DmaHttpClient dmahttpclient = new DmaHttpClient();
-	private static String applicationName;
-	private GridView gridView;
+	private static ProgressDialog sLoadProgressDialog = null;
+	private static ProgressDialog sUpdateProgressDialog = null;
+	private Intent mIntent = null;
+	private static HashMap<String, String> sApplicationInfos = new HashMap<String, String>();
+	private DmaHttpClient mDmahttpclient = new DmaHttpClient();
+	private static String sApplicationName;
+	private GridView mGridView;
 
 	@Override
 	protected void onCreate(Bundle icicle) {
@@ -86,17 +89,17 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		textView.setTextColor(Color.BLACK);
 		layout.addView(textView, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 		
-		gridView = new GridView(this);
-		gridView.setCacheColorHint(Color.TRANSPARENT);
-		gridView.setVerticalScrollBarEnabled(false);
-		gridView.setScrollingCacheEnabled(false);
-		gridView.setVerticalSpacing(5);
-		gridView.setHorizontalSpacing(10);
-		gridView.setNumColumns(GridView.AUTO_FIT);
-		gridView.setColumnWidth(60);
-		gridView.setStretchMode(GridView.STRETCH_COLUMN_WIDTH);
-		gridView.setGravity(Gravity.CENTER);
-		gridView.setLayoutAnimation(new LayoutAnimationController(animation));
+		mGridView = new GridView(this);
+		mGridView.setCacheColorHint(Color.TRANSPARENT);
+		mGridView.setVerticalScrollBarEnabled(false);
+		mGridView.setScrollingCacheEnabled(false);
+		mGridView.setVerticalSpacing(5);
+		mGridView.setHorizontalSpacing(10);
+		mGridView.setNumColumns(GridView.AUTO_FIT);
+		mGridView.setColumnWidth(60);
+		mGridView.setStretchMode(GridView.STRETCH_COLUMN_WIDTH);
+		mGridView.setGravity(Gravity.CENTER);
+		mGridView.setLayoutAnimation(new LayoutAnimationController(animation));
 		mAdapter = new AppsAdapter(this);		
 		mApplicationName = new TextView(this);
 		mApplicationName.setGravity(Gravity.CENTER);
@@ -111,29 +114,32 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 			}
 		}
 		
-		gridView.setOnTouchListener(new OnTouchListener() {
+		mGridView.setOnTouchListener(new OnTouchListener() {
 			@Override
 			public boolean onTouch(View arg0, MotionEvent arg1) {
 				switch (arg1.getAction()) {
 					case MotionEvent.ACTION_UP:
-						gridView.setVerticalScrollBarEnabled(false);
+						mGridView.setVerticalScrollBarEnabled(false);
 						break;
 					default:
-						gridView.setVerticalScrollBarEnabled(true);
+						mGridView.setVerticalScrollBarEnabled(true);
 						break;
 				}
 				return false;
 			}
-		});		
+		});
 		
-		gridView.setAdapter(mAdapter);
-		gridView.setOnItemClickListener(this);
-		gridView.setOnItemSelectedListener(this);
-		layout.addView(gridView, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+		mGridView.setAdapter(mAdapter);
+		mGridView.setOnItemClickListener(this);
+		mGridView.setOnItemSelectedListener(this);
+		layout.addView(mGridView, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 		setContentView(layout);
 	}
 
-	public class AppsAdapter extends BaseAdapter {
+	/**
+	 * Contains items associated with the ApplicationListView
+	 */
+	private class AppsAdapter extends BaseAdapter {
 		private Context mContext;
 		private ArrayList<Integer> mApps = new ArrayList<Integer>();
 		
@@ -141,6 +147,9 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 			mContext = context;
 		}
 
+		/**
+		 * Returns the item in the given position which contains an icon and the application's name
+		 */
 		public View getView(int position, View convertView, ViewGroup parent) {
 			LinearLayout layout = new LinearLayout(mContext);
 			layout.setOrientation(LinearLayout.VERTICAL);
@@ -208,7 +217,9 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		return super.onMenuItemSelected(featureId, item);
 	}
 
-	//Logout delete the preference data
+	/**
+	 * Deletes preference data and finishes this activity 
+	 */
 	public void logout() {
 		SharedPreferences.Editor editor = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE).edit();
 		editor.clear();
@@ -217,16 +228,18 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		startActivityForResult(new Intent(this, Dma.class), 0);
 	}
 
-	//Using the preference data to rebuild application list
+	/**
+	 * Updates the application list
+	 */
 	public void update() {
-		updateProgressDialog = ProgressDialog.show(this, "Please wait...", "Updaing application list...", true, false);
+		sUpdateProgressDialog = ProgressDialog.show(this, "Please wait...", "Updaing application list...", true, false);
 		new Thread() {
 			public void run() {
 				try {
 					SharedPreferences prefs = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE);
-					String appsList = dmahttpclient.Authentication(prefs.getString("Username", ""),
+					String appsList = mDmahttpclient.Authentication(prefs.getString("Username", ""),
 							prefs.getString("Userpassword", ""));
-					dmahttpclient.update(appsList);
+					mDmahttpclient.update(appsList);
 					SharedPreferences.Editor editorPrefs = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE).edit();
 					editorPrefs.remove("ApplicationList");
 					editorPrefs.putString("ApplicationList", appsList);
@@ -235,7 +248,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 				catch(Exception e)
 				{e.printStackTrace();}
 				
-				updateProgressDialog.dismiss();
+				sUpdateProgressDialog.dismiss();
 				ApplicationListView.this.finish();
 				startActivityForResult(new Intent(ApplicationListView.this, ApplicationListView.class), 0);
 			}
@@ -250,53 +263,51 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	@Override
 	public void onNothingSelected(AdapterView<?> arg0) {}
 
+	/**
+	 * Launches the selected application
+	 */
 	@Override
 	public void onItemClick(AdapterView<?> parent, View v, final int position, long id) {
 		SharedPreferences prefs = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE);
-		applicationName = Dma.applicationList.get(position).getName();
-		applicationInfos.put("Username", prefs.getString("Username", ""));
-		applicationInfos.put("Userpassword", prefs.getString("Userpassword", ""));
-		applicationInfos.put("AppId", Dma.applicationList.get(position).getAppId());
-		applicationInfos.put("AppVer", Dma.applicationList.get(position).getAppVer());
-		applicationInfos.put("AppBuild", Dma.applicationList.get(position).getAppBuild());
-		applicationInfos.put("SubId", Dma.applicationList.get(position).getSubId());
-		applicationInfos.put("DbId", Dma.applicationList.get(position).getDbId());
-		loadProgressDialog = ProgressDialog.show(this, "Please wait...", "Preparing application...", true, false);
-		i = new Intent(this, ApplicationView.class);
+		sApplicationName = Dma.applicationList.get(position).getName();
+		sApplicationInfos.put("Username", prefs.getString("Username", ""));
+		sApplicationInfos.put("Userpassword", prefs.getString("Userpassword", ""));
+		sApplicationInfos.put("AppId", Dma.applicationList.get(position).getAppId());
+		sApplicationInfos.put("AppVer", Dma.applicationList.get(position).getAppVer());
+		sApplicationInfos.put("AppBuild", Dma.applicationList.get(position).getAppBuild());
+		sApplicationInfos.put("SubId", Dma.applicationList.get(position).getSubId());
+		sApplicationInfos.put("DbId", Dma.applicationList.get(position).getDbId());
+		sLoadProgressDialog = ProgressDialog.show(this, "Please wait...", "Preparing application...", true, false);
+		mIntent = new Intent(this, ApplicationView.class);
 		
 		new Thread() {
 			public void run() {
 				try {
-					ApplicationView.prepareData(position, applicationInfos.get("Username"),
-							applicationInfos.get("Userpassword"));
+					ApplicationView.prepareData(position, sApplicationInfos.get("Username"),
+							sApplicationInfos.get("Userpassword"));
 				}	
 				catch(Exception e)
 				{e.printStackTrace();}
 				
-				startActivityForResult(i, 0);
+				startActivityForResult(mIntent, 0);
 			}
 		}.start();
 	}
 	
 	public static HashMap<String, String> getApplicationsInfo() {
-		return applicationInfos;
+		return sApplicationInfos;
 	}
 	
 	public static String getApplicationName() {
-		return applicationName;
+		return sApplicationName;
 	}
 
 	@Override
 	protected void onStop() {
-		if (loadProgressDialog != null) {
-			loadProgressDialog.dismiss();
-			loadProgressDialog = null;
+		if (sLoadProgressDialog != null) {
+			sLoadProgressDialog.dismiss();
+			sLoadProgressDialog = null;
 		}
 		super.onStop();
 	}
-	
-	static class ViewHolder {
-        TextView text;
-        ImageView icon;
-    }
 }
