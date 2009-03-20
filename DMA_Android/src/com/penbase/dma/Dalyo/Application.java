@@ -1,69 +1,69 @@
 package com.penbase.dma.Dalyo;
 
 public class Application {
-	private int IconRes;
-	private String Name;
-	private String AppId;
-	private String AppVer;
-	private String AppBuild;
-	private String SubId;
-	private String DbId;
+	private int mIconRes;
+	private String mName;
+	private String mAppId;
+	private String mAppVer;
+	private String mAppBuild;
+	private String mSubId;
+	private String mDbId;
 
 	public Application() {}
 
 	public String getAppId() {
-		return AppId;
+		return mAppId;
 	}
 	
 	public void setAppId(String dalyoId) {
-		AppId = dalyoId;
+		mAppId = dalyoId;
 	}
 	
 	public int getIconRes() {
-		return IconRes;
+		return mIconRes;
 	}
 	
 	public void setIconRes(int iconRes) {
-		IconRes = iconRes;
+		mIconRes = iconRes;
 	}
 	
 	public String getName() {
-		return Name;
+		return mName;
 	}
 	
 	public void setName(String name) {
-		Name = name;
+		mName = name;
 	}
 	
 	public String getAppVer() {
-		return AppVer;
+		return mAppVer;
 	}
 	
 	public void setAppVer(String appver) {
-		this.AppVer = appver;
+		this.mAppVer = appver;
 	}
 	
 	public String getAppBuild() {
-		return AppBuild;
+		return mAppBuild;
 	}
 	
 	public void setAppBuild(String appbuild) {
-		this.AppBuild = appbuild;
+		this.mAppBuild = appbuild;
 	}
 	
 	public String getSubId() {
-		return SubId;
+		return mSubId;
 	}
 	
 	public void setSubId(String subid) {
-		this.SubId = subid;
+		this.mSubId = subid;
 	}
 	
 	public String getDbId() {
-		return DbId;
+		return mDbId;
 	}
 	
 	public void setDbId(String dbid) {
-		this.DbId = dbid;
+		this.mDbId = dbid;
 	}
 }

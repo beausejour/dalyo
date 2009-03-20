@@ -305,35 +305,35 @@ public class DatabaseAdapter {
 		}
 		ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		byte[] tableNb = new byte[Binary.INTBYTE];
+		byte[] tableNb = new byte[Constant.INTBYTE];
 		bis.read(tableNb, 0, tableNb.length);
 		bos.write(tableNb, 0, tableNb.length);
 		int tableNbInt = Binary.byteArrayToInt(tableNb);
 		for (int i=0; i<tableNbInt; i++) {
 			//Get table's id
-			byte[] tableId = new byte[Binary.INTBYTE];
+			byte[] tableId = new byte[Constant.INTBYTE];
 			bis.read(tableId, 0, tableId.length);
 			int tableIdInt = Binary.byteArrayToInt(tableId);
 			bos.write(tableId, 0, tableId.length);
 			
 			//Get filed's number
-			byte[] fieldsNb = new byte[Binary.INTBYTE];
+			byte[] fieldsNb = new byte[Constant.INTBYTE];
 			bis.read(fieldsNb, 0, fieldsNb.length);
 			int fieldsNbInt = Binary.byteArrayToInt(fieldsNb);
 			
 			//Get fields's ids
-			byte[] fields = new byte[Binary.INTBYTE*fieldsNbInt];
+			byte[] fields = new byte[Constant.INTBYTE*fieldsNbInt];
 			bis.read(fields, 0, fields.length);
 			ArrayList<Integer> fieldList = new ArrayList<Integer>();
 			ByteArrayInputStream bisFields = new ByteArrayInputStream(fields);
 			for (int j=0; j<fieldsNbInt; j++) {
-				byte[] field = new byte[Binary.INTBYTE];
+				byte[] field = new byte[Constant.INTBYTE];
 				bisFields.read(field, 0, field.length);
 				fieldList.add(Binary.byteArrayToInt(field));
 			}
 
 			//Get number of records
-			byte[] recordsNb = new byte[Binary.INTBYTE];
+			byte[] recordsNb = new byte[Constant.INTBYTE];
 			bis.read(recordsNb, 0, recordsNb.length);
 			int recordsNbInt = Binary.byteArrayToInt(recordsNb);
 			bos.write(recordsNb, 0, recordsNb.length);
@@ -342,21 +342,21 @@ public class DatabaseAdapter {
 			for (int k=0; k<recordsNbInt; k++) {
 				ArrayList<Object> valueList = new ArrayList<Object>();
 				//Get type of synchronization
-				byte[] syncType = new byte[Binary.TYPEBYTE];
+				byte[] syncType = new byte[Constant.TYPEBYTE];
 				bis.read(syncType, 0, syncType.length);
 				int syncTypeInt = Binary.byteArrayToType(syncType);
 				syncTypeList.add(syncTypeInt);
 				bos.write(syncType, 0, syncType.length);
 				
 				//Get local id
-				byte[] localId = new byte[Binary.INTBYTE];
+				byte[] localId = new byte[Constant.INTBYTE];
 				bis.read(localId, 0, localId.length);
 				String localIdString = String.valueOf(tableIdInt+""+(k+1));
 				valueList.add(localIdString);
 				bos.write(Binary.intToByteArray(k+1), 0, Binary.intToByteArray(k+1).length);
 				
 				//Get global id
-				byte[] globalId = new byte[Binary.INTBYTE];
+				byte[] globalId = new byte[Constant.INTBYTE];
 				bis.read(globalId, 0, globalId.length);
 				int globalIdInt = Binary.byteArrayToInt(globalId);
 				valueList.add(String.valueOf(globalIdInt));
@@ -367,7 +367,7 @@ public class DatabaseAdapter {
 					for (int l=0; l<fieldsNbInt; l++) {
 						String valueType = fieldsTypeMap.get(String.valueOf(fieldList.get(l)));
 						//Get length of value
-						byte[] valueLength = new byte[Binary.INTBYTE];
+						byte[] valueLength = new byte[Constant.INTBYTE];
 						bis.read(valueLength, 0, valueLength.length);
 						int valueLengthInt = Binary.byteArrayToInt(valueLength);
 						//Get value
@@ -578,29 +578,29 @@ public class DatabaseAdapter {
 	
 	public static void updateIds(byte[] bytes) {
 		ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-		byte[] tableNb = new byte[Binary.INTBYTE];
+		byte[] tableNb = new byte[Constant.INTBYTE];
 		bis.read(tableNb, 0, tableNb.length);
 		int tableNbInt = Binary.byteArrayToInt(tableNb);
 		for (int i=0; i<tableNbInt; i++) {
 			//Get table's id
-			byte[] tableId = new byte[Binary.INTBYTE];
+			byte[] tableId = new byte[Constant.INTBYTE];
 			bis.read(tableId, 0, tableId.length);
 			int tableIdInt = Binary.byteArrayToInt(tableId);
 			//Get number of records
-			byte[] recordsNb = new byte[Binary.INTBYTE];
+			byte[] recordsNb = new byte[Constant.INTBYTE];
 			bis.read(recordsNb, 0, recordsNb.length);
 			int recordsNbInt = Binary.byteArrayToInt(recordsNb);
 			for (int k=0; k<recordsNbInt; k++) {
 				//Get type of synchronization
-				byte[] syncType = new byte[Binary.TYPEBYTE];
+				byte[] syncType = new byte[Constant.TYPEBYTE];
 				bis.read(syncType, 0, syncType.length);
 				int syncTypeInt = Binary.byteArrayToType(syncType);
 				//Get local id
-				byte[] localId = new byte[Binary.INTBYTE];
+				byte[] localId = new byte[Constant.INTBYTE];
 				bis.read(localId, 0, localId.length);
 				int localIdInt = Binary.byteArrayToInt(localId);
 				//Get global id
-				byte[] globalId = new byte[Binary.INTBYTE];
+				byte[] globalId = new byte[Constant.INTBYTE];
 				bis.read(globalId, 0, globalId.length);
 				int globalIdInt = Binary.byteArrayToInt(globalId);
 				updateGid(tableIdInt, localIdInt, globalIdInt);

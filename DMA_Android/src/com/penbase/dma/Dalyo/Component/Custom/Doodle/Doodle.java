@@ -1,14 +1,5 @@
 package com.penbase.dma.Dalyo.Component.Custom.Doodle;
 
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-
-import com.penbase.dma.Constant.Constant;
-import com.penbase.dma.View.ApplicationListView;
-import com.penbase.dma.View.ApplicationView;
-
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -23,16 +14,27 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
+
+import com.penbase.dma.Constant.Constant;
+import com.penbase.dma.View.ApplicationListView;
+import com.penbase.dma.View.ApplicationView;
+
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 
 public class Doodle extends Activity implements ColorPickerDialog.OnColorChangedListener {
-    private Paint       mPaint;
-    private DoodlePanelView	doodleView;
-    private String id;
+    private Paint mPaint;
+    private DoodlePanelView	mDoodleView;
+    private String mId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setDither(true);
@@ -41,9 +43,9 @@ public class Doodle extends Activity implements ColorPickerDialog.OnColorChanged
         mPaint.setStrokeJoin(Paint.Join.ROUND);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
         mPaint.setStrokeWidth(1);
-        doodleView = new DoodlePanelView(this);
-        id = this.getIntent().getStringExtra("ID");
-        setContentView(doodleView);
+        mDoodleView = new DoodlePanelView(this);
+        mId = this.getIntent().getStringExtra("ID");
+        setContentView(mDoodleView);
         setTitle("Doodle");
     }
     
@@ -51,10 +53,12 @@ public class Doodle extends Activity implements ColorPickerDialog.OnColorChanged
         private Bitmap  mBitmap;
         private Canvas  mCanvas;
         private Path    mPath;
+        private float mX;
+        private float mY;
+        private static final float TOUCH_TOLERANCE = 4;
         
         public DoodlePanelView(Context c) {
             super(c);
-            
             mBitmap = Bitmap.createBitmap(320, 480, Bitmap.Config.ARGB_8888);
             mCanvas = new Canvas(mBitmap);
             mCanvas.drawColor(Color.WHITE);
@@ -72,9 +76,6 @@ public class Doodle extends Activity implements ColorPickerDialog.OnColorChanged
             canvas.drawPath(mPath, mPaint);
             invalidate(); 
         }
-        
-        private float mX, mY;
-        private static final float TOUCH_TOLERANCE = 4;
         
         private void touch_start(float x, float y) {
             mPath.reset();
@@ -159,29 +160,27 @@ public class Doodle extends Activity implements ColorPickerDialog.OnColorChanged
        try{
                fos = new FileOutputStream(file);
                DataOutputStream dos = new DataOutputStream(fos);
-               if (doodleView.mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, dos)) {
+               if (mDoodleView.mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, dos)) {
             	   Log.i("info", "image compressed ok");
-               }
-               else {
+               } else {
             	   Log.i("info", "image compressed failed");
                }
+       } catch (FileNotFoundException e) {
+    	   e.printStackTrace();
        }
-       catch (FileNotFoundException e)
-       {e.printStackTrace();}
-       ((DoodleView)ApplicationView.getComponents().get(id).getView()).setImageName(imageName);
+       ((DoodleView)ApplicationView.getComponents().get(mId).getView()).setImageName(imageName);
        this.finish();
    }
    
    private void clearImage() {
-	   doodleView.mBitmap.eraseColor(0xFFFFFFFF);
-	   doodleView.invalidate();
+	   mDoodleView.mBitmap.eraseColor(0xFFFFFFFF);
+	   mDoodleView.invalidate();
    }
    
    private void addWidth() {
 	   if (mPaint.getStrokeWidth() < 10) {
 		   mPaint.setStrokeWidth(mPaint.getStrokeWidth() + 2);
-	   }
-	   else {
+	   } else {
 		   mPaint.setStrokeWidth(1);
 	   }
    }

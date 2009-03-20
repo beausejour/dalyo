@@ -9,17 +9,20 @@ import android.graphics.Paint.Style;
 import android.view.Gravity;
 import android.widget.TextView;
 
+/**
+ * Displays a cell of DataView
+ */
 public class CustomTextView extends TextView{
-	private Paint borderPaint;
+	private Paint mBorderPaint;
 	
 	public CustomTextView(Context context) {
 		super(context);
 		this.setGravity(Gravity.LEFT);
 		this.setTextColor(Color.BLACK);
-		borderPaint = new Paint();
-		borderPaint.setARGB(255, 223, 217, 217);
-		borderPaint.setAntiAlias(true);
-		borderPaint.setStyle(Style.STROKE);
+		mBorderPaint = new Paint();
+		mBorderPaint.setARGB(255, 223, 217, 217);
+		mBorderPaint.setAntiAlias(true);
+		mBorderPaint.setStyle(Style.STROKE);
 	}
 
 	@Override
@@ -27,6 +30,6 @@ public class CustomTextView extends TextView{
 		super.onDraw(canvas);
 		RectF drawRect = new RectF();
 		drawRect.set(0,0, getMeasuredWidth(), getMeasuredHeight());
-		canvas.drawRoundRect(drawRect, 0, 0, borderPaint);
+		canvas.drawRoundRect(drawRect, 0, 0, mBorderPaint);
 	}
 }
