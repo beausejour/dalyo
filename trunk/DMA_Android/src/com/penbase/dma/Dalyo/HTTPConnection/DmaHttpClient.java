@@ -84,7 +84,20 @@ public class DmaHttpClient{
 	//Image file's path
 	private String imageFilePath;
 	
+	private Dma mDma;
+	
 	public DmaHttpClient() {
+		createFilesPath();
+		try {
+			url = new URL(Constant.LOCAL);
+			//url = new URL("http://emvista.com/server/com.penbase.arbiter.Arbiter");
+		}
+		catch (MalformedURLException e) 
+		{e.printStackTrace();}
+	}
+	
+	public DmaHttpClient(Dma dma) {
+		mDma = dma;
 		createFilesPath();
 		try {
 			url = new URL(Constant.LOCAL);
@@ -183,11 +196,10 @@ public class DmaHttpClient{
 			}
 		}
 		catch (ProtocolException pe) {
-			Log.i("info", "HTTPExample: ProtocolException; " + pe.getMessage());
+			mDma.showErrorMessage("HTTPExample: ProtocolException; " + pe.getMessage());
 		}
 		catch (IOException ioe) {
-			Log.i("info", "HTTPExample: IOException; " + ioe.getMessage());
-			ioe.printStackTrace();
+			mDma.showErrorMessage("HTTPExample: IOException; " + ioe.getMessage());
 		}
 
 		if (errorCode != ErrorCode.OK) {

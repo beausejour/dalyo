@@ -178,7 +178,7 @@ public class Dma extends Activity implements OnClickListener {
 		new Thread(){
 			public void run() {
 				if (mHandler != null) {
-					mServerResponse = new DmaHttpClient().Authentication(mTx_login.getText().toString().trim(),
+					mServerResponse = new DmaHttpClient(Dma.this).Authentication(mTx_login.getText().toString().trim(),
 							mTx_password.getText().toString().trim());
 					mHandler.sendEmptyMessage(0);
 				}
@@ -242,6 +242,11 @@ public class Dma extends Activity implements OnClickListener {
 				break;
 		}
 		return super.onMenuItemSelected(featureId, item);
+	}
+	
+	public void showErrorMessage(String message) {
+		mAlertDialog.setMessage("Check your username or password!");
+		mAlertDialog.show();
 	}
 	
 	public static String getDeviceID() {

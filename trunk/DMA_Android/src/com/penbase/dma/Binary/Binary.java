@@ -5,10 +5,10 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
+/**
+ * Manages all the conversion from byte array to different objects and inverse 
+ */
 public class Binary {
-	public static int INTBYTE = 4;	
-	public static int TYPEBYTE = 1;
-	
 	public static int byteArrayToType(byte[] bytes) {
 		int n = 0;
 		n += ( (int) bytes[0] & 0xff) << 0;
@@ -28,9 +28,9 @@ public class Binary {
 		String result = null;
 		try{
 			result = new String(bytes, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
 		}
-		catch (UnsupportedEncodingException e) 
-		{e.printStackTrace();}
 		return result;
 	}
 	
@@ -85,23 +85,17 @@ public class Binary {
 		Object result = null;
 		if ((type.equals("VARCHAR")) || (type.equals("KEY")) || (type.equals("CHAR")) || (type.equals("TEXT")) || (type.equals("BLOB"))) {
 			result = byteArrayToString(bytes);
-		}
-		else if (type.equals("BOOLEAN")) {
+		} else if (type.equals("BOOLEAN")) {
 			result = String.valueOf(byteArrayToBool(bytes));
-		}
-		else if (type.equals("INTEGER")) {
+		} else if (type.equals("INTEGER")) {
 			result = String.valueOf(byteArrayToInt(bytes));	
-		}
-		else if (type.equals("TIME")) {
+		} else if (type.equals("TIME")) {
 			result = byteArrayToTime(bytes);
-		}
-		else if (type.equals("DATE")) {
+		} else if (type.equals("DATE")) {
 			result = byteArrayToDate(bytes);
-		}
-		else if (type.equals("DATETIME")) {
+		} else if (type.equals("DATETIME")) {
 			result = byteArrayToDateTime(bytes);
-		}		
-		else if (type.equals("DOUBLE")) {
+		} else if (type.equals("DOUBLE")) {
 			result = String.valueOf(byteArrayToDouble(bytes));
 		}
 		return result;
@@ -187,44 +181,33 @@ public class Binary {
 		if ((type.equals("VARCHAR")) || (type.equals("KEY")) || (type.equals("CHAR")) || (type.equals("TEXT"))) {
 			if (value == null) {
 				result = stringToByteArray("");	
-			}
-			else {
+			} else {
 				result = stringToByteArray(value.toString());
 			}
-		}
-		else if (type.equals("BOOLEAN")) {
+		} else if (type.equals("BOOLEAN")) {
 			result = boolToByteArray(Integer.valueOf(value.toString()));
-		}
-		else if (type.equals("INTEGER")) {
+		} else if (type.equals("INTEGER")) {
 			if (value == null) {
 				result = intToByteArray(0);
-			}
-			else {
+			} else {
 				result = intToByteArray(Integer.valueOf(value.toString()));
 			}
-		}
-		else if (type.equals("TIME")) {
+		} else if (type.equals("TIME")) {
 			result = timeToByteArray(value.toString());
-		}
-		else if (type.equals("DATE")) {
+		} else if (type.equals("DATE")) {
 			result = dateToByteArray(value.toString());
-		}
-		else if (type.equals("DATETIME")) {
+		} else if (type.equals("DATETIME")) {
 			result = dateTimeToByteArray(value.toString());
-		}		
-		else if (type.equals("DOUBLE")) {
+		} else if (type.equals("DOUBLE")) {
 			if (value == null) {
 				result = intToByteArray(0);
-			}
-			else {
+			} else {
 				result = doubleToByteArray(Double.valueOf(value.toString()));
 			}
-		}
-		else if (type.equals("BLOB")) {
+		} else if (type.equals("BLOB")) {
 			if (value == null) {
 				result = stringToByteArray("");	
-			}
-			else {
+			} else {
 				result = stringToByteArray(value.toString());
 			}
 		}

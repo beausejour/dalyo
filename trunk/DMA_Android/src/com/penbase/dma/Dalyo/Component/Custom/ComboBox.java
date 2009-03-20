@@ -1,13 +1,5 @@
 package com.penbase.dma.Dalyo.Component.Custom;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import com.penbase.dma.Constant.DatabaseAttribute;
-import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
-import com.penbase.dma.Dalyo.Function.Function;
-import com.penbase.dma.View.ApplicationView;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.view.View;
@@ -15,52 +7,68 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
+import com.penbase.dma.Constant.DatabaseAttribute;
+import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
+import com.penbase.dma.Dalyo.Function.Function;
+import com.penbase.dma.View.ApplicationView;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+/**
+ * Displays configured items or retrieved data from databases
+ */
 public class ComboBox extends Spinner {
-	private ArrayAdapter<String> spinnerArrayAdapter;
-	private int currentPosition = -1;
-	private ArrayList<String> labelList;
-	private ArrayList<String> valueList;
-	private ArrayList<String> itemsList;
-	private Context context;
-	private String formId;
-	private HashMap<Integer, HashMap<Object, Object>> records = new HashMap<Integer, HashMap<Object, Object>>();
-	private String funcName;
+	private ArrayAdapter<String> mSpinnerArrayAdapter;
+	private int mCurrentPosition = -1;
+	private ArrayList<String> mLabelList;
+	private ArrayList<String> mValueList;
+	private ArrayList<String> mItemsList;
+	private Context mContext;
+	private String mFormId;
+	private HashMap<Integer, HashMap<Object, Object>> mRecords = new HashMap<Integer, HashMap<Object, Object>>();
+	private String mFuncName;
 	
 	public ComboBox(Context context, ArrayList<String> labelList, ArrayList<String> valueList) {
 		super(context);
-		this.context = context;
-		this.labelList = labelList;
-		this.valueList = valueList;
+		this.mContext = context;
+		this.mLabelList = labelList;
+		this.mValueList = valueList;
 	}
 	
 	public ComboBox(Context context, ArrayList<String> il) {
 		super(context);
-		this.labelList = new ArrayList<String>();
-		this.valueList = new ArrayList<String>();
-		this.itemsList = il;
+		this.mLabelList = new ArrayList<String>();
+		this.mValueList = new ArrayList<String>();
+		this.mItemsList = il;
 		for (String s : il) {
-			labelList.add(s);
-			valueList.add(s);
+			mLabelList.add(s);
+			mValueList.add(s);
 		}
-		spinnerArrayAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, il);
-		this.setAdapter(spinnerArrayAdapter);	
+		mSpinnerArrayAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, il);
+		this.setAdapter(mSpinnerArrayAdapter);	
 	}
 	
 	public void setCurrentValue(String fid, HashMap<Object, Object> record) {
-		formId = fid;
-		if ((formId != null) && (record != null)) {
-			ApplicationView.getLayoutsMap().get(formId).refresh(record);
+		mFormId = fid;
+		if ((mFormId != null) && (record != null)) {
+			ApplicationView.getLayoutsMap().get(mFormId).refresh(record);
 		}
 	}
 	
+	/**
+	 * Sends a sql query with new parameters
+	 * @param filter column filter condition
+	 * @param order order by a column
+	 * @param distinct if distinct same value
+	 */
 	public void refresh(Object filter, Object order, Object distinct) {
-		//need to implement distinct
 		ArrayList<String> tables = new ArrayList<String>();
-		tables.add(labelList.get(0));
-		if (!tables.contains(valueList.get(0))) {
-			tables.add(valueList.get(0));
+		tables.add(mLabelList.get(0));
+		if (!tables.contains(mValueList.get(0))) {
+			tables.add(mValueList.get(0));
 		}		
-		itemsList = new ArrayList<String>();
+		mItemsList = new ArrayList<String>();
 		Cursor cursor = DatabaseAdapter.selectQuery(tables, null, filter, order, distinct);
 		cursor.moveToFirst();
 		int cursorCount = cursor.getCount();
@@ -69,33 +77,37 @@ public class ComboBox extends Spinner {
 			HashMap<Object, Object> record = new HashMap<Object, Object>();
 			int columnsSize = columnNames.length;
 			for (int j=0; j<columnsSize; j++) {
-				if (columnNames[j].equals(DatabaseAttribute.FIELD+labelList.get(1))) {
-					itemsList.add(cursor.getString(j));
+				if (columnNames[j].equals(DatabaseAttribute.FIELD+mLabelList.get(1))) {
+					mItemsList.add(cursor.getString(j));
 				}
 				record.put(columnNames[j], cursor.getString(j));
 			}
-			records.put(i, record);
+			mRecords.put(i, record);
 			cursor.moveToNext();
 		}
 		DatabaseAdapter.closeCursor(cursor);
-		spinnerArrayAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, itemsList);
-		this.setAdapter(spinnerArrayAdapter);
+		mSpinnerArrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_spinner_item, mItemsList);
+		this.setAdapter(mSpinnerArrayAdapter);
 	}
 	
 	public Object getCurrentValue() {
-		return valueList.get(currentPosition);
+		return mValueList.get(mCurrentPosition);
 	}
 	
+	/**
+	 * Calls a given function when user change the current item
+	 * @param name function name which will be called
+	 */
 	public void setOnChangeFunction(String name) {
-		this.funcName = name;
+		this.mFuncName = name;
 		this.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long arg3) {
-				currentPosition = position;
-				if (formId != null) {
-					setCurrentValue(formId, getCurrentRecord());
+				mCurrentPosition = position;
+				if (mFormId != null) {
+					setCurrentValue(mFormId, getCurrentRecord());
 				}
-				Function.createFunction(funcName);
+				Function.createFunction(mFuncName);
 			}
 
 			@Override
@@ -106,52 +118,48 @@ public class ComboBox extends Spinner {
 	}
 	
 	public HashMap<Object, Object> getCurrentRecord() {
-		if (currentPosition == -1) {
+		if (mCurrentPosition == -1) {
 			return null;
-		}
-		else {
-			return records.get(currentPosition);
+		} else {
+			return mRecords.get(mCurrentPosition);
 		}
 	}
 	
 	public void removeAllItems() {
-		spinnerArrayAdapter.clear();
+		mSpinnerArrayAdapter.clear();
 	}
 	
 	public void addItem(String label, String value) {
-		itemsList.add(label);
-		labelList.add(label);
-		valueList.add(value);
+		mItemsList.add(label);
+		mLabelList.add(label);
+		mValueList.add(value);
 	}
 	
 	public String getValue() {
-		if (currentPosition == -1) {
-			return valueList.get(0);
-		}
-		else {
-			return valueList.get(currentPosition);
+		if (mCurrentPosition == -1) {
+			return mValueList.get(0);
+		} else {
+			return mValueList.get(mCurrentPosition);
 		}
 	}
 	
 	public String getLabel() {
-		if (currentPosition == -1) {
-			return labelList.get(0);
-		}
-		else {
-			return labelList.get(currentPosition);
+		if (mCurrentPosition == -1) {
+			return mLabelList.get(0);
+		} else {
+			return mLabelList.get(mCurrentPosition);
 		}
 	}
 	
 	public int count() {
-		return itemsList.size();
+		return mItemsList.size();
 	}
 	
 	public int getSelectedIndex() {
-		if (currentPosition == -1) {
+		if (mCurrentPosition == -1) {
 			return 1;
-		}
-		else {
-			return currentPosition + 1;
+		} else {
+			return mCurrentPosition + 1;
 		}
 	}
 	

@@ -29,4 +29,7 @@ public class Constant {
 	
 	public static final String FALSE = "false";
 	public static final String TRUE = "true";
+	
+	public static int INTBYTE = 4;	
+	public static int TYPEBYTE = 1;
 }

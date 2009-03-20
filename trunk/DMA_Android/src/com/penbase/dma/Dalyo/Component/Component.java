@@ -1,17 +1,5 @@
 package com.penbase.dma.Dalyo.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import com.penbase.dma.Constant.Constant;
-import com.penbase.dma.Constant.DesignTag;
-import com.penbase.dma.Dalyo.Component.Custom.*;
-import com.penbase.dma.Dalyo.Component.Custom.Dataview.DataView;
-import com.penbase.dma.Dalyo.Component.Custom.Doodle.DoodleView;
-import com.penbase.dma.Dalyo.Component.Custom.PictureBox.PictureBoxView;
-import com.penbase.dma.Dalyo.Function.Function;
-import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
-
 import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -25,269 +13,267 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
+import com.penbase.dma.Constant.Constant;
+import com.penbase.dma.Constant.DesignTag;
+import com.penbase.dma.Dalyo.Component.Custom.*;
+import com.penbase.dma.Dalyo.Component.Custom.Dataview.DataView;
+import com.penbase.dma.Dalyo.Component.Custom.Doodle.DoodleView;
+import com.penbase.dma.Dalyo.Component.Custom.PictureBox.PictureBoxView;
+import com.penbase.dma.Dalyo.Function.Function;
+import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+/**
+ * Generic graphic component
+ */
 public class Component {
-	private Context context;
-	private String id;
-	private String type;
-	private String label;
-	private String fontSize;
-	private String fontType;
-	private View view = null;
-	private String tableID = null;
-	private String fieldID = null;
+	private Context mContext;
+	private String mId;
+	private String mType;
+	private String mLabel;
+	private String mFontSize;
+	private String mFontType;
+	private View mView = null;
+	private String mTableID = null;
+	private String mFieldID = null;
 	
 	//Variables for checkbox	
-	private String checked = null;	
+	private String mChecked = null;	
 
 	//Variables for combobox
-	private ArrayList<String> itemList = new ArrayList<String>();
-	private ArrayList<String> labelList = null;
-	private ArrayList<String> valueList = null;
+	private ArrayList<String> mItemList = new ArrayList<String>();
+	private ArrayList<String> mLabelList = null;
+	private ArrayList<String> mValueList = null;
 	
 	//Variable for image
-	private int background = 0;
-	private String extension = null;
+	private int mBackground = 0;
+	private String mExtension = null;
 	
 	//Variable for dataview
-	private ArrayList<ArrayList<String>> columnInfos = new ArrayList<ArrayList<String>>();
-	private HashMap<Integer, String> onCalculateMap = new HashMap<Integer, String>();
+	private ArrayList<ArrayList<String>> mColumnInfos = new ArrayList<ArrayList<String>>();
+	private HashMap<Integer, String> mOnCalculateMap = new HashMap<Integer, String>();
 	
 	//Variable for Label
-	private String align = null;
+	private String mAlign = null;
 	
 	//Variable for textfield
-	private boolean editable;
-	private String multiLine;
+	private boolean mEditable;
+	private String mMultiLine;
 	
 	//Variable for TimeField/DateField
-	private String dateTimeValue = null;
+	private String mDateTimeValue = null;
 	
 	//Variable for Gauge
-	private int minValue;
-	private int maxValue;
-	private int initialValue;
+	private int mMinValue;
+	private int mMaxValue;
+	private int mInitialValue;
 
 	public Component(Context c, String t) {
-		this.context = c;
-		this.type = t;		
+		this.mContext = c;
+		this.mType = t;		
 	}
 	
 	public void setFontSize(String fs) {
-		this.fontSize = fs;
+		this.mFontSize = fs;
 	}
 	
 	public void setFontType(String ft) {
-		this.fontType = ft;
+		this.mFontType = ft;
 	}
 	
 	public void setId(String i) {
-		this.id = i;
+		this.mId = i;
 	}
 	
 	public void setBackGround(int bg) {
-		this.background = bg;
+		this.mBackground = bg;
 	}
 	
 	public void setAlign(String align) {
-		this.align = align;
+		this.mAlign = align;
 	}
 	
 	public void setLabel(String l) {
-		this.label = l;
+		this.mLabel = l;
 	}
 		
 	public void setTableId(String tid) {
-		this.tableID = tid;
+		this.mTableID = tid;
 	}
 	
 	public void setFieldId(String fid) {
-		this.fieldID = fid;	
+		this.mFieldID = fid;	
 	}
 	
 	public void setChecked(String check) {
-		this.checked = check;
+		this.mChecked = check;
 	}
 	
 	public void setExtension(String ext) {
-		this.extension = ext;
+		this.mExtension = ext;
 	}
 	
 	public void setItemList(ArrayList<String> l) {
-		this.itemList = l;
+		this.mItemList = l;
 	}
 	
 	public void setLabelList(ArrayList<String> l) {
-		this.labelList = l;
+		this.mLabelList = l;
 	}
 	
 	public void setValueList(ArrayList<String> v) {
-		this.valueList = v;
+		this.mValueList = v;
 	}
 	
 	public void setDataviewColumns(ArrayList<ArrayList<String>> l) {
-		this.columnInfos = l;
+		this.mColumnInfos = l;
 	}
 	
 	public void setDataviewOncalculate(HashMap<Integer, String> onc) {
-		this.onCalculateMap = onc;
+		this.mOnCalculateMap = onc;
 	}
 	
 	public void setMultiLine(String ml) {
-		this.multiLine = ml;
+		this.mMultiLine = ml;
 	}
 	
 	public void setEditable(boolean editable) {
-		this.editable = editable;
+		this.mEditable = editable;
 	}
 	
 	public void setDateTimeValue(String value) {
-		this.dateTimeValue = value;
+		this.mDateTimeValue = value;
 	}
 	
 	public void setInitValue(int i) {
-		this.initialValue = i;
+		this.mInitialValue = i;
 	}
 	
 	public void setMinValue(int min) {
-		this.minValue = min;
+		this.mMinValue = min;
 	}
 
 	public void setMaxValue(int max) {
-		this.maxValue = max;
+		this.mMaxValue = max;
 	}
 	
 	public View getView() {
-		return view;
+		return mView;
 	}
 	
 	public String getId() {
-		return id;
+		return mId;
 	}
 	
 	public void setView() {
-		if(type.equals(DesignTag.COMPONENT_BUTTON)) {
-			Button button = new Button(context);
-			button.setText(label);
-			button.setTypeface(getFontType(fontType));
-			button.setTextSize(getFontSize(fontSize));
-			if (background != 0) {
-				Drawable d = Drawable.createFromPath(DmaHttpClient.getFilesPath()+background+"."+extension);
+		if(mType.equals(DesignTag.COMPONENT_BUTTON)) {
+			Button button = new Button(mContext);
+			button.setText(mLabel);
+			button.setTypeface(getFontType(mFontType));
+			button.setTextSize(getFontSize(mFontSize));
+			if (mBackground != 0) {
+				Drawable d = Drawable.createFromPath(DmaHttpClient.getFilesPath()+mBackground+"."+mExtension);
 				button.setBackgroundDrawable(d);
 			}
-			view = button;
-		}
-		else if(type.equals(DesignTag.COMPONENT_CHECKBOX)) {
-			CheckBox checkbox = new CheckBox(context);
-			checkbox.setText(label);
-			checkbox.setTypeface(getFontType(fontType));
-			checkbox.setTextSize(getFontSize(fontSize));
-			if (checked.equals(true)) {
+			mView = button;
+		} else if(mType.equals(DesignTag.COMPONENT_CHECKBOX)) {
+			CheckBox checkbox = new CheckBox(mContext);
+			checkbox.setText(mLabel);
+			checkbox.setTypeface(getFontType(mFontType));
+			checkbox.setTextSize(getFontSize(mFontSize));
+			if (mChecked.equals(true)) {
 				checkbox.setChecked(true);
 			}
-			view = checkbox;
-		}
-		else if(type.equals(DesignTag.COMPONENT_COMBOBOX)) {
+			mView = checkbox;
+		} else if(mType.equals(DesignTag.COMPONENT_COMBOBOX)) {
 			ComboBox combobox;
-			if ((valueList != null) && (labelList != null)) {
-				combobox = new ComboBox(context, labelList, valueList);
+			if ((mValueList != null) && (mLabelList != null)) {
+				combobox = new ComboBox(mContext, mLabelList, mValueList);
+			} else {
+				combobox = new ComboBox(mContext, mItemList);
 			}
-			else {
-				combobox = new ComboBox(context, itemList);
+			mView = combobox;
+		} else if(mType.equals(DesignTag.COMPONENT_LABEL)) {
+			Label labelObject = new Label(mContext, getFontType(mFontType), getFontSize(mFontSize));
+			labelObject.setText(mLabel);
+			if (mAlign != null) {
+				labelObject.setGravity(getGravity(mAlign));
 			}
-			view = combobox;
-		}
-		else if(type.equals(DesignTag.COMPONENT_LABEL)) {
-			Label labelObject = new Label(context, getFontType(fontType), getFontSize(fontSize));
-			labelObject.setText(label);
-			if (align != null) {
-				labelObject.setGravity(getGravity(align));
-			}
-			view = labelObject;
-		}
-		else if(type.equals(DesignTag.COMPONENT_DATEFIELD)) {
-			DateField datefield = new DateField(context, getFontType(fontType), getFontSize(fontSize), dateTimeValue);
-			view = datefield;
-		}
-		else if(type.equals(DesignTag.COMPONENT_TIMEFIELD)) {
-			TimeField timefield = new TimeField(context, getFontType(fontType), getFontSize(fontSize), dateTimeValue);
-			view = timefield;
-		}
-		else if(type.equals(DesignTag.COMPONENT_TEXTFIELD)) {
-			if (multiLine.equals("true")) {
-				TextZone textzone = new TextZone(context, getFontType(fontType), getFontSize(fontSize));
-				if ((tableID != null) && (fieldID != null)) {
-					textzone.setTableId(tableID);
-					textzone.setFieldId(fieldID);
+			mView = labelObject;
+		} else if(mType.equals(DesignTag.COMPONENT_DATEFIELD)) {
+			DateField datefield = new DateField(mContext, getFontType(mFontType), getFontSize(mFontSize), mDateTimeValue);
+			mView = datefield;
+		} else if(mType.equals(DesignTag.COMPONENT_TIMEFIELD)) {
+			TimeField timefield = new TimeField(mContext, getFontType(mFontType), getFontSize(mFontSize), mDateTimeValue);
+			mView = timefield;
+		} else if(mType.equals(DesignTag.COMPONENT_TEXTFIELD)) {
+			if (mMultiLine.equals("true")) {
+				TextZone textzone = new TextZone(mContext, getFontType(mFontType), getFontSize(mFontSize));
+				if ((mTableID != null) && (mFieldID != null)) {
+					textzone.setTableId(mTableID);
+					textzone.setFieldId(mFieldID);
 				}
-				view = textzone;
-			}
-			else {
-				TextField textfield = new TextField(context, getFontType(fontType), getFontSize(fontSize));
-				if ((tableID != null) && (fieldID != null)) {
-					textfield.setTableId(tableID);
-					textfield.setFieldId(fieldID);
+				mView = textzone;
+			} else {
+				TextField textfield = new TextField(mContext, getFontType(mFontType), getFontSize(mFontSize));
+				if ((mTableID != null) && (mFieldID != null)) {
+					textfield.setTableId(mTableID);
+					textfield.setFieldId(mFieldID);
 				}
-				view = textfield;
+				mView = textfield;
 			}
-			if (align != null) {
-				((TextView)view).setGravity(getGravity(align));
+			if (mAlign != null) {
+				((TextView)mView).setGravity(getGravity(mAlign));
 			}
-			if (editable) {
-				((TextView)view).setEnabled(!editable);
+			if (mEditable) {
+				((TextView)mView).setEnabled(!mEditable);
 			}
-		}
-		else if(type.equals(DesignTag.COMPONENT_TEXTZONE)) {
-			TextZone textzone = new TextZone(context, getFontType(fontType), getFontSize(fontSize));
-			view = textzone;
-		}
-		else if(type.equals(DesignTag.COMPONENT_RADIOBUTTON)) {
-			Radiobutton radiobutton = new Radiobutton(context);
-			radiobutton.getTextView().setText(label);
-			radiobutton.getTextView().setTypeface(getFontType(fontType));
-			radiobutton.getTextView().setTextSize(getFontSize(fontSize));
-			view = radiobutton;
-		}
-		else if(type.equals(DesignTag.COMPONENT_NUMBERBOX)) {
-			NumberBox numberbox = new NumberBox(context);
-			numberbox.setInitialValue(initialValue);
-			numberbox.setMaxValue(maxValue);
-			numberbox.setMinValue(minValue);
-			view = numberbox;
-		}
-		else if(type.equals(DesignTag.COMPONENT_PICTUREBOX)) {
-			PictureBoxView pictureBox = new PictureBoxView(context, id);
-			view = pictureBox;
-		}
-		else if(type.equals(DesignTag.COMPONENT_IMAGE)) {
-			ImageView imageview = new ImageView(context);
-			if (background != 0) {
-				Drawable d = Drawable.createFromPath(DmaHttpClient.getFilesPath()+background+"."+extension);
+		} else if(mType.equals(DesignTag.COMPONENT_TEXTZONE)) {
+			TextZone textzone = new TextZone(mContext, getFontType(mFontType), getFontSize(mFontSize));
+			mView = textzone;
+		} else if(mType.equals(DesignTag.COMPONENT_RADIOBUTTON)) {
+			Radiobutton radiobutton = new Radiobutton(mContext);
+			radiobutton.getTextView().setText(mLabel);
+			radiobutton.getTextView().setTypeface(getFontType(mFontType));
+			radiobutton.getTextView().setTextSize(getFontSize(mFontSize));
+			mView = radiobutton;
+		} else if(mType.equals(DesignTag.COMPONENT_NUMBERBOX)) {
+			NumberBox numberbox = new NumberBox(mContext);
+			numberbox.setInitialValue(mInitialValue);
+			numberbox.setMaxValue(mMaxValue);
+			numberbox.setMinValue(mMinValue);
+			mView = numberbox;
+		} else if(mType.equals(DesignTag.COMPONENT_PICTUREBOX)) {
+			PictureBoxView pictureBox = new PictureBoxView(mContext, mId);
+			mView = pictureBox;
+		} else if(mType.equals(DesignTag.COMPONENT_IMAGE)) {
+			ImageView imageview = new ImageView(mContext);
+			if (mBackground != 0) {
+				Drawable d = Drawable.createFromPath(DmaHttpClient.getFilesPath()+mBackground+"."+mExtension);
 				imageview.setBackgroundDrawable(d);
 			}
-			view = imageview;
-		}
-		else if(type.equals(DesignTag.COMPONENT_DATAVIEW)) {
-			DataView dataview = new DataView(context, tableID);
-			dataview.setText(getFontSize(fontSize), getFontType(fontType));
-			dataview.setColumnInfo(columnInfos);
-			dataview.setOncalculate(onCalculateMap);
-			view = dataview;
-		}
-		else if (type.equals(DesignTag.COMPONENT_DOODLE)) {
-			DoodleView doodleView= new DoodleView(context, id);
-			view = doodleView;
-		}
-		else if (type.equals(DesignTag.COMPONENT_GAUGE)) {
-			Gauge gauge = new Gauge(context);
-			gauge.setProgress(initialValue);
-			gauge.setMax(maxValue);
-			gauge.setMinValue(minValue);
-			view = gauge;
-		}
-		else {
-			Button button = new Button(context);
-			button.setText(label);
-			view = button;
+			mView = imageview;
+		} else if(mType.equals(DesignTag.COMPONENT_DATAVIEW)) {
+			DataView dataview = new DataView(mContext, mTableID);
+			dataview.setText(getFontSize(mFontSize), getFontType(mFontType));
+			dataview.setColumnInfo(mColumnInfos);
+			dataview.setOncalculate(mOnCalculateMap);
+			mView = dataview;
+		} else if (mType.equals(DesignTag.COMPONENT_DOODLE)) {
+			DoodleView doodleView= new DoodleView(mContext, mId);
+			mView = doodleView;
+		} else if (mType.equals(DesignTag.COMPONENT_GAUGE)) {
+			Gauge gauge = new Gauge(mContext);
+			gauge.setProgress(mInitialValue);
+			gauge.setMax(mMaxValue);
+			gauge.setMinValue(mMinValue);
+			mView = gauge;
+		} else {
+			Button button = new Button(mContext);
+			button.setText(mLabel);
+			mView = button;
 		}
 	}
 	
@@ -300,8 +286,7 @@ public class Component {
 					Function.createFunction(funcName);
 				}
 			});
-		}
-		else {
+		} else {
 			view.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View arg0) {
@@ -314,8 +299,7 @@ public class Component {
 	public void setOnchangeFunction(String funcName, View view) {
 		if (view instanceof Gauge) {
 			((Gauge)view).setOnChangeFunction(funcName);
-		}
-		else if (view instanceof ComboBox) {
+		} else if (view instanceof ComboBox) {
 			((ComboBox)view).setOnChangeFunction(funcName);
 		}
 	}
@@ -324,11 +308,9 @@ public class Component {
 		int gravity = 0;
 		if (align.equals(Constant.LEFT)) {
 			gravity = Gravity.LEFT;
-		}
-		else if (align.equals(Constant.CENTER)) {
+		} else if (align.equals(Constant.CENTER)) {
 			gravity = Gravity.CENTER;
-		}
-		else if (align.equals(Constant.RIGHT)) {
+		} else if (align.equals(Constant.RIGHT)) {
 			gravity = Gravity.RIGHT;
 		}
 		return gravity;
@@ -338,11 +320,9 @@ public class Component {
 		float fontSize = 14;
 		if (fs.equals(Constant.SMALL)) {
 			fontSize = 12;
-		}
-		else if (fs.equals(Constant.BIG)) {
+		} else if (fs.equals(Constant.BIG)) {
 			fontSize = 16;
-		}
-		else if (fs.equals(Constant.EXTRA)) {
+		} else if (fs.equals(Constant.EXTRA)) {
 			fontSize = 18;
 		}
 		return fontSize;
@@ -352,14 +332,11 @@ public class Component {
 		Typeface fontType = Typeface.DEFAULT;
 		if (ft.equals(Constant.ITALIC)) {
 			fontType = Typeface.create(Typeface.SERIF, Typeface.ITALIC);
-		}
-		else if (ft.equals(Constant.BOLD)) {
+		} else if (ft.equals(Constant.BOLD)) {
 			fontType = Typeface.DEFAULT_BOLD;
-		}
-		else if (ft.equals(Constant.UNDERLINE)) {
+		} else if (ft.equals(Constant.UNDERLINE)) {
 			//Underline text, not implemented yet in android
-		}
-		else if (ft.equals(Constant.ITALICBOLD)) {
+		} else if (ft.equals(Constant.ITALICBOLD)) {
 			fontType = Typeface.create(Typeface.SERIF, Typeface.BOLD_ITALIC);
 		}
 		return fontType;
@@ -368,26 +345,19 @@ public class Component {
 	public void setValue(Object value) {
 		if (getView() instanceof NumberBox) {
 			((NumberBox)getView()).setValue(value);
-		}
-		else if (getView() instanceof TextField) {
+		} else if (getView() instanceof TextField) {
 			((TextField)getView()).setText(value.toString());
-		}
-		else if (getView() instanceof Label) {
+		} else if (getView() instanceof Label) {
 			((Label)getView()).setText(value.toString());
-		}
-		else if (getView() instanceof TextZone) {
+		} else if (getView() instanceof TextZone) {
 			((TextZone)getView()).setText(value.toString());
-		}
-		else if (getView() instanceof TimeField) {
+		} else if (getView() instanceof TimeField) {
 			((TimeField)getView()).setTime(value.toString());
-		}
-		else if (getView() instanceof DateField) {
+		} else if (getView() instanceof DateField) {
 			((DateField)getView()).setDate(value.toString());
-		}
-		else if (getView() instanceof Gauge) {
+		} else if (getView() instanceof Gauge) {
 			((Gauge)getView()).setValue(Integer.valueOf(value.toString()));
-		}
-		else if (getView() instanceof ImageView) {
+		} else if (getView() instanceof ImageView) {
 			Drawable d = Drawable.createFromPath(DmaHttpClient.getFilesPath()+value.toString());
 			((ImageView)getView()).setBackgroundDrawable(d);
 		}
@@ -397,29 +367,21 @@ public class Component {
 		Object result = null;
 		if (getView() instanceof NumberBox) {
 			result = ((NumberBox)getView()).getValue();
-		}
-		else if (getView() instanceof Label) {
+		} else if (getView() instanceof Label) {
 			result = ((Label)getView()).getText();
-		}
-		else if (getView() instanceof TextZone) {
+		} else if (getView() instanceof TextZone) {
 			result = ((TextZone)getView()).getValue();
-		}
-		else if (getView() instanceof TimeField) {
+		} else if (getView() instanceof TimeField) {
 			result = ((TimeField)getView()).getTime();
-		}
-		else if (getView() instanceof DateField) {
+		} else if (getView() instanceof DateField) {
 			result = ((DateField)getView()).getDate();
-		}
-		else if (getView() instanceof Gauge) {
+		} else if (getView() instanceof Gauge) {
 			result = ((Gauge)getView()).getValue();
-		}
-		else if (getView() instanceof DoodleView) {
+		} else if (getView() instanceof DoodleView) {
 			result = ((DoodleView)getView()).getImageName();
-		}
-		else if (getView() instanceof ComboBox) {
+		} else if (getView() instanceof ComboBox) {
 			result = ((ComboBox)getView()).getValue();
-		}
-		else if (getView() instanceof PictureBoxView) {
+		} else if (getView() instanceof PictureBoxView) {
 			result = ((PictureBoxView)getView()).getPhotoName();
 		}
 		return result;
@@ -429,14 +391,11 @@ public class Component {
 		String result = "";
 		if (getView() instanceof Label) {
 			result = ((Label)getView()).getText().toString();
-		}
-		else if (getView() instanceof TextZone) {
+		} else if (getView() instanceof TextZone) {
 			result = ((TextZone)getView()).getValue();
-		}
-		else if (getView() instanceof TextField) {
+		} else if (getView() instanceof TextField) {
 			result = ((TextField)getView()).getValue();
-		}
-		else if (getView() instanceof ComboBox) {
+		} else if (getView() instanceof ComboBox) {
 			result = ((ComboBox)getView()).getLabel();
 		}
 		return result;
@@ -449,11 +408,9 @@ public class Component {
 		}
 		if (getView() instanceof TextZone) {
 			((TextZone)getView()).setText(newText);
-		}
-		else if (getView() instanceof Label) {
+		} else if (getView() instanceof Label) {
 			((Label)getView()).setText(newText);
-		}
-		else if (getView() instanceof TextField) {
+		} else if (getView() instanceof TextField) {
 			((TextField)getView()).setText(newText);
 		}
 	}
@@ -477,8 +434,7 @@ public class Component {
 	public void setVisible(boolean state) {
 		if (state) {
 			getView().setVisibility(View.VISIBLE);
-		}
-		else {
+		} else {
 			getView().setVisibility(View.INVISIBLE);
 		}
 	}
@@ -486,13 +442,12 @@ public class Component {
 	public boolean isVisible() {
 		if (getView().getVisibility() == View.VISIBLE) {
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
 	}
 	
 	public void reSet() {
-		setValue(label);
+		setValue(mLabel);
 	}
 }

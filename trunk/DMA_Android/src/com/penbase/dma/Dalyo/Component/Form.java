@@ -1,9 +1,5 @@
 package com.penbase.dma.Dalyo.Component;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -20,16 +16,20 @@ import com.penbase.dma.Dalyo.Component.Custom.PictureBox.PictureBoxView;
 import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.View.ApplicationListView;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class Form extends AbsoluteLayout{
-	private String tableId;
-	private String title;
-	private ArrayList<String> menuItemNameList;
-	private ArrayList<String> menuItemOnClickList;
+	private String mTableId;
+	private String mTitle;
+	private ArrayList<String> mMenuItemNameList;
+	private ArrayList<String> mMenuItemOnClickList;
 	
 	public Form(Context context) {		
 		super(context);
-		menuItemNameList = new ArrayList<String>();
-		menuItemOnClickList = new ArrayList<String>();
+		mMenuItemNameList = new ArrayList<String>();
+		mMenuItemOnClickList = new ArrayList<String>();
 		this.setLayoutParams(new AbsoluteLayout.LayoutParams(LayoutParams.FILL_PARENT, 
 				LayoutParams.FILL_PARENT, 0, 0));
 	}
@@ -39,35 +39,35 @@ public class Form extends AbsoluteLayout{
 	}
 	
 	public ArrayList<String> getMenuItemNameList() {
-		return menuItemNameList;
+		return mMenuItemNameList;
 	}
 	
 	public void setMenuItemNameList(ArrayList<String> nameList) {
-		menuItemNameList = nameList;
+		mMenuItemNameList = nameList;
 	}
 	
 	public ArrayList<String> getMenuItemOnClickList() {
-		return menuItemOnClickList;
+		return mMenuItemOnClickList;
 	}
 	
 	public void setMenuItemOnClickList(ArrayList<String> onClickList) {
-		menuItemOnClickList = onClickList;
+		mMenuItemOnClickList = onClickList;
 	}
 	
 	public void setTableId(String tableId) {
-		this.tableId = tableId;
+		this.mTableId = tableId;
 	}
 	
 	public String getTableId() {
-		return tableId;
+		return mTableId;
 	}
 	
 	public void setTitle(String t) {
-		this.title = t;
+		this.mTitle = t;
 	}
 	
 	public String getTitle() {
-		return title;
+		return mTitle;
 	}
 	
 	public void clear() {
@@ -76,11 +76,9 @@ public class Form extends AbsoluteLayout{
 			Log.i("info", "this.getChildAt(i) "+this.getChildAt(i));
 			if (this.getChildAt(i) instanceof TextField) {
 				((TextField)this.getChildAt(i)).clear();
-			}
-			else if (this.getChildAt(i) instanceof TextZone) {
+			} else if (this.getChildAt(i) instanceof TextZone) {
 				((TextZone)this.getChildAt(i)).clear();
-			}
-			else if (this.getChildAt(i) instanceof PictureBoxView) {
+			} else if (this.getChildAt(i) instanceof PictureBoxView) {
 				((PictureBoxView)this.getChildAt(i)).clear();
 			}
 		}
@@ -107,8 +105,7 @@ public class Form extends AbsoluteLayout{
 			for (int i=0; i<viewLen; i++) {
 				if (this.getChildAt(i) instanceof TextField) {
 					((TextField)this.getChildAt(i)).refresh(record);
-				}
-				else if (this.getChildAt(i) instanceof TextZone) {
+				} else if (this.getChildAt(i) instanceof TextZone) {
 					((TextZone)this.getChildAt(i)).refresh(record);
 				}
 			}
@@ -129,8 +126,7 @@ public class Form extends AbsoluteLayout{
 						((DoodleView)this.getChildAt(i)).setBackgroundDrawable(Drawable.createFromPath(path));
 					}	
 				}
-			}
-			else if (this.getChildAt(i) instanceof PictureBoxView) {
+			} else if (this.getChildAt(i) instanceof PictureBoxView) {
 				String fileName = ((PictureBoxView)this.getChildAt(i)).getPhotoName();
 				if (!fileName.equals("")) {
 					String path = Constant.PACKAGENAME + ApplicationListView.getApplicationName() + "/" + fileName;

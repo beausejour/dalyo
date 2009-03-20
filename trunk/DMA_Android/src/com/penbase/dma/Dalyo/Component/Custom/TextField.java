@@ -1,16 +1,16 @@
 package com.penbase.dma.Dalyo.Component.Custom;
 
-import java.util.HashMap;
-
-import com.penbase.dma.Constant.DatabaseAttribute;
-
 import android.content.Context;
 import android.graphics.Typeface;
 import android.widget.AutoCompleteTextView;
 
+import com.penbase.dma.Constant.DatabaseAttribute;
+
+import java.util.HashMap;
+
 public class TextField extends AutoCompleteTextView {
-	private String tableId = "";
-	private String fieldId = "";
+	private String mTableId = "";
+	private String mFieldId = "";
 	
 	public TextField(Context context, Typeface tf, float fs) {
 		super(context);
@@ -19,19 +19,19 @@ public class TextField extends AutoCompleteTextView {
 	}
 	
 	public void setTableId(String tid) {
-		this.tableId = tid;
+		this.mTableId = tid;
 	}
 	
 	public void setFieldId(String fid) {
-		this.fieldId = fid;
+		this.mFieldId = fid;
 	}
 	
 	public String getTableId() {
-		return tableId;
+		return mTableId;
 	}
 	
 	public String getFieldId() {
-		return fieldId;
+		return mFieldId;
 	}
 	
 	public void refresh(HashMap<Object, Object> record) {

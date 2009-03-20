@@ -7,23 +7,23 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 public class Radiobutton extends LinearLayout {
-	private RadioButton rb;
-	private TextView tv;
+	private RadioButton mRb;
+	private TextView mTv;
 
 	public Radiobutton(Context context) {
 		super(context);
-		rb = new RadioButton(context);
-		tv = new TextView(context);
-		tv.setGravity(Gravity.CENTER);
-		this.addView(rb, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT));
-		this.addView(tv, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+		mRb = new RadioButton(context);
+		mTv = new TextView(context);
+		mTv.setGravity(Gravity.CENTER);
+		this.addView(mRb, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT));
+		this.addView(mTv, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 	}
 	
 	public TextView getTextView() {
-		return tv;
+		return mTv;
 	}
 	
 	public boolean isSelected() {
-		return rb.isChecked();
+		return mRb.isChecked();
 	}
 }

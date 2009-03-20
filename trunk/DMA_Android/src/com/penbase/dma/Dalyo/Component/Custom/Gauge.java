@@ -1,24 +1,24 @@
 package com.penbase.dma.Dalyo.Component.Custom;
 
-import com.penbase.dma.Dalyo.Function.Function;
-
 import android.content.Context;
 import android.widget.SeekBar;
 
+import com.penbase.dma.Dalyo.Function.Function;
+
 public class Gauge extends SeekBar {
-	private int minValue;
-	private String funcName;
+	private int mMinValue;
+	private String mFuncName;
 	
 	public Gauge(Context context) {
 		super(context);
 	}
 
 	public void setMinValue(int min) {
-		this.minValue = min;
+		this.mMinValue = min;
 	}
 	
 	public int getValue() {
-		return this.getProgress() + minValue;
+		return this.getProgress() + mMinValue;
 	}
 	
 	public void setValue(int value) {
@@ -26,12 +26,12 @@ public class Gauge extends SeekBar {
 	}
 	
 	public void setOnChangeFunction(String name) {
-		this.funcName = name;
+		this.mFuncName = name;
 		this.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress,
 					boolean fromTouch) {
-				Function.createFunction(funcName);
+				Function.createFunction(mFuncName);
 			}
 
 			@Override

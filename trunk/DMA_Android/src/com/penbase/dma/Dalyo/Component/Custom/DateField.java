@@ -1,6 +1,5 @@
 package com.penbase.dma.Dalyo.Component.Custom;
 
-import java.util.Calendar;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.graphics.Typeface;
@@ -10,24 +9,27 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.DatePicker;
 
+import java.util.Calendar;
+
+/**
+ * Displays a DatePickerDialog when it was clicked
+ */
 public class DateField extends Button implements OnClickListener{
 	private int mYear;
 	private int mMonth;
 	private int mDay;
-	private Context context;
+	private Context mContext;
 	
 	public DateField(Context c, Typeface tf, float fs, String defaultValue) {
 		super(c);
-		this.context = c;
+		this.mContext = c;
 		if ((defaultValue != null) && (!defaultValue.equals(""))) {
 			String displayDate = defaultValue.split(" ")[0];
 			mYear = Integer.valueOf(displayDate.split("/")[2]);
 			mMonth = Integer.valueOf(displayDate.split("/")[1]) - 1;
 			mDay = Integer.valueOf(displayDate.split("/")[0]);
 			this.setText(displayDate);
-		}
-		else
-		{
+		} else {
 			Calendar calendar = Calendar.getInstance();
 			mYear = calendar.get(Calendar.YEAR);
 			mMonth = calendar.get(Calendar.MONTH) - 1;
@@ -40,7 +42,7 @@ public class DateField extends Button implements OnClickListener{
 
 	@Override
 	public void onClick(View arg0) {
-		new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
+		new DatePickerDialog(mContext, new DatePickerDialog.OnDateSetListener() {
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 mYear = year;
                 mMonth = monthOfYear + 1;

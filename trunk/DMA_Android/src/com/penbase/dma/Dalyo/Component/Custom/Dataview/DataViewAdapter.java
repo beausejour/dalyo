@@ -1,44 +1,43 @@
 package com.penbase.dma.Dalyo.Component.Custom.Dataview;
 
-import java.util.ArrayList;
-
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+import java.util.ArrayList;
+
 public class DataViewAdapter extends BaseAdapter{
-	private ArrayList<CustomLinearLayout> items = new ArrayList<CustomLinearLayout>();
+	private ArrayList<CustomLinearLayout> mItems = new ArrayList<CustomLinearLayout>();
 	
 	public DataViewAdapter() {
 	}
 
 	@Override
 	public int getCount() {
-		return items.size();
+		return mItems.size();
 	}
 
 	public void addItem(CustomLinearLayout cll) {
 		boolean isAdded = false;
 		int count = getCount();
 		for (int i=0; i<count; i++) {
-			CustomLinearLayout item = items.get(i);
+			CustomLinearLayout item = mItems.get(i);
 			if (item.getDataList().equals(cll.getDataList())) {
 				isAdded = true;
 			}
 		}
 		if (!isAdded) {
-			items.add(cll);
+			mItems.add(cll);
 		}
 	}
 	
 	@Override
 	public Object getItem(int position) {
+		Object result = null;
 		if (position < getCount()-1) {
-			return items.get(position);
+			result = mItems.get(position);
 		}
-		else {
-			return null;
-		}		
+		return result;
 	}
 
 	@Override
@@ -48,14 +47,14 @@ public class DataViewAdapter extends BaseAdapter{
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		return items.get(position);
+		return mItems.get(position);
 	}
 	
 	public void removeItems() {
-		items.clear();
+		mItems.clear();
 	}
 	
 	public ArrayList<CustomLinearLayout> getItems() {
-		return items;
+		return mItems;
 	}
 }

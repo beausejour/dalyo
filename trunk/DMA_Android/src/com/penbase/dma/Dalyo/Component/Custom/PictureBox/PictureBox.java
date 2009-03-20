@@ -1,51 +1,55 @@
 package com.penbase.dma.Dalyo.Component.Custom.PictureBox;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.hardware.Camera;
+import android.media.MediaPlayer;
+import android.os.Bundle;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.penbase.dma.R;
 import com.penbase.dma.Constant.Constant;
 import com.penbase.dma.View.ApplicationListView;
 import com.penbase.dma.View.ApplicationView;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
-import android.hardware.Camera;
-import android.media.MediaPlayer;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
+/**
+ * Launches camera to take a picture
+ */
 public class PictureBox extends Activity implements SurfaceHolder.Callback {
-	private Camera camera;
+	private Camera mCamera;
 	private SurfaceView mSurfaceView;
 	private SurfaceHolder mHolder;
-	private byte[] photoBytes = null;
-	private String id;
-	private ProgressDialog saveProgressDialog = null;
+	private byte[] mPhotoBytes = null;
+	private String mId;
+	private ProgressDialog mSaveProgressDialog = null;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		Log.i("info", "oncreate");
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		mSurfaceView = new SurfaceView(this);
 		mHolder = mSurfaceView.getHolder();
 		mHolder.addCallback(this);
 		mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-		id = this.getIntent().getStringExtra("ID");
+		mId = this.getIntent().getStringExtra("ID");
 		setContentView(mSurfaceView);
-		setTitle("Camera");
 	}
 
 	Camera.PictureCallback pictureCallback = new Camera.PictureCallback() {
 		public void onPictureTaken(byte[] data, Camera c) {
-			photoBytes = data;
+			mPhotoBytes = data;
 		}
 	};
 	
@@ -64,16 +68,17 @@ public class PictureBox extends Activity implements SurfaceHolder.Callback {
 				//play sound
 				MediaPlayer mp = MediaPlayer.create(PictureBox.this, R.raw.camera_click);
 				mp.start();
-				camera.takePicture(null, null, pictureCallback);
+				mCamera.takePicture(null, null, pictureCallback);
 				break;
 			case KeyEvent.KEYCODE_FOCUS:
 				//auto focus
 				if (event.getRepeatCount() == 0) {
-					camera.autoFocus(autoFocusCallBack);
+					mCamera.autoFocus(autoFocusCallBack);
 				}
 				break;
 			case KeyEvent.KEYCODE_BACK:
 				PictureBox.this.finish();
+				break;
 		}
 		return super.onKeyDown(keyCode, event);
 	}
@@ -81,23 +86,23 @@ public class PictureBox extends Activity implements SurfaceHolder.Callback {
 	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
 			int height) {
-       Camera.Parameters parameters = camera.getParameters();
+       Camera.Parameters parameters = mCamera.getParameters();
        parameters.set("rotation", 0); 
        parameters.setPreviewSize(width, height);
-       camera.setParameters(parameters);
-       camera.startPreview();
+       mCamera.setParameters(parameters);
+       mCamera.startPreview();
 	}
 
 	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
-		camera = Camera.open();
-		camera.setPreviewDisplay(mHolder);
+		mCamera = Camera.open();
+		mCamera.setPreviewDisplay(mHolder);
 	}
 
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
-		camera.stopPreview();
-		camera.release();
+		mCamera.stopPreview();
+		mCamera.release();
 	}
 
 	@Override
@@ -113,8 +118,8 @@ public class PictureBox extends Activity implements SurfaceHolder.Callback {
 		switch (item.getItemId()) {
 			case 0:
 				//Save picture
-				if (photoBytes != null) {
-					saveProgressDialog = ProgressDialog.show(this, "Please wait...", "Saving photo...", true, false);
+				if (mPhotoBytes != null) {
+					mSaveProgressDialog = ProgressDialog.show(this, "Please wait...", "Saving photo...", true, false);
 					new Thread() {
 						public void run() {
 							String photoName = System.currentTimeMillis()+".jpg";
@@ -123,23 +128,20 @@ public class PictureBox extends Activity implements SurfaceHolder.Callback {
 							try{
 								fos = new FileOutputStream(file);
 								try {
-									fos.write(photoBytes);
-								}
-								catch (IOException e) {
+									fos.write(mPhotoBytes);
+								} catch (IOException e) {
 									e.printStackTrace();
 								}
-							}
-							catch (FileNotFoundException e) {
+							} catch (FileNotFoundException e) {
 								e.printStackTrace();
 							}
 							try {
-								photoBytes = null;
+								mPhotoBytes = null;
 								fos.close();
-							} 
-							catch (IOException e) {
+							}  catch (IOException e) {
 								e.printStackTrace();
 							}
-							((PictureBoxView)ApplicationView.getComponents().get(id).getView()).setPhotoName(photoName);
+							((PictureBoxView)ApplicationView.getComponents().get(mId).getView()).setPhotoName(photoName);
 							PictureBox.this.finish();
 						}
 					}.start();
@@ -147,8 +149,8 @@ public class PictureBox extends Activity implements SurfaceHolder.Callback {
 				break;
 			case 1:
 				//Cancel the current picture and take another one
-				if (photoBytes != null) {
-					camera.startPreview();
+				if (mPhotoBytes != null) {
+					mCamera.startPreview();
 				}
 				break;
 		}
@@ -157,9 +159,9 @@ public class PictureBox extends Activity implements SurfaceHolder.Callback {
 
 	@Override
 	protected void onDestroy() {
-		if (saveProgressDialog != null) {
-			saveProgressDialog.dismiss();
-			saveProgressDialog = null;
+		if (mSaveProgressDialog != null) {
+			mSaveProgressDialog.dismiss();
+			mSaveProgressDialog = null;
 		}
 		super.onDestroy();
 	}

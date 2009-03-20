@@ -7,37 +7,40 @@ import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
 
+/**
+ * Object gets GPS informations
+ */
 public class Gps{
-	private static final String providerName = "gps";
-	private LocationManager locationManager;
-    private Location location = null;
-    private LocationListener locationListener;
-    private int status = LocationProvider.OUT_OF_SERVICE;
+	private static final String sProviderName = "gps";
+	private LocationManager mLocationManager;
+    private Location mLocation = null;
+    private LocationListener mLocationListener;
+    private int mStatus = LocationProvider.OUT_OF_SERVICE;
 	
 	public Gps(Context context) {
-		locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        locationListener = new MyLocationListener();
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-        location = locationManager.getLastKnownLocation(providerName);
+		mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+		mLocationListener = new MyLocationListener();
+        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
+        mLocation = mLocationManager.getLastKnownLocation(sProviderName);
 	}
 	
 	public int getStatus() {
-		return status;
+		return mStatus;
 	}
 	
 	public Location getLocation() {
-		return location;
+		return mLocation;
 	}
 	
 	public void stop() {
-		locationManager.removeUpdates(locationListener);
+		mLocationManager.removeUpdates(mLocationListener);
 	}
 	
     private class MyLocationListener implements LocationListener {
         public void onLocationChanged(Location loc) {
         	// Called when the location has changed.
         	if (loc != null) {
-        		location = loc;
+        		mLocation = loc;
         	}
         }
 
@@ -51,7 +54,7 @@ public class Gps{
 
         public void onStatusChanged(String provider, int s, Bundle extras) {
         	// Called when the provider status changes.
-        	status = s;
+        	mStatus = s;
         }
     }
 }

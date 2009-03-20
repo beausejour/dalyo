@@ -2,37 +2,42 @@ package com.penbase.dma.Dalyo;
 
 import android.os.Handler;
 
+/**
+ * Displays a progress dialog during construction of an application
+ */
 public class LoadingThread implements Runnable {
-	Thread m_thread = null;
-	Handler handler = null;
+	Thread mThread = null;
+	Handler mHandler = null;
 	
 	public LoadingThread(Handler h) {
-		this.handler = h;
+		this.mHandler = h;
 	}
 	
 	public void Start() {
-		m_thread = new Thread(null, this, "LoadingThread");
-		m_thread.start();
+		mThread = new Thread(null, this, "LoadingThread");
+		mThread.start();
 	}
 	
 	public void run() {
 		try{ 
 			Thread.sleep(3000); 
-		} 
-		catch (InterruptedException e) {}
+		} catch (InterruptedException e) {
+			
+		}
 	
-		if (handler != null) {
-			handler.sendEmptyMessage(0);
+		if (mHandler != null) {
+			mHandler.sendEmptyMessage(0);
 		}
 	}
 	
 	public void Stop() {
-		if (m_thread != null) {
+		if (mThread != null) {
 			try{ 
-				m_thread.join(); 
-			} 
-			catch (InterruptedException e) {}
+				mThread.join(); 
+			} catch (InterruptedException e) {
+				
+			}
 		}
-		m_thread = null;
+		mThread = null;
 	}
 }
