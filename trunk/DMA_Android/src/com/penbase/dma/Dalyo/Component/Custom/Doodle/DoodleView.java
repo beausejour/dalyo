@@ -6,31 +6,31 @@ import android.view.View;
 import android.widget.Button;
 
 public class DoodleView extends Button {
-	private String imageName;
-	private Context context;
-	private String id;
+	private String mImageName;
+	private Context mContext;
+	private String mId;
 	
 	public DoodleView(Context c, String i) {
 		super(c);
-		this.context = c;
-		this.id = i;
-		this.imageName = "";
+		this.mContext = c;
+		this.mId = i;
+		this.mImageName = "";
 		this.setText("Open Doodle");
 		this.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent myIntent = new Intent(context, Doodle.class);
-				myIntent.putExtra("ID", id);
-				context.startActivity(myIntent);
+				Intent myIntent = new Intent(mContext, Doodle.class);
+				myIntent.putExtra("ID", mId);
+				mContext.startActivity(myIntent);
 			}
 		});
 	}
    
    public void setImageName(String s) {
-	   imageName = s;
+	   mImageName = s;
    }
    
    public String getImageName() {
-	   return imageName;
+	   return mImageName;
    }
 }

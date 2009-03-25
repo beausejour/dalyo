@@ -1,5 +1,25 @@
 package com.penbase.dma.Dalyo.Database;
 
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
+
+import com.penbase.dma.Binary.Binary;
+import com.penbase.dma.Constant.Constant;
+import com.penbase.dma.Constant.DatabaseAttribute;
+import com.penbase.dma.Constant.DatabaseTag;
+import com.penbase.dma.Dalyo.Function.Function;
+import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
+import com.penbase.dma.View.ApplicationListView;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -11,34 +31,16 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
-import com.penbase.dma.Binary.Binary;
-import com.penbase.dma.Constant.Constant;
-import com.penbase.dma.Constant.DatabaseAttribute;
-import com.penbase.dma.Constant.DatabaseTag;
-import com.penbase.dma.Dalyo.Function.Function;
-import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
-import com.penbase.dma.View.ApplicationListView;
-
-import android.content.ContentValues;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.database.SQLException;
-import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
-
 public class DatabaseAdapter {
-	private final Document dbDocument;
-	private final Context context;
-	private static SQLiteDatabase sqlite = null;
-	private static HashMap<String, ArrayList<String>> tablesMap;
-	private static HashMap<String, String> tablesNameMap;
-	private static HashMap<String, String> fieldsTypeMap;
-	private static HashMap<String, String> fieldsNameMap;
+	//private final Document dbDocument;
+	private Document mDbDocument;
+	//private final Context context;
+	private Context mContext;
+	private static SQLiteDatabase sSqlite = null;
+	private static HashMap<String, ArrayList<String>> sTablesMap;
+	private static HashMap<String, String> sTablesNameMap;
+	private static HashMap<String, String> sFieldsTypeMap;
+	private static HashMap<String, String> sFieldsNameMap;
 	private static HashMap<String, String> fieldsPKMap;
 	private static ArrayList<ArrayList<String>> foreignKeyList;
 	private String dbName = null;
@@ -48,19 +50,19 @@ public class DatabaseAdapter {
 	private static  ArrayList<ArrayList<Object>> blobRecords;
 	
 	public DatabaseAdapter(Context c, Document d, String database) {
-		this.context = c;
-		this.dbDocument = d;
+		this.mContext = c;
+		this.mDbDocument = d;
 		this.dbName = database;
 		this.TABLEPREF = dbName+"_"+TABLEPREF;
 		this.FIELDPREF = dbName+"_"+FIELDPREF;
-		tablesMap = new HashMap<String, ArrayList<String>>();		//{tid, [tablename, fieldnames...]}
-		tablesNameMap = new HashMap<String, String>();
-		fieldsTypeMap = new HashMap<String, String>();
-		fieldsNameMap = new HashMap<String, String>();
+		sTablesMap = new HashMap<String, ArrayList<String>>();		//{tid, [tablename, fieldnames...]}
+		sTablesNameMap = new HashMap<String, String>();
+		sFieldsTypeMap = new HashMap<String, String>();
+		sFieldsNameMap = new HashMap<String, String>();
 		fieldsPKMap = new HashMap<String, String>();
 		foreignKeyList = new ArrayList<ArrayList<String>>();
 		blobRecords = new ArrayList<ArrayList<Object>>();
-		if (dbDocument.getElementsByTagName(DatabaseTag.TABLE).getLength() > 0) {
+		if (mDbDocument.getElementsByTagName(DatabaseTag.TABLE).getLength() > 0) {
 			createDatabase(dbName);
 		}
 	}
@@ -70,17 +72,17 @@ public class DatabaseAdapter {
 		try{
 			if (!databaseExists(database)) {
 				Log.i("info", "the database doesn't exist");
-				sqlite = context.openOrCreateDatabase(database, 0, null);
+				sSqlite = mContext.openOrCreateDatabase(database, 0, null);
 				createTable();
 			}
 			else if (!checkDatabaseExists()) {
 				Log.i("info", "the database isn't the same");
-				sqlite = context.openOrCreateDatabase(database, 0, null);
+				sSqlite = mContext.openOrCreateDatabase(database, 0, null);
 				createTable();
 			}
 			else {
 				Log.i("info", "the database have nothing to change");
-				sqlite = context.openOrCreateDatabase(database, 0, null);
+				sSqlite = mContext.openOrCreateDatabase(database, 0, null);
 			}
 		}
 		catch (Exception e) {
@@ -89,8 +91,8 @@ public class DatabaseAdapter {
 	}
 	
 	public void closeDatabase() {
-		if ((sqlite != null) && (sqlite.isOpen())) {
-			sqlite.close();
+		if ((sSqlite != null) && (sSqlite.isOpen())) {
+			sSqlite.close();
 		}
 	}
 	
@@ -107,9 +109,9 @@ public class DatabaseAdapter {
 		HashMap<String, String> fNMap = new HashMap<String, String>();
 		HashMap<String, String> fsPkMap = new HashMap<String, String>();
 		ArrayList<ArrayList<String>> fkList = new ArrayList<ArrayList<String>>();
-		SharedPreferences tablePref = context.getSharedPreferences(TABLEPREF, Context.MODE_PRIVATE);
-		SharedPreferences fieldPref = context.getSharedPreferences(FIELDPREF, Context.MODE_PRIVATE);
-		NodeList tableList = dbDocument.getElementsByTagName(DatabaseTag.TABLE);
+		SharedPreferences tablePref = mContext.getSharedPreferences(TABLEPREF, Context.MODE_PRIVATE);
+		SharedPreferences fieldPref = mContext.getSharedPreferences(FIELDPREF, Context.MODE_PRIVATE);
+		NodeList tableList = mDbDocument.getElementsByTagName(DatabaseTag.TABLE);
 		int tableLen = tableList.getLength();
 		int i = 0;
 		while (i < tableLen) {
@@ -172,10 +174,10 @@ public class DatabaseAdapter {
 			}
 		}
 		if (result) {
-			tablesMap = tsMap;
-			tablesNameMap = tnMap;
-			fieldsNameMap = fNMap;
-			fieldsTypeMap = fsMap;
+			sTablesMap = tsMap;
+			sTablesNameMap = tnMap;
+			sFieldsNameMap = fNMap;
+			sFieldsTypeMap = fsMap;
 			fieldsPKMap = fsPkMap;
 			foreignKeyList = fkList;
 		}
@@ -183,9 +185,9 @@ public class DatabaseAdapter {
 	}
 	
 	private void createTable() {
-		SharedPreferences.Editor editorTablePref = context.getSharedPreferences(TABLEPREF, Context.MODE_PRIVATE).edit();
-		SharedPreferences.Editor editorFieldPref = context.getSharedPreferences(FIELDPREF, Context.MODE_PRIVATE).edit();
-		NodeList tableList = dbDocument.getElementsByTagName(DatabaseTag.TABLE);
+		SharedPreferences.Editor editorTablePref = mContext.getSharedPreferences(TABLEPREF, Context.MODE_PRIVATE).edit();
+		SharedPreferences.Editor editorFieldPref = mContext.getSharedPreferences(FIELDPREF, Context.MODE_PRIVATE).edit();
+		NodeList tableList = mDbDocument.getElementsByTagName(DatabaseTag.TABLE);
 		int tableLen = tableList.getLength();
 		for (int i=0; i<tableLen; i++) {
 			String createquery = "CREATE TABLE IF NOT EXISTS ";
@@ -193,7 +195,7 @@ public class DatabaseAdapter {
 			String typeSync = table.getAttribute(DatabaseTag.TABLE_SYNC);
 			String tableId = table.getAttribute(DatabaseTag.TABLE_ID);
 			String tableOriginalName = table.getAttribute(DatabaseTag.TABLE_NAME);
-			tablesNameMap.put(tableOriginalName, tableId);
+			sTablesNameMap.put(tableOriginalName, tableId);
 			editorTablePref.putString(tableId, "");
 			String tableName = DatabaseAttribute.TABLE+tableId;
 			ArrayList<String> tableElements = new ArrayList<String>();
@@ -211,12 +213,12 @@ public class DatabaseAdapter {
 					Element field = (Element) fieldList.item(j);
 					String fieldId = field.getAttribute(DatabaseTag.FIELD_ID);
 					String fieldName = field.getAttribute(DatabaseTag.FIELD_NAME);
-					fieldsNameMap.put(fieldId, fieldName);
+					sFieldsNameMap.put(fieldId, fieldName);
 					String fieldNewName = DatabaseAttribute.FIELD+fieldId;
 					tableElements.add(fieldNewName);
 					String fieldType = field.getAttribute(DatabaseTag.FIELD_TYPE);
 					String fieldSize = field.getAttribute(DatabaseTag.FIELD_SIZE);
-					fieldsTypeMap.put(fieldId, fieldType);
+					sFieldsTypeMap.put(fieldId, fieldType);
 					if (fieldType.equals(DatabaseAttribute.VARCHAR)) {
 						fieldType = fieldType+"("+fieldSize+")";
 					}
@@ -256,13 +258,13 @@ public class DatabaseAdapter {
 				}
 			}
 			
-			tablesMap.put(tableId, tableElements);
+			sTablesMap.put(tableId, tableElements);
 			
 			createquery = createquery.substring(0, createquery.length()-2);
 			createquery += ");";
 			
 			Log.i("info", "query "+createquery);
-			sqlite.execSQL(createquery);
+			sSqlite.execSQL(createquery);
 			
 			if (systemFields.size() > 0) {
 				//insert system fields value (contacts, events, tasks)
@@ -296,7 +298,7 @@ public class DatabaseAdapter {
 	}
 	
 	private void deleteDatabase(String database) {
-		context.deleteDatabase(database);
+		mContext.deleteDatabase(database);
 	}
 
 	public byte[] syncImportTable(byte[] bytes) {
@@ -365,7 +367,7 @@ public class DatabaseAdapter {
 				if (syncTypeInt != DatabaseAttribute.DELETEVALUE) {
 					//Get each record's information
 					for (int l=0; l<fieldsNbInt; l++) {
-						String valueType = fieldsTypeMap.get(String.valueOf(fieldList.get(l)));
+						String valueType = sFieldsTypeMap.get(String.valueOf(fieldList.get(l)));
 						//Get length of value
 						byte[] valueLength = new byte[Constant.INTBYTE];
 						bis.read(valueLength, 0, valueLength.length);
@@ -428,7 +430,7 @@ public class DatabaseAdapter {
 		int tableNbInt = 0;
 		Set<String> keys = null;
 		if (tables == null) {
-			keys = tablesMap.keySet();
+			keys = sTablesMap.keySet();
 		}
 		else {
 			keys = new HashSet<String>(tables);
@@ -456,7 +458,7 @@ public class DatabaseAdapter {
 				selection += "\'"+filter.get(2)+"\'";
 			}
 			
-			Cursor cursor = sqlite.query(table, null, selection, null, null, null, null);
+			Cursor cursor = sSqlite.query(table, null, selection, null, null, null, null);
 			
 			Log.i("info", "cursor count "+cursor.getCount());
 			if (cursor.getCount() > 0) {
@@ -498,7 +500,7 @@ public class DatabaseAdapter {
 			bos.write(tableId, 0, tableId.length);
 			
 			//fieldsNb
-			ArrayList<String> fields = tablesMap.get(tidKey);
+			ArrayList<String> fields = sTablesMap.get(tidKey);
 			int fieldsNbInt = fields.size();
 			byte[] fieldsNb = Binary.intToByteArray(fieldsNbInt);
 			bos.write(fieldsNb, 0, fieldsNb.length);
@@ -533,7 +535,7 @@ public class DatabaseAdapter {
 				//value
 				if (syncTypeInt != DatabaseAttribute.DELETEVALUE) {
 					for (int fid=0; fid<fieldsNbInt; fid++) {
-						String valueType = fieldsTypeMap.get(fields.get(fid).split("_")[1]);
+						String valueType = sFieldsTypeMap.get(fields.get(fid).split("_")[1]);
 						byte[] value = null;
 						byte[] valueLenth = null;
 						
@@ -622,7 +624,7 @@ public class DatabaseAdapter {
 		else {
 			whereClause = DatabaseAttribute.ID+tableId+"=\'"+lid+"\'";
 		}
-		sqlite.update(table, values, whereClause, null);
+		sSqlite.update(table, values, whereClause, null);
 	}
 	
 	private void updateTable(int tableId, ArrayList<Integer> fields, ArrayList<Integer> syncTypeList,
@@ -675,7 +677,7 @@ public class DatabaseAdapter {
 			values.put(DatabaseAttribute.FIELD+fieldsList.get(i), (String)record.get(i+2));
 		}
 		String tableName = DatabaseAttribute.TABLE+tableId;
-		long insertResult = sqlite.insert(tableName, null, values);
+		long insertResult = sSqlite.insert(tableName, null, values);
 		Log.i("info", "insertresult "+insertResult);
 	}
 	
@@ -695,7 +697,7 @@ public class DatabaseAdapter {
 		}
 		String update = "UPDATE "+tableName+" SET "+newValue+" WHERE "+DatabaseAttribute.GID+tableId+"=\'"+record.get(1)+"\';";
 		Log.i("info", "update "+update);
-		sqlite.execSQL(update);
+		sSqlite.execSQL(update);
 	}
 	
 	private void deleteValues(int tableId, ArrayList<Integer> fieldsList, ArrayList<Object> record) {
@@ -704,7 +706,7 @@ public class DatabaseAdapter {
 		DatabaseAdapter.deleteBlobFiles(String.valueOf(tableId), selectionString);
 		String delete = "DELETE FROM "+DatabaseAttribute.TABLE+tableId+" WHERE "+selectionString+";";
 		//String delete = "DELETE FROM "+DatabaseAttribute.TABLE+tableId+" WHERE "+DatabaseAttribute.GID+tableId+"=\'"+record.get(1)+"\';";
-		sqlite.execSQL(delete);
+		sSqlite.execSQL(delete);
 	}
 	
 	//Generate primary key for KEY and INTEGER
@@ -740,22 +742,22 @@ public class DatabaseAdapter {
 		DatabaseAdapter.deleteBlobFiles(tableId, selectionString);
 		
 		if (selectionString == null) {
-			sqlite.execSQL("DELETE FROM "+DatabaseAttribute.TABLE+tableId+";");
+			sSqlite.execSQL("DELETE FROM "+DatabaseAttribute.TABLE+tableId+";");
 		}
 		else {
-			sqlite.execSQL("DELETE FROM "+DatabaseAttribute.TABLE+tableId+" WHERE "+selectionString+";");
+			sSqlite.execSQL("DELETE FROM "+DatabaseAttribute.TABLE+tableId+" WHERE "+selectionString+";");
 		}
 	}
 	
 	private static void deleteBlobFiles(String tableId, String selectionString) {
-		Cursor cursor = sqlite.query(DatabaseAttribute.TABLE+tableId, null, selectionString, null, null, null, null);
+		Cursor cursor = sSqlite.query(DatabaseAttribute.TABLE+tableId, null, selectionString, null, null, null, null);
 		if (cursor.getCount() != 0) {
 			String[] columnsNames = cursor.getColumnNames();
 			ArrayList<Integer> blobColumnArray = new ArrayList<Integer>();
 			int columnsNameNb = columnsNames.length;
 			for (int i=0; i<columnsNameNb; i++) {
 				if (columnsNames[i].contains(DatabaseAttribute.FIELD)) {
-					if (fieldsTypeMap.get(columnsNames[i].split("_")[1]).equals(DatabaseAttribute.BLOB)) {
+					if (sFieldsTypeMap.get(columnsNames[i].split("_")[1]).equals(DatabaseAttribute.BLOB)) {
 						blobColumnArray.add(i);
 					}
 				}
@@ -781,7 +783,7 @@ public class DatabaseAdapter {
 		Cursor result = null;
 		String table = DatabaseAttribute.TABLE+tableId;
 		String selection = createSelectionString(fieldList, valueList);
-		result = sqlite.query(table, null, selection, null, null, null, null);
+		result = sSqlite.query(table, null, selection, null, null, null, null);
 		return result;
 	}
 	
@@ -791,7 +793,7 @@ public class DatabaseAdapter {
 		ArrayList<String> tables = new ArrayList<String>();
 		tables.add(tableId);
 		String selection = createSelectionString(tables, filter);
-		result = sqlite.query(DatabaseAttribute.TABLE + tableId, new String[]{projectionIn}, selection, null, null, null, null);
+		result = sSqlite.query(DatabaseAttribute.TABLE + tableId, new String[]{projectionIn}, selection, null, null, null, null);
 		return result;
 	}
 	
@@ -815,7 +817,7 @@ public class DatabaseAdapter {
 				isDisctinct = true;
 			}
 		}
-		result = sqlite.query(isDisctinct, table, projectionIn, selection, null, null, null, orderBy, null);
+		result = sSqlite.query(isDisctinct, table, projectionIn, selection, null, null, null, orderBy, null);
 		return result;
 	}
 
@@ -834,7 +836,7 @@ public class DatabaseAdapter {
 					(record.get(i+1) == null)) {
 				Log.i("info", "in case of filed has pk field, generate its value");
 				record.remove(i+1);
-				record.add(i+1, generatePK(fieldsTypeMap.get(fieldsList.get(i)), record.get(0)));
+				record.add(i+1, generatePK(sFieldsTypeMap.get(fieldsList.get(i)), record.get(0)));
 			}
 			
 			fields += DatabaseAttribute.FIELD+fieldsList.get(i);
@@ -849,14 +851,14 @@ public class DatabaseAdapter {
 				(fieldsPKMap.containsKey(String.valueOf(tableId)))) {
 			Log.i("info", "in case of field list hasn't pk field, generate its value");
 			fields += ", "+DatabaseAttribute.FIELD+fieldsPKMap.get(String.valueOf(tableId));
-			values += ", \'"+generatePK(fieldsTypeMap.get(fieldsPKMap.get(String.valueOf(tableId))), record.get(0))+"\'";
+			values += ", \'"+generatePK(sFieldsTypeMap.get(fieldsPKMap.get(String.valueOf(tableId))), record.get(0))+"\'";
 		}
 		fields += ")";
 		values += ")";
 		String tableName = DatabaseAttribute.TABLE+tableId;
 		String insert = "INSERT INTO "+tableName+" "+fields+" VALUES"+values+";";
 		Log.i("info", "query "+insert);
-		sqlite.execSQL(insert);
+		sSqlite.execSQL(insert);
 	}
 	
 	public static void updateQuery(String tableId, ArrayList<Integer> fieldList, ArrayList<Object> valueList, HashMap<Object, Object> record) {
@@ -880,7 +882,7 @@ public class DatabaseAdapter {
 		Log.i("info", "values "+values);
 		String whereClause = createWhereClause(tableId, record);
 		Log.i("info", "whereclause "+whereClause);
-		sqlite.update(table, values, whereClause, null);
+		sSqlite.update(table, values, whereClause, null);
 	}
 	
 	public static void deleteQuery(String tableId, HashMap<Object, Object> record) {
@@ -892,62 +894,62 @@ public class DatabaseAdapter {
 				ContentValues values = new ContentValues();
 				values.put(DatabaseAttribute.STATE, DatabaseAttribute.DELETEVALUE);
 				Log.i("info", "whereclause "+whereClause+" values "+values);
-				sqlite.update(table, values, whereClause, null);
+				sSqlite.update(table, values, whereClause, null);
 			}
 			else {
 				Log.i("info", "whereclause "+whereClause);
-				sqlite.delete(table, whereClause, null);
+				sSqlite.delete(table, whereClause, null);
 			}
 		}
 	}
 	
 	public static int getTableNb() {
-		return tablesMap.size();
+		return sTablesMap.size();
 	}
 	
 	public static Set<String> getTableIds() {
-		return tablesMap.keySet();
+		return sTablesMap.keySet();
 	}
 	
 	public static HashMap<String, ArrayList<String>> getTablesMap() {
-		return tablesMap;
+		return sTablesMap;
 	}
 	
 	public static String getFieldName(String fieldId) {
 		String result = "";
-		if (fieldsNameMap.containsKey(fieldId)) {
-			result = fieldsNameMap.get(fieldId);
+		if (sFieldsNameMap.containsKey(fieldId)) {
+			result = sFieldsNameMap.get(fieldId);
 		}
 		return result;
 	}
 	
 	public static String getTableIdByName(String name) {
-		return tablesNameMap.get(name);
+		return sTablesNameMap.get(name);
 	}
 	
 	public static HashMap<String, String> getFieldsNameMap() {
-		return fieldsNameMap;
+		return sFieldsNameMap;
 	}
 	
 	public static HashMap<String, String> getFieldsTypeMap() {
-		return fieldsTypeMap;
+		return sFieldsTypeMap;
 	}
 	
 	public static void beginTransaction() {
 		STARTTRANSACTION = true;
-		sqlite.execSQL("BEGIN TRANSACTION;");
+		sSqlite.execSQL("BEGIN TRANSACTION;");
 	}
 	
 	public static void rollbackTransaction() {
 		if (STARTTRANSACTION) {
-			sqlite.execSQL("ROLLBACK TRANSACTION;");
+			sSqlite.execSQL("ROLLBACK TRANSACTION;");
 			STARTTRANSACTION = false;
 		}
 	}
 	
 	public static void commitTransaction() {
 		if (STARTTRANSACTION) {
-			sqlite.execSQL("COMMIT TRANSACTION;");
+			sSqlite.execSQL("COMMIT TRANSACTION;");
 			STARTTRANSACTION = false;
 		}
 	}
@@ -958,20 +960,20 @@ public class DatabaseAdapter {
 	
 	public static void cleanTables() {
 		Log.i("info", "cleantables");
-		Set<String> keys = tablesMap.keySet();
+		Set<String> keys = sTablesMap.keySet();
 		for (String key : keys) {
 			String table = DatabaseAttribute.TABLE+key;
 			Log.i("info", "table "+table);
 			String id = DatabaseAttribute.ID+key;
 			String[] projectionIn = new String[]{id, DatabaseAttribute.STATE};
-			Cursor result = sqlite.query(table, projectionIn, null, null, null, null, null);
+			Cursor result = sSqlite.query(table, projectionIn, null, null, null, null, null);
 			result.moveToFirst();
 			int count = result.getCount();
 			for (int i=0; i<count; i++) {
 				String whereClause = id+" = \'"+result.getString(result.getColumnIndexOrThrow(id))+"\'";
 				if (result.getInt(result.getColumnIndexOrThrow(DatabaseAttribute.STATE)) == DatabaseAttribute.DELETEVALUE) {
 					Log.i("info", "delete value");
-					sqlite.delete(table, whereClause, null);					
+					sSqlite.delete(table, whereClause, null);					
 				}
 				result.moveToNext();
 			}
@@ -982,10 +984,10 @@ public class DatabaseAdapter {
 	public static Object getCursorValue(Cursor cursor, String field) {
 		if (field.indexOf(DatabaseAttribute.FIELD) != -1) {
 			String fieldId = Integer.valueOf(field.split("_")[1]).toString();
-			if (fieldsTypeMap.get(fieldId).equals(DatabaseAttribute.INTEGER)) {
+			if (sFieldsTypeMap.get(fieldId).equals(DatabaseAttribute.INTEGER)) {
 				return cursor.getInt(cursor.getColumnIndexOrThrow(field));
 			}
-			else if (fieldsTypeMap.get(fieldId).equals(DatabaseAttribute.DOUBLE)) {
+			else if (sFieldsTypeMap.get(fieldId).equals(DatabaseAttribute.DOUBLE)) {
 				return cursor.getDouble(cursor.getColumnIndexOrThrow(field));
 			}
 			/*else if (fieldsTypeMap.get(fieldId).equals(DatabaseAttribute.BLOB)) {

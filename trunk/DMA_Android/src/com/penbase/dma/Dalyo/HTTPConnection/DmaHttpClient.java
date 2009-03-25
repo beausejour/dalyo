@@ -286,7 +286,7 @@ public class DmaHttpClient{
 					}
 				}
 			}
-			
+
 			if (deleteIndex != -1) {
 				String applicationName = Dma.getApplications().get(deleteIndex).getName();
 				if (applicationName.indexOf("(") != -1) {

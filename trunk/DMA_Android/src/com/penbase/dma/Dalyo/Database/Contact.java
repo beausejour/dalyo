@@ -1,11 +1,5 @@
 package com.penbase.dma.Dalyo.Database;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import com.penbase.dma.Constant.DatabaseAttribute;
-import com.penbase.dma.View.ApplicationView;
-
 import android.database.Cursor;
 import android.provider.Contacts;
 import android.provider.Contacts.ContactMethods;
@@ -13,108 +7,114 @@ import android.provider.Contacts.Organizations;
 import android.provider.Contacts.People;
 import android.provider.Contacts.Phones;
 
+import com.penbase.dma.Constant.DatabaseAttribute;
+import com.penbase.dma.View.ApplicationView;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class Contact {
-	private Cursor contactsCursor;
-	private String tableId;
-	private HashMap<String, ArrayList<String>> fields;
+	private Cursor mContactsCursor;
+	private String mTableId;
+	private HashMap<String, ArrayList<String>> mFields;
 	
 	//Names
-	private String firstName = null;
-	private String lastName = null;
+	private String mFirstName = null;
+	private String mLastName = null;
 	
 	//Phone numbers
-	private String workPhone = null;
-	private String homePhone = null;
-	private String mobilePhone = null;
-	private String companyPhone = null;
-	private String otherPhone = null;
-	private String faxWork = null;
+	private String mWorkPhone = null;
+	private String mHomePhone = null;
+	private String mMobilePhone = null;
+	private String mCompanyPhone = null;
+	private String mOtherPhone = null;
+	private String mFaxWork = null;
 	
 	//Addresses
-	private String email = null;
-	private String emailWork = null;
-	private String imWork = null;
-	private String street = null;
-	private String streetWork = null;
+	private String mEmail = null;
+	private String mEmailWork = null;
+	private String mImWork = null;
+	private String mStreet = null;
+	private String mStreetWork = null;
 	
 	//Organization
-	private String company = null;
+	private String mCompany = null;
 	
 	public Contact(String tableId, HashMap<String, ArrayList<String>> fields) {
-		this.tableId = tableId;
-		this.fields = fields;
+		this.mTableId = tableId;
+		this.mFields = fields;
 		String[] contactsProjection = new String[] {People._ID, People.NAME};
-		contactsCursor = ApplicationView.getCurrentView().managedQuery(People.CONTENT_URI, contactsProjection, null, null, null);
+		mContactsCursor = ApplicationView.getCurrentView().managedQuery(People.CONTENT_URI, contactsProjection, null, null, null);
 		readContacts();
 	}
 	
 	private void readContacts() {
-		int contactsCursorCount = contactsCursor.getCount();
+		int contactsCursorCount = mContactsCursor.getCount();
 		if (contactsCursorCount > 0) {
-			contactsCursor.moveToFirst();
+			mContactsCursor.moveToFirst();
 			for (int i=0; i<contactsCursorCount; i++) {
 				ArrayList<Integer> fieldsList = new ArrayList<Integer>();
 				ArrayList<Object> record = new ArrayList<Object>();
-				Cursor allRowsCursor = DatabaseAdapter.selectQuery(tableId, null, null);
+				Cursor allRowsCursor = DatabaseAdapter.selectQuery(mTableId, null, null);
 				int newId = allRowsCursor.getCount()+1;
 				DatabaseAdapter.closeCursor(allRowsCursor);
 				record.add(newId);
-				String[] contactsColumns = contactsCursor.getColumnNames();
-				setValue(contactsCursor, contactsColumns);
-				for (String key : fields.keySet()) {
+				String[] contactsColumns = mContactsCursor.getColumnNames();
+				setValue(mContactsCursor, contactsColumns);
+				for (String key : mFields.keySet()) {
 					fieldsList.add(Integer.valueOf(key));
-					if (Integer.valueOf(fields.get(key).get(1)) == DatabaseAttribute.LASTNAME) {
-						record.add(lastName);
+					if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.LASTNAME) {
+						record.add(mLastName);
 					}
-					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseAttribute.FIRSTNAME) {
-						record.add(firstName);
+					else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.FIRSTNAME) {
+						record.add(mFirstName);
 					}
-					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseAttribute.PHONEWORK) {
-						record.add(workPhone);
+					else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.PHONEWORK) {
+						record.add(mWorkPhone);
 					}
-					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseAttribute.HOMEPHONE) {
-						record.add(homePhone);
+					else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.HOMEPHONE) {
+						record.add(mHomePhone);
 					}
-					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseAttribute.MOBILEPHONE) {
-						record.add(mobilePhone);
+					else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.MOBILEPHONE) {
+						record.add(mMobilePhone);
 					}
-					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseAttribute.PHONE2WORK) {
-						record.add(otherPhone);
+					else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.PHONE2WORK) {
+						record.add(mOtherPhone);
 					}
-					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseAttribute.FAXWORK) {
-						record.add(faxWork);
+					else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.FAXWORK) {
+						record.add(mFaxWork);
 					}
-					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseAttribute.COMPANYPHONE) {
-						record.add(companyPhone);
+					else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.COMPANYPHONE) {
+						record.add(mCompanyPhone);
 					}
-					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseAttribute.EMAIL) {
-						record.add(email);
+					else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.EMAIL) {
+						record.add(mEmail);
 					}
-					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseAttribute.EMAILWORK) {
-						record.add(emailWork);
+					else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.EMAILWORK) {
+						record.add(mEmailWork);
 					}
-					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseAttribute.IMWORK) {
-						record.add(imWork);
+					else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.IMWORK) {
+						record.add(mImWork);
 					}
-					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseAttribute.STREET) {
-						record.add(street);
+					else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.STREET) {
+						record.add(mStreet);
 					}
-					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseAttribute.STREETWORK) {
-						record.add(streetWork);
+					else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.STREETWORK) {
+						record.add(mStreetWork);
 					}
-					else if (Integer.valueOf(fields.get(key).get(1)) == DatabaseAttribute.COMPANY) {
-						record.add(company);
+					else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.COMPANY) {
+						record.add(mCompany);
 					}
 					else {
 						record.add(null);
 					}
 				}
 				//insert contact value to db
-				DatabaseAdapter.addQuery(Integer.valueOf(tableId), fieldsList, record);
-				contactsCursor.moveToNext();
+				DatabaseAdapter.addQuery(Integer.valueOf(mTableId), fieldsList, record);
+				mContactsCursor.moveToNext();
 			}
 		}
-		DatabaseAdapter.closeCursor(contactsCursor);
+		DatabaseAdapter.closeCursor(mContactsCursor);
 	}
 	
 	private void setValue (Cursor cursor, String[] columns) {
@@ -123,14 +123,14 @@ public class Contact {
 				String name = cursor.getString(cursor.getColumnIndex(column));
 			
 				if (!cursor.isNull(cursor.getColumnIndex(column))) {
-					firstName = name.split(" ")[0];
+					mFirstName = name.split(" ")[0];
 					if (name.indexOf(" ") != -1) {
-						lastName = name.substring(name.indexOf(" ")+1, name.length());
+						mLastName = name.substring(name.indexOf(" ")+1, name.length());
 					}
 				}
 			}
 			else if (column.equals(People._ID)) {
-				String whereClause = "person="+contactsCursor.getString(contactsCursor.getColumnIndex(column));
+				String whereClause = "person="+mContactsCursor.getString(mContactsCursor.getColumnIndex(column));
 				
 				String[] phonesProjection = new String[] {Phones.NUMBER, Phones.TYPE};
 				Cursor phonesCursor = ApplicationView.getCurrentView().managedQuery(Contacts.Phones.CONTENT_URI, phonesProjection, whereClause, null, null);
@@ -142,22 +142,22 @@ public class Contact {
 					for (int j=0; j<phonesCursorCount; j++) {
 						switch (phonesCursor.getInt(typeColumn)) {
 							case Phones.TYPE_WORK:
-								workPhone = phonesCursor.getString(numberColumn);
+								mWorkPhone = phonesCursor.getString(numberColumn);
 								break;
 							case Phones.TYPE_HOME:
-								homePhone = phonesCursor.getString(numberColumn);
+								mHomePhone = phonesCursor.getString(numberColumn);
 								break;
 							case Phones.TYPE_MOBILE:
-								mobilePhone = phonesCursor.getString(numberColumn);
+								mMobilePhone = phonesCursor.getString(numberColumn);
 								break;
 							case Phones.TYPE_CUSTOM:
-								companyPhone = phonesCursor.getString(numberColumn);
+								mCompanyPhone = phonesCursor.getString(numberColumn);
 								break;
 							case Phones.TYPE_OTHER:
-								otherPhone = phonesCursor.getString(numberColumn);
+								mOtherPhone = phonesCursor.getString(numberColumn);
 								break;
 							case Phones.TYPE_FAX_WORK:
-								faxWork = phonesCursor.getString(numberColumn);
+								mFaxWork = phonesCursor.getString(numberColumn);
 								break;
 						}
 						phonesCursor.moveToNext();
@@ -179,26 +179,26 @@ public class Contact {
 								switch (addressesCursor.getInt(kindColumn)) {
 									//mail
 									case 1:
-										email = addressesCursor.getString(dataColumn);
+										mEmail = addressesCursor.getString(dataColumn);
 										break;
 									//address
 									case 2:
-										street = addressesCursor.getString(dataColumn);
+										mStreet = addressesCursor.getString(dataColumn);
 										break;
 								}
 								break;
 							case ContactMethods.TYPE_WORK:
 								switch (addressesCursor.getInt(kindColumn)) {
 									case 1:
-										emailWork = addressesCursor.getString(dataColumn);
+										mEmailWork = addressesCursor.getString(dataColumn);
 										break;
 									case 2:
-										streetWork = addressesCursor.getString(dataColumn);
+										mStreetWork = addressesCursor.getString(dataColumn);
 										break;
 								}
 								break;
 							case ContactMethods.TYPE_OTHER:
-								imWork = addressesCursor.getString(dataColumn);
+								mImWork = addressesCursor.getString(dataColumn);
 								break;
 						}
 						addressesCursor.moveToNext();
@@ -213,7 +213,7 @@ public class Contact {
 					organizationsCursor.moveToFirst();
 					int organizationColumn = organizationsCursor.getColumnIndex(Organizations.COMPANY);
 					for (int j=0; j<organizationsCursorCount; j++) {
-						company = organizationsCursor.getString(organizationColumn);
+						mCompany = organizationsCursor.getString(organizationColumn);
 						organizationsCursor.moveToNext();
 					}
 				}

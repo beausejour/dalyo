@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.Paint.Style;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -71,21 +72,16 @@ public class DataView extends LinearLayout implements OnGestureListener {
 		mListView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View v, int position, long arg3) {
-				mCurrentPosition = position;
-				if (!((CustomLinearLayout) v).isHeader()) {
-					v.setSelected(true);
+				if (mHasHeader) {
+					setRowBackground(mCurrentPosition + 1, false);
+				} else {
+					setRowBackground(mCurrentPosition, false);
 				}
+				setCurrentPosition(position);
+				setRowBackground(position, true);
 			}
 		});
-		
-		mListView.setOnFocusChangeListener(new OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View arg0, boolean arg1) {
-				if (!arg1) {
-					mCurrentPosition = -1;
-				}
-			}
-		});
+
 		mListView.setOnTouchListener(new OnTouchListener() {
 			@Override
 			public boolean onTouch(View arg0, MotionEvent arg1) {
@@ -124,6 +120,20 @@ public class DataView extends LinearLayout implements OnGestureListener {
 	
 	public static Typeface getTextType() {
 		return sFontType;
+	}
+	
+	public boolean hasHeader() {
+		return mHasHeader;
+	}
+	
+	public void setRowBackground(int position, boolean isSelected) {
+		if (isSelected) {
+			((CustomLinearLayout)mListView.getItemAtPosition(position)).setBackgroundColor(Color.rgb(255, 142, 0));
+		} else {
+			if (position > 0) {
+				((CustomLinearLayout)mListView.getItemAtPosition(position)).setBackgroundColor(Color.TRANSPARENT);	
+			}
+		}
 	}
 	
 	/**
@@ -272,7 +282,7 @@ public class DataView extends LinearLayout implements OnGestureListener {
 	 * @return the record the selected row
 	 */
 	public HashMap<Object, Object> getCurrentRecord() {
-		if (mCurrentPosition < 1) {
+		if (mCurrentPosition < 0) {
 			return null;
 		} else {
 			int position = mCurrentPosition;
@@ -281,7 +291,11 @@ public class DataView extends LinearLayout implements OnGestureListener {
 	}
 	
 	public void setCurrentPosition(int position) {
-		mCurrentPosition = position;
+		if (mHasHeader) {
+			mCurrentPosition = position - 1;
+		} else {
+			mCurrentPosition = position;
+		}
 	}
 	
 	public ListView getListView() {
@@ -319,8 +333,8 @@ public class DataView extends LinearLayout implements OnGestureListener {
 	}
 	
 	public int getSelectedRow() {
-		if (mCurrentPosition < 1) {
-			return 0;
+		if (mCurrentPosition < 0) {
+			return -1;
 		} else {
 			return mCurrentPosition;
 		}
@@ -347,9 +361,14 @@ public class DataView extends LinearLayout implements OnGestureListener {
 	}
 	
 	public void setSelectedRow(int row) {
-		if (mListView.getChildCount() >= row) {
-			mListView.getChildAt(mCurrentPosition).setSelected(false);
-			mListView.getChildAt(row).setSelected(true);
+		if (mListView.getCount() >= row) {
+			if (mHasHeader) {
+				setRowBackground(mCurrentPosition + 1, false);
+			} else {
+				setRowBackground(mCurrentPosition, false);
+			}
+			setCurrentPosition(row);
+			setRowBackground(row, true);
 		}
 	}
 	
