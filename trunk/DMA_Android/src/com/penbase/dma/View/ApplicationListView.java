@@ -212,7 +212,8 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	 */
 	public void update() {
 		sUpdateProgressDialog = ProgressDialog.show(this, "Please wait...", "Updaing application list...", true, false);
-		new Thread() {
+		new Thread(new Runnable() {
+			@Override
 			public void run() {
 				SharedPreferences prefs = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE);
 				String appsList = mDmahttpclient.Authentication(prefs.getString("Username", ""),
@@ -225,9 +226,9 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 				
 				sUpdateProgressDialog.dismiss();
 				ApplicationListView.this.finish();
-				startActivityForResult(new Intent(ApplicationListView.this, ApplicationListView.class), 0);
+				startActivityForResult(new Intent(ApplicationListView.this, ApplicationListView.class), 0);				
 			}
-		}.start();
+		}).start();
 	}
 
 	@Override
@@ -255,13 +256,14 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		sLoadProgressDialog = ProgressDialog.show(this, "Please wait...", "Preparing application...", true, false);
 		mIntent = new Intent(this, ApplicationView.class);
 		
-		new Thread() {
+		new Thread(new Runnable() {
+			@Override
 			public void run() {
 				ApplicationView.prepareData(position, sApplicationInfos.get("Username"),
 						sApplicationInfos.get("Userpassword"));
-				startActivityForResult(mIntent, 0);
+				startActivityForResult(mIntent, 0);	
 			}
-		}.start();
+		}).start();
 	}
 	
 	public static HashMap<String, String> getApplicationsInfo() {

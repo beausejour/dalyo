@@ -1,10 +1,12 @@
 package com.penbase.dma.Dalyo.Component.Custom;
 
 import android.content.Context;
-import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
+
+import com.penbase.dma.R;
 
 public class Radiobutton extends LinearLayout {
 	private RadioButton mRb;
@@ -12,11 +14,10 @@ public class Radiobutton extends LinearLayout {
 
 	public Radiobutton(Context context) {
 		super(context);
-		mRb = new RadioButton(context);
-		mTv = new TextView(context);
-		mTv.setGravity(Gravity.CENTER);
-		this.addView(mRb, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT));
-		this.addView(mTv, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+		LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		inflater.inflate(R.layout.radiobutton, this, true);
+		mRb = (RadioButton)findViewById(R.id.mRb);
+		mTv = (TextView)findViewById(R.id.mTv);
 	}
 	
 	public TextView getTextView() {

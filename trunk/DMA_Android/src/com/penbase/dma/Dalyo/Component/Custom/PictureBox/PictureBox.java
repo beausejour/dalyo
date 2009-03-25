@@ -120,7 +120,8 @@ public class PictureBox extends Activity implements SurfaceHolder.Callback {
 				//Save picture
 				if (mPhotoBytes != null) {
 					mSaveProgressDialog = ProgressDialog.show(this, "Please wait...", "Saving photo...", true, false);
-					new Thread() {
+					new Thread(new Runnable() {
+						@Override
 						public void run() {
 							String photoName = System.currentTimeMillis()+".jpg";
 							File file = new File(Constant.PACKAGENAME+ApplicationListView.getApplicationName()+"/"+photoName);
@@ -144,7 +145,7 @@ public class PictureBox extends Activity implements SurfaceHolder.Callback {
 							((PictureBoxView)ApplicationView.getComponents().get(mId).getView()).setPhotoName(photoName);
 							PictureBox.this.finish();
 						}
-					}.start();
+					}).start();
 				}
 				break;
 			case 1:

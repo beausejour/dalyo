@@ -30,7 +30,8 @@ public class NS_Database {
 		if ((faceless == null) || (((Boolean)faceless).booleanValue())) {
 			//display progress dialog
 			final ProgressDialog exportProgressDialog = ProgressDialog.show(Function.getContext(), "Please wait...", "Importing application's data...", true, false);
-			new Thread() {
+			new Thread(new Runnable() {
+				@Override
 				public void run() {
 					try {
 						exportResult = ApplicationView.getCurrentClient().exportData(
@@ -39,12 +40,12 @@ public class NS_Database {
 								ApplicationListView.getApplicationsInfo().get("Username"),
 								ApplicationListView.getApplicationsInfo().get("Userpassword"),
 								tables, filters);
+					} catch(Exception e) {
+						e.printStackTrace();
 					}
-					catch(Exception e)
-					{e.printStackTrace();}
 					exportProgressDialog.dismiss();
 				}
-			}.start();
+			}).start();
 		}
 		else {
 			exportResult = ApplicationView.getCurrentClient().exportData(
@@ -71,7 +72,8 @@ public class NS_Database {
 		if ((faceless == null) || (((Boolean)faceless).booleanValue())) {
 			//display progress dialog
 			final ProgressDialog importProgressDialog = ProgressDialog.show(Function.getContext(), "Please wait...", "Importing application's data...", true, false);
-			new Thread() {
+			new Thread(new Runnable() {
+				@Override
 				public void run() {
 					try {
 						importResult = ApplicationView.getCurrentClient().importData(
@@ -80,12 +82,12 @@ public class NS_Database {
 								ApplicationListView.getApplicationsInfo().get("Username"),
 								ApplicationListView.getApplicationsInfo().get("Userpassword"),
 								tables, filters);
+					} catch(Exception e) {
+						e.printStackTrace();
 					}
-					catch(Exception e)
-					{e.printStackTrace();}
 					importProgressDialog.dismiss();
-				}
-			}.start();
+				}				
+			}).start();
 		}
 		else {
 			importResult = ApplicationView.getCurrentClient().importData(

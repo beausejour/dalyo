@@ -1,22 +1,5 @@
 package com.penbase.dma.View;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-import com.penbase.dma.R;
-import com.penbase.dma.Constant.DesignTag;
-import com.penbase.dma.Dalyo.LoadingThread;
-import com.penbase.dma.Dalyo.Component.Component;
-import com.penbase.dma.Dalyo.Component.Form;
-import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
-import com.penbase.dma.Dalyo.Function.Function;
-import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -25,7 +8,6 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,92 +15,123 @@ import android.view.MenuItem.OnMenuItemClickListener;
 import android.widget.AbsoluteLayout;
 import android.graphics.Color;
 
+import com.penbase.dma.Constant.DesignTag;
+import com.penbase.dma.Dalyo.Component.Component;
+import com.penbase.dma.Dalyo.Component.Form;
+import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
+import com.penbase.dma.Dalyo.Function.Function;
+import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+/**
+ * Generic object for Dalyo application, it builds application's UI, database etc.
+ */
 public class ApplicationView extends Activity {
-	private static Menu currentMenu;
-	private static ApplicationView applicationView;
-	private static DmaHttpClient client;
-	private static HashMap<String, Form> layoutsMap;
-	private static HashMap<String, String> onLoadFuncMap;	
-	private static Document designDoc = null;
-	private Component component;
-	private static Document behaviorDocument = null;
-	private static Document dbDoc = null;
-	private static HashMap<String, String> resourcesFileMap;
-	private static HashMap<String, Component> componentsMap;
-	private static DatabaseAdapter database;
-	private LoadingThread loadingThread = null;
-	private ProgressDialog loadingbar;
-	private static String clientLogin;
-	private static String currentFormId;
-	private Handler handler = new Handler() {
+	private static Menu sCurrentMenu;
+	private static ApplicationView sApplicationView;
+	private static DmaHttpClient sClient;
+	private static HashMap<String, Form> sLayoutsMap;
+	private static HashMap<String, String> sOnLoadFuncMap;	
+	private static Document sDesignDoc = null;
+	private Component mComponent;
+	private static Document sBehaviorDocument = null;
+	private static Document sDbDoc = null;
+	private static HashMap<String, String> sResourcesFileMap;
+	private static HashMap<String, Component> sComponentsMap;
+	private static DatabaseAdapter sDatabase;
+	private ProgressDialog mLoadingDialog;
+	private static String sClientLogin;
+	private static String sCurrentFormId;
+	private Handler mHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 				default:
 					createView();
-					loadingbar.dismiss();
 					display();
 					break;
 			}
 		}
 	};
-	private static int currentOrientation;
+	private static int sCurrentOrientation;
 
 	@Override
 	public void onCreate(Bundle icicle) {	
 		super.onCreate(icicle);
-		ApplicationView.applicationView = this;
-		database = new DatabaseAdapter(this, dbDoc, clientLogin+"_"+ApplicationListView.getApplicationName());
-		resourcesFileMap = client.getResourceMap("ext");
-		componentsMap = new HashMap<String, Component>();
-		new Function(this, behaviorDocument);
-		setContentView(R.layout.loading);
-		loadingbar = ProgressDialog.show(this, "Please wait...", "Building application ...", true, false);
-		loadingThread = new LoadingThread(handler);
-        setTitle(ApplicationListView.getApplicationName());
-		loadingThread.Start();
+		ApplicationView.sApplicationView = this;
+		sResourcesFileMap = sClient.getResourceMap("ext");
+		sComponentsMap = new HashMap<String, Component>();
+		mLoadingDialog = ProgressDialog.show(this, "Please wait...", "Building application ...", true, false);
+		setTitle(ApplicationListView.getApplicationName());
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				sDatabase = new DatabaseAdapter(ApplicationView.this, sDbDoc, sClientLogin+"_"+ApplicationListView.getApplicationName());
+				new Function(ApplicationView.this, sBehaviorDocument);
+				mHandler.sendEmptyMessage(0);	
+			}
+		}).start();
 	}
 
+	/**
+	 * Displays first form of application
+	 */
 	private void display() {
 		generalSetup();
-		NodeList generalInfo = designDoc.getElementsByTagName(DesignTag.DESIGN_S_G);
+		NodeList generalInfo = sDesignDoc.getElementsByTagName(DesignTag.DESIGN_S_G);
 		final String startFormId = ((Element) generalInfo.item(0)).getAttribute(DesignTag.DESIGN_S_G_FID);
-		if (onLoadFuncMap.containsKey(startFormId)) {
-			layoutsMap.get(startFormId).onLoad(onLoadFuncMap.get(startFormId));
+		if (sOnLoadFuncMap.containsKey(startFormId)) {
+			sLayoutsMap.get(startFormId).onLoad(sOnLoadFuncMap.get(startFormId));
 		}
-		currentFormId = startFormId;
-		setTitle(layoutsMap.get(startFormId).getTitle());
-		setContentView(layoutsMap.get(startFormId));
-		Log.i("info", "end of load first function");
+		sCurrentFormId = startFormId;
+		setTitle(sLayoutsMap.get(startFormId).getTitle());
+		mLoadingDialog.dismiss();
+		setContentView(sLayoutsMap.get(startFormId));
 	}
 
+	/**
+	 * Prepares necessary xml data
+	 * @param position Position of application
+	 * @param login Login name
+	 * @param pwd Password
+	 */
 	public static void prepareData(int position, String login, String pwd) {
-		client = new DmaHttpClient();
-		client.checkXmlFiles();
-		clientLogin = login;
-		behaviorDocument = client.getBehavior(ApplicationListView.getApplicationsInfo().get("AppId"),
+		sClient = new DmaHttpClient();
+		sClient.checkXmlFiles();
+		sClientLogin = login;
+		sBehaviorDocument = sClient.getBehavior(ApplicationListView.getApplicationsInfo().get("AppId"),
 				ApplicationListView.getApplicationsInfo().get("AppVer"),
 				ApplicationListView.getApplicationsInfo().get("AppBuild"),
 				ApplicationListView.getApplicationsInfo().get("SubId"), login, pwd);
 		
-		designDoc = client.getDesign(ApplicationListView.getApplicationsInfo().get("AppId"),
+		sDesignDoc = sClient.getDesign(ApplicationListView.getApplicationsInfo().get("AppId"),
 				ApplicationListView.getApplicationsInfo().get("AppVer"),
 				ApplicationListView.getApplicationsInfo().get("AppBuild"),
 				ApplicationListView.getApplicationsInfo().get("SubId"), login, pwd);
 		
-		client.getResources(ApplicationListView.getApplicationsInfo().get("AppId"),
+		sClient.getResources(ApplicationListView.getApplicationsInfo().get("AppId"),
 				ApplicationListView.getApplicationsInfo().get("AppVer"),
 				ApplicationListView.getApplicationsInfo().get("AppBuild"),
 				ApplicationListView.getApplicationsInfo().get("SubId"),login, pwd);
 		
-		dbDoc = client.getDB(ApplicationListView.getApplicationsInfo().get("AppId"),
+		sDbDoc = sClient.getDB(ApplicationListView.getApplicationsInfo().get("AppId"),
 				ApplicationListView.getApplicationsInfo().get("AppVer"),
 				ApplicationListView.getApplicationsInfo().get("AppBuild"),
 				ApplicationListView.getApplicationsInfo().get("SubId"), login, pwd);
 	}
 
+	/**
+	 * Sets up on start function
+	 */
 	private void generalSetup() {
-		Node system = designDoc.getElementsByTagName(DesignTag.DESIGN_S).item(0);
+		Node system = sDesignDoc.getElementsByTagName(DesignTag.DESIGN_S).item(0);
 		int childrenLen = system.getChildNodes().getLength();
 		for (int i=0; i<childrenLen; i++) {
 			Element child = (Element) system.getChildNodes().item(i);
@@ -131,10 +144,13 @@ public class ApplicationView extends Activity {
 		}
 	}
 	
+	/**
+	 * Parses application's interface and construct all its forms
+	 */
 	private void createView() {
-		layoutsMap = new HashMap<String, Form>();
-		onLoadFuncMap = new HashMap<String, String>();
-		NodeList formsList = designDoc.getElementsByTagName(DesignTag.DESIGN_F);
+		sLayoutsMap = new HashMap<String, Form>();
+		sOnLoadFuncMap = new HashMap<String, String>();
+		NodeList formsList = sDesignDoc.getElementsByTagName(DesignTag.DESIGN_F);
 		int formsListLen = formsList.getLength();
 		for (int i=0; i<formsListLen; i++) {
 			Form form = new Form(this);
@@ -148,8 +164,7 @@ public class ApplicationView extends Activity {
 			if (formElt.hasAttribute(DesignTag.DESIGN_F_BC)) {
 				String backgourndColor = "#"+formElt.getAttribute(DesignTag.DESIGN_F_BC);
 				form.setBackgroundColor(Color.parseColor(backgourndColor));
-			}
-			else {
+			} else {
 				//Default background color is white
 				form.setBackgroundColor(Color.WHITE);
 			}
@@ -160,7 +175,7 @@ public class ApplicationView extends Activity {
 				form.setTitle(title);
 			}
 			
-			layoutsMap.put(formId, form);
+			sLayoutsMap.put(formId, form);
 			
 			NodeList formEltList = formElt.getChildNodes();
 			int formEltListLen = formEltList.getLength();
@@ -187,20 +202,17 @@ public class ApplicationView extends Activity {
 												menuItemNameList.add(menuItem.getAttribute(DesignTag.COMPONENT_COMMON_NAME));
 												if (menuItem.hasAttribute(DesignTag.EVENT_ONCLICK)) {
 													menuItemOnClickList.add(menuItem.getAttribute(DesignTag.EVENT_ONCLICK));
-												}
-												else {
+												} else {
 													menuItemOnClickList.add("");
 												}
 											}
 										}
 									}
-								}
-								else {
+								} else {
 									menuItemNameList.add(menu.getAttribute(DesignTag.COMPONENT_COMMON_NAME));
 									if (menu.hasAttribute(DesignTag.EVENT_ONCLICK)) {
 										menuItemOnClickList.add(menu.getAttribute(DesignTag.EVENT_ONCLICK));
-									}
-									else {
+									} else {
 										menuItemOnClickList.add("");
 									}
 								}
@@ -209,49 +221,46 @@ public class ApplicationView extends Activity {
 					}
 					form.setMenuItemNameList(menuItemNameList);
 					form.setMenuItemOnClickList(menuItemOnClickList);
-				}
-				else if (element.getNodeName().equals(DesignTag.COMPONENT_NAVIBAR)) {
-					
-				}
-				else {
-					component = new Component(this, element.getNodeName());
+				} else if (element.getNodeName().equals(DesignTag.COMPONENT_NAVIBAR)) {
+					//Navigation bar
+				} else {
+					mComponent = new Component(this, element.getNodeName());
 					
 					if (element.hasAttribute(DesignTag.COMPONENT_COMMON_ID)) {
-						component.setId(element.getAttribute(DesignTag.COMPONENT_COMMON_ID));
+						mComponent.setId(element.getAttribute(DesignTag.COMPONENT_COMMON_ID));
 					}
 					if (element.hasAttribute(DesignTag.COMPONENT_COMMON_FONTSIZE)) {
-						component.setFontSize(element.getAttribute(DesignTag.COMPONENT_COMMON_FONTSIZE));
+						mComponent.setFontSize(element.getAttribute(DesignTag.COMPONENT_COMMON_FONTSIZE));
 					}
 					if (element.hasAttribute(DesignTag.COMPONENT_COMMON_FONTTYPE)) {
-						component.setFontType(element.getAttribute(DesignTag.COMPONENT_COMMON_FONTTYPE));
+						mComponent.setFontType(element.getAttribute(DesignTag.COMPONENT_COMMON_FONTTYPE));
 					}
 					if (element.hasAttribute(DesignTag.COMPONENT_COMMON_ALIGN)) {
-						component.setAlign(element.getAttribute(DesignTag.COMPONENT_COMMON_ALIGN));
+						mComponent.setAlign(element.getAttribute(DesignTag.COMPONENT_COMMON_ALIGN));
 					}
 					if (element.hasAttribute(DesignTag.COMPONENT_COMMON_LABEL)) {
-						component.setLabel(element.getAttribute(DesignTag.COMPONENT_COMMON_LABEL));
+						mComponent.setLabel(element.getAttribute(DesignTag.COMPONENT_COMMON_LABEL));
 					}
 					if (element.hasAttribute(DesignTag.COMPONENT_COMMON_TABLEID)) {
-						component.setTableId(element.getAttribute(DesignTag.COMPONENT_COMMON_TABLEID));
+						mComponent.setTableId(element.getAttribute(DesignTag.COMPONENT_COMMON_TABLEID));
 					}
 					if (element.hasAttribute(DesignTag.COMPONENT_COMMON_FIELDID)) {
-						component.setFieldId(element.getAttribute(DesignTag.COMPONENT_COMMON_FIELDID));
+						mComponent.setFieldId(element.getAttribute(DesignTag.COMPONENT_COMMON_FIELDID));
 					}
 					if (element.hasAttribute(DesignTag.COMPONENT_COMMON_BACKGROUND)) {
-						component.setBackGround(Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_COMMON_BACKGROUND)));
-						component.setExtension(resourcesFileMap.get(element.getAttribute(DesignTag.COMPONENT_COMMON_BACKGROUND)));
+						mComponent.setBackGround(Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_COMMON_BACKGROUND)));
+						mComponent.setExtension(sResourcesFileMap.get(element.getAttribute(DesignTag.COMPONENT_COMMON_BACKGROUND)));
 					}
 					if (element.hasAttribute(DesignTag.COMPONENT_TEXTFIELD_MULTI)) {
-						component.setMultiLine(element.getAttribute(DesignTag.COMPONENT_TEXTFIELD_MULTI));
-						component.setEditable(element.hasAttribute(DesignTag.COMPONENT_TEXTFIELD_EDIT));
+						mComponent.setMultiLine(element.getAttribute(DesignTag.COMPONENT_TEXTFIELD_MULTI));
+						mComponent.setEditable(element.hasAttribute(DesignTag.COMPONENT_TEXTFIELD_EDIT));
 					}
 					
 					if (element.getNodeName().equals(DesignTag.COMPONENT_CHECKBOX)) {
 						if (element.hasAttribute(DesignTag.COMPONENT_CHECKBOX_CHECKED)) {
-							component.setChecked(element.getAttribute(DesignTag.COMPONENT_CHECKBOX_CHECKED));
+							mComponent.setChecked(element.getAttribute(DesignTag.COMPONENT_CHECKBOX_CHECKED));
 						}
-					}
-					else if (element.getNodeName().equals(DesignTag.COMPONENT_COMBOBOX)) {
+					} else if (element.getNodeName().equals(DesignTag.COMPONENT_COMBOBOX)) {
 						ArrayList<String> itemList = new ArrayList<String>();
 						NodeList nodeItemList = element.getChildNodes();
 						if (nodeItemList.getLength() > 0) {
@@ -264,9 +273,8 @@ public class ApplicationView extends Activity {
 									itemList.add(value);
 								}
 							}
-							component.setItemList(itemList);
-						}
-						else if ((element.hasAttribute(DesignTag.COMPONENT_COMBOBOX_LABELTABLE)) &&
+							mComponent.setItemList(itemList);
+						} else if ((element.hasAttribute(DesignTag.COMPONENT_COMBOBOX_LABELTABLE)) &&
 								(element.hasAttribute(DesignTag.COMPONENT_COMBOBOX_LABELFIELD)) &&
 								(element.hasAttribute(DesignTag.COMPONENT_COMBOBOX_VALUETABLE)) &&
 								(element.hasAttribute(DesignTag.COMPONENT_COMBOBOX_VALUEFIELD))) {
@@ -278,11 +286,10 @@ public class ApplicationView extends Activity {
 							valueList.add(element.getAttribute(DesignTag.COMPONENT_COMBOBOX_VALUETABLE));
 							valueList.add(element.getAttribute(DesignTag.COMPONENT_COMBOBOX_VALUEFIELD));
 							
-							component.setLabelList(labelList);
-							component.setValueList(valueList);
+							mComponent.setLabelList(labelList);
+							mComponent.setValueList(valueList);
 						}
-					}
-					else if (element.getNodeName().equals(DesignTag.COMPONENT_DATAVIEW)) {
+					} else if (element.getNodeName().equals(DesignTag.COMPONENT_DATAVIEW)) {
 						ArrayList<ArrayList<String>> columnInfos = new ArrayList<ArrayList<String>>();
 						HashMap<Integer, String> onCalculateMap = new HashMap<Integer, String>();
 						NodeList nodeItemList = element.getChildNodes();
@@ -300,8 +307,7 @@ public class ApplicationView extends Activity {
 									if (column.getAttribute(DesignTag.COMPONENT_DATAVIEW_COLUMN_CALC).equals("true")) {
 										if (column.hasAttribute(DesignTag.EVENT_ONCALCULATE)) {
 											onCalculateMap.put(k, column.getAttribute(DesignTag.EVENT_ONCALCULATE));
-										}
-										else {
+										} else {
 											onCalculateMap.put(k, "");
 										}
 									}
@@ -309,88 +315,78 @@ public class ApplicationView extends Activity {
 								}
 							}
 						}
-						component.setDataviewColumns(columnInfos);
-						component.setDataviewOncalculate(onCalculateMap);
-					}
-					else if ((element.getNodeName().equals(DesignTag.COMPONENT_DATEFIELD)) ||
+						mComponent.setDataviewColumns(columnInfos);
+						mComponent.setDataviewOncalculate(onCalculateMap);
+					} else if ((element.getNodeName().equals(DesignTag.COMPONENT_DATEFIELD)) ||
 							(element.getNodeName().equals(DesignTag.COMPONENT_TIMEFIELD))) {
 						if (element.hasAttribute(DesignTag.COMPONENT_COMMON_VALUE)) {
-							component.setDateTimeValue(element.getAttribute(DesignTag.COMPONENT_COMMON_VALUE));
+							mComponent.setDateTimeValue(element.getAttribute(DesignTag.COMPONENT_COMMON_VALUE));
 						}
-					}
-					else if ((element.getNodeName().equals(DesignTag.COMPONENT_GAUGE)) ||
+					} else if ((element.getNodeName().equals(DesignTag.COMPONENT_GAUGE)) ||
 							(element.getNodeName().equals(DesignTag.COMPONENT_NUMBERBOX))) {
 						if (element.hasAttribute(DesignTag.COMPONENT_INIT)) {
-							component.setInitValue(Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_INIT)));
+							mComponent.setInitValue(Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_INIT)));
 						}
 						if (element.hasAttribute(DesignTag.COMPONENT_MIN)) {
-							/*if (!element.getAttribute(DesignTag.COMPONENT_MIN).equals("true") && !element.getAttribute(DesignTag.COMPONENT_MIN).equals("false")) {
-								component.setMinValue(Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_MIN)));
-							}*/
-							component.setMinValue(Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_MIN)));
+							mComponent.setMinValue(Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_MIN)));
 						}
 						if (element.hasAttribute(DesignTag.COMPONENT_MAX)) {
-							/*if (!element.getAttribute(DesignTag.COMPONENT_MAX).equals("true") && !element.getAttribute(DesignTag.COMPONENT_MAX).equals("false")) {
-								component.setMaxValue(Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_MAX)));
-							}*/
-							component.setMaxValue(Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_MAX)));
+							mComponent.setMaxValue(Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_MAX)));
 						}
 					}
 					
 					if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-						currentOrientation = Configuration.ORIENTATION_LANDSCAPE;
-					}
-					else if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-			        	currentOrientation = Configuration.ORIENTATION_PORTRAIT;
+						sCurrentOrientation = Configuration.ORIENTATION_LANDSCAPE;
+					} else if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+						sCurrentOrientation = Configuration.ORIENTATION_PORTRAIT;
 			        }
 					
-					component.setView();
-					componentsMap.put(element.getAttribute(DesignTag.COMPONENT_COMMON_ID), component);
+					mComponent.setView();
+					sComponentsMap.put(element.getAttribute(DesignTag.COMPONENT_COMMON_ID), mComponent);
 					
 					if (element.hasAttribute(DesignTag.COMPONENT_COMMON_ENABLE)) {
-						component.getView().setEnabled(false);
+						mComponent.getView().setEnabled(false);
 					}
 					if (element.hasAttribute(DesignTag.COMPONENT_COMMON_VISIBLE)) {
-						component.getView().setVisibility(View.INVISIBLE);
+						mComponent.getView().setVisibility(View.INVISIBLE);
 					}
 					
-					if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
-						component.getView().setLayoutParams(new AbsoluteLayout.LayoutParams(
+					if (sCurrentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+						mComponent.getView().setLayoutParams(new AbsoluteLayout.LayoutParams(
 								Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_COMMON_LWIDTH)),
 								Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_COMMON_LHEIGHT)),
 								Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_COMMON_LCOORDX)),
 								Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_COMMON_LCOORDY))));
-			        }
-			        else {
-			        	component.getView().setLayoutParams(new AbsoluteLayout.LayoutParams(
+			        } else {
+			        	mComponent.getView().setLayoutParams(new AbsoluteLayout.LayoutParams(
 								Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_COMMON_PWIDTH)),
 								Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_COMMON_PHEIGHT)),
 								Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_COMMON_PCOORDX)),
 								Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_COMMON_PCOORDY))));
 			        }
-					form.addView(component.getView());
+					form.addView(mComponent.getView());
 					
 					//Add onclick event
 					if (element.hasAttribute(DesignTag.EVENT_ONCLICK)) {
-						component.setOnclickFunction(element.getAttribute(DesignTag.EVENT_ONCLICK), component.getView());
+						mComponent.setOnclickFunction(element.getAttribute(DesignTag.EVENT_ONCLICK), mComponent.getView());
 					}
 					
 					//Add onchange event
 					if (element.hasAttribute(DesignTag.EVENT_ONCHANGE)) {
-						component.setOnchangeFunction(element.getAttribute(DesignTag.EVENT_ONCHANGE), component.getView());
+						mComponent.setOnchangeFunction(element.getAttribute(DesignTag.EVENT_ONCHANGE), mComponent.getView());
 					}
 				}
 			}
 			//Add onload event in a hashmap for calling this function by changing form 
-			onLoadFuncMap.put(formId, formElt.getAttribute(DesignTag.EVENT_ONLOAD));
+			sOnLoadFuncMap.put(formId, formElt.getAttribute(DesignTag.EVENT_ONLOAD));
 		}
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		currentMenu = menu;
-		boolean result = super.onCreateOptionsMenu(currentMenu);
-		setCurrentFormId(currentFormId);
+		sCurrentMenu = menu;
+		boolean result = super.onCreateOptionsMenu(sCurrentMenu);
+		setCurrentFormId(sCurrentFormId);
 		return result;
 	}
 
@@ -399,49 +395,49 @@ public class ApplicationView extends Activity {
 	}
 
 	public static int getOrientation() {
-		return currentOrientation;
+		return sCurrentOrientation;
 	}
 
 	public static HashMap<String, Component> getComponents() {
-		return componentsMap;
+		return sComponentsMap;
 	}
 
 	public static HashMap<String, Form> getLayoutsMap() {
-		return layoutsMap;
+		return sLayoutsMap;
 	}
 
 	public static DatabaseAdapter getDataBase() {
-		return database;
+		return sDatabase;
 	}
 
 	public static DmaHttpClient getCurrentClient() {
-		return client;
+		return sClient;
 	}
 
 	public static ApplicationView getCurrentView() {
-		return applicationView;
+		return sApplicationView;
 	}
 
 	public static HashMap<String, String> getOnLoadFuncMap() {
-		return onLoadFuncMap;
+		return sOnLoadFuncMap;
 	}
 
 	public static String getCurrentFormId() {
-		return currentFormId;
+		return sCurrentFormId;
 	}
 	
 	public static void setCurrentFormId(String id) {
-		currentFormId = id;
-		ArrayList<String> menuItemNameList = layoutsMap.get(currentFormId).getMenuItemNameList();
-		if (currentMenu != null) {
-			currentMenu.clear();
+		sCurrentFormId = id;
+		ArrayList<String> menuItemNameList = sLayoutsMap.get(sCurrentFormId).getMenuItemNameList();
+		if (sCurrentMenu != null) {
+			sCurrentMenu.clear();
 			int itemsSize = menuItemNameList.size();
 			if (itemsSize > 0) {
 				for (int i=0; i<itemsSize; i++) {
-					currentMenu.add(Menu.NONE, i, Menu.NONE, menuItemNameList.get(i)).setOnMenuItemClickListener(new OnMenuItemClickListener() {
+					sCurrentMenu.add(Menu.NONE, i, Menu.NONE, menuItemNameList.get(i)).setOnMenuItemClickListener(new OnMenuItemClickListener() {
 						@Override
 						public boolean onMenuItemClick(MenuItem item) {
-							ArrayList<String> menuItemOnClickList = layoutsMap.get(currentFormId).getMenuItemOnClickList();
+							ArrayList<String> menuItemOnClickList = sLayoutsMap.get(sCurrentFormId).getMenuItemOnClickList();
 							if (!menuItemOnClickList.get(item.getItemId()).equals("")) {
 								Function.createFunction(menuItemOnClickList.get(item.getItemId()));
 							}
@@ -454,13 +450,13 @@ public class ApplicationView extends Activity {
 	}
 	
 	public static void errorDialog(String message) {
-		AlertDialog dialog = new AlertDialog.Builder(applicationView).create();
+		AlertDialog dialog = new AlertDialog.Builder(sApplicationView).create();
 		dialog.setMessage(message);
 		dialog.setTitle("Error");
 		dialog.setButton("OK", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				applicationView.finish();
+				sApplicationView.finish();
 			}
 			
 		});
@@ -477,6 +473,6 @@ public class ApplicationView extends Activity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		database.closeDatabase();
+		sDatabase.closeDatabase();
 	}
 }

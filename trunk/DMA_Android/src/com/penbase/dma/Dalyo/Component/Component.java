@@ -167,6 +167,9 @@ public class Component {
 		return mId;
 	}
 	
+	/**
+	 * Instantiates a View object by its type
+	 */
 	public void setView() {
 		if(mType.equals(DesignTag.COMPONENT_BUTTON)) {
 			Button button = new Button(mContext);
@@ -277,6 +280,11 @@ public class Component {
 		}
 	}
 	
+	/**
+	 * Sets view's on click event
+	 * @param funcName The function which called in on click event
+	 * @param view The view need to be captured
+	 */
 	public void setOnclickFunction(final String funcName, final View view) {
 		if (view instanceof DataView) {
 			((DataView)view).getListView().setOnItemClickListener(new OnItemClickListener() {
@@ -296,6 +304,11 @@ public class Component {
 		}
 	}
 	
+	/**
+	 * Sets view's on change event
+	 * @param funcName The function which called in on change event
+	 * @param view The view need to be captured
+	 */
 	public void setOnchangeFunction(String funcName, View view) {
 		if (view instanceof Gauge) {
 			((Gauge)view).setOnChangeFunction(funcName);
@@ -304,6 +317,11 @@ public class Component {
 		}
 	}
 	
+	/**
+	 * Converts align string to a Gravity constant
+	 * @param align A string represents view's alignment
+	 * @return Gravity constant
+	 */
 	private int getGravity(String align) {
 		int gravity = 0;
 		if (align.equals(Constant.LEFT)) {
