@@ -1,29 +1,29 @@
 package com.penbase.dma.Dalyo.Component.Custom.PictureBox;
 
-import com.penbase.dma.R;
-
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
 import android.widget.ImageButton;
 
+import com.penbase.dma.R;
+
 public class PictureBoxView extends ImageButton {
-	private Context context;
-	private String id;
-	private String photoName;
+	private Context mContext;
+	private String mId;
+	private String mPhotoName;
 	
 	public PictureBoxView(Context c, String i) {
 		super(c);
-		this.context = c;
-		this.id = i;
-		this.photoName = "";
+		this.mContext = c;
+		this.mId = i;
+		this.mPhotoName = "";
 		this.setImageResource(R.drawable.camera);
 		this.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent myIntent = new Intent(context, PictureBox.class);
-				myIntent.putExtra("ID", id);
-				context.startActivity(myIntent);
+				Intent myIntent = new Intent(mContext, PictureBox.class);
+				myIntent.putExtra("ID", mId);
+				mContext.startActivity(myIntent);
 			}
 		});
 	}
@@ -34,10 +34,10 @@ public class PictureBoxView extends ImageButton {
 	}
 	
 	public void setPhotoName(String name) {
-		photoName = name;
+		mPhotoName = name;
 	}
 	
 	public String getPhotoName() {
-		return photoName;
+		return mPhotoName;
 	}
 }

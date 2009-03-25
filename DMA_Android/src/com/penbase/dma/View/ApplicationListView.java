@@ -23,6 +23,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -218,6 +219,8 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 				SharedPreferences prefs = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE);
 				String appsList = mDmahttpclient.Authentication(prefs.getString("Username", ""),
 						prefs.getString("Userpassword", ""));
+				Log.i("info", "appsList "+appsList);
+				Log.i("info", "get application list "+prefs.getString("ApplicationList", ""));
 				mDmahttpclient.update(appsList);
 				SharedPreferences.Editor editorPrefs = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE).edit();
 				editorPrefs.remove("ApplicationList");

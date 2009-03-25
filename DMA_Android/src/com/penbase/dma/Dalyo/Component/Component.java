@@ -3,6 +3,7 @@ package com.penbase.dma.Dalyo.Component;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -290,7 +291,16 @@ public class Component {
 			((DataView)view).getListView().setOnItemClickListener(new OnItemClickListener() {
 				@Override
 				public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+					if (((DataView)view).hasHeader() && (((DataView)view).getSelectedRow() != -1)) {
+						((DataView)view).setRowBackground(((DataView)view).getSelectedRow() + 1, false);
+					} else {
+						if (((DataView)view).getSelectedRow() != -1) {
+							((DataView)view).setRowBackground(((DataView)view).getSelectedRow(), false);
+						}
+					}
 					((DataView)view).setCurrentPosition(position);
+					((DataView)view).setRowBackground(position, true);
+					
 					Function.createFunction(funcName);
 				}
 			});

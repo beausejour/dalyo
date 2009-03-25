@@ -3,12 +3,12 @@ package com.penbase.dma.Dalyo.Database;
 import java.util.Random;
 
 public class KeyGenerator {
-	private static Random random = new Random();
+	private static Random sRandom = new Random();
 	
 	public static String getKeyGenerated() {
 		String result = "";
 		for (int i=0; i<16; i++) {
-			if (random.nextInt(2) == 0) {
+			if (sRandom.nextInt(2) == 0) {
 				result += getAlphabet();
 			}
 			else {
@@ -23,12 +23,12 @@ public class KeyGenerator {
 	
 	private static char getAlphabet() {
 		int range = 26;
-		return (char)('A'+random.nextInt(range));
+		return (char)('A'+sRandom.nextInt(range));
 	}
 	
 	private static char getNumeric() {
 		int range = 10;
-		return (char)('0'+random.nextInt(range));
+		return (char)('0'+sRandom.nextInt(range));
 	}
 	
 	public static String getDefaultKey() {

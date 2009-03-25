@@ -1,12 +1,13 @@
 package com.penbase.dma.Dalyo.Database;
 
+import android.database.Cursor;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import android.database.Cursor;
-
 public class Record {
-	private HashMap<Object, Object> currentRecord = null;
+	private HashMap<Object, Object> mCurrentRecord = null;
+	
 	public Record(String tableId, ArrayList<Object> fList, ArrayList<Object> vList) {
 		if ((fList != null) && (vList != null) && (fList.size() == vList.size())) {
 			Cursor cursorAllRows = DatabaseAdapter.selectQuery(tableId, null, null);
@@ -20,7 +21,7 @@ public class Record {
 				valueList.add(vList.get(i));
 			}
 			DatabaseAdapter.addQuery(Integer.valueOf(tableId), fieldList, valueList);
-			currentRecord = new HashMap<Object, Object>();
+			mCurrentRecord = new HashMap<Object, Object>();
 			valueList.remove(0);
 			Cursor cursor = DatabaseAdapter.selectQuery(tableId, fieldList, valueList);
 			cursor.moveToFirst();
@@ -29,7 +30,7 @@ public class Record {
 				String[] columnNames = cursor.getColumnNames();
 				int columnsRecordSize = columnNames.length;
 				for (int j=0; j<columnsRecordSize; j++) {
-					currentRecord.put(columnNames[j], cursor.getString(j));
+					mCurrentRecord.put(columnNames[j], cursor.getString(j));
 				}
 				cursor.moveToNext();
 			}
@@ -58,7 +59,7 @@ public class Record {
 	}
 	
 	public HashMap<Object, Object> getRecord() {
-		return currentRecord;
+		return mCurrentRecord;
 	}
 	
 	public static int countRecord(String table, Object filter) {
