@@ -3,8 +3,8 @@ package com.penbase.dma.Dalyo.Component.Custom;
 import android.content.Context;
 import android.text.Spannable;
 import android.text.method.NumberKeyListener;
-import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
@@ -14,18 +14,20 @@ import com.penbase.dma.R;
 
 public class NumberBox extends LinearLayout{
 	private AutoCompleteTextView mAct;
-	private ImageView view_up;
-	private ImageView view_down;
-	private int initialValue;
-	private int maxValue;
-	private int minValue;
+	private ImageView mView_up;
+	private ImageView mView_down;
+	private int mInitialValue;
+	private int mMaxValue;
+	private int mMinValue;
 	private static final char[] NUMBERCHARS = {'1','2','3','4','5','6','7','8','9','0'};
 	
-	public NumberBox(Context c) {
-		super(c);
-		this.setGravity(Gravity.CENTER_VERTICAL);
-		mAct = new AutoCompleteTextView(c);
-		mAct.setGravity(Gravity.CENTER);
+	public NumberBox(Context context) {
+		super(context);
+		
+		LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		inflater.inflate(R.layout.numberbox, this, true);
+		
+		mAct = (AutoCompleteTextView)findViewById(R.id.act);
 		mAct.setEnabled(false);
 		mAct.setKeyListener(new NumberKeyListener() {
 			@Override
@@ -41,47 +43,37 @@ public class NumberBox extends LinearLayout{
 						oldValue = mAct.getText().toString();
 					}
 					int newValue = Integer.valueOf(oldValue + "" + event.getDisplayLabel());
-					if (newValue < minValue) {
-						mAct.setText(String.valueOf(minValue));
-					} else if (newValue > maxValue) {
-						mAct.setText(String.valueOf(maxValue));
+					if (newValue < mMinValue) {
+						mAct.setText(String.valueOf(mMinValue));
+					} else if (newValue > mMaxValue) {
+						mAct.setText(String.valueOf(mMaxValue));
 					}
 				}
 				return super.lookup(event, content);
 			}
         });
 		
-		view_up = new ImageView(c);
-		view_up.setImageResource(R.drawable.plus);
-		view_up.setOnClickListener(new OnClickListener() {
+		mView_up = (ImageView)findViewById(R.id.up);
+		mView_up.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				if (Integer.valueOf(mAct.getText().toString()) < maxValue) {
+				if (Integer.valueOf(mAct.getText().toString()) < mMaxValue) {
 					int value = Integer.valueOf(mAct.getText().toString()) + 1;
 					mAct.setText(String.valueOf(value));
 				}
 			}
 		});
 		
-		view_down = new ImageView(c);
-		view_down.setImageResource(R.drawable.minus);
-		view_down.setOnClickListener(new OnClickListener() {
+		mView_down = (ImageView)findViewById(R.id.down);
+		mView_down.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				if (Integer.valueOf(mAct.getText().toString()) > minValue) {
+				if (Integer.valueOf(mAct.getText().toString()) > mMinValue) {
 					int value = Integer.valueOf(mAct.getText().toString()) - 1;
 					mAct.setText(String.valueOf(value));
 				}
 			}
 		});
-		
-
-		this.addView(mAct, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
-				LayoutParams.WRAP_CONTENT, 90));
-		this.addView(view_up, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
-				LayoutParams.WRAP_CONTENT));
-		this.addView(view_down, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
-				LayoutParams.WRAP_CONTENT));
 	}
 	
     private boolean hasChar(char c) {
@@ -107,15 +99,15 @@ public class NumberBox extends LinearLayout{
 	}
 	
 	public void setInitialValue(int value) {
-		this.initialValue = value;
-		mAct.setText(String.valueOf(initialValue));
+		this.mInitialValue = value;
+		mAct.setText(String.valueOf(mInitialValue));
 	}
 	
 	public void setMaxValue(int value) {
-		this.maxValue = value;
+		this.mMaxValue = value;
 	}
 	
 	public void setMinValue(int value) {
-		this.minValue = value;
+		this.mMinValue = value;
 	}
 }

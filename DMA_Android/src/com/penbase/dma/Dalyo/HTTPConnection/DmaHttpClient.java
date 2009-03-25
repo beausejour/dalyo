@@ -58,6 +58,7 @@ import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.View.ApplicationListView;
 import com.penbase.dma.View.ApplicationView;
 
+import android.os.Looper;
 import android.util.Log;
 
 public class DmaHttpClient{
@@ -196,10 +197,11 @@ public class DmaHttpClient{
 			}
 		}
 		catch (ProtocolException pe) {
-			mDma.showErrorMessage("HTTPExample: ProtocolException; " + pe.getMessage());
+			mDma.showMessage("HTTPExample: ProtocolException; " + pe.getMessage());
 		}
 		catch (IOException ioe) {
-			mDma.showErrorMessage("HTTPExample: IOException; " + ioe.getMessage());
+			Looper.prepare();
+			mDma.showMessage("HTTPExample: IOException; " + ioe.getMessage());
 		}
 
 		if (errorCode != ErrorCode.OK) {

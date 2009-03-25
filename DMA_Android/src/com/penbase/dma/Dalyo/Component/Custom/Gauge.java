@@ -5,6 +5,9 @@ import android.widget.SeekBar;
 
 import com.penbase.dma.Dalyo.Function.Function;
 
+/**
+ * Gauge object
+ */
 public class Gauge extends SeekBar {
 	private int mMinValue;
 	private String mFuncName;

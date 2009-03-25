@@ -20,6 +20,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * A form of application
+ */
 public class Form extends AbsoluteLayout{
 	private String mTableId;
 	private String mTitle;
@@ -34,6 +37,10 @@ public class Form extends AbsoluteLayout{
 				LayoutParams.FILL_PARENT, 0, 0));
 	}
 	
+	/**
+	 * Calls the given function before display this form
+	 * @param name Function name
+	 */
 	public void onLoad(String name) {
 		Function.createFunction(name);
 	}
@@ -70,6 +77,9 @@ public class Form extends AbsoluteLayout{
 		return mTitle;
 	}
 	
+	/**
+	 * Clears its subview's value
+	 */
 	public void clear() {
 		int viewLen = this.getChildCount();
 		for (int i=0; i<viewLen; i++) {
@@ -84,6 +94,11 @@ public class Form extends AbsoluteLayout{
 		}
 	}
 	
+	/**
+	 * Binds a record to its subviews
+	 * @param formId
+	 * @param record An HashMap {column name = value}
+	 */
 	public void setRecord(String formId, HashMap<Object, Object> record) {
 		int viewLen = this.getChildCount();
 		for (int i=0; i<viewLen; i++) {
@@ -99,6 +114,10 @@ public class Form extends AbsoluteLayout{
 		}
 	}
 	
+	/**
+	 * Refreshes subview's value with a given record
+	 * @param record
+	 */
 	public void refresh(HashMap<Object, Object> record) {
 		if (record.size() > 0) {
 			int viewLen = this.getChildCount();
@@ -112,6 +131,9 @@ public class Form extends AbsoluteLayout{
 		}
 	}
 	
+	/**
+	 * Sets its subviews' preview, only for Doodle and PictureBox
+	 */
 	public void setPreview() {
 		int viewLen = this.getChildCount();
 		for (int i=0; i<viewLen; i++) {

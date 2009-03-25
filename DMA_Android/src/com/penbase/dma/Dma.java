@@ -80,7 +80,6 @@ public class Dma extends Activity implements OnClickListener {
 		SharedPreferences settings = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE);
 		boolean rememberMe = settings.getBoolean("RememberMe", false);
 		mAlertDialog = new AlertDialog.Builder(this).create();
-		mAlertDialog.setTitle("Error");
 		if (!rememberMe) {
 			if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
 				setContentView(R.layout.login_layout);
@@ -175,7 +174,8 @@ public class Dma extends Activity implements OnClickListener {
 		}
 		mLoadApps = ProgressDialog.show(this, "Please wait...", "Connecting to server...", true, false);
 
-		new Thread(){
+		new Thread(new Runnable() {
+			@Override
 			public void run() {
 				if (mHandler != null) {
 					mServerResponse = new DmaHttpClient(Dma.this).Authentication(mTx_login.getText().toString().trim(),
@@ -183,7 +183,7 @@ public class Dma extends Activity implements OnClickListener {
 					mHandler.sendEmptyMessage(0);
 				}
 			}
-		}.start();
+		}).start();
 	}
 	
 	/**
@@ -192,15 +192,16 @@ public class Dma extends Activity implements OnClickListener {
 	private void callApplicationListView() {
 		if (mServerResponse == null) {
 			mLoadApps.dismiss();
-			mAlertDialog.setMessage("Connection failed!");
-			mAlertDialog.show();
+			mAlertDialog.setTitle("Error");
+			showMessage("Connection failed!");
 		} else if (mServerResponse.equals(String.valueOf(ErrorCode.UNAUTHORIZED))) {
 			mLoadApps.dismiss();
-			mAlertDialog.setMessage("Check your username or password!");
-			mAlertDialog.show();
+			mAlertDialog.setTitle("Error");
+			showMessage("Check your username or password!");
 		} else {
 			mLoadApps.setMessage("Loading application list...");
-			new Thread() {
+			new Thread(new Runnable() {
+				@Override
 				public void run() {
 					try {
 						// save user info
@@ -219,7 +220,7 @@ public class Dma extends Activity implements OnClickListener {
 					startActivityForResult(new Intent(Dma.this, ApplicationListView.class), 0);
 					Dma.this.finish();
 				}
-			}.start();
+			}).start();
 		}
 	}
 	
@@ -234,8 +235,7 @@ public class Dma extends Activity implements OnClickListener {
 	public boolean onOptionsItemSelected(int featureId, MenuItem item) {
 		switch (item.getItemId()) {
 			case 0:
-				mAlertDialog.setMessage("DMA Android version "+getVersion());
-				mAlertDialog.show();
+				showMessage("DMA Android version "+getVersion());
 				break;
 			case 1:
 				this.finish();
@@ -244,7 +244,7 @@ public class Dma extends Activity implements OnClickListener {
 		return super.onMenuItemSelected(featureId, item);
 	}
 	
-	public void showErrorMessage(String message) {
+	public void showMessage(String message) {
 		mAlertDialog.setMessage("Check your username or password!");
 		mAlertDialog.show();
 	}
