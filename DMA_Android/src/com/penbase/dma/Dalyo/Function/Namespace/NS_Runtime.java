@@ -1,14 +1,5 @@
 package com.penbase.dma.Dalyo.Function.Namespace;
 
-import org.w3c.dom.Element;
-
-import com.penbase.dma.Constant.Constant;
-import com.penbase.dma.Constant.ScriptAttribute;
-import com.penbase.dma.Constant.ScriptTag;
-import com.penbase.dma.Dalyo.Function.Function;
-import com.penbase.dma.View.ApplicationListView;
-import com.penbase.dma.View.ApplicationView;
-
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -17,6 +8,14 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.util.Log;
 
+import com.penbase.dma.Constant.Constant;
+import com.penbase.dma.Constant.ScriptAttribute;
+import com.penbase.dma.Constant.ScriptTag;
+import com.penbase.dma.Dalyo.Function.Function;
+import com.penbase.dma.View.ApplicationListView;
+import com.penbase.dma.View.ApplicationView;
+
+import org.w3c.dom.Element;
 
 public class NS_Runtime {
 	private static ProgressDialog syncProgressDialog;
@@ -31,8 +30,7 @@ public class NS_Runtime {
 		String title = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_CAPTION, ScriptAttribute.STRING).toString();
 		if (!title.equals(ScriptAttribute.CONST_NULL)) {
 			new AlertDialog.Builder(context).setMessage(message).setTitle(title).show();
-		}
-		else {
+		} else {
 			new AlertDialog.Builder(context).setMessage(message).show();
 		}
 	}
@@ -50,11 +48,9 @@ public class NS_Runtime {
 		String path = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_PATH, ScriptAttribute.STRING).toString();
 		if (path.contains("http://")) {
 			ApplicationView.getCurrentView().startActivityForResult(new Intent(Intent.ACTION_VIEW, Uri.parse(path)), 0);
-		}
-		else if (path.contains("tel:")) {
+		} else if (path.contains("tel:")) {
 			ApplicationView.getCurrentView().startActivityForResult(new Intent(Intent.ACTION_DIAL, Uri.parse(path)), 0);
-		}
-		else {
+		} else {
 			//Different types of file
 		}
 	}
@@ -88,8 +84,7 @@ public class NS_Runtime {
 			}
 			syncProgressDialog.dismiss();
 			return result;
-		}
-		else {
+		} else {
 			Log.i("info", "else ");
 			boolean importResult = ApplicationView.getCurrentClient().importData(
 					ApplicationListView.getApplicationsInfo().get("AppId"),

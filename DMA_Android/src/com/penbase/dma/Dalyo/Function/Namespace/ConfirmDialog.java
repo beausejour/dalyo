@@ -37,8 +37,7 @@ public class ConfirmDialog extends Thread{
 					message = element.getChildNodes().item(0).getNodeValue();
 					Log.i("info", "message "+message);
 				}
-			}
-			else if ((element.getNodeName().equals(ScriptTag.PARAMETER)) && 
+			} else if ((element.getNodeName().equals(ScriptTag.PARAMETER)) && 
 					(element.getAttribute(ScriptTag.NAME).equals(ScriptAttribute.PARAMETER_NAME_CAPTION))) {
 				if (element.getNodeType() != Node.TEXT_NODE) {
 					NodeList children = element.getChildNodes();

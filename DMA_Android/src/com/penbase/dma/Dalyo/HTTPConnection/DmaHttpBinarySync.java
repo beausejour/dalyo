@@ -1,5 +1,14 @@
 package com.penbase.dma.Dalyo.HTTPConnection;
 
+import android.util.Log;
+
+import com.penbase.dma.Dma;
+import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
+import com.penbase.dma.Constant.Constant;
+import com.penbase.dma.Constant.ErrorCode;
+import com.penbase.dma.View.ApplicationListView;
+import com.penbase.dma.View.ApplicationView;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -11,37 +20,37 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
-import android.util.Log;
-
-import com.penbase.dma.Dma;
-import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
-import com.penbase.dma.Constant.Constant;
-import com.penbase.dma.Constant.ErrorCode;
-import com.penbase.dma.View.ApplicationListView;
-import com.penbase.dma.View.ApplicationView;
-
+/**
+ * Manages synchronization HTTP connection
+ */
 public class DmaHttpBinarySync {
-	private String requestAction;
-	private String responseAction;
-	private String blobAction;
-	private byte[] inputbytes;
-	private String urlString;
-	private String cookie = null;
-	private String syncType;
+	private String mRequestAction;
+	private String mResponseAction;
+	private String mBlobAction;
+	private byte[] mInputbytes;
+	private String mUrlString;
+	private String mCookie = null;
+	private String mSyncType;
 	
 	public DmaHttpBinarySync(String url, String request, String blob, String response, byte[] inputbytes, String syncType) {
-		this.requestAction = request;
-		this.blobAction = blob;
-		this.responseAction = response;
-		this.inputbytes = inputbytes;
-		this.urlString = url;
-		this.syncType = syncType;
+		this.mRequestAction = request;
+		this.mBlobAction = blob;
+		this.mResponseAction = response;
+		this.mInputbytes = inputbytes;
+		this.mUrlString = url;
+		this.mSyncType = syncType;
 	}
 	
+	/**
+	 * Creates HTTP connection
+	 * @param action Connection parameters
+	 * @param bytes Data transfered in HTTP connection
+	 * @return Server's response
+	 */
 	private byte[] createConnection(String action, byte[] bytes) {
 		byte[] result = null;
 		try{
-			URL newUrl = new URL(urlString+"?"+action);
+			URL newUrl = new URL(mUrlString+"?"+action);
 			HttpURLConnection connection = (HttpURLConnection) newUrl.openConnection();
 			String boundary = DmaHttpClient.getBoundary();
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -69,8 +78,8 @@ public class DmaHttpBinarySync {
 			connection.setRequestProperty("Content-Type", "multipart/form-data" + "; boundary=" + boundary);
 			connection.setRequestProperty("Content-Length", "" + sbbytes.length);
 			connection.setRequestProperty("Connection", "close");
-			if (cookie != null) {
-				connection.setRequestProperty("Cookie", cookie);
+			if (mCookie != null) {
+				connection.setRequestProperty("Cookie", mCookie);
 			}
 			connection.setRequestMethod("POST");
 			connection.connect();
@@ -79,23 +88,26 @@ public class DmaHttpBinarySync {
 			dos.flush();
 			dos.close();
 			result = getData(connection);
-		}
-		catch (IOException ioe) {
+		} catch (IOException ioe) {
 			Log.i("info", "HTTPExample: IOException; " + ioe.getMessage());
 		}
 		return result;
 	}
 	
+	/**
+	 * Treats data sent from server
+	 * @return If well done
+	 */
 	public boolean run() {
 		boolean wellDone = false;
-		byte[] data = createConnection(requestAction, inputbytes);
+		byte[] data = createConnection(mRequestAction, mInputbytes);
 		String codeStr = getErrorCode(data);
-		Log.i("info", "code of action "+requestAction+" : "+Integer.valueOf(codeStr));
+		Log.i("info", "code of action "+mRequestAction+" : "+Integer.valueOf(codeStr));
 		if ((Integer.valueOf(codeStr) == ErrorCode.OK) || (Integer.valueOf(codeStr) == ErrorCode.CONTINUE)) {
 			int newLength = data.length - codeStr.length() - 1;
 			byte[] result = new byte[newLength];
 			System.arraycopy(data, codeStr.length()+1, result, 0, result.length);
-			if (syncType.equals("Import")) {
+			if (mSyncType.equals("Import")) {
 				DatabaseAdapter.beginTransaction();
 				byte[] returnByte = ApplicationView.getDataBase().syncImportTable(result);
 				
@@ -105,7 +117,7 @@ public class DmaHttpBinarySync {
 				if (blobNb > 0) {
 					for(int i=0; i<blobNb; i++) {
 						ArrayList<Object> blob = blobs.get(i);
-						String getBlobAction = blobAction;
+						String getBlobAction = mBlobAction;
 						getBlobAction += "&table="+blob.get(0);
 						getBlobAction += "&fieldid="+blob.get(1);
 						Log.i("info", "blob.get(2).toString() "+blob.get(2).toString());
@@ -127,14 +139,13 @@ public class DmaHttpBinarySync {
 				}
 				
 				//Get response
-				byte[] responsedata = createConnection(responseAction, returnByte);
+				byte[] responsedata = createConnection(mResponseAction, returnByte);
 				String codeReportStr = getErrorCode(responsedata);
 				Log.i("info", "report code "+Integer.valueOf(codeReportStr));
 				if (Integer.valueOf(codeReportStr) == ErrorCode.OK) {
 					DatabaseAdapter.commitTransaction();
 					wellDone = true;
-				}
-				else{
+				} else{
 					Log.i("info", "cancel transaction");
 					DatabaseAdapter.rollbackTransaction();
 				}
@@ -142,16 +153,15 @@ public class DmaHttpBinarySync {
 				if (Integer.valueOf(codeStr) == ErrorCode.CONTINUE) {
 					Log.i("info", "continue import action");
 					//continue to receive
-					wellDone = new DmaHttpBinarySync(urlString, requestAction, blobAction, responseAction, inputbytes, "Import").run();
+					wellDone = new DmaHttpBinarySync(mUrlString, mRequestAction, mBlobAction, mResponseAction, mInputbytes, "Import").run();
 				}
-			}
-			else if (syncType.equals("Export")) {
+			} else if (mSyncType.equals("Export")) {
 				//check if there is blob data to send
 				ArrayList<ArrayList<Object>> blobs = DatabaseAdapter.getBlobRecords();
 				int blobNb = blobs.size();
 				if (blobNb > 0) {
 					for (ArrayList<Object> blob : blobs) {
-						String sendAction = blobAction;
+						String sendAction = mBlobAction;
 						sendAction += "&fieldid="+blob.get(0);
 						sendAction += "&blob="+blob.get(1);
 						sendAction += "&format=jpg";
@@ -163,9 +173,9 @@ public class DmaHttpBinarySync {
 				}
 				DatabaseAdapter.updateIds(result);
 				
-				byte[] responsedata = createConnection(responseAction, null);
+				byte[] responsedata = createConnection(mResponseAction, null);
 				String codeResponseStr = getErrorCode(responsedata);
-				Log.i("info", "responsea "+responseAction+" code "+codeResponseStr);
+				Log.i("info", "responsea "+mResponseAction+" code "+codeResponseStr);
 				if (Integer.valueOf(codeResponseStr) == ErrorCode.OK) {
 					//DatabaseAdapter.cleanTables();
 					wellDone = true;
@@ -173,7 +183,7 @@ public class DmaHttpBinarySync {
 				
 				if (Integer.valueOf(codeStr) == ErrorCode.CONTINUE) {
 					//continue to receive
-					wellDone = new DmaHttpBinarySync(urlString, requestAction, blobAction, responseAction, result, "Export").run();
+					wellDone = new DmaHttpBinarySync(mUrlString, mRequestAction, mBlobAction, mResponseAction, result, "Export").run();
 				}
 			}
 		}
@@ -204,11 +214,9 @@ public class DmaHttpBinarySync {
 		        }
 		        // Close the input stream and return bytes
 		        is.close();
-		} 
-		catch (FileNotFoundException e) {
+		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		Log.i("info", "bytes length "+bytes.length);
@@ -216,8 +224,8 @@ public class DmaHttpBinarySync {
     }
 	
 	private byte[] getData(HttpURLConnection connection) {
-		if (cookie == null) {
-			cookie = connection.getHeaderField("Set-Cookie").split(";")[0];
+		if (mCookie == null) {
+			mCookie = connection.getHeaderField("Set-Cookie").split(";")[0];
 		}
 		InputStream in;
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();

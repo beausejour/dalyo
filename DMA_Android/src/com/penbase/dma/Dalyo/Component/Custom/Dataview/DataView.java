@@ -9,7 +9,6 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.Paint.Style;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -202,8 +201,7 @@ public class DataView extends LinearLayout implements OnGestureListener {
 	public void refresh(Object filter, Object order) {
 		if (mTableId == null) {
 			ApplicationView.errorDialog("Check your dataview setting");
-		}
-		else {
+		} else {
 			if (mAdapter.getItems().size() > 1) {
 				mAdapter.removeItems();
 				mAdapter = new DataViewAdapter();

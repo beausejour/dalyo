@@ -1,14 +1,14 @@
 package com.penbase.dma.Dalyo.Function.Namespace;
 
-import java.util.ArrayList;
-
-import org.w3c.dom.Element;
-
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.Dalyo.Function.DateTime.DalyoDate;
 import com.penbase.dma.Dalyo.Function.DateTime.Time;
+
+import org.w3c.dom.Element;
+
+import java.util.ArrayList;
 
 public class NS_List {
 	@SuppressWarnings("unchecked")
@@ -17,11 +17,9 @@ public class NS_List {
 		Object value = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
 		if (value instanceof DalyoDate) {
 			((ArrayList<Object>)Function.getVariablesMap().get(listName)).add(((DalyoDate)value).toString());
-		}
-		else if (value instanceof Time) {
+		} else if (value instanceof Time) {
 			((ArrayList<Object>)Function.getVariablesMap().get(listName)).add(((Time)value).toString());
-		}
-		else {
+		} else {
 			((ArrayList<Object>)Function.getVariablesMap().get(listName)).add(value);
 		}
 	}

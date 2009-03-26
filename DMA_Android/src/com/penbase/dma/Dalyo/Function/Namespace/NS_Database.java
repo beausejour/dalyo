@@ -1,9 +1,5 @@
 package com.penbase.dma.Dalyo.Function.Namespace;
 
-import java.util.ArrayList;
-
-import org.w3c.dom.Element;
-
 import android.app.ProgressDialog;
 
 import com.penbase.dma.Constant.ScriptAttribute;
@@ -12,6 +8,10 @@ import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
 import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.View.ApplicationListView;
 import com.penbase.dma.View.ApplicationView;
+
+import org.w3c.dom.Element;
+
+import java.util.ArrayList;
 
 public class NS_Database {
 	private static boolean exportResult = false;
@@ -46,8 +46,7 @@ public class NS_Database {
 					exportProgressDialog.dismiss();
 				}
 			}).start();
-		}
-		else {
+		} else {
 			exportResult = ApplicationView.getCurrentClient().exportData(
 					ApplicationListView.getApplicationsInfo().get("AppId"),
 					ApplicationListView.getApplicationsInfo().get("DbId"), 
@@ -88,8 +87,7 @@ public class NS_Database {
 					importProgressDialog.dismiss();
 				}				
 			}).start();
-		}
-		else {
+		} else {
 			importResult = ApplicationView.getCurrentClient().importData(
 					ApplicationListView.getApplicationsInfo().get("AppId"),
 					ApplicationListView.getApplicationsInfo().get("DbId"), 

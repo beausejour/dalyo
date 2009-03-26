@@ -212,8 +212,7 @@ public class Dma extends Activity implements OnClickListener {
 						editorPrefs.putString("ApplicationList", mServerResponse);
 						editorPrefs.commit();
 						createApplicationListFromXml(mServerResponse);
-					}
-					catch(Exception e) {
+					} catch(Exception e) {
 						e.printStackTrace();
 					}
 

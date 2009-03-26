@@ -1,14 +1,14 @@
 package com.penbase.dma.Dalyo.Function.Namespace;
 
-import org.w3c.dom.Element;
+import android.content.Context;
+import android.location.Location;
 
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Gps;
 import com.penbase.dma.Dalyo.Function.Function;
 
-import android.content.Context;
-import android.location.Location;
+import org.w3c.dom.Element;
 
 public class NS_Gps {
 	private static Gps gps;
@@ -17,8 +17,7 @@ public class NS_Gps {
 		Location location = (Location)Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.LOCATION, ScriptAttribute.LOCATION);
 		if (location != null) {
 			return location.getAltitude();
-		}
-		else {
+		} else {
 			return null;
 		}
 	}
@@ -27,8 +26,7 @@ public class NS_Gps {
 		Location location = (Location)Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.LOCATION, ScriptAttribute.LOCATION);
 		if (location != null) {
 			return location.getLatitude();
-		}
-		else {
+		} else {
 			return null;
 		}
 	}
@@ -41,8 +39,7 @@ public class NS_Gps {
 		Location location = (Location)Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.LOCATION, ScriptAttribute.LOCATION);
 		if (location != null) {
 			return location.getLongitude();
-		}
-		else {
+		} else {
 			return null;
 		}
 	}
@@ -51,8 +48,7 @@ public class NS_Gps {
 		Location location = (Location)Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.LOCATION, ScriptAttribute.LOCATION);
 		if (location != null) {
 			return location.getSpeed();
-		}
-		else {
+		} else {
 			return null;
 		}
 	}

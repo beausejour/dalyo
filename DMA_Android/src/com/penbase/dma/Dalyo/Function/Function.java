@@ -1,13 +1,5 @@
 package com.penbase.dma.Dalyo.Function;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
 import android.content.Context;
 import android.util.Log;
 
@@ -18,21 +10,29 @@ import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Function.Namespace.*;
 import com.penbase.dma.View.ApplicationView;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class Function {
-	private static Document behaviorDocument;
-	private static Context context;
-	private static HashMap<String, Object> varsMap;
-	private static HashMap<String, ArrayList<String>> funcsMap;
-	private static boolean isFirstTime;
+	private static Document sBehaviorDocument;
+	private static Context sContext;
+	private static HashMap<String, Object> sVarsMap;
+	private static HashMap<String, ArrayList<String>> sFuncsMap;
+	private static boolean sIsFirstTime;
 	//private static HashMap<String, String> parametersMap;
 	
 	public Function(Context c, Document document) {
-		context = c;
-		varsMap = new HashMap<String, Object>();
-		funcsMap = new HashMap<String, ArrayList<String>>();
+		sContext = c;
+		sVarsMap = new HashMap<String, Object>();
+		sFuncsMap = new HashMap<String, ArrayList<String>>();
 		//parametersMap = new HashMap<String, String>();
-		behaviorDocument = document;
-		isFirstTime = true;
+		sBehaviorDocument = document;
+		sIsFirstTime = true;
 		createMaps();
 	}
 	
@@ -41,14 +41,14 @@ public class Function {
 	 * Create 2 maps which contains variables and the positions of function
 	 * */
 	private void createMaps() {
-		NodeList funcList = behaviorDocument.getElementsByTagName(ScriptTag.FUNCTION);
+		NodeList funcList = sBehaviorDocument.getElementsByTagName(ScriptTag.FUNCTION);
 		int functionSize = funcList.getLength();
 		for (int i=0; i<functionSize; i++) {
 			Element funcElement = (Element) funcList.item(i);
 			ArrayList<String> funcParams = new ArrayList<String>();
 			funcParams.add(String.valueOf(i));
 			funcParams.add(funcElement.getAttribute(ScriptTag.OUTPUT));
-			funcsMap.put(funcElement.getAttribute(ScriptTag.NAME), funcParams);
+			sFuncsMap.put(funcElement.getAttribute(ScriptTag.NAME), funcParams);
 			NodeList nodesList = funcElement.getChildNodes();
 			int itemLen = nodesList.getLength();
 			for (int j=0; j<itemLen; j++) {
@@ -58,13 +58,13 @@ public class Function {
 				}
 			}
 		}
-		isFirstTime = false;
+		sIsFirstTime = false;
 	}
 	
 	public static void createFunction(String name) {
-		NodeList funcList = behaviorDocument.getElementsByTagName(ScriptTag.FUNCTION);
-		if (funcsMap.containsKey(name)) {
-			final Element funcElement = (Element) funcList.item(Integer.valueOf(funcsMap.get(name).get(0)));
+		NodeList funcList = sBehaviorDocument.getElementsByTagName(ScriptTag.FUNCTION);
+		if (sFuncsMap.containsKey(name)) {
+			final Element funcElement = (Element) funcList.item(Integer.valueOf(sFuncsMap.get(name).get(0)));
 			final NodeList nodeList = funcElement.getChildNodes();
 			int nodeLen = nodeList.getLength();
 		
@@ -79,26 +79,19 @@ public class Function {
 		Object result = null;
 		if (element.getNodeName().equals(ScriptTag.CALL)) {
 			result = Function.distributeCall(element);
-		}
-		else if (element.getNodeName().equals(ScriptTag.ELEMENT)) {
+		} else if (element.getNodeName().equals(ScriptTag.ELEMENT)) {
 			result = element.getAttribute(ScriptTag.ELEMENT_ID);
-		}
-		else if (element.getNodeName().equals(ScriptTag.FOREACH)) {
+		} else if (element.getNodeName().equals(ScriptTag.FOREACH)) {
 			forEach(element);
-		}
-		else if (element.getNodeName().equals(ScriptTag.IF)) {
+		} else if (element.getNodeName().equals(ScriptTag.IF)) {
 			result = ifCondition(element);
-		}
-		else if (element.getNodeName().equals(ScriptTag.KEYWORD)) {
+		} else if (element.getNodeName().equals(ScriptTag.KEYWORD)) {
 			result = Function.getKeyWord(element);
-		}
-		else if (element.getNodeName().equals(ScriptTag.RETURN)) {
+		} else if (element.getNodeName().equals(ScriptTag.RETURN)) {
 			result = getReturnValue(element);
-		}
-		else if (element.getNodeName().equals(ScriptTag.SET)) {
+		} else if (element.getNodeName().equals(ScriptTag.SET)) {
 			setVariable(element);
-		}
-		else if (element.getNodeName().equals(ScriptTag.VAR)) {
+		} else if (element.getNodeName().equals(ScriptTag.VAR)) {
 			//use only one format to save all types of variale's value
 			result = getVariableValue(element);
 		}
@@ -114,16 +107,14 @@ public class Function {
 			Element child = (Element)element.getChildNodes().item(i);
 			if (child.getNodeName().equals(ScriptTag.LIST)) {
 				list = distributeAction((Element)child.getChildNodes().item(0));
-			}
-			else if (child.getNodeName().equals(ScriptTag.CURSOR)) {
+			} else if (child.getNodeName().equals(ScriptTag.CURSOR)) {
 				cursorName = child.getAttribute(ScriptTag.NAME);
 				cursorType = child.getAttribute(ScriptTag.TYPE);
 				setVariable(child);
-			}
-			else if (child.getNodeName().equals(ScriptTag.DO)) {
+			} else if (child.getNodeName().equals(ScriptTag.DO)) {
 				for (Object eachValue : (ArrayList<?>)list) {
 					if (checkValueType(cursorType, eachValue)) {
-						varsMap.put(cursorName, eachValue);
+						sVarsMap.put(cursorName, eachValue);
 						int actionsNb = child.getChildNodes().getLength();
 						for (int j=0; j<actionsNb; j++) {
 							Element grandChild = (Element)child.getChildNodes().item(j);
@@ -141,29 +132,24 @@ public class Function {
 			if (value.toString().indexOf(".") != -1) {
 				try {
 					Double.valueOf(value.toString());
-				}
-				catch (NumberFormatException nfe) {
+				} catch (NumberFormatException nfe) {
 					result = false;
 					ApplicationView.errorDialog("Check your variable's type !");
 				}
-			}
-			else {
+			} else {
 				try {
 					Integer.valueOf(value.toString());
-				}
-				catch (NumberFormatException nfe) {
+				} catch (NumberFormatException nfe) {
 					result = false;
 					ApplicationView.errorDialog("Check your variable's type !");
 				}
 			}
-		}
-		else if (type.equals("string")) {
+		} else if (type.equals("string")) {
 			if ((value.getClass().toString().contains("HashMap")) || (value.getClass().toString().contains("ArrayList"))) {
 				result = false;
 				ApplicationView.errorDialog("Check your variable's type !");
 			}
-		}
-		else if (type.equals("list")) {
+		} else if (type.equals("list")) {
 			if (!value.getClass().toString().contains("ArrayList")) {
 				result = false;
 				ApplicationView.errorDialog("Check your variable's type !");
@@ -172,7 +158,11 @@ public class Function {
 		return result;
 	}
 	
-	//Find out the result of boolean list
+	/**
+	 * Finds out the result of boolean list
+	 * @param boolList
+	 * @return
+	 */
 	private static boolean checkConditions(boolean[] boolList) {
 		boolean result = false;
 		int size = boolList.length;
@@ -183,13 +173,11 @@ public class Function {
 			if (!boolList[i]) {
 				result = boolList[i];
 				i = size;
-			}
-			else {
+			} else {
 				if (boolList[i] == boolList[j]) {
 					checked++;
 					i++;
-				}
-				else {
+				} else {
 					i = size;
 				}
 			}
@@ -200,7 +188,13 @@ public class Function {
 		return result;
 	}
 	
-	//Compare the left value and the right value
+	/**
+	 * Compares the left value and the right value
+	 * @param left
+	 * @param operator
+	 * @param right
+	 * @return
+	 */
 	private static boolean checkCondition(Object left, Object operator, Object right) {
 		boolean result = false;
 		switch (Integer.valueOf(operator.toString())) {
@@ -214,11 +208,9 @@ public class Function {
 			case ScriptAttribute.EQUALS:
 				if ((left instanceof Integer) || (right instanceof Integer)) {
 					result = (Integer.valueOf(left.toString()) == (Integer.valueOf(right.toString())));
-				}
-				else if ((left == null) || (right == null)) {
+				} else if ((left == null) || (right == null)) {
 					result = (left == right);
-				}
-				else {
+				} else {
 					result = (left.equals(right));
 				}
 				break;
@@ -261,8 +253,7 @@ public class Function {
 					}
 				}
 				conditionCheck = checkConditions(checkList); 
-			}
-			else if (child.getNodeName().equals(ScriptTag.THEN)) {
+			} else if (child.getNodeName().equals(ScriptTag.THEN)) {
 				if (conditionCheck) {
 					Log.i("info", "pass to then");
 					NodeList thenchildren = child.getChildNodes();
@@ -272,8 +263,7 @@ public class Function {
 						result = distributeAction(thenChild);
 					} 
 				}
-			}
-			else if (child.getNodeName().equals(ScriptTag.ELSE)) {
+			} else if (child.getNodeName().equals(ScriptTag.ELSE)) {
 				if (!conditionCheck) {
 					Log.i("info", "pass to else");
 					NodeList elsechildren = child.getChildNodes();
@@ -290,9 +280,9 @@ public class Function {
 	
 	public static Object createCalculateFunction(String name, HashMap<Object, Object> record) {
 		Object result = null;
-		NodeList funcList = behaviorDocument.getElementsByTagName(ScriptTag.FUNCTION);
-		if (funcsMap.containsKey(name)) {
-			Element funcElement = (Element) funcList.item(Integer.valueOf(funcsMap.get(name).get(0)));
+		NodeList funcList = sBehaviorDocument.getElementsByTagName(ScriptTag.FUNCTION);
+		if (sFuncsMap.containsKey(name)) {
+			Element funcElement = (Element) funcList.item(Integer.valueOf(sFuncsMap.get(name).get(0)));
 			if (funcElement.getAttribute(ScriptTag.NAME).equals(name)) {
 				NodeList nodesList = funcElement.getChildNodes();
 				int itemLen = nodesList.getLength();
@@ -300,461 +290,342 @@ public class Function {
 					Element element = (Element) nodesList.item(i);
 					if ((element.getNodeName().equals(ScriptTag.PARAMETER)) &&
 							element.getAttribute(ScriptTag.TYPE).equals(ScriptAttribute.RECORD)) {
-						varsMap.put(element.getAttribute(ScriptTag.NAME), record);
-					}
-					else {
+						sVarsMap.put(element.getAttribute(ScriptTag.NAME), record);
+					} else {
 						distributeAction(element);
 					}
 				}
 			}
 		}
 		if (result == null) {
-			if (funcsMap.get(name).get(1).equals(ScriptAttribute.STRING)) {
+			if (sFuncsMap.get(name).get(1).equals(ScriptAttribute.STRING)) {
 				result = "";
 			}
 		}
 		return result;
 	}
 	
-	//Check element's name and namespace to call the right function 
+	/**
+	 * Checks element's name and namespace to call the right function
+	 * @param element
+	 * @return
+	 */
 	public static Object distributeCall(Element element) {
 		Object result = null;
 		Log.i("info", "namespace "+element.getAttribute(ScriptTag.NAMESPACE)+" function name "+element.getAttribute(ScriptTag.FUNCTION));
 		if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.COMPONENT)) {
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETLABEL)) {
 				result = NS_Component.GetLabel(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETVALUE)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETVALUE)) {
 				result = NS_Component.GetValue(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ISENABLED)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ISENABLED)) {
 				result = NS_Component.IsEnabled(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ISVISIBLE)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ISVISIBLE)) {
 				result = NS_Component.IsVisible(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_RESET)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_RESET)) {
 				NS_Component.ReSet(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETENABLED)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETENABLED)) {
 				NS_Component.SetEnabled(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETFOCUS)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETFOCUS)) {
 				NS_Component.SetFocus(element);
-			}
-			else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETTEXT)) || 
+			} else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETTEXT)) || 
 					(element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETLABEL))) {
 				NS_Component.SetText(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETVISIBLE)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETVISIBLE)) {
 				NS_Component.SetVisible(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETVALUE)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETVALUE)) {
 				NS_Component.SetValue(element);
 			}
-		}
-		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_COMPONENT_CHECK)) {
+		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_COMPONENT_CHECK)) {
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CHECK)) {
 				NS_ComponentCheckbox.Check(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ISCHECKED)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ISCHECKED)) {
 				result = NS_ComponentCheckbox.IsChecked(element);
 			}
-		}
-		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_COMPONENT_CB)) {
+		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_COMPONENT_CB)) {
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ADDITEM)) {
 				NS_ComponentCombobox.AddItem(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_COUNT)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_COUNT)) {
 				result = NS_ComponentCombobox.Count(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSELECTEDINDEX)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSELECTEDINDEX)) {
 				result = NS_ComponentCombobox.GetSelectedIndex(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSELECTEDRECORD)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSELECTEDRECORD)) {
 				result = NS_ComponentCombobox.GetSelectedRecord(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_REFRESH)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_REFRESH)) {
 				NS_ComponentCombobox.Refresh(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_REMOVEALLITEMS)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_REMOVEALLITEMS)) {
 				NS_ComponentCombobox.RemoveAllItems(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETSELECTEDINDEX)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETSELECTEDINDEX)) {
 				NS_ComponentCombobox.SetSelectedIndex(element);
 			}
-		}
-		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_COMPONENT_DV)) {
+		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_COMPONENT_DV)) {
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETCELLVALUE)) {
 				result = NS_ComponentDataview.GetCellValue(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETCOLUMNINDEX)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETCOLUMNINDEX)) {
 				result = NS_ComponentDataview.GetColumnIndex(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETROWCOUNT)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETROWCOUNT)) {
 				result = NS_ComponentDataview.GetRowCount(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSELECTEDRECORD)) {
-				if (!isFirstTime) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSELECTEDRECORD)) {
+				if (!sIsFirstTime) {
 					result = NS_ComponentDataview.GetSelectedRecord(element);
 				}
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSELECTEDROW)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSELECTEDROW)) {
 				result = NS_ComponentDataview.GetSelectedRow(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_REFRESH)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_REFRESH)) {
 				NS_ComponentDataview.Refresh(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETNUMERICFORMAT)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETNUMERICFORMAT)) {
 				NS_ComponentDataview.SetNumericFormat(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETSELECTEDROW)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETSELECTEDROW)) {
 				NS_ComponentDataview.SetSelectedRow(element);
 			}
-		}
-		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_COMPONENT_NB)) {
+		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_COMPONENT_NB)) {
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETMAX)) {
 				NS_ComponentNumberBox.SetMax(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETMIN)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETMIN)) {
 				NS_ComponentNumberBox.SetMin(element);
 			}
-		}
-		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_COMPONENT_RB)) {
+		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_COMPONENT_RB)) {
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ISSELECTED)) {
 				result = NS_ComponentRadioButton.IsSelected(element);
 			}
-		}
-		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_COMPONENT_TF)) {
+		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_COMPONENT_TF)) {
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETTEXT)) {
 				result = NS_ComponentTextField.GetText(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ISEMPTY)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ISEMPTY)) {
 				result = NS_ComponentTextField.IsEmpty(element);
 			}
-		}
-		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DATE)) {
+		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DATE)) {
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ADDMINUTES)) {
 				result = NS_Date.AddMinutes(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_FORMAT)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_FORMAT)) {
 				result = NS_Date.Format(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NOW)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NOW)) {
 				result = NS_Date.CurrentDate();
-				Log.i("info", "current date "+result);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NOWHOUR)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NOWHOUR)) {
 				result = NS_Date.CurrentHour();
 			}
-		}
-		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB)) {
+		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB)) {
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CANCELTRANSACTION)) {
 				NS_Database.CancelTransaction();
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_EXPORT)) {
-				if (!isFirstTime) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_EXPORT)) {
+				if (!sIsFirstTime) {
 					result = NS_Database.Export(element);
 				}
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_IMPORT)) {
-				if (!isFirstTime) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_IMPORT)) {
+				if (!sIsFirstTime) {
 					result =  NS_Database.Import(element);
 				}
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETTABLEBYNAME)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETTABLEBYNAME)) {
 				result = NS_Database.GetTableByName(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_STARTTRANSACTION)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_STARTTRANSACTION)) {
 				NS_Database.StartTransaction();
-			}
-
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_VALIDATETRANSACTION)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_VALIDATETRANSACTION)) {
 				NS_Database.ValidateTransaction();
 			}
-		}
-		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB_DATASET)) {
+		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB_DATASET)) {
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETVALUE)) {
 				result = NS_DatabaseDataset.GetValue(element);
 				Log.i("info", "result "+result);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SELECT)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SELECT)) {
 				result = NS_DatabaseDataset.Select(element);
 			}
-		}
-		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB_FIELD)) {
+		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB_FIELD)) {
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETFIELDNAME)) {
 				result = NS_DatabaseField.GetFieldName(element);
 			}
-		}
-		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB_TABLE)) {
+		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB_TABLE)) {
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_AVERAGE)) {
 				result = NS_DatabaseTable.Average(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CANCELNRECORD)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CANCELNRECORD)) {
 
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CLEAR)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CLEAR)) {
 				NS_DatabaseTable.Clear(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_COUNT)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_COUNT)) {
 				result = NS_DatabaseTable.Count(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_DELETERECORD)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_DELETERECORD)) {
 				NS_DatabaseTable.DeleteRecord(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_EDITRECORD)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_EDITRECORD)) {
 				NS_DatabaseTable.EditRecord(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETFIELDVALUE)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETFIELDVALUE)) {
 				result = NS_DatabaseTable.GetFieldValue(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETFIELDVALUEBYPRIMARYKEY)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETFIELDVALUEBYPRIMARYKEY)) {
 				result = NS_DatabaseTable.GetFieldValueByPrimaryKey(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETFILTEREDRECORDS)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETFILTEREDRECORDS)) {
 				result = NS_DatabaseTable.GetFilteredRecords(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETRECORD)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETRECORD)) {
 				result = NS_DatabaseTable.GetRecord(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETRECORDS)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETRECORDS)) {
 				result = NS_DatabaseTable.GetRecords(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_MAX)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_MAX)) {
 				result = NS_DatabaseTable.Max(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_MIN)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_MIN)) {
 				result = NS_DatabaseTable.Min(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NEWRECORD)) {
-				if (!isFirstTime) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NEWRECORD)) {
+				if (!sIsFirstTime) {
 					result = NS_DatabaseTable.CreateNewRecord(element);
 				}
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_STARTNEWRECORD)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_STARTNEWRECORD)) {
 
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SUM)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SUM)) {
 				result = NS_DatabaseTable.Sum(element);
 			}
-		}
-		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.FILTER)) {
+		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.FILTER)) {
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ADDCRITERIA)) {
 				NS_Filter.AddCriteria(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CLEAR)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CLEAR)) {
 				NS_Filter.Clear(element);
 			}
-		}
-		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.FORM)) {
+		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.FORM)) {
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CLEAR)) {
 				NS_Form.Clear(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETCURRENTFORM)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETCURRENTFORM)) {
 				result = NS_Form.GetCurrentForm(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NAVIGATE)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NAVIGATE)) {
 				NS_Form.Navigate(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETCURRENTRECORD)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETCURRENTRECORD)) {
 				NS_Form.SetCurrentRecord(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETTITLE)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETTITLE)) {
 				NS_Form.SetTitle(element);
 			}
-		}
-		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_GPS)) {
+		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_GPS)) {
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETALTITUDE)) {
 				result = NS_Gps.GetAltitude(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETLATITUDE)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETLATITUDE)) {
 				result = NS_Gps.GetLatitude(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETLOCATION)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETLOCATION)) {
 				result = NS_Gps.GetLocation();
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETLONGITUDE)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETLONGITUDE)) {
 				result = NS_Gps.GetLogitude(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSPEED)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSPEED)) {
 				result = NS_Gps.GetSpeed(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSTATUS)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSTATUS)) {
 				result = NS_Gps.GetStatus();
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_INIT)) {
-				NS_Gps.Init(context);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_STOP)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_INIT)) {
+				NS_Gps.Init(sContext);
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_STOP)) {
 				NS_Gps.Stop();
 			}
-		}
-		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.LIST)) {
+		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.LIST)) {
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ADD)) {
 				NS_List.AddValue(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CLEAR)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CLEAR)) {
 				NS_List.Clear(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GET)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GET)) {
 				result = NS_List.Get(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSIZE)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSIZE)) {
 				result = NS_List.Size(element);
 			}
-		}
-		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_MATH)) {
+		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_MATH)) {
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ABS)) {
 				result = NS_Math.Abs(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ADD)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ADD)) {
 				result = NS_Math.Sum(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CEIL)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CEIL)) {
 				result = NS_Math.Ceil(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_DIVISION)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_DIVISION)) {
 				result = NS_Math.Division(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_FLOOR)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_FLOOR)) {
 				result = NS_Math.Floor(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_FORMAT)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_FORMAT)) {
 				result = NS_Math.Format(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_MULTIPLE)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_MULTIPLE)) {
 				result = NS_Math.Multiple(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_PERCANTAGE)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_PERCANTAGE)) {
 				result = NS_Math.Percentage(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_RANDOM)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_RANDOM)) {
 				result = NS_Math.Random(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ROUND)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ROUND)) {
 				result = NS_Math.Round(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SUB)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SUB)) {
 				result = NS_Math.Subtract(element);
 			}
-			
-		}
-		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.OBJECT)) {
+		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.OBJECT)) {
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TOBOOLEAN)) {
-				if (!isFirstTime) {
+				if (!sIsFirstTime) {
 					result = NS_Object.ToBoolean(element);
 				}
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TODATE)) {
-				if (!isFirstTime) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TODATE)) {
+				if (!sIsFirstTime) {
 					result = NS_Object.ToDate(element);
 				}
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TOINT)) {
-				if (!isFirstTime) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TOINT)) {
+				if (!sIsFirstTime) {
 					result = NS_Object.ToInt(element);
 				}
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TONUMERIC)) {
-				if (!isFirstTime) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TONUMERIC)) {
+				if (!sIsFirstTime) {
 					result = NS_Object.ToNumeric(element);
 				}
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TOSTRING)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TOSTRING)) {
 				result = NS_Object.ToString(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TORECORD)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TORECORD)) {
 				result = NS_Object.ToRecord(element);
 			}
-		}
-		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.ORDER)) {
+		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.ORDER)) {
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ADDCRITERIA)) {
 				NS_Order.AddCriteria(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CLEAR)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CLEAR)) {
 				//NS_Order.Clear(element);
 			}
-		}
-		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_RUNTIME)) {
+		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_RUNTIME)) {
 			if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ALERT)) ||
 					(element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ERROR))) {
-				NS_Runtime.Error(context, element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_EXIT)) {
+				NS_Runtime.Error(sContext, element);
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_EXIT)) {
 				NS_Runtime.Exit(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_BROWSE)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_BROWSE)) {
 				NS_Runtime.Browse(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CONFIRM)) {
-				ConfirmDialog confirmDialog = new ConfirmDialog(element.getElementsByTagName(ScriptTag.PARAMETER), context);
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CONFIRM)) {
+				ConfirmDialog confirmDialog = new ConfirmDialog(element.getElementsByTagName(ScriptTag.PARAMETER), sContext);
 				confirmDialog.start();
 				try{
 					confirmDialog.join();
-				}
-				catch (InterruptedException e) {
+				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 				result = confirmDialog.getValue();
 				//Cancel the thread, because the stop() method is deprecated
 				//confirmDialog = null;
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETCURRENTUSER)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETCURRENTUSER)) {
 				result = NS_Runtime.GetCurrentUser(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_STARTAPP)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_STARTAPP)) {
 				NS_Runtime.StartApp(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SYNC)) {
-				if (!isFirstTime) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SYNC)) {
+				if (!sIsFirstTime) {
 					result = NS_Runtime.Synchronize(element);
 				}
 			}
-		}
-		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_STRING)) {
+		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_STRING)) {
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CONCAT)) {
 				result = NS_String.Concat(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_EXPLODE)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_EXPLODE)) {
 				result = NS_String.Explode(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_IMPLODE)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_IMPLODE)) {
 				result = NS_String.Implode(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_INDEXOF)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_INDEXOF)) {
 				result = NS_String.Indexof(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_LENGTH)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_LENGTH)) {
 				result = NS_String.Length(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_REPLACE)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_REPLACE)) {
 				result = NS_String.Replace(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SUBSTRING)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SUBSTRING)) {
 				result = NS_String.Substring(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TOLOWER)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TOLOWER)) {
 				result = NS_String.ToLower(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TOUPPER)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TOUPPER)) {
 				result = NS_String.ToUpper(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TRIM)) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TRIM)) {
 				result = NS_String.Trim(element);
 			}
-		}
-		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_TIMER)) {
+		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_TIMER)) {
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CANCEL)) {
 				NS_Timer.Cancel(element);
-			}
-			else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_START)) {
-				if (!isFirstTime) {
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_START)) {
+				if (!sIsFirstTime) {
 					result = NS_Timer.Start(element);
 				}
 			}
-		}
-		else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_USER)) {
+		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_USER)) {
 			if (element.getChildNodes().getLength() > 0) {
 				int childrenLen = element.getChildNodes().getLength();
 				for (int i=0; i<childrenLen; i++) {
@@ -772,20 +643,23 @@ public class Function {
 		return result;
 	}
 	
-	//Return variable's value
+	/**
+	 * Returns variable's value
+	 * @param item
+	 * @return
+	 */
 	public static Object getVariableValue(Element item) {
 		Object result = null;
-		if (varsMap.containsKey(item.getAttribute(ScriptTag.NAME))) {
-			result = varsMap.get(item.getAttribute(ScriptTag.NAME));
-		}
-		else {
+		if (sVarsMap.containsKey(item.getAttribute(ScriptTag.NAME))) {
+			result = sVarsMap.get(item.getAttribute(ScriptTag.NAME));
+		} else {
 			Node parent = item.getParentNode();
 			while (!parent.getNodeName().equals(ScriptTag.FUNCTION)) {
 				parent = parent.getParentNode();
 			}
 			String varName = ((Element) parent).getAttribute(ScriptTag.NAME)+"_"+item.getAttribute(ScriptTag.NAME);
-			if (varsMap.containsKey(varName)) {
-				result = varsMap.get(varName);
+			if (sVarsMap.containsKey(varName)) {
+				result = sVarsMap.get(varName);
 			}
 		}
 		return result;
@@ -801,20 +675,17 @@ public class Function {
 			if ((element.getAttribute(ScriptTag.TYPE).equals(ScriptAttribute.FILTER)) ||
 					(element.getAttribute(ScriptTag.TYPE).equals(ScriptAttribute.LIST)) ||
 					(element.getAttribute(ScriptTag.TYPE).equals(ScriptAttribute.ORDER))) {
-				varsMap.put(element.getAttribute(ScriptTag.NAME), new ArrayList<Object>());
+				sVarsMap.put(element.getAttribute(ScriptTag.NAME), new ArrayList<Object>());
+			} else {
+				sVarsMap.put(element.getAttribute(ScriptTag.NAME), null);
 			}
-			else {
-				varsMap.put(element.getAttribute(ScriptTag.NAME), null);
-			}
-		}
-		else if ((element.getChildNodes().getLength() == 1) && (element.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE)) {
+		} else if ((element.getChildNodes().getLength() == 1) && (element.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE)) {
 			Log.i("info", "1 child "+element.getChildNodes().item(0).getNodeValue());
-			varsMap.put(element.getAttribute(ScriptTag.NAME), element.getChildNodes().item(0).getNodeValue());	
-		}
-		else {
+			sVarsMap.put(element.getAttribute(ScriptTag.NAME), element.getChildNodes().item(0).getNodeValue());	
+		} else {
 			Object value = getValue(element, element.getChildNodes().item(0).getNodeName(), "", "");
 			Log.i("info", "prepare to add "+element.getAttribute(ScriptTag.NAME)+" in the var list its value is "+value);
-			varsMap.put(element.getAttribute(ScriptTag.NAME), value);
+			sVarsMap.put(element.getAttribute(ScriptTag.NAME), value);
 		}
 	}
 
@@ -824,17 +695,13 @@ public class Function {
 		if (element.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE) {
 			if (element.getChildNodes().item(0).getNodeValue().equals(ScriptAttribute.CONST_NULL)) {
 				result = null;
-			}
-			else if (element.getChildNodes().item(0).getNodeValue().equals(ScriptAttribute.CONST_TRUE)) {
+			} else if (element.getChildNodes().item(0).getNodeValue().equals(ScriptAttribute.CONST_TRUE)) {
 				result = true;
-			}
-			else if (element.getChildNodes().item(0).getNodeValue().equals(ScriptAttribute.CONST_FALSE)) {
+			} else if (element.getChildNodes().item(0).getNodeValue().equals(ScriptAttribute.CONST_FALSE)) {
 				result = false;
-			}
-			else if (element.getChildNodes().item(0).getNodeValue().equals(ScriptAttribute.CONST_GPS_SIGNAL_OK)) {
+			} else if (element.getChildNodes().item(0).getNodeValue().equals(ScriptAttribute.CONST_GPS_SIGNAL_OK)) {
 				result = GpsStatus.GPS_SIGNAL_OK;
-			}
-			else if (element.getChildNodes().item(0).getNodeValue().equals(ScriptAttribute.CONST_EMPTY_STRING)) {
+			} else if (element.getChildNodes().item(0).getNodeValue().equals(ScriptAttribute.CONST_EMPTY_STRING)) {
 				result = "";
 			}
 		}
@@ -861,7 +728,7 @@ public class Function {
 	}
 	
 	public static Context getContext() {
-		return context;
+		return sContext;
 	}
 	
 	private static String getReturnValue(Element element) {
@@ -888,8 +755,7 @@ public class Function {
 						if (item.getNodeName().equals(ScriptTag.VAR)) {
 							value = item.getAttribute(ScriptTag.NAME);
 						}
-					}
-					else if (child.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE) {
+					} else if (child.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE) {
 						
 					}
 				}
@@ -898,7 +764,14 @@ public class Function {
 		return value;
 	}
 	
-	//Return values of function's parameter
+	/**
+	 * Returns values of function's parameter
+	 * @param element
+	 * @param tag
+	 * @param name
+	 * @param type
+	 * @return
+	 */
 	public static Object getValue(Element element, String tag, String name, String type) {
 		Object value = null;
 		int itemsLen = element.getChildNodes().getLength();
@@ -910,26 +783,22 @@ public class Function {
 					if (child.getChildNodes().item(0).getNodeType() == Node.ELEMENT_NODE) {
 						Element item = (Element) child.getChildNodes().item(0);
 						value = distributeAction(item);
-					}
-					else if (child.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE) {
+					} else if (child.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE) {
 						value = child.getChildNodes().item(0).getNodeValue();
 					}
 				}
-			}
-			//Set variable
-			else if ((child.getNodeName().equals(tag)) && (name.equals("")) && (type.equals(""))) {
+			} else if ((child.getNodeName().equals(tag)) && (name.equals("")) && (type.equals(""))) {
+				//Set variable
 				value = distributeAction(child);
-			}
-			//Function parameters
-			else if ((child.getNodeName().equals(tag)) &&
+			} else if ((child.getNodeName().equals(tag)) &&
 					(child.getAttribute(ScriptTag.NAME).equals(name)) &&
 					(child.getAttribute(ScriptTag.TYPE).equals(type))) {
+				//Function parameters
 				if (child.getChildNodes().getLength() == 1) {
 					if (child.getChildNodes().item(0).getNodeType() == Node.ELEMENT_NODE) {
 						Element item = (Element) child.getChildNodes().item(0);
 						value = distributeAction(item);
-					}
-					else if (child.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE) {
+					} else if (child.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE) {
 						value = child.getChildNodes().item(0).getNodeValue();
 					}
 				}
@@ -939,6 +808,6 @@ public class Function {
 	}
 	
 	public static HashMap<String, Object> getVariablesMap() {
-		return varsMap;
+		return sVarsMap;
 	}
 }

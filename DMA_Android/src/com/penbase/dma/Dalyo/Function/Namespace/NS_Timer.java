@@ -1,13 +1,14 @@
 package com.penbase.dma.Dalyo.Function.Namespace;
 
-import java.util.HashMap;
-import java.util.Timer;
-import java.util.TimerTask;
-import org.w3c.dom.Element;
-
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Function.Function;
+
+import org.w3c.dom.Element;
+
+import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class NS_Timer {
 	private static HashMap<Integer, Timer> timerMap = new HashMap<Integer, Timer>(); 
@@ -25,8 +26,7 @@ public class NS_Timer {
 		long delayedValue;
 		if ((delayed == null) || (!((Boolean)delayed).booleanValue())) {
 			delayedValue = 0;
-		}
-		else {
+		} else {
 			delayedValue = interval * 1000;
 		}
 		Timer timer = new Timer();

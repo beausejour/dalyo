@@ -1,11 +1,11 @@
 package com.penbase.dma.Dalyo.Function.Namespace;
 
-import org.w3c.dom.Element;
-
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.View.ApplicationView;
+
+import org.w3c.dom.Element;
 
 public class NS_Component {
 	public static String GetLabel(Element element) {
@@ -17,8 +17,7 @@ public class NS_Component {
 		String componentId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT).toString();
 		if (ApplicationView.getComponents().containsKey(componentId)) {
 			return ApplicationView.getComponents().get(componentId).getValue();
-		}
-		else {
+		} else {
 			return null;
 		}
 	}

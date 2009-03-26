@@ -1,10 +1,5 @@
 package com.penbase.dma.Dalyo.Function.Namespace;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import org.w3c.dom.Element;
-
 import android.database.Cursor;
 
 import com.penbase.dma.Constant.DatabaseAttribute;
@@ -13,6 +8,11 @@ import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
 import com.penbase.dma.Dalyo.Database.Record;
 import com.penbase.dma.Dalyo.Function.Function;
+
+import org.w3c.dom.Element;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class NS_DatabaseTable {
 	public static String Average(Element element) {
@@ -110,8 +110,7 @@ public class NS_DatabaseTable {
 	public static HashMap<Object, Object> GetRecord(Element element) {
 		if (NS_DatabaseTable.GetRecords(element).size() > 0) {
 			return NS_DatabaseTable.GetRecords(element).get(0);
-		}
-		else {
+		} else {
 			return null;
 		}
 	}
