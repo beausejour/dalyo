@@ -37,6 +37,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_GETFIELDNAME = "getFieldName";
 	public static final String FUNCTION_GETFIELDVALUE = "getFieldValue";
 	public static final String FUNCTION_GETFIELDVALUEBYPRIMARYKEY = "getFieldValueByPrimaryKey";
+	public static final String FUNCTION_GETFILTEREDRECORD = "getFilteredRecord";
 	public static final String FUNCTION_GETFILTEREDRECORDS = "getFilteredRecords";
 	public static final String FUNCTION_GETLABEL = "getLabel";
 	public static final String FUNCTION_GETLATITUDE = "getLatitude";

@@ -101,6 +101,16 @@ public class NS_DatabaseTable {
 		return value;
 	}
 	
+	public static HashMap<Object, Object> GetFilteredRecord(Element element) {
+		String tableId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
+		Object filter = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FILTER, ScriptAttribute.FILTER);
+		if (getRecords(tableId, filter).size() > 0) {
+			return getRecords(tableId, filter).get(0);
+		} else {
+			return null;
+		}
+	}
+	
 	public static ArrayList<HashMap<Object, Object>> GetFilteredRecords(Element element) {
 		String tableId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
 		Object filter = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FILTER, ScriptAttribute.FILTER);

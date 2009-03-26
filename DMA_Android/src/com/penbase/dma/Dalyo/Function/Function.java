@@ -450,6 +450,8 @@ public class Function {
 				result = NS_DatabaseTable.GetFieldValue(element);
 			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETFIELDVALUEBYPRIMARYKEY)) {
 				result = NS_DatabaseTable.GetFieldValueByPrimaryKey(element);
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETFILTEREDRECORD)) {
+				result = NS_DatabaseTable.GetFilteredRecord(element);
 			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETFILTEREDRECORDS)) {
 				result = NS_DatabaseTable.GetFilteredRecords(element);
 			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETRECORD)) {
