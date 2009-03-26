@@ -104,11 +104,9 @@ public class Form extends AbsoluteLayout{
 		for (int i=0; i<viewLen; i++) {
 			if (this.getChildAt(i) instanceof ComboBox) {
 				((ComboBox)this.getChildAt(i)).setCurrentValue(formId, record);
-			}
-			else if (this.getChildAt(i) instanceof TextField) {
+			} else if (this.getChildAt(i) instanceof TextField) {
 				((TextField)this.getChildAt(i)).refresh(record);
-			}
-			else if (this.getChildAt(i) instanceof TextZone) {
+			} else if (this.getChildAt(i) instanceof TextZone) {
 				((TextZone)this.getChildAt(i)).refresh(record);
 			}
 		}

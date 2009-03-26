@@ -48,8 +48,7 @@ public class Record {
 				valueList.add(vList.get(i));
 			}
 			DatabaseAdapter.updateQuery(tableId, fieldList, valueList, record);
-		}
-		else {
+		} else {
 			//exception
 		}
 	}

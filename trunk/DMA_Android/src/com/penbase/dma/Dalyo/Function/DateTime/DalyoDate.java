@@ -5,22 +5,22 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class DalyoDate {
-	private int day;
-	private int month;
-	private int year;
-	private int hour;
-	private int minute;
-	private int second;
-	private Calendar calendar;
+	private int mDay;
+	private int mMonth;
+	private int mYear;
+	private int mHour;
+	private int mMinute;
+	private int mSecond;
+	private Calendar mCalendar;
 	
 	public DalyoDate() {
-		calendar = GregorianCalendar.getInstance();
-		this.day = calendar.get(Calendar.DATE);
-		this.month = calendar.get(Calendar.MONTH)+1;
-		this.year = calendar.get(Calendar.YEAR);
-		this.hour = calendar.get(Calendar.HOUR_OF_DAY);
-		this.minute = calendar.get(Calendar.MINUTE);
-		this.second = calendar.get(Calendar.SECOND);
+		mCalendar = GregorianCalendar.getInstance();
+		this.mDay = mCalendar.get(Calendar.DATE);
+		this.mMonth = mCalendar.get(Calendar.MONTH)+1;
+		this.mYear = mCalendar.get(Calendar.YEAR);
+		this.mHour = mCalendar.get(Calendar.HOUR_OF_DAY);
+		this.mMinute = mCalendar.get(Calendar.MINUTE);
+		this.mSecond = mCalendar.get(Calendar.SECOND);
 	}
 	
 	public Date toDate() {
@@ -28,7 +28,7 @@ public class DalyoDate {
 	}
 	
 	public String toString() {
-		return day+"/"+month+"/"+year+" "+hour+":"+minute+":"+second;
+		return mDay+"/"+mMonth+"/"+mYear+" "+mHour+":"+mMinute+":"+mSecond;
 	}
 	
 	public int toInt() {
@@ -36,12 +36,12 @@ public class DalyoDate {
 	}
 	
 	private long toLong() {
-		return new GregorianCalendar(year, month, day, hour, minute, second).getTimeInMillis();
+		return new GregorianCalendar(mYear, mMonth, mDay, mHour, mMinute, mSecond).getTimeInMillis();
 	}
 	
 	public DalyoDate addMinutes(int minutes) {
-		calendar.add(Calendar.MINUTE, minutes);
-		this.minute = calendar.get(Calendar.MINUTE);
+		mCalendar.add(Calendar.MINUTE, minutes);
+		this.mMinute = mCalendar.get(Calendar.MINUTE);
 		return this;
 	}
 }

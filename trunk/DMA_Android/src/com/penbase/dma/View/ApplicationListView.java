@@ -77,8 +77,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		ImageView imageView = (ImageView)findViewById(R.id.banner);
 		if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
 			imageView.setBackgroundResource(R.drawable.banniere_dalyo);
-		}
-		else if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+		} else if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
 			imageView.setBackgroundResource(R.drawable.banniere_dalyo1);
 		}
 		

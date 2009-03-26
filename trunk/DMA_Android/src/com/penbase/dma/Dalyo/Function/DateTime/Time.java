@@ -4,28 +4,28 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 public class Time {
-	private int day;
-	private int month;
-	private int year;
-	private int hour;
-	private int minute;
-	private int second;
+	private int mDay;
+	private int mMonth;
+	private int mYear;
+	private int mHour;
+	private int mMinute;
+	private int mSecond;
 	
 	public Time() {
 		Calendar calendar = Calendar.getInstance();
-		this.hour = calendar.get(Calendar.HOUR_OF_DAY);
-		this.minute = calendar.get(Calendar.MINUTE);
-		this.second = calendar.get(Calendar.SECOND);
-		this.day = calendar.get(Calendar.DATE);
-		this.month = calendar.get(Calendar.MONTH)+1;
-		this.year = calendar.get(Calendar.YEAR);
+		this.mHour = calendar.get(Calendar.HOUR_OF_DAY);
+		this.mMinute = calendar.get(Calendar.MINUTE);
+		this.mSecond = calendar.get(Calendar.SECOND);
+		this.mDay = calendar.get(Calendar.DATE);
+		this.mMonth = calendar.get(Calendar.MONTH)+1;
+		this.mYear = calendar.get(Calendar.YEAR);
 	}
 	
 	public String toString() {
-		return hour+":"+minute+":"+second;
+		return mHour+":"+mMinute+":"+mSecond;
 	}
 	
 	public int toInt() {
-		return new Long(new GregorianCalendar(year, month, day, hour, minute, second).getTimeInMillis()).intValue();
+		return new Long(new GregorianCalendar(mYear, mMonth, mDay, mHour, mMinute, mSecond).getTimeInMillis()).intValue();
 	}
 }

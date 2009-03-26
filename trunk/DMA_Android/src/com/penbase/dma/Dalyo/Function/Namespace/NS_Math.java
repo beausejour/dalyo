@@ -1,26 +1,24 @@
 package com.penbase.dma.Dalyo.Function.Namespace;
 
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.util.Random;
-
-import org.w3c.dom.Element;
-
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Function.Function;
+
+import org.w3c.dom.Element;
+
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.util.Random;
 
 public class NS_Math {
 	public static Object Abs(Element element) {
 		Object value = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.PARAMETER_TYPE_NUMERIC);
 		if (value.toString().indexOf(".") != -1) {
 			return Math.abs(Double.valueOf(value.toString()));
-		}
-		else if (value.toString().indexOf(",") != -1) {
+		} else if (value.toString().indexOf(",") != -1) {
 			Object result = Math.abs(Double.valueOf(value.toString().replace(",", ".")));
 			return result.toString().replace(".", ",");
-		}
-		else {
+		} else {
 			return Math.abs(Integer.valueOf(value.toString()));
 		}
 	}
@@ -38,18 +36,15 @@ public class NS_Math {
 		Object right = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_B, ScriptAttribute.PARAMETER_TYPE_NUMERIC);
 		if ((left.toString().indexOf(".") != -1) || (right.toString().indexOf(".") != -1)) {
 			return (Double.valueOf(left.toString()) / Double.valueOf(right.toString()));
-		}
-		else if ((left.toString().indexOf(",") != -1) || (right.toString().indexOf(",") != -1)) {
+		} else if ((left.toString().indexOf(",") != -1) || (right.toString().indexOf(",") != -1)) {
 			left = left.toString().replace(",", ".");
 			right = right.toString().replace(",", ".");
 			double result = (Double.valueOf(left.toString()) / Double.valueOf(right.toString()));
 			return String.valueOf(result).replace(".", ",");
-		}
-		else {
+		} else {
 			if ((Integer.valueOf(left.toString()) % Integer.valueOf(right.toString())) == 0) {
 				return (Integer.valueOf(left.toString()) / Integer.valueOf(right.toString()));
-			}
-			else {
+			} else {
 				return (Double.valueOf(left.toString()) / Double.valueOf(right.toString()));
 			}
 		}
@@ -79,30 +74,25 @@ public class NS_Math {
 			DecimalFormat transform = new DecimalFormat(decimalString);
 			if (value.toString().indexOf(",") != -1) {
 				result = transform.format(Double.parseDouble(value.toString().replace(",", ".")));
-			}
-			else {
+			} else {
 				result = transform.format(Double.parseDouble(value.toString()));
 				result = result.replace(",", ".");
 			}
-		}
-		else {
+		} else {
 			result = value.toString();
 		}
 		if (!hasThousandsSep) {
 			return result;
-		}
-		else {
+		} else {
 			if (result.indexOf(".") != -1) {
 				if (result.indexOf(".") > 3) {
 					result = result.substring(0, result.indexOf(".") - 3) + " " + result.substring(result.indexOf(".") - 3, result.length());
 				}
-			}
-			else if (result.indexOf(",") != -1) {
+			} else if (result.indexOf(",") != -1) {
 				if (result.indexOf(",") > 3) {
 					result = result.substring(0, result.indexOf(",") - 3) + " " + result.substring(result.indexOf(",") - 3, result.length());
 				}
-			}
-			else {
+			} else {
 				if (result.length() > 3) {
 					result = result.substring(0, result.length() - 3) + " " + result.substring(result.length() - 3, result.length());
 				}
@@ -119,8 +109,7 @@ public class NS_Math {
 			right = right.toString().replace(",", ".");
 			double result = (Double.valueOf(left.toString()) * Double.valueOf(right.toString()));
 			return String.valueOf(result).replace(".", ",");
-		}
-		else {
+		} else {
 			return new BigDecimal(left.toString()).multiply(new BigDecimal(right.toString()));
 		}
 	}
@@ -136,11 +125,9 @@ public class NS_Math {
 		Object min = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_MIN, ScriptAttribute.PARAMETER_TYPE_INT);
 		if ((max == null) && (min == null)) {
 			return new Random().nextInt();
-		}
-		else if (min == null) {
+		} else if (min == null) {
 			return new Random().nextInt(Integer.valueOf(max.toString()));
-		}
-		else {
+		} else {
 			return Double.valueOf(Integer.valueOf(min.toString()) * Math.random()).intValue(); 
 		}
 	}
@@ -161,13 +148,11 @@ public class NS_Math {
 			DecimalFormat transform = new DecimalFormat(decimalString);
 			if (value.toString().indexOf(",") != -1) {
 				result = transform.format(Double.parseDouble(value.toString().replace(",", ".")));
-			}
-			else {
+			} else {
 				result = transform.format(Double.parseDouble(value.toString()));
 				result = result.toString().replace(",", ".");
 			}
-		}
-		else {
+		} else {
 			result = value.toString();
 		}
 		return result;
@@ -178,14 +163,12 @@ public class NS_Math {
 		Object right = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_B, ScriptAttribute.PARAMETER_TYPE_NUMERIC);
 		if ((left.toString().indexOf(".") != -1) || (right.toString().indexOf(".") != -1)) {
 			return (Double.valueOf(left.toString()) - Double.valueOf(right.toString()));
-		}
-		else if ((left.toString().indexOf(",") != -1) || (right.toString().indexOf(",") != -1)) {
+		} else if ((left.toString().indexOf(",") != -1) || (right.toString().indexOf(",") != -1)) {
 			left = left.toString().replace(",", ".");
 			right = right.toString().replace(",", ".");
 			double result = (Double.valueOf(left.toString()) - Double.valueOf(right.toString()));
 			return String.valueOf(result).replace(".", ",");
-		}
-		else {
+		} else {
 			return (Integer.valueOf(left.toString()) - Integer.valueOf(right.toString()));
 		}
 	}
@@ -195,14 +178,12 @@ public class NS_Math {
 		Object right = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_B, ScriptAttribute.PARAMETER_TYPE_NUMERIC);
 		if ((left.toString().indexOf(".") != -1) || (right.toString().indexOf(".") != -1)) {
 			return (Double.valueOf(left.toString()) + Double.valueOf(right.toString()));
-		}
-		else if ((left.toString().indexOf(",") != -1) || (right.toString().indexOf(",") != -1)) {
+		} else if ((left.toString().indexOf(",") != -1) || (right.toString().indexOf(",") != -1)) {
 			left = left.toString().replace(",", ".");
 			right = right.toString().replace(",", ".");
 			double result = (Double.valueOf(left.toString()) + Double.valueOf(right.toString()));
 			return String.valueOf(result).replace(".", ",");
-		}
-		else {
+		} else {
 			return (Integer.valueOf(left.toString()) + Integer.valueOf(right.toString()));
 		}
 	}

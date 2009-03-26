@@ -10,8 +10,7 @@ public class KeyGenerator {
 		for (int i=0; i<16; i++) {
 			if (sRandom.nextInt(2) == 0) {
 				result += getAlphabet();
-			}
-			else {
+			} else {
 				result += getNumeric();
 			}
 			if ((((i+1) % 4) == 0) && (i != 15)) {

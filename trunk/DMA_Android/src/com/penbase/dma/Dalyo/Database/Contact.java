@@ -13,6 +13,9 @@ import com.penbase.dma.View.ApplicationView;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Reads phone's contact information
+ */
 public class Contact {
 	private Cursor mContactsCursor;
 	private String mTableId;
@@ -65,47 +68,33 @@ public class Contact {
 					fieldsList.add(Integer.valueOf(key));
 					if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.LASTNAME) {
 						record.add(mLastName);
-					}
-					else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.FIRSTNAME) {
+					} else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.FIRSTNAME) {
 						record.add(mFirstName);
-					}
-					else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.PHONEWORK) {
+					} else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.PHONEWORK) {
 						record.add(mWorkPhone);
-					}
-					else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.HOMEPHONE) {
+					} else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.HOMEPHONE) {
 						record.add(mHomePhone);
-					}
-					else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.MOBILEPHONE) {
+					} else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.MOBILEPHONE) {
 						record.add(mMobilePhone);
-					}
-					else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.PHONE2WORK) {
+					} else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.PHONE2WORK) {
 						record.add(mOtherPhone);
-					}
-					else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.FAXWORK) {
+					} else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.FAXWORK) {
 						record.add(mFaxWork);
-					}
-					else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.COMPANYPHONE) {
+					} else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.COMPANYPHONE) {
 						record.add(mCompanyPhone);
-					}
-					else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.EMAIL) {
+					} else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.EMAIL) {
 						record.add(mEmail);
-					}
-					else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.EMAILWORK) {
+					} else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.EMAILWORK) {
 						record.add(mEmailWork);
-					}
-					else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.IMWORK) {
+					} else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.IMWORK) {
 						record.add(mImWork);
-					}
-					else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.STREET) {
+					} else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.STREET) {
 						record.add(mStreet);
-					}
-					else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.STREETWORK) {
+					} else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.STREETWORK) {
 						record.add(mStreetWork);
-					}
-					else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.COMPANY) {
+					} else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.COMPANY) {
 						record.add(mCompany);
-					}
-					else {
+					} else {
 						record.add(null);
 					}
 				}
@@ -128,8 +117,7 @@ public class Contact {
 						mLastName = name.substring(name.indexOf(" ")+1, name.length());
 					}
 				}
-			}
-			else if (column.equals(People._ID)) {
+			} else if (column.equals(People._ID)) {
 				String whereClause = "person="+mContactsCursor.getString(mContactsCursor.getColumnIndex(column));
 				
 				String[] phonesProjection = new String[] {Phones.NUMBER, Phones.TYPE};
