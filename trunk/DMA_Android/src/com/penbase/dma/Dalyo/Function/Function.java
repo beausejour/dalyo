@@ -425,7 +425,6 @@ public class Function {
 		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB_DATASET)) {
 			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETVALUE)) {
 				result = NS_DatabaseDataset.GetValue(element);
-				Log.i("info", "result "+result);
 			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SELECT)) {
 				result = NS_DatabaseDataset.Select(element);
 			}
@@ -444,8 +443,12 @@ public class Function {
 				result = NS_DatabaseTable.Count(element);
 			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_DELETERECORD)) {
 				NS_DatabaseTable.DeleteRecord(element);
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_DELETERECORDS)) {
+				NS_DatabaseTable.DeleteRecords(element);
 			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_EDITRECORD)) {
 				NS_DatabaseTable.EditRecord(element);
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETFIELDS)) {
+				result = NS_DatabaseTable.GetFields(element);
 			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETFIELDVALUE)) {
 				result = NS_DatabaseTable.GetFieldValue(element);
 			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETFIELDVALUEBYPRIMARYKEY)) {

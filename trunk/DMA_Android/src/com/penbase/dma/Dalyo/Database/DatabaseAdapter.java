@@ -32,9 +32,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class DatabaseAdapter {
-	//private final Document dbDocument;
 	private Document mDbDocument;
-	//private final Context context;
 	private Context mContext;
 	private static SQLiteDatabase sSqlite = null;
 	private static HashMap<String, ArrayList<String>> sTablesMap;
