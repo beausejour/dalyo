@@ -54,6 +54,17 @@ public class NS_DatabaseTable {
 		Record.deleteRecord(tableId, record);
 	}
 	
+	public static void DeleteRecords(Element element) {
+		String tableId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
+		Object filter = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FILTER, ScriptAttribute.FILTER);
+		ArrayList<HashMap<Object, Object>> records = getRecords(tableId, filter);
+		if (records.size() > 0) {
+			for (HashMap<Object, Object> record : records) {
+				Record.deleteRecord(tableId, record);
+			}
+		}
+	}
+	
 	@SuppressWarnings("unchecked")
 	public static void EditRecord(Element element) {
 		String tableId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
@@ -61,6 +72,18 @@ public class NS_DatabaseTable {
 		ArrayList<Object> fieldList = (ArrayList<Object>) Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_FIELDS, ScriptAttribute.LIST);
 		ArrayList<Object> valueList = (ArrayList<Object>) Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUES, ScriptAttribute.LIST);
 		Record.editRecord(tableId, record, fieldList, valueList);
+	}
+	
+	public static ArrayList<Object> GetFields(Element element) {
+		String tableId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
+		ArrayList<String> fields = DatabaseAdapter.getTablesMap().get(tableId);
+		ArrayList<Object> result = new ArrayList<Object>();
+		if (fields.size() > 0) {
+			for (String field : fields) {
+				result.add(field.split("_")[1]);
+			}
+		}
+		return result;
 	}
 	
 	@SuppressWarnings("unchecked")

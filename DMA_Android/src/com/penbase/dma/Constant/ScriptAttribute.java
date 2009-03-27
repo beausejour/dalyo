@@ -20,6 +20,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_CONFIRM = "confirm";
 	public static final String FUNCTION_COUNT = "count";
 	public static final String FUNCTION_DELETERECORD = "deleteRecord";
+	public static final String FUNCTION_DELETERECORDS = "deleteRecords";
 	public static final String FUNCTION_DIVISION = "div";
 	public static final String FUNCTION_EDITRECORD = "editRecord";
 	public static final String FUNCTION_ERROR = "error";
@@ -35,6 +36,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_GETCURRENTFORM = "getCurrentForm";
 	public static final String FUNCTION_GETCURRENTUSER = "getCurrentUser";
 	public static final String FUNCTION_GETFIELDNAME = "getFieldName";
+	public static final String FUNCTION_GETFIELDS = "getFields";
 	public static final String FUNCTION_GETFIELDVALUE = "getFieldValue";
 	public static final String FUNCTION_GETFIELDVALUEBYPRIMARYKEY = "getFieldValueByPrimaryKey";
 	public static final String FUNCTION_GETFILTEREDRECORD = "getFilteredRecord";
