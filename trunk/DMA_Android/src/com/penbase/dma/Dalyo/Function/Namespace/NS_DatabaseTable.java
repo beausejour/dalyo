@@ -13,6 +13,7 @@ import org.w3c.dom.Element;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 public class NS_DatabaseTable {
 	public static String Average(Element element) {
@@ -72,6 +73,41 @@ public class NS_DatabaseTable {
 		ArrayList<Object> fieldList = (ArrayList<Object>) Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_FIELDS, ScriptAttribute.LIST);
 		ArrayList<Object> valueList = (ArrayList<Object>) Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUES, ScriptAttribute.LIST);
 		Record.editRecord(tableId, record, fieldList, valueList);
+	}
+	
+	public static String GetFieldByName(Element element) {
+		String tableId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
+		String fieldName = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_FIELDNAME, ScriptAttribute.STRING).toString();
+		ArrayList<String> checkFieldsId = new ArrayList<String>();
+		HashMap<String, String> filedsName = DatabaseAdapter.getFieldsNameMap();
+		Iterator<String> iterador = filedsName.keySet().iterator();
+		while (iterador.hasNext()) {
+			String key = iterador.next().toString();
+			if (filedsName.get(key).equals(fieldName)) {
+				checkFieldsId.add(key);
+			}
+		}
+		
+		ArrayList<String> fields = DatabaseAdapter.getTablesMap().get(tableId);
+		ArrayList<Object> fieldsId = new ArrayList<Object>();
+		if (fields.size() > 0) {
+			for (String field : fields) {
+				fieldsId.add(field.split("_")[1]);
+			}
+		}
+		
+		String fieldId = "";
+		int fieldsIdSize = checkFieldsId.size();
+		int i = 0;
+		while (i < fieldsIdSize) {
+			String fid = checkFieldsId.get(i);
+			if (fieldsId.contains(fid)) {
+				fieldId = fid;
+				i = fieldsIdSize;
+			}
+			i ++;
+		}
+		return fieldId;
 	}
 	
 	public static ArrayList<Object> GetFields(Element element) {

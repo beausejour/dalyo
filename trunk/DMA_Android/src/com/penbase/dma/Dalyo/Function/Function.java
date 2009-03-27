@@ -447,6 +447,8 @@ public class Function {
 				NS_DatabaseTable.DeleteRecords(element);
 			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_EDITRECORD)) {
 				NS_DatabaseTable.EditRecord(element);
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETFIELDBYNAME)) {
+				result = NS_DatabaseTable.GetFieldByName(element);
 			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETFIELDS)) {
 				result = NS_DatabaseTable.GetFields(element);
 			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETFIELDVALUE)) {

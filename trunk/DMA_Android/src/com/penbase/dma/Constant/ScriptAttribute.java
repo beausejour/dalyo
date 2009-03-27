@@ -35,6 +35,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_GETCOLUMNINDEX = "getColumnIndex";
 	public static final String FUNCTION_GETCURRENTFORM = "getCurrentForm";
 	public static final String FUNCTION_GETCURRENTUSER = "getCurrentUser";
+	public static final String FUNCTION_GETFIELDBYNAME = "getFieldByName";
 	public static final String FUNCTION_GETFIELDNAME = "getFieldName";
 	public static final String FUNCTION_GETFIELDS = "getFields";
 	public static final String FUNCTION_GETFIELDVALUE = "getFieldValue";
@@ -151,6 +152,7 @@ public class ScriptAttribute {
 	public static final String PARAMETER_NAME_ENABLE = "enable";
 	public static final String PARAMETER_NAME_END = "end";
 	public static final String PARAMETER_NAME_FACELESS = "faceless";
+	public static final String PARAMETER_NAME_FIELDNAME = "fieldname";
 	public static final String PARAMETER_NAME_FIELDS = "fields";
 	public static final String PARAMETER_NAME_FILTERS = "filters";
 	public static final String PARAMETER_NAME_FORMAT = "format";
