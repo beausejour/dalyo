@@ -26,7 +26,8 @@
 		android:src="@drawable/banniere_dalyo" />
 	<TextView android:id="@+id/label1" 
 		android:layout_width="fill_parent"
-		android:layout_height="wrap_content" 
+		android:layout_height="wrap_content"
+		android:layout_marginLeft="5px"
 		android:textColor="#000044" 
 		android:text="@string/login" />
 	<EditText android:id="@+id/textLogin" 
@@ -38,7 +39,8 @@
 	<TextView android:id="@+id/label2" 
 		android:layout_marginTop="10px"
 		android:layout_width="fill_parent"
-		android:layout_height="wrap_content" 
+		android:layout_height="wrap_content"
+		android:layout_marginLeft="5px"
 		android:textColor="#000044"
 		android:layout_below="@+id/textLogin" 
 		android:text="@string/pwd" />

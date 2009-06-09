@@ -12,7 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.MenuItem.OnMenuItemClickListener;
-import android.widget.AbsoluteLayout;
+import android.widget.RelativeLayout;
 import android.graphics.Color;
 
 import com.penbase.dma.Constant.DesignTag;
@@ -106,25 +106,14 @@ public class ApplicationView extends Activity {
 		sClient = new DmaHttpClient();
 		sClient.checkXmlFiles();
 		sClientLogin = login;
-		sBehaviorDocument = sClient.getBehavior(ApplicationListView.getApplicationsInfo().get("AppId"),
+		String urlRequest = sClient.generateRegularUrlRequest(ApplicationListView.getApplicationsInfo().get("AppId"),
 				ApplicationListView.getApplicationsInfo().get("AppVer"),
 				ApplicationListView.getApplicationsInfo().get("AppBuild"),
 				ApplicationListView.getApplicationsInfo().get("SubId"), login, pwd);
-		
-		sDesignDoc = sClient.getDesign(ApplicationListView.getApplicationsInfo().get("AppId"),
-				ApplicationListView.getApplicationsInfo().get("AppVer"),
-				ApplicationListView.getApplicationsInfo().get("AppBuild"),
-				ApplicationListView.getApplicationsInfo().get("SubId"), login, pwd);
-		
-		sClient.getResources(ApplicationListView.getApplicationsInfo().get("AppId"),
-				ApplicationListView.getApplicationsInfo().get("AppVer"),
-				ApplicationListView.getApplicationsInfo().get("AppBuild"),
-				ApplicationListView.getApplicationsInfo().get("SubId"),login, pwd);
-		
-		sDbDoc = sClient.getDB(ApplicationListView.getApplicationsInfo().get("AppId"),
-				ApplicationListView.getApplicationsInfo().get("AppVer"),
-				ApplicationListView.getApplicationsInfo().get("AppBuild"),
-				ApplicationListView.getApplicationsInfo().get("SubId"), login, pwd);
+		sBehaviorDocument = sClient.getBehavior(urlRequest);
+		sDesignDoc = sClient.getDesign(urlRequest);
+		sClient.getResources(urlRequest);
+		sDbDoc = sClient.getDB(urlRequest);
 	}
 
 	/**
@@ -344,36 +333,39 @@ public class ApplicationView extends Activity {
 					mComponent.setView();
 					sComponentsMap.put(element.getAttribute(DesignTag.COMPONENT_COMMON_ID), mComponent);
 					
+					View componentView = mComponent.getView();
 					if (element.hasAttribute(DesignTag.COMPONENT_COMMON_ENABLE)) {
-						mComponent.getView().setEnabled(false);
+						componentView.setEnabled(false);
 					}
 					if (element.hasAttribute(DesignTag.COMPONENT_COMMON_VISIBLE)) {
-						mComponent.getView().setVisibility(View.INVISIBLE);
+						componentView.setVisibility(View.INVISIBLE);
 					}
 					
 					if (sCurrentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
-						mComponent.getView().setLayoutParams(new AbsoluteLayout.LayoutParams(
+						RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
 								Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_COMMON_LWIDTH)),
-								Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_COMMON_LHEIGHT)),
-								Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_COMMON_LCOORDX)),
-								Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_COMMON_LCOORDY))));
+								Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_COMMON_LHEIGHT)));
+						layoutParams.leftMargin = Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_COMMON_LCOORDX));
+						layoutParams.topMargin = Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_COMMON_LCOORDY));
+						componentView.setLayoutParams(layoutParams);
 			        } else {
-			        	mComponent.getView().setLayoutParams(new AbsoluteLayout.LayoutParams(
+			        	RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
 								Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_COMMON_PWIDTH)),
-								Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_COMMON_PHEIGHT)),
-								Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_COMMON_PCOORDX)),
-								Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_COMMON_PCOORDY))));
+								Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_COMMON_PHEIGHT)));
+						layoutParams.leftMargin = Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_COMMON_PCOORDX));
+						layoutParams.topMargin = Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_COMMON_PCOORDY));
+						componentView.setLayoutParams(layoutParams);
 			        }
-					form.addView(mComponent.getView());
+					form.addSubView(componentView);
 					
 					//Add onclick event
 					if (element.hasAttribute(DesignTag.EVENT_ONCLICK)) {
-						mComponent.setOnclickFunction(element.getAttribute(DesignTag.EVENT_ONCLICK), mComponent.getView());
+						mComponent.setOnclickFunction(element.getAttribute(DesignTag.EVENT_ONCLICK), componentView);
 					}
 					
 					//Add onchange event
 					if (element.hasAttribute(DesignTag.EVENT_ONCHANGE)) {
-						mComponent.setOnchangeFunction(element.getAttribute(DesignTag.EVENT_ONCHANGE), mComponent.getView());
+						mComponent.setOnchangeFunction(element.getAttribute(DesignTag.EVENT_ONCHANGE), componentView);
 					}
 				}
 			}

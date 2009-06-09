@@ -139,11 +139,11 @@ public class DatabaseAdapter {
 						if (field.hasAttribute(DatabaseTag.FIELD_PK)) {
 							fsPkMap.put(tableId, fieldId);
 							fieldTypeValue += " UNIQUE, ";
-						} else if ((field.hasAttribute(DatabaseTag.FIELD_FORIEIGNTABLE)) 
-								&& (field.hasAttribute(DatabaseTag.FIELD_FORIEIGNFIELD))) {
+						} else if ((field.hasAttribute(DatabaseTag.FIELD_FOREIGNTABLE)) 
+								&& (field.hasAttribute(DatabaseTag.FIELD_FOREIGNFIELD))) {
 							ArrayList<String> fk = new ArrayList<String>();
-							String foreignTableId = field.getAttribute(DatabaseTag.FIELD_FORIEIGNTABLE);
-							String foreignFieldId = field.getAttribute(DatabaseTag.FIELD_FORIEIGNFIELD);
+							String foreignTableId = field.getAttribute(DatabaseTag.FIELD_FOREIGNTABLE);
+							String foreignFieldId = field.getAttribute(DatabaseTag.FIELD_FOREIGNFIELD);
 							fieldTypeValue += foreignTableId+" "+foreignFieldId;
 							fk.add(tableId);
 							fk.add(fieldId);
@@ -220,10 +220,10 @@ public class DatabaseAdapter {
 						sFieldsPKMap.put(tableId, fieldId);
 						createquery += fieldNewName+" "+fieldType+" UNIQUE, ";
 						fieldTypeValue += " UNIQUE, ";
-					} else if ((field.hasAttribute(DatabaseTag.FIELD_FORIEIGNTABLE)) &&
-							(field.hasAttribute(DatabaseTag.FIELD_FORIEIGNFIELD))) {
-						String foreignTableId = field.getAttribute(DatabaseTag.FIELD_FORIEIGNTABLE);
-						String foreignFieldId = field.getAttribute(DatabaseTag.FIELD_FORIEIGNFIELD);
+					} else if ((field.hasAttribute(DatabaseTag.FIELD_FOREIGNTABLE)) &&
+							(field.hasAttribute(DatabaseTag.FIELD_FOREIGNFIELD))) {
+						String foreignTableId = field.getAttribute(DatabaseTag.FIELD_FOREIGNTABLE);
+						String foreignFieldId = field.getAttribute(DatabaseTag.FIELD_FOREIGNFIELD);
 						fieldTypeValue += foreignTableId+" "+foreignFieldId;
 						createquery += fieldNewName+" "+fieldType+", ";
 						foreignKey.add(tableId);
@@ -377,9 +377,10 @@ public class DatabaseAdapter {
 							sBlobRecords.add(blobData);
 						}
 					}
-					if (syncTypeInt != DatabaseAttribute.SYNCHRONIZED) {
+					recordsList.add(valueList);
+					/*if (syncTypeInt != DatabaseAttribute.SYNCHRONIZED) {
 						recordsList.add(valueList);
-					}
+					}*/
 				}
 			}
 			updateTable(tableIdInt, fieldList, syncTypeList, recordsList);
@@ -776,11 +777,15 @@ public class DatabaseAdapter {
 	
 	public static Cursor selectQuery(String tableId, String fieldId, Object filter, String type) {
 		Cursor result = null;
-		String projectionIn = type + "(" + DatabaseAttribute.FIELD + fieldId +")";
+		StringBuffer projectionIn = new StringBuffer(type);
+		projectionIn.append("(");
+		projectionIn.append(DatabaseAttribute.FIELD);
+		projectionIn.append(fieldId);
+		projectionIn.append(")");
 		ArrayList<String> tables = new ArrayList<String>();
 		tables.add(tableId);
 		String selection = createSelectionString(tables, filter);
-		result = sSqlite.query(DatabaseAttribute.TABLE + tableId, new String[]{projectionIn}, selection, null, null, null, null);
+		result = sSqlite.query(DatabaseAttribute.TABLE + tableId, new String[]{projectionIn.toString()}, selection, null, null, null, null);
 		return result;
 	}
 	

@@ -39,15 +39,19 @@ public class TimeField extends Button implements OnClickListener {
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                 mHour = hourOfDay;
                 mMinute = minute;
-                String newTime = mHour+":"+mMinute;
-				TimeField.this.setText(newTime);
+                StringBuffer newTime = new StringBuffer(String.valueOf(mHour));
+                newTime.append(":");
+                newTime.append(mMinute);
+				TimeField.this.setText(newTime.toString());
             }
         }, mHour, mMinute, false).show();
 	}
 	
 	public String getTime() {
-		String time = mHour+":"+mMinute;
-		return time;
+		StringBuffer time = new StringBuffer(String.valueOf(mHour));
+		time.append(":");
+		time.append(mMinute);
+		return time.toString();
 	}
 	
 	public void setTime(String time) {

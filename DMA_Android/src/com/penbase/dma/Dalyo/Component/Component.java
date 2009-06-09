@@ -177,7 +177,11 @@ public class Component {
 			button.setTypeface(getFontType(mFontType));
 			button.setTextSize(getFontSize(mFontSize));
 			if (mBackground != 0) {
-				Drawable d = Drawable.createFromPath(DmaHttpClient.getFilesPath()+mBackground+"."+mExtension);
+				StringBuffer path = new StringBuffer(DmaHttpClient.getFilesPath());
+				path.append(mBackground);
+				path.append(".");
+				path.append(mExtension);
+				Drawable d = Drawable.createFromPath(path.toString());
 				button.setBackgroundDrawable(d);
 			}
 			mView = button;
@@ -254,7 +258,11 @@ public class Component {
 		} else if(mType.equals(DesignTag.COMPONENT_IMAGE)) {
 			ImageView imageview = new ImageView(mContext);
 			if (mBackground != 0) {
-				Drawable d = Drawable.createFromPath(DmaHttpClient.getFilesPath()+mBackground+"."+mExtension);
+				StringBuffer path = new StringBuffer(DmaHttpClient.getFilesPath());
+				path.append(mBackground);
+				path.append(".");
+				path.append(mExtension);
+				Drawable d = Drawable.createFromPath(path.toString());
 				imageview.setBackgroundDrawable(d);
 			}
 			mView = imageview;
