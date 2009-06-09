@@ -51,6 +51,12 @@ public class NumberBox extends LinearLayout{
 				}
 				return super.lookup(event, content);
 			}
+
+			@Override
+			public int getInputType() {
+				// TODO Auto-generated method stub
+				return 0;
+			}
         });
 		
 		mView_up = (ImageView)findViewById(R.id.up);

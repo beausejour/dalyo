@@ -4,11 +4,13 @@
     <string name="menu_about">A propos</string>
     <string name="menu_logout">Déconnexion</string>
     <string name="menu_update">Mettre à jour</string>
-    <string name="quit">Quitter</string>
-    <string name="about">Dalyo Mobile Agent 0.2.0</string>
+    <string name="menu_quit">Quitter</string>
+    <string name="aboutmsg">Dalyo Mobile Agent 1.0.0</string>
 	<string name="login">Identifiant :</string>
 	<string name="pwd">Mot de passe :</string>
 	<string name="rememberme">Se souvenir de moi</string>
 	<string name="run">Connexion</string>
 	<string name="applist">Liste des applications: </string>
+	<string name="web">www.dalyo.com</string>
+    <string name="email">support@penbase.com</string>
 </resources>

@@ -3,7 +3,6 @@ package com.penbase.dma.Dalyo.Component.Custom;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.graphics.Typeface;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -26,13 +25,13 @@ public class DateField extends Button implements OnClickListener{
 		if ((defaultValue != null) && (!defaultValue.equals(""))) {
 			String displayDate = defaultValue.split(" ")[0];
 			mYear = Integer.valueOf(displayDate.split("/")[2]);
-			mMonth = Integer.valueOf(displayDate.split("/")[1]) - 1;
+			mMonth = Integer.valueOf(displayDate.split("/")[1]);
 			mDay = Integer.valueOf(displayDate.split("/")[0]);
 			this.setText(displayDate);
 		} else {
 			Calendar calendar = Calendar.getInstance();
 			mYear = calendar.get(Calendar.YEAR);
-			mMonth = calendar.get(Calendar.MONTH) - 1;
+			mMonth = calendar.get(Calendar.MONTH);
 			mDay = calendar.get(Calendar.DAY_OF_MONTH);
 		}
 		this.setTypeface(tf);
@@ -44,19 +43,26 @@ public class DateField extends Button implements OnClickListener{
 	public void onClick(View arg0) {
 		new DatePickerDialog(mContext, new DatePickerDialog.OnDateSetListener() {
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                mYear = year;
-                mMonth = monthOfYear + 1;
-                mDay = dayOfMonth;
-                String newDate = mDay+"/"+mMonth+"/"+mYear;
-				Log.i("info", "current month "+mMonth);
-				DateField.this.setText(newDate);
+                mYear = view.getYear();
+                mMonth = view.getMonth() + 1;
+                mDay = view.getDayOfMonth();
+                StringBuffer newDate = new StringBuffer(String.valueOf(mDay));
+                newDate.append("/");
+                newDate.append(mMonth);
+                newDate.append("/");
+                newDate.append(mYear);
+				DateField.this.setText(newDate.toString());
             }
-        }, mYear, mMonth, mDay).show();
+        }, mYear, mMonth - 1, mDay).show();
 	}
 	
 	public String getDate() {
-		String date = mDay+"/"+mMonth+"/"+mYear;
-		return date;
+		StringBuffer date = new StringBuffer(String.valueOf(mDay));
+		date.append("/");
+		date.append(mMonth);
+		date.append("/");
+		date.append(mYear);
+		return date.toString();
 	}
 	
 	public void setDate(String date) {

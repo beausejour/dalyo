@@ -2,13 +2,15 @@
 <resources>
     <string name="app_name">Dalyo</string>
     <string name="menu_about">About</string>
-    <string name="menu_logout">Logout</string>
+    <string name="menu_logout">Sign out</string>
     <string name="menu_update">Update application list</string>
-    <string name="quit">Quit</string>
-    <string name="about">Dalyo Mobile Agent 0.2.0</string>
+    <string name="menu_quit">Exit</string>
+    <string name="aboutmsg">Dalyo Mobile Agent 1.0.0</string>
 	<string name="login">Login :</string>
 	<string name="pwd">Password :</string>
 	<string name="rememberme">Remember me</string>
-	<string name="run">Run</string>
+	<string name="run">Sign in</string>
 	<string name="applist">Applications list: </string>
+	<string name="web">www.dalyo.com</string>
+    <string name="email">support@penbase.com</string>
 </resources>

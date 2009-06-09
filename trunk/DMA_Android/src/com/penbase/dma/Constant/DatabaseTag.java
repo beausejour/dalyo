@@ -13,8 +13,8 @@ public interface DatabaseTag {
 	
 	//Field
 	public static final String FIELD = "f";
-	public static final String FIELD_FORIEIGNTABLE = "ft";
-	public static final String FIELD_FORIEIGNFIELD = "ff";
+	public static final String FIELD_FOREIGNTABLE = "ft";
+	public static final String FIELD_FOREIGNFIELD = "ff";
 	public static final String FIELD_ID = "id";
 	public static final String FIELD_NAME = "n";
 	public static final String FIELD_PK = "pk";

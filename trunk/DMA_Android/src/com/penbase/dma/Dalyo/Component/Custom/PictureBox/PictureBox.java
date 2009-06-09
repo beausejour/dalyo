@@ -96,7 +96,11 @@ public class PictureBox extends Activity implements SurfaceHolder.Callback {
 	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
 		mCamera = Camera.open();
-		mCamera.setPreviewDisplay(mHolder);
+		try {
+			mCamera.setPreviewDisplay(mHolder);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override

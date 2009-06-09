@@ -15,30 +15,25 @@
 package com.penbase.dma.View;
 
 import android.app.Activity;
-import android.app.Dialog;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnTouchListener;
-import android.view.ViewGroup.LayoutParams;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -46,18 +41,15 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import com.penbase.dma.Dma;
 import com.penbase.dma.R;
 import com.penbase.dma.Constant.Constant;
-import com.penbase.dma.Dalyo.Application;
 import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
  * Displays a GridView which contains all applications' icons
  */
 public class ApplicationListView extends Activity implements OnItemSelectedListener, OnItemClickListener {
-
-	private AppsAdapter mAdapter;
+	private ApplicationAdapter mAdapter;
 	private TextView mApplicationName;
 	private static ProgressDialog sLoadProgressDialog = null;
 	private static ProgressDialog sUpdateProgressDialog = null;
@@ -66,6 +58,8 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	private DmaHttpClient mDmahttpclient = new DmaHttpClient();
 	private static String sApplicationName;
 	private GridView mGridView;
+	private AlertDialog mAboutDialog;
+	private LayoutInflater mInflater;
 
 	@Override
 	protected void onCreate(Bundle icicle) {
@@ -81,7 +75,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		}
 		
 		mApplicationName = (TextView)findViewById(R.id.appnametv);
-		mAdapter = new AppsAdapter(this);
+		mAdapter = new ApplicationAdapter(this);
 
 		int size = Dma.getApplications().size();
 		for (int i =0; i < size; i++) {
@@ -112,87 +106,37 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		mGridView.setAdapter(mAdapter);
 		mGridView.setOnItemClickListener(this);
 		mGridView.setOnItemSelectedListener(this);
-	}
-
-	/**
-	 * Contains items associated with the ApplicationListView
-	 */
-	private class AppsAdapter extends BaseAdapter {
-		private Context mContext;
-		private ArrayList<Integer> mApps = new ArrayList<Integer>();
-		
-		public AppsAdapter(Context context) {
-			mContext = context;
-		}
-
-		/**
-		 * Returns the item in the given position which contains an icon and the application's name
-		 */
-		public View getView(int position, View convertView, ViewGroup parent) {
-			LinearLayout layout = new LinearLayout(mContext);
-			layout.setOrientation(LinearLayout.VERTICAL);
-			layout.setGravity(Gravity.CENTER);
-			
-			ImageView i = new ImageView(mContext);
-			i.setImageResource(mApps.get(position));
-			i.setAdjustViewBounds(true);
-			i.setScaleType(ImageView.ScaleType.FIT_CENTER);
-            i.setLayoutParams(new GridView.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-			i.setBackgroundResource(android.R.drawable.picture_frame);
-			
-			TextView tv = new TextView(mContext);
-			tv.setText(Dma.getApplications().get(position).getName());
-			tv.setTextSize(11);
-			tv.setTextColor(Color.BLACK);
-			tv.setGravity(Gravity.CENTER_HORIZONTAL);
-			
-			layout.addView(i, new LinearLayout.LayoutParams(60, 60));
-			layout.addView(tv, new LinearLayout.LayoutParams(60, 30));
-			return layout;
-		}
-
-		public final int getCount() {
-			return mApps.size();
-		}
-
-		public final Object getItem(int position) {
-			return mApps.get(position);
-		}
-
-		public final long getItemId(int position) {
-			return position;
-		}
-
-		public void addApplication(Application app) {
-			mApps.add(app.getIconRes());
-		}
+		mInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		mAboutDialog = new AlertDialog.Builder(this).setIcon(android.R.drawable.ic_dialog_info)
+        .setTitle(R.string.menu_about).setView(mInflater.inflate(R.layout.about, null, false)).create();
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		boolean r = super.onCreateOptionsMenu(menu);
-		menu.add(Menu.NONE, 0, Menu.NONE, "Logout");
-		menu.add(Menu.NONE, 1, Menu.NONE, "About");
-		menu.add(Menu.NONE, 2, Menu.NONE, "Update");
-		return r;
+		menu.add(Menu.NONE, 0, Menu.NONE, R.string.menu_update).setIcon(R.drawable.ic_menu_refresh);
+		menu.add(Menu.NONE, 1, Menu.NONE, R.string.menu_about).setIcon(android.R.drawable.ic_menu_info_details);
+		menu.add(Menu.NONE, 2, Menu.NONE, R.string.menu_logout).setIcon(R.drawable.ic_menu_logout);
+		menu.add(Menu.NONE, 3, Menu.NONE, R.string.menu_quit).setIcon(android.R.drawable.ic_menu_close_clear_cancel);
+		return true;
 	}
 
 	@Override
-	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case 0:
-				logout();
-				return true;
-			case 1:
-				Dialog dialog = new Dialog(this);
-				dialog.setTitle("DMA version 0.9");
-				dialog.show();
-				return true;
-			case 2:
 				update();
-				return true;
+				break;
+			case 1:
+				mAboutDialog.show();
+				break;
+			case 2:
+				logout();
+				break;
+			case 3:
+				finish();
+				break;
 		}
-		return super.onMenuItemSelected(featureId, item);
+		return true;
 	}
 
 	/**

@@ -89,7 +89,7 @@ public class DmaHttpBinarySync {
 			dos.close();
 			result = getData(connection);
 		} catch (IOException ioe) {
-			Log.i("info", "HTTPExample: IOException; " + ioe.getMessage());
+			ioe.printStackTrace();
 		}
 		return result;
 	}
@@ -102,6 +102,12 @@ public class DmaHttpBinarySync {
 		boolean wellDone = false;
 		byte[] data = createConnection(mRequestAction, mInputbytes);
 		String codeStr = getErrorCode(data);
+		//String url, String request, String blob, String response, byte[] inputbytes, String syncType
+		Log.i("info", "url "+mUrlString);
+		Log.i("info", "request "+mRequestAction);
+		Log.i("info", "blob "+mBlobAction);
+		Log.i("info", "response "+mResponseAction);
+		
 		Log.i("info", "code of action "+mRequestAction+" : "+Integer.valueOf(codeStr));
 		if ((Integer.valueOf(codeStr) == ErrorCode.OK) || (Integer.valueOf(codeStr) == ErrorCode.CONTINUE)) {
 			int newLength = data.length - codeStr.length() - 1;
@@ -117,14 +123,17 @@ public class DmaHttpBinarySync {
 				if (blobNb > 0) {
 					for(int i=0; i<blobNb; i++) {
 						ArrayList<Object> blob = blobs.get(i);
-						String getBlobAction = mBlobAction;
-						getBlobAction += "&table="+blob.get(0);
-						getBlobAction += "&fieldid="+blob.get(1);
+						StringBuffer getBlobAction = new StringBuffer(mBlobAction);
+						getBlobAction.append("&table=");
+						getBlobAction.append(blob.get(0));
+						getBlobAction.append("&fieldid=");
+						getBlobAction.append(blob.get(1));
 						Log.i("info", "blob.get(2).toString() "+blob.get(2).toString());
 						String recordId = blob.get(2).toString().split("_")[4].split("\\.")[0];
-						getBlobAction += "&record="+recordId;
+						getBlobAction.append("&record=");
+						getBlobAction.append(recordId);
 						
-						byte[] responsedata = createConnection(getBlobAction, null);
+						byte[] responsedata = createConnection(getBlobAction.toString(), null);
 						String codeResponseStr = getErrorCode(responsedata);
 						Log.i("info", "responsea "+getBlobAction+" code "+codeResponseStr);
 						
@@ -161,12 +170,14 @@ public class DmaHttpBinarySync {
 				int blobNb = blobs.size();
 				if (blobNb > 0) {
 					for (ArrayList<Object> blob : blobs) {
-						String sendAction = mBlobAction;
-						sendAction += "&fieldid="+blob.get(0);
-						sendAction += "&blob="+blob.get(1);
-						sendAction += "&format=jpg";
+						StringBuffer sendAction = new StringBuffer(mBlobAction);
+						sendAction.append("&fieldid=");
+						sendAction.append(blob.get(0));
+						sendAction.append("&blob=");
+						sendAction.append(blob.get(1));
+						sendAction.append("&format=jpg");
 						File image = new File(Constant.PACKAGENAME+ApplicationListView.getApplicationName()+"/"+blob.get(1));
-						byte[] responsedata = createConnection(sendAction, this.getBytesFromFile(image));
+						byte[] responsedata = createConnection(sendAction.toString(), this.getBytesFromFile(image));
 						String codeResponseStr = getErrorCode(responsedata);
 						Log.i("info", "responsea "+sendAction+" code "+codeResponseStr);
 					}
@@ -232,7 +243,7 @@ public class DmaHttpBinarySync {
 		try {
 			in = connection.getInputStream();
 			int c;
-			byte[] readByte = new byte[1024];
+			byte[] readByte = new byte[32 * 1024];
 			while ((c = in.read(readByte)) > 0) {
 				bos.write(readByte, 0, c);
 			}

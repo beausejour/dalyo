@@ -83,6 +83,7 @@ public class Doodle extends Activity implements ColorPickerDialog.OnColorChanged
             mX = x;
             mY = y;
         }
+        
         private void touch_move(float x, float y) {
             float dx = Math.abs(x - mX);
             float dy = Math.abs(y - mY);
@@ -92,6 +93,7 @@ public class Doodle extends Activity implements ColorPickerDialog.OnColorChanged
                 mY = y;
             }
         }
+        
         private void touch_up() {
             mPath.lineTo(mX, mY);
             // commit the path to our offscreen
@@ -161,8 +163,8 @@ public class Doodle extends Activity implements ColorPickerDialog.OnColorChanged
        FileOutputStream fos;
        try{
                fos = new FileOutputStream(file);
-               DataOutputStream dos = new DataOutputStream(fos);
-               if (mDoodleView.mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, dos)) {
+               //DataOutputStream dos = new DataOutputStream(fos);
+               if (mDoodleView.mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)) {
             	   Log.i("info", "image compressed ok");
                } else {
             	   Log.i("info", "image compressed failed");

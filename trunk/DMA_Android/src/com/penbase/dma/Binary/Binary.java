@@ -59,20 +59,39 @@ public class Binary {
 	private static String byteArrayToTime(byte[] bytes) {
 		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+1"), Locale.FRENCH);
 		calendar.setTimeInMillis(byteArrayToLong(bytes)*1000);
-		return (calendar.get(Calendar.HOUR)-1)+":"+calendar.get(Calendar.MINUTE)+":"+calendar.get(Calendar.SECOND);
+		StringBuffer result = new StringBuffer(String.valueOf((calendar.get(Calendar.HOUR)-1)));
+		result.append(":");
+		result.append(calendar.get(Calendar.MINUTE));
+		result.append(":");
+		result.append(calendar.get(Calendar.SECOND));
+		return result.toString();
 	}
 	
 	private static String byteArrayToDate(byte[] bytes) {
 		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+1"), Locale.FRENCH);
 		calendar.setTimeInMillis(byteArrayToLong(bytes)*1000);
-		return calendar.get(Calendar.DAY_OF_MONTH)+"/"+(calendar.get(Calendar.MONTH)+1)+"/"+calendar.get(Calendar.YEAR);
+		StringBuffer result = new StringBuffer(String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)));
+		result.append("/");
+		result.append((calendar.get(Calendar.MONTH)+1));
+		result.append("/");
+		result.append(calendar.get(Calendar.YEAR));
+		return result.toString();
 	}
 	
 	private static String byteArrayToDateTime(byte[] bytes) {
 		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+1"), Locale.FRENCH);
 		calendar.setTimeInMillis(byteArrayToLong(bytes)*1000);
-		return calendar.get(Calendar.DAY_OF_MONTH)+"/"+(calendar.get(Calendar.MONTH)+1)+"/"+calendar.get(Calendar.YEAR)+
-		" "+(calendar.get(Calendar.HOUR)+1)+":"+calendar.get(Calendar.MINUTE)+":"+calendar.get(Calendar.SECOND);
+		StringBuffer result = new StringBuffer(String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)));
+		result.append("/");
+		result.append((calendar.get(Calendar.MONTH)+1));
+		result.append("/");
+		result.append(calendar.get(Calendar.YEAR));
+		result.append((calendar.get(Calendar.HOUR)+1));
+		result.append(":");
+		result.append(calendar.get(Calendar.MINUTE));
+		result.append(":");
+		result.append(calendar.get(Calendar.SECOND));
+		return result.toString();
 	}
 	
 	private static int byteArrayToBool(byte[] bytes) {

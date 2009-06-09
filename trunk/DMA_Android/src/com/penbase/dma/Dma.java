@@ -25,6 +25,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.telephony.TelephonyManager;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.MenuItem;
@@ -72,6 +73,8 @@ public class Dma extends Activity implements OnClickListener {
 			}
 		}
 	};
+	private AlertDialog mAboutDialog;
+	private LayoutInflater mInflater;
 	
 	@Override
 	public void onCreate(Bundle icicle) {
@@ -91,6 +94,9 @@ public class Dma extends Activity implements OnClickListener {
 			mTx_login = (TextView) findViewById(R.id.textLogin);
 			mTx_password = (TextView) findViewById(R.id.textePasswd);
 			mCb_remember_me = (CheckBox) findViewById(R.id.remember_me_cb);
+			mInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			mAboutDialog = new AlertDialog.Builder(this).setIcon(android.R.drawable.ic_dialog_info)
+	        .setTitle(R.string.menu_about).setView(mInflater.inflate(R.layout.about, null, false)).create();
 		} else {
 			String xml = settings.getString("ApplicationList", null);
 			createApplicationListFromXml(xml);
@@ -225,22 +231,22 @@ public class Dma extends Activity implements OnClickListener {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		boolean r = super.onCreateOptionsMenu(menu);
-		menu.add(Menu.NONE, 0, Menu.NONE, "About");
-		menu.add(Menu.NONE, 1, Menu.NONE, "Quit");
-		return r;
+		menu.add(Menu.NONE, 0, Menu.NONE, R.string.menu_about).setIcon(android.R.drawable.ic_menu_info_details);
+		menu.add(Menu.NONE, 1, Menu.NONE, R.string.menu_quit).setIcon(android.R.drawable.ic_menu_close_clear_cancel);
+		return true;
 	}
 
-	public boolean onOptionsItemSelected(int featureId, MenuItem item) {
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case 0:
-				showMessage("DMA Android version "+getVersion());
+				mAboutDialog.show();
 				break;
 			case 1:
-				this.finish();
+				finish();
 				break;
 		}
-		return super.onMenuItemSelected(featureId, item);
+		return true;
 	}
 	
 	public void showMessage(String message) {
@@ -253,7 +259,7 @@ public class Dma extends Activity implements OnClickListener {
 	}
 	
 	public static String getVersion() {
-		return "1.0";
+		return "1.0.0";
 	}
 
 	@Override
