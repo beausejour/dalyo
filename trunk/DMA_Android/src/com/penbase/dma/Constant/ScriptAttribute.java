@@ -31,6 +31,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_FORMAT = "format";
 	public static final String FUNCTION_GET = "get";
 	public static final String FUNCTION_GETALTITUDE = "getAltitude";
+	public static final String FUNCTION_GETAPPLICATIONVERSION = "getApplicationVersion";
 	public static final String FUNCTION_GETCELLVALUE = "getCellValue";
 	public static final String FUNCTION_GETCOLUMNINDEX = "getColumnIndex";
 	public static final String FUNCTION_GETCURRENTFORM = "getCurrentForm";
@@ -144,6 +145,7 @@ public class ScriptAttribute {
 	public static final String PARAMETER_NAME_CALLBACK = "callback";
 	public static final String PARAMETER_NAME_CAPTION = "caption";
 	public static final String PARAMETER_NAME_COLUMN = "col";
+	public static final String PARAMETER_NAME_CONFIRM = "confirm";
 	public static final String PARAMETER_NAME_DECIMALS = "decimals";
 	public static final String PARAMETER_NAME_DELAYED = "delayed";
 	public static final String PARAMETER_NAME_DELIMITER = "delimiter";
@@ -172,6 +174,7 @@ public class ScriptAttribute {
 	public static final String PARAMETER_NAME_REPLACEMENT = "replacement";
 	public static final String PARAMETER_NAME_ROW = "row";
 	public static final String PARAMETER_NAME_SEARCH = "search";
+	public static final String PARAMETER_NAME_SHOW = "show";
 	public static final String PARAMETER_NAME_SOURCE = "source";
 	public static final String PARAMETER_NAME_START = "start";
 	public static final String PARAMETER_NAME_STATE = "state";
@@ -182,6 +185,7 @@ public class ScriptAttribute {
 	public static final String PARAMETER_NAME_TIMERID = "timer_id";
 	public static final String PARAMETER_NAME_TITLE = "title";
 	public static final String PARAMETER_NAME_TOKEN = "token";
+	public static final String PARAMETER_NAME_TYPE = "type";
 	public static final String PARAMETER_NAME_UNDERLINE = "underline";
 	public static final String PARAMETER_NAME_URL = "url";
 	public static final String PARAMETER_NAME_VALUE = "value";

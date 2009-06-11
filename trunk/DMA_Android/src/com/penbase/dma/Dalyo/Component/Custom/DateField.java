@@ -43,9 +43,9 @@ public class DateField extends Button implements OnClickListener{
 	public void onClick(View arg0) {
 		new DatePickerDialog(mContext, new DatePickerDialog.OnDateSetListener() {
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                mYear = view.getYear();
-                mMonth = view.getMonth() + 1;
-                mDay = view.getDayOfMonth();
+                mYear = year;
+                mMonth = monthOfYear + 1;
+                mDay = dayOfMonth;
                 StringBuffer newDate = new StringBuffer(String.valueOf(mDay));
                 newDate.append("/");
                 newDate.append(mMonth);

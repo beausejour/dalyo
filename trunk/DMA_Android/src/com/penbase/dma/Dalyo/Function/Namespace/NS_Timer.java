@@ -1,5 +1,7 @@
 package com.penbase.dma.Dalyo.Function.Namespace;
 
+import android.util.Log;
+
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Function.Function;
@@ -11,11 +13,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class NS_Timer {
-	private static HashMap<Integer, Timer> timerMap = new HashMap<Integer, Timer>(); 
+	private static HashMap<Integer, Timer> mTimerMap = new HashMap<Integer, Timer>(); 
 	
 	public static void Cancel(Element element) {
-		int timerId = Integer.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_TIMERID, ScriptAttribute.PARAMETER_TYPE_INT).toString());
-		timerMap.get(timerId).cancel();
+		Log.i("info", "mTimerMap "+mTimerMap.toString());
+		if (mTimerMap.size() > 0) {
+			int timerId = Integer.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_TIMERID, ScriptAttribute.PARAMETER_TYPE_INT).toString());
+			mTimerMap.get(timerId).cancel();	
+		}
 	}
 	
 	public static int Start(Element element) {
@@ -37,7 +42,7 @@ public class NS_Timer {
 				Function.createFunction(callback);
 			}
 		};
-		timerMap.put(timerId, timer);
+		mTimerMap.put(timerId, timer);
 		timer.scheduleAtFixedRate(task, delayedValue, interval*1000);
 		return timerId;
 	}
