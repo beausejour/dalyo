@@ -310,7 +310,7 @@ public class Function {
 	 * @param element
 	 * @return
 	 */
-	public static Object distributeCall(Element element) {
+	private static Object distributeCall(Element element) {
 		Object result = null;
 		Log.i("info", "namespace "+element.getAttribute(ScriptTag.NAMESPACE)+" function name "+element.getAttribute(ScriptTag.FUNCTION));
 		if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.COMPONENT)) {
@@ -500,7 +500,9 @@ public class Function {
 			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETLATITUDE)) {
 				result = NS_Gps.GetLatitude(element);
 			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETLOCATION)) {
-				result = NS_Gps.GetLocation();
+				if (!sIsFirstTime) {
+					result = NS_Gps.GetLocation();	
+				}
 			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETLONGITUDE)) {
 				result = NS_Gps.GetLogitude(element);
 			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSPEED)) {
@@ -593,6 +595,8 @@ public class Function {
 				result = confirmDialog.getValue();
 				//Cancel the thread, because the stop() method is deprecated
 				//confirmDialog = null;
+			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETAPPLICATIONVERSION)) {
+				result = NS_Runtime.getApplicationVersion(element);
 			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETCURRENTUSER)) {
 				result = NS_Runtime.GetCurrentUser(element);
 			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_STARTAPP)) {
@@ -610,7 +614,9 @@ public class Function {
 			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_IMPLODE)) {
 				result = NS_String.Implode(element);
 			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_INDEXOF)) {
-				result = NS_String.Indexof(element);
+				if (!sIsFirstTime) {
+					result = NS_String.Indexof(element);	
+				}
 			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_LENGTH)) {
 				result = NS_String.Length(element);
 			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_REPLACE)) {
@@ -655,7 +661,7 @@ public class Function {
 	 * @param item
 	 * @return
 	 */
-	public static Object getVariableValue(Element item) {
+	private static Object getVariableValue(Element item) {
 		Object result = null;
 		if (sVarsMap.containsKey(item.getAttribute(ScriptTag.NAME))) {
 			result = sVarsMap.get(item.getAttribute(ScriptTag.NAME));

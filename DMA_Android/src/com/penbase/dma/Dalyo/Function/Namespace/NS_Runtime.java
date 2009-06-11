@@ -39,9 +39,30 @@ public class NS_Runtime {
 		ApplicationView.getCurrentView().quit();
 	}
 	
+	public static String getApplicationVersion(Element element) {
+		return ApplicationView.getApplicationVersion();
+	}
+	
 	public static String GetCurrentUser(Element element) {
 		SharedPreferences prefs = ApplicationView.getCurrentView().getSharedPreferences(Constant.PREFNAME, Context.MODE_PRIVATE);
 		return prefs.getString("Username", "");
+	}
+	
+	/*
+	 * <c f="setWaitCursor" ns="runtime">
+	 * 	<p n="show" t="boolean"><kw>TRUE</kw></p>
+	 * 	<p n="text" t="string">Acquisition du GPS! Veuillez vous positionner en zone de couverture (extérieur)!</p>
+	 *	</c>
+	 * */
+	public static void SetWaitCursor(Element element) {
+		Object willShow = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_SHOW, ScriptAttribute.PARAMETER_TYPE_BOOLEAN);
+		String text = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_TEXT, ScriptAttribute.STRING).toString();
+		if ((Boolean)willShow) {
+			
+		} else {
+			
+		}
+		//TODO show progress dialog if willShow otherwise dismiss it
 	}
 	
 	public static void StartApp(Element element) {

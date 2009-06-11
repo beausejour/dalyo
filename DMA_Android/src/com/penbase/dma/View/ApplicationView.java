@@ -49,6 +49,7 @@ public class ApplicationView extends Activity {
 	private ProgressDialog mLoadingDialog;
 	private static String sClientLogin;
 	private static String sCurrentFormId;
+	private static String sApplicationVersion;
 	private Handler mHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
@@ -91,6 +92,7 @@ public class ApplicationView extends Activity {
 			sLayoutsMap.get(startFormId).onLoad(sOnLoadFuncMap.get(startFormId));
 		}
 		sCurrentFormId = startFormId;
+		sApplicationVersion = ((Element) generalInfo.item(0)).getAttribute(DesignTag.DESIGN_S_G_PV);
 		setTitle(sLayoutsMap.get(startFormId).getTitle());
 		mLoadingDialog.dismiss();
 		setContentView(sLayoutsMap.get(startFormId));
@@ -453,6 +455,10 @@ public class ApplicationView extends Activity {
 			
 		});
 		dialog.show();
+	}
+	
+	public static String getApplicationVersion() {
+		return sApplicationVersion;
 	}
 	
 	@Override

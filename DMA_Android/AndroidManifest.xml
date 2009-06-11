@@ -14,6 +14,11 @@
 		<activity android:name=".View.ApplicationView"></activity>
 		<activity android:name=".Dalyo.Component.Custom.Doodle.Doodle"></activity>
 		<activity android:name=".Dalyo.Component.Custom.PictureBox.PictureBox"></activity>
+		<activity android:name=".Dalyo.BarcodeReader.CaptureActivity"
+			android:screenOrientation="landscape"
+			android:configChanges="orientation|keyboardHidden"
+			android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+        </activity>
 	</application>
 	<uses-sdk android:minSdkVersion="3" />
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>

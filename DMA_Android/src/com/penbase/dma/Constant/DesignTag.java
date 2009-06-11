@@ -16,9 +16,10 @@ public class DesignTag {
 	//Design
 	public static final String DESIGN_S = "s";
 	public static final String DESIGN_S_G = "g";
-	public static final String DESIGN_S_G_SM = "sm";
 	public static final String DESIGN_S_G_FID = "fid";
 	public static final String DESIGN_S_G_OS = "os";
+	public static final String DESIGN_S_G_PV = "pv";
+	public static final String DESIGN_S_G_SM = "sm";
 	public static final String DESIGN_S_MM = "mm";
 	public static final String DESIGN_S_MM_E = "e";
 	public static final String DESIGN_F = "f";
