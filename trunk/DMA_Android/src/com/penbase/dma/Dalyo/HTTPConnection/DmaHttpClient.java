@@ -38,6 +38,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -48,6 +49,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
@@ -261,20 +263,21 @@ public class DmaHttpClient{
 			String subId = "";
 			String dbId = "";
 			for (int t = 0; t < elsLength; t++) {
-				Node noeud = els.item(t);
-				if (noeud.getNodeType() == Node.ELEMENT_NODE) {
-					if (noeud.getNodeName().equals(DesignTag.LOGIN_ID)) {
-						appId = noeud.getChildNodes().item(0).getNodeValue();
-					} else if (noeud.getNodeName().equals(DesignTag.LOGIN_TIT)) {
-						title = noeud.getChildNodes().item(0).getNodeValue();
-					} else if (noeud.getNodeName().equals(DesignTag.LOGIN_VER)) {
-						appVer = noeud.getChildNodes().item(0).getNodeValue();
-					} else if (noeud.getNodeName().equals(DesignTag.LOGIN_BLD)) {
-						appBuild = noeud.getChildNodes().item(0).getNodeValue();
-					} else if (noeud.getNodeName().equals(DesignTag.LOGIN_SUB)) {
-						subId = noeud.getChildNodes().item(0).getNodeValue();
-					} else if (noeud.getNodeName().equals(DesignTag.LOGIN_DBID)) {
-						dbId = noeud.getChildNodes().item(0).getNodeValue();
+				Node node = els.item(t);
+				NodeList nodes = node.getChildNodes();
+				if (node.getNodeType() == Node.ELEMENT_NODE) {
+					if (node.getNodeName().equals(DesignTag.LOGIN_ID)) {
+						appId = nodes.item(0).getNodeValue();
+					} else if (node.getNodeName().equals(DesignTag.LOGIN_TIT)) {
+						title = nodes.item(0).getNodeValue();
+					} else if (node.getNodeName().equals(DesignTag.LOGIN_VER)) {
+						appVer = nodes.item(0).getNodeValue();
+					} else if (node.getNodeName().equals(DesignTag.LOGIN_BLD)) {
+						appBuild = nodes.item(0).getNodeValue();
+					} else if (node.getNodeName().equals(DesignTag.LOGIN_SUB)) {
+						subId = nodes.item(0).getNodeValue();
+					} else if (node.getNodeName().equals(DesignTag.LOGIN_DBID)) {
+						dbId = nodes.item(0).getNodeValue();
 					}
 				}
 			}
@@ -376,7 +379,8 @@ public class DmaHttpClient{
 			StringBuffer getDesign = new StringBuffer("act=getdesign");
 			getDesign.append(urlRequest);
 			String designStream = SendPost(getDesign.toString(), STRING);
-			StreamToFile(designStream, mDesign_XML);
+			Log.i("info", "designStream "+designStream);
+			StreamToFile(designStream, mDesign_XML, false);
 			return CreateParseDocument(designStream, null);
 		} else {
 			Log.i("info", "start parsing design file");
@@ -447,16 +451,16 @@ public class DmaHttpClient{
 							Log.i("info", "download repalce image");
 							new File(fileName.toString()).delete();
 							String resourceStream = SendPost(getResource.toString(), IMAGE);
-							StreamToFile(resourceStream, fileName.toString());
+							StreamToFile(resourceStream, fileName.toString(), true);
 						}
 					} else {
 						Log.i("info", "download image");
 						String resourceStream = SendPost(getResource.toString(), IMAGE);
-						StreamToFile(resourceStream, fileName.toString());
+						StreamToFile(resourceStream, fileName.toString(), true);
 					}
 				}
 			}
-			StreamToFile(resourcesStream, mResources_XML);
+			StreamToFile(resourcesStream, mResources_XML, false);
 		}
 	}
 	
@@ -477,7 +481,7 @@ public class DmaHttpClient{
 			getDB.append(urlRequest);
 			String dbStream = SendPost(getDB.toString(), STRING);
 			Log.i("info", "dbstream ");
-			StreamToFile(dbStream, sDb_XML);
+			StreamToFile(dbStream, sDb_XML, false);
 			return CreateParseDocument(dbStream, null);
 		} else {
 			return CreateParseDocument(null, new File(sDb_XML));
@@ -499,7 +503,7 @@ public class DmaHttpClient{
 			StringBuffer getBehavior = new StringBuffer("act=getbehavior");
 			getBehavior.append(urlRequest);
 			String behaviorStream = SendPost(getBehavior.toString(), STRING);
-			StreamToFile(behaviorStream, mBehavior_XML);
+			StreamToFile(behaviorStream, mBehavior_XML, false);
 			return CreateParseDocument(behaviorStream, null);
 		} else {
 			return CreateParseDocument(null, new File(mBehavior_XML));
@@ -643,17 +647,23 @@ public class DmaHttpClient{
 	}
 	
 	/**
-	 * Saves the downloaded xml stream to file
+	 * Saves the downloaded xml stream or images to file
 	 * @param stream
 	 * @param filePath
 	 */
-	private void StreamToFile(String stream, String filePath) {
+	private void StreamToFile(String stream, String filePath, boolean isImage) {
         File file = new File(filePath);
         FileOutputStream fos;
         try{
                 fos = new FileOutputStream(file);
-                DataOutputStream dos = new DataOutputStream(fos);
-                dos.writeBytes(stream);
+                if (isImage) {
+                	DataOutputStream dos = new DataOutputStream(fos);
+                    dos.writeBytes(stream);	
+                } else {
+                	BufferedWriter out = new BufferedWriter(new OutputStreamWriter(fos, "UTF8"));
+                    out.write(stream);
+                    out.close();	
+                }
                 Log.i("info", "file create ok "+filePath);
         } catch (FileNotFoundException e) {
         	e.printStackTrace();

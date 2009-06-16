@@ -25,6 +25,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -120,20 +121,21 @@ public class Dma extends Activity implements OnClickListener {
 			Application app = new Application();
 			int elsLength = els.getLength();
 			for (int t = 0; t < elsLength; t++) {
-				Node noeud = els.item(t);
-				if (noeud.getNodeType() == Node.ELEMENT_NODE) {
-					if (noeud.getNodeName().equals(DesignTag.LOGIN_ID)) {
-						app.setAppId(noeud.getChildNodes().item(0).getNodeValue());
-					} else if (noeud.getNodeName().equals(DesignTag.LOGIN_TIT)) {
-						app.setName(noeud.getChildNodes().item(0).getNodeValue());
-					} else if (noeud.getNodeName().equals(DesignTag.LOGIN_BLD)) {
-						app.setAppBuild(noeud.getChildNodes().item(0).getNodeValue());
-					} else if (noeud.getNodeName().equals(DesignTag.LOGIN_SUB)) {
-						app.setSubId(noeud.getChildNodes().item(0).getNodeValue());
-					} else if (noeud.getNodeName().equals(DesignTag.LOGIN_DBID)) {
-						app.setDbId(noeud.getChildNodes().item(0).getNodeValue());
-					} else if (noeud.getNodeName().equals(DesignTag.LOGIN_VER)) {
-						app.setAppVer(noeud.getChildNodes().item(0).getNodeValue());
+				Node node = els.item(t);
+				NodeList nodes = node.getChildNodes();
+				if (node.getNodeType() == Node.ELEMENT_NODE) {
+					if (node.getNodeName().equals(DesignTag.LOGIN_ID)) {
+						app.setAppId(nodes.item(0).getNodeValue());
+					} else if (node.getNodeName().equals(DesignTag.LOGIN_TIT)) {
+						app.setName(nodes.item(0).getNodeValue());
+					} else if (node.getNodeName().equals(DesignTag.LOGIN_BLD)) {
+						app.setAppBuild(nodes.item(0).getNodeValue());
+					} else if (node.getNodeName().equals(DesignTag.LOGIN_SUB)) {
+						app.setSubId(nodes.item(0).getNodeValue());
+					} else if (node.getNodeName().equals(DesignTag.LOGIN_DBID)) {
+						app.setDbId(nodes.item(0).getNodeValue());
+					} else if (node.getNodeName().equals(DesignTag.LOGIN_VER)) {
+						app.setAppVer(nodes.item(0).getNodeValue());
 					}
 				}
 			}

@@ -8,6 +8,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -54,9 +55,17 @@ public class ApplicationView extends Activity {
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
-				default:
+				case 0:
 					createView();
 					display();
+					break;
+				case 1:
+					Log.i("info", "show dialog");
+					mLoadingDialog = ProgressDialog.show(ApplicationView.this, "Please wait...", "Building application ...", true, false);
+					break;
+				case 2:
+					Log.i("info", "dismiss dialog");
+					mLoadingDialog.dismiss();
 					break;
 			}
 		}
@@ -74,7 +83,10 @@ public class ApplicationView extends Activity {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				sDatabase = new DatabaseAdapter(ApplicationView.this, sDbDoc, sClientLogin+"_"+ApplicationListView.getApplicationName());
+				StringBuffer databaseName = new StringBuffer(sClientLogin);
+				databaseName.append("_");
+				databaseName.append(ApplicationListView.getApplicationName());
+				sDatabase = new DatabaseAdapter(ApplicationView.this, sDbDoc, databaseName.toString());
 				new Function(ApplicationView.this, sBehaviorDocument);
 				mHandler.sendEmptyMessage(0);	
 			}
@@ -123,9 +135,10 @@ public class ApplicationView extends Activity {
 	 */
 	private void generalSetup() {
 		Node system = sDesignDoc.getElementsByTagName(DesignTag.DESIGN_S).item(0);
-		int childrenLen = system.getChildNodes().getLength();
+		NodeList nodes = system.getChildNodes();
+		int childrenLen = nodes.getLength();
 		for (int i=0; i<childrenLen; i++) {
-			Element child = (Element) system.getChildNodes().item(i);
+			Element child = (Element) nodes.item(i);
 			if (child.getNodeName().equals(DesignTag.DESIGN_S_G)) {
 				if (child.hasAttribute(DesignTag.DESIGN_S_G_OS)) {
 					String name = child.getAttribute(DesignTag.DESIGN_S_G_OS);
@@ -242,11 +255,7 @@ public class ApplicationView extends Activity {
 						mComponent.setBackGround(Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_COMMON_BACKGROUND)));
 						mComponent.setExtension(sResourcesFileMap.get(element.getAttribute(DesignTag.COMPONENT_COMMON_BACKGROUND)));
 					}
-					if (element.hasAttribute(DesignTag.COMPONENT_TEXTFIELD_MULTI)) {
-						mComponent.setMultiLine(element.getAttribute(DesignTag.COMPONENT_TEXTFIELD_MULTI));
-						mComponent.setEditable(element.hasAttribute(DesignTag.COMPONENT_TEXTFIELD_EDIT));
-					}
-					
+
 					if (element.getNodeName().equals(DesignTag.COMPONENT_CHECKBOX)) {
 						if (element.hasAttribute(DesignTag.COMPONENT_CHECKBOX_CHECKED)) {
 							mComponent.setChecked(element.getAttribute(DesignTag.COMPONENT_CHECKBOX_CHECKED));
@@ -287,7 +296,7 @@ public class ApplicationView extends Activity {
 						if (nodeItemList.getLength() > 0) {
 							int nbColumn = nodeItemList.getLength();
 							for (int k=0; k<nbColumn; k++) {
-								Element column = (Element) element.getChildNodes().item(k);
+								Element column = (Element)nodeItemList.item(k);
 								if (column.getNodeName().equals(DesignTag.COMPONENT_DATAVIEW_COLUMN)) {
 									ArrayList<String> acolumn = new ArrayList<String>();
 									acolumn.add(column.getAttribute(DesignTag.COMPONENT_COMMON_TABLEID));
@@ -324,6 +333,12 @@ public class ApplicationView extends Activity {
 						if (element.hasAttribute(DesignTag.COMPONENT_MAX)) {
 							mComponent.setMaxValue(Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_MAX)));
 						}
+					} else if (element.getNodeName().equals(DesignTag.COMPONENT_TEXTFIELD)) {
+						if (element.hasAttribute(DesignTag.COMPONENT_TEXTFIELD_MULTI)) {
+							mComponent.setMultiLine(element.getAttribute(DesignTag.COMPONENT_TEXTFIELD_MULTI));
+						}
+						mComponent.setEditable(element.hasAttribute(DesignTag.COMPONENT_TEXTFIELD_EDIT));
+						mComponent.setTextFilter(element.getAttribute(DesignTag.COMPONENT_TEXTFIELD_TEXTFILTER));
 					}
 					
 					if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -450,7 +465,7 @@ public class ApplicationView extends Activity {
 		dialog.setButton("OK", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				sApplicationView.finish();
+				//sApplicationView.finish();
 			}
 			
 		});
@@ -472,5 +487,9 @@ public class ApplicationView extends Activity {
 	protected void onDestroy() {
 		super.onDestroy();
 		sDatabase.closeDatabase();
+	}
+	
+	public Handler getHandler() {
+		return mHandler;
 	}
 }

@@ -102,12 +102,7 @@ public class DmaHttpBinarySync {
 		boolean wellDone = false;
 		byte[] data = createConnection(mRequestAction, mInputbytes);
 		String codeStr = getErrorCode(data);
-		//String url, String request, String blob, String response, byte[] inputbytes, String syncType
-		Log.i("info", "url "+mUrlString);
-		Log.i("info", "request "+mRequestAction);
-		Log.i("info", "blob "+mBlobAction);
-		Log.i("info", "response "+mResponseAction);
-		
+
 		Log.i("info", "code of action "+mRequestAction+" : "+Integer.valueOf(codeStr));
 		if ((Integer.valueOf(codeStr) == ErrorCode.OK) || (Integer.valueOf(codeStr) == ErrorCode.CONTINUE)) {
 			int newLength = data.length - codeStr.length() - 1;
@@ -176,7 +171,11 @@ public class DmaHttpBinarySync {
 						sendAction.append("&blob=");
 						sendAction.append(blob.get(1));
 						sendAction.append("&format=jpg");
-						File image = new File(Constant.PACKAGENAME+ApplicationListView.getApplicationName()+"/"+blob.get(1));
+						StringBuffer imagePath = new StringBuffer(Constant.PACKAGENAME);
+						imagePath.append(ApplicationListView.getApplicationName());
+						imagePath.append("/");
+						imagePath.append(blob.get(1));
+						File image = new File(imagePath.toString());
 						byte[] responsedata = createConnection(sendAction.toString(), this.getBytesFromFile(image));
 						String codeResponseStr = getErrorCode(responsedata);
 						Log.i("info", "responsea "+sendAction+" code "+codeResponseStr);
@@ -230,7 +229,6 @@ public class DmaHttpBinarySync {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		Log.i("info", "bytes length "+bytes.length);
         return bytes;
     }
 	

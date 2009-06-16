@@ -11,9 +11,9 @@ import java.util.Arrays;
 
 public class NS_String {
 	public static String Concat(Element element) {
-		String left = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_A, ScriptAttribute.STRING).toString();
-		String right = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_B, ScriptAttribute.STRING).toString();
-		return left+right;
+		StringBuffer result = new StringBuffer(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_A, ScriptAttribute.STRING).toString());
+		result.append(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_B, ScriptAttribute.STRING).toString());
+		return result.toString();
 	}
 	
 	public static ArrayList<String> Explode(Element element) {

@@ -1,7 +1,5 @@
 package com.penbase.dma.Dalyo.Function.Namespace;
 
-import android.util.Log;
-
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Function.Function;
@@ -56,10 +54,9 @@ public class NS_Date {
 		
 		for (int i=0; i<indexArraySize; i++) {
 			if (indexArray.get(i) + 1 < format.length()) {
-				Log.i("info", "format.charAt(indexArray.get(i) + 1) "+format.charAt(indexArray.get(i) + 1));
-				Log.i("info", "convert in utgf8 "+Character.toString(format.charAt(indexArray.get(i) + 1)));
-				String newString = ""+format.charAt(indexArray.get(i) + 1);
-				formatedDate = formatedDate.replace(indexArray.get(i) + 1, indexArray.get(i) + 2, newString);
+				StringBuffer newString = new StringBuffer("");
+				newString.append(format.charAt(indexArray.get(i) + 1));
+				formatedDate = formatedDate.replace(indexArray.get(i) + 1, indexArray.get(i) + 2, newString.toString());
 			}
 		}
 		

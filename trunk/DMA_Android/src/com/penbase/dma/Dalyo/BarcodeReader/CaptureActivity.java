@@ -1,5 +1,8 @@
 package com.penbase.dma.Dalyo.BarcodeReader;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import com.google.zxing.Result;
@@ -7,6 +10,10 @@ import com.google.zxing.ResultPoint;
 import com.google.zxing.client.result.ParsedResult;
 import com.google.zxing.client.result.ResultParser;
 import com.penbase.dma.R;
+import com.penbase.dma.Constant.Constant;
+import com.penbase.dma.Dalyo.Component.Custom.Barcode;
+import com.penbase.dma.View.ApplicationListView;
+import com.penbase.dma.View.ApplicationView;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -16,6 +23,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -56,6 +64,8 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 	  private Button mCompleteButton;
 	  private Button mCancelButton;
 	  private static String mBarCodeContent = null;
+	  private String mId;
+	  private ImageView mBarcodeImageView;
 
 	  @Override
 	  public void onCreate(Bundle icicle) {
@@ -64,7 +74,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 	    Window window = getWindow();
 	    window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 	    setContentView(R.layout.capture);
-
+	    mId = getIntent().getStringExtra("ID");
 	    CameraManager.init(getApplication());
 	    mViewfinderView = (ViewfinderView) findViewById(R.id.viewfinder_view);
 	    mResultView = findViewById(R.id.result_view);
@@ -73,7 +83,9 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 	    mCompleteButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				//TODO save content text	
+				savePreview();
+				((Barcode)ApplicationView.getComponents().get(mId).getView()).setContent(mBarCodeContent);
+				finish();
 			}
 	    });
 	    mCancelButton = (Button)findViewById(R.id.cancel);
@@ -89,6 +101,24 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 	    mHasSurface = false;
 	  }
 
+	  private void savePreview() {
+		  StringBuffer photoName = new StringBuffer(Constant.BARCODEFILE);
+		  photoName.append(mId).append("_tmp.jpg");
+		  StringBuffer filePath = new StringBuffer(Constant.PACKAGENAME);
+		  filePath.append(ApplicationListView.getApplicationName()).append("/").append(photoName);
+		  File file = new File(filePath.toString());
+		  if (file.exists()) {
+			  file.delete();
+		  }
+		  FileOutputStream fos = null;
+		  try {
+			fos = new FileOutputStream(file);
+			((BitmapDrawable)mBarcodeImageView.getDrawable()).getBitmap().compress(Bitmap.CompressFormat .JPEG, 100, fos);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	  }
+	  
 	  @Override
 	  protected void onResume() {
 	    super.onResume();
@@ -199,17 +229,17 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 	    mResultView.setVisibility(View.VISIBLE);
 	    mResultButtonView.setVisibility(View.VISIBLE);
 
-	      ImageView barcodeImageView = (ImageView) findViewById(R.id.barcode_image_view);
-	      barcodeImageView.setMaxWidth(MAX_RESULT_IMAGE_SIZE);
-	      barcodeImageView.setMaxHeight(MAX_RESULT_IMAGE_SIZE);
-	      barcodeImageView.setImageBitmap(barcode);
+	    mBarcodeImageView = (ImageView) findViewById(R.id.barcode_image_view);
+	    mBarcodeImageView.setMaxWidth(MAX_RESULT_IMAGE_SIZE);
+	    mBarcodeImageView.setMaxHeight(MAX_RESULT_IMAGE_SIZE);
+	    mBarcodeImageView.setImageBitmap(barcode);
 	      
-	      TextView contentsTextView = (TextView) findViewById(R.id.contents_text_view);
-	      StringBuffer text = new StringBuffer("Information trouvée: \n\n");
-	      ParsedResult result = ResultParser.parseResult(rawResult);
-	      mBarCodeContent = result.getDisplayResult();
-	      text.append(result.getDisplayResult());
-	      contentsTextView.setText(text);
+	    TextView contentsTextView = (TextView) findViewById(R.id.contents_text_view);
+	    StringBuffer text = new StringBuffer("Information trouvée: \n\n");
+	    ParsedResult result = ResultParser.parseResult(rawResult);
+	    mBarCodeContent = result.getDisplayResult();
+	    text.append(result.getDisplayResult());
+	    contentsTextView.setText(text);
 	  }
 
 	  /**

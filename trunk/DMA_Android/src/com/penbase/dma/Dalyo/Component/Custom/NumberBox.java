@@ -54,7 +54,6 @@ public class NumberBox extends LinearLayout{
 
 			@Override
 			public int getInputType() {
-				// TODO Auto-generated method stub
 				return 0;
 			}
         });
