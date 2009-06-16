@@ -117,6 +117,7 @@ public class PictureBox extends Activity implements SurfaceHolder.Callback {
 		return true;
 	}
 
+	//TODO save photo in temp mode, "picturebox_id_temp.jpg" if it is not saved, delete it when the activity destroyed
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		switch (item.getItemId()) {

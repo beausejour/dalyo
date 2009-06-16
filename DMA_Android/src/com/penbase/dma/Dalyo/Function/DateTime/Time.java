@@ -22,7 +22,10 @@ public class Time {
 	}
 	
 	public String toString() {
-		return mHour+":"+mMinute+":"+mSecond;
+		StringBuffer result = new StringBuffer(String.valueOf(mHour));
+		result.append(":").append(mMinute);
+		result.append(":").append(mSecond);
+		return result.toString();
 	}
 	
 	public int toInt() {

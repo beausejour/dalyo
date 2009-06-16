@@ -28,7 +28,13 @@ public class DalyoDate {
 	}
 	
 	public String toString() {
-		return mDay+"/"+mMonth+"/"+mYear+" "+mHour+":"+mMinute+":"+mSecond;
+		StringBuffer result = new StringBuffer(String.valueOf(mDay));
+		result.append("/").append(mMonth);
+		result.append("/").append(mYear);
+		result.append(" ").append(mHour);
+		result.append(":").append(mMinute);
+		result.append(":").append(mSecond);
+		return result.toString();
 	}
 	
 	public int toInt() {

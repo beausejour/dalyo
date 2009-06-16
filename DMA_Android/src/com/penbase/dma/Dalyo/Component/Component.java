@@ -3,6 +3,7 @@ package com.penbase.dma.Dalyo.Component;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.text.method.DigitsKeyListener;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -61,6 +62,7 @@ public class Component {
 	//Variable for textfield
 	private boolean mEditable;
 	private String mMultiLine;
+	private String mTextFilter;
 	
 	//Variable for TimeField/DateField
 	private String mDateTimeValue = null;
@@ -143,6 +145,10 @@ public class Component {
 		this.mEditable = editable;
 	}
 	
+	public void setTextFilter(String tf) {
+		this.mTextFilter = tf;
+	}
+	
 	public void setDateTimeValue(String value) {
 		this.mDateTimeValue = value;
 	}
@@ -171,7 +177,11 @@ public class Component {
 	 * Instantiates a View object by its type
 	 */
 	public void setView() {
-		if(mType.equals(DesignTag.COMPONENT_BUTTON)) {
+		if (mType.equals(DesignTag.COMPONENT_BARCODECOMPONENT)) {
+			Barcode barcode = new Barcode(mContext, mId);
+			mView = barcode;
+		}
+		else if (mType.equals(DesignTag.COMPONENT_BUTTON)) {
 			Button button = new Button(mContext);
 			button.setText(mLabel);
 			button.setTypeface(getFontType(mFontType));
@@ -185,7 +195,7 @@ public class Component {
 				button.setBackgroundDrawable(d);
 			}
 			mView = button;
-		} else if(mType.equals(DesignTag.COMPONENT_CHECKBOX)) {
+		} else if (mType.equals(DesignTag.COMPONENT_CHECKBOX)) {
 			CheckBox checkbox = new CheckBox(mContext);
 			checkbox.setText(mLabel);
 			checkbox.setTypeface(getFontType(mFontType));
@@ -194,7 +204,7 @@ public class Component {
 				checkbox.setChecked(true);
 			}
 			mView = checkbox;
-		} else if(mType.equals(DesignTag.COMPONENT_COMBOBOX)) {
+		} else if (mType.equals(DesignTag.COMPONENT_COMBOBOX)) {
 			ComboBox combobox;
 			if ((mValueList != null) && (mLabelList != null)) {
 				combobox = new ComboBox(mContext, mLabelList, mValueList);
@@ -202,20 +212,20 @@ public class Component {
 				combobox = new ComboBox(mContext, mItemList);
 			}
 			mView = combobox;
-		} else if(mType.equals(DesignTag.COMPONENT_LABEL)) {
+		} else if (mType.equals(DesignTag.COMPONENT_LABEL)) {
 			Label labelObject = new Label(mContext, getFontType(mFontType), getFontSize(mFontSize));
 			labelObject.setText(mLabel);
 			if (mAlign != null) {
 				labelObject.setGravity(getGravity(mAlign));
 			}
 			mView = labelObject;
-		} else if(mType.equals(DesignTag.COMPONENT_DATEFIELD)) {
+		} else if (mType.equals(DesignTag.COMPONENT_DATEFIELD)) {
 			DateField datefield = new DateField(mContext, getFontType(mFontType), getFontSize(mFontSize), mDateTimeValue);
 			mView = datefield;
-		} else if(mType.equals(DesignTag.COMPONENT_TIMEFIELD)) {
+		} else if (mType.equals(DesignTag.COMPONENT_TIMEFIELD)) {
 			TimeField timefield = new TimeField(mContext, getFontType(mFontType), getFontSize(mFontSize), mDateTimeValue);
 			mView = timefield;
-		} else if(mType.equals(DesignTag.COMPONENT_TEXTFIELD)) {
+		} else if (mType.equals(DesignTag.COMPONENT_TEXTFIELD)) {
 			if (mMultiLine.equals("true")) {
 				TextZone textzone = new TextZone(mContext, getFontType(mFontType), getFontSize(mFontSize));
 				if ((mTableID != null) && (mFieldID != null)) {
@@ -237,25 +247,31 @@ public class Component {
 			if (mEditable) {
 				((TextView)mView).setEnabled(!mEditable);
 			}
-		} else if(mType.equals(DesignTag.COMPONENT_TEXTZONE)) {
+			if (!mTextFilter.equals(Constant.NONE)) {
+				if (mTextFilter.equals(Constant.POSITIVENUMERIC)) {
+					DigitsKeyListener numericOnlyListener = new DigitsKeyListener(false, true);
+					((TextView)mView).setKeyListener(numericOnlyListener);
+				}
+			}
+		} else if (mType.equals(DesignTag.COMPONENT_TEXTZONE)) {
 			TextZone textzone = new TextZone(mContext, getFontType(mFontType), getFontSize(mFontSize));
 			mView = textzone;
-		} else if(mType.equals(DesignTag.COMPONENT_RADIOBUTTON)) {
+		} else if (mType.equals(DesignTag.COMPONENT_RADIOBUTTON)) {
 			Radiobutton radiobutton = new Radiobutton(mContext);
 			radiobutton.getTextView().setText(mLabel);
 			radiobutton.getTextView().setTypeface(getFontType(mFontType));
 			radiobutton.getTextView().setTextSize(getFontSize(mFontSize));
 			mView = radiobutton;
-		} else if(mType.equals(DesignTag.COMPONENT_NUMBERBOX)) {
+		} else if (mType.equals(DesignTag.COMPONENT_NUMBERBOX)) {
 			NumberBox numberbox = new NumberBox(mContext);
 			numberbox.setInitialValue(mInitialValue);
 			numberbox.setMaxValue(mMaxValue);
 			numberbox.setMinValue(mMinValue);
 			mView = numberbox;
-		} else if(mType.equals(DesignTag.COMPONENT_PICTUREBOX)) {
+		} else if (mType.equals(DesignTag.COMPONENT_PICTUREBOX)) {
 			PictureBoxView pictureBox = new PictureBoxView(mContext, mId);
 			mView = pictureBox;
-		} else if(mType.equals(DesignTag.COMPONENT_IMAGE)) {
+		} else if (mType.equals(DesignTag.COMPONENT_IMAGE)) {
 			ImageView imageview = new ImageView(mContext);
 			if (mBackground != 0) {
 				StringBuffer path = new StringBuffer(DmaHttpClient.getFilesPath());
@@ -266,7 +282,7 @@ public class Component {
 				imageview.setBackgroundDrawable(d);
 			}
 			mView = imageview;
-		} else if(mType.equals(DesignTag.COMPONENT_DATAVIEW)) {
+		} else if (mType.equals(DesignTag.COMPONENT_DATAVIEW)) {
 			DataView dataview = new DataView(mContext, mTableID);
 			dataview.setText(getFontSize(mFontSize), getFontType(mFontType));
 			dataview.setColumnInfo(mColumnInfos);
@@ -400,25 +416,27 @@ public class Component {
 	
 	public Object getValue() {
 		Object result = null;
-		if (getView() instanceof NumberBox) {
-			result = ((NumberBox)getView()).getValue();
+		if (getView() instanceof Barcode) {
+			result = ((Barcode)getView()).getContent();
+		} else if (getView() instanceof ComboBox) {
+			result = ((ComboBox)getView()).getValue();
+		} else if (getView() instanceof DateField) {
+			result = ((DateField)getView()).getDate();
+		} else if (getView() instanceof DoodleView) {
+			result = ((DoodleView)getView()).getImageName();
+		} else if (getView() instanceof Gauge) {
+			result = ((Gauge)getView()).getValue();
 		} else if (getView() instanceof Label) {
 			result = ((Label)getView()).getText();
+		} else if (getView() instanceof NumberBox) {
+			result = ((NumberBox)getView()).getValue();
+		} else if (getView() instanceof PictureBoxView) {
+			result = ((PictureBoxView)getView()).getPhotoName();
 		} else if (getView() instanceof TextZone) {
 			result = ((TextZone)getView()).getValue();
 		} else if (getView() instanceof TimeField) {
 			result = ((TimeField)getView()).getTime();
-		} else if (getView() instanceof DateField) {
-			result = ((DateField)getView()).getDate();
-		} else if (getView() instanceof Gauge) {
-			result = ((Gauge)getView()).getValue();
-		} else if (getView() instanceof DoodleView) {
-			result = ((DoodleView)getView()).getImageName();
-		} else if (getView() instanceof ComboBox) {
-			result = ((ComboBox)getView()).getValue();
-		} else if (getView() instanceof PictureBoxView) {
-			result = ((PictureBoxView)getView()).getPhotoName();
-		}
+		}     
 		return result;
 	}
 	
@@ -447,6 +465,8 @@ public class Component {
 			((Label)getView()).setText(newText);
 		} else if (getView() instanceof TextField) {
 			((TextField)getView()).setText(newText);
+		} else if (getView() instanceof Button) {
+			((Button)getView()).setText(newText);
 		}
 	}
 	

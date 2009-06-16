@@ -67,6 +67,7 @@ public class DatabaseAdapter {
 	
 	private void createDatabase(String database) throws SQLException{
 		Log.i("info", "dbName "+mDbName);
+		closeDatabase();
 		try{
 			if (!databaseExists(database)) {
 				Log.i("info", "the database doesn't exist");
@@ -92,7 +93,9 @@ public class DatabaseAdapter {
 	}
 	
 	private boolean databaseExists(String database) {
-		File dbFile = new File(Constant.PACKAGENAME+"databases/"+database);
+		StringBuffer filePath = new StringBuffer(Constant.PACKAGENAME);
+		filePath.append("databases/").append(database);
+		File dbFile = new File(filePath.toString());
 		return dbFile.exists();
 	}
 	
@@ -182,9 +185,9 @@ public class DatabaseAdapter {
 		NodeList tableList = mDbDocument.getElementsByTagName(DatabaseTag.TABLE);
 		int tableLen = tableList.getLength();
 		for (int i=0; i<tableLen; i++) {
-			String createquery = "CREATE TABLE IF NOT EXISTS ";
+			StringBuffer createquery = new StringBuffer("CREATE TABLE IF NOT EXISTS ");
 			Element table = (Element) tableList.item(i);
-			String typeSync = table.getAttribute(DatabaseTag.TABLE_SYNC);
+			//String typeSync = table.getAttribute(DatabaseTag.TABLE_SYNC);
 			String tableId = table.getAttribute(DatabaseTag.TABLE_ID);
 			String tableOriginalName = table.getAttribute(DatabaseTag.TABLE_NAME);
 			sTablesNameMap.put(tableOriginalName, tableId);
@@ -193,7 +196,8 @@ public class DatabaseAdapter {
 			ArrayList<String> tableElements = new ArrayList<String>();
 			String id = DatabaseAttribute.ID+tableId;
 			String gid = DatabaseAttribute.GID+tableId;
-			createquery += tableName+" ("+id+" VARCHAR(255), "+gid+" VARCHAR(255), "+DatabaseAttribute.STATE+" INTEGER, ";
+			createquery.append(tableName).append(" (").append(id).append(" VARCHAR(255), ").append(gid);
+			createquery.append(" VARCHAR(255), ").append(DatabaseAttribute.STATE).append(" INTEGER, ");
 			NodeList fieldList = table.getChildNodes();
 			int fieldLen = fieldList.getLength();
 			ArrayList<ArrayList<String>> foreignKeyTable = new ArrayList<ArrayList<String>>();
@@ -218,14 +222,14 @@ public class DatabaseAdapter {
 					String fieldTypeValue = fieldType;
 					if (field.hasAttribute(DatabaseTag.FIELD_PK)) {
 						sFieldsPKMap.put(tableId, fieldId);
-						createquery += fieldNewName+" "+fieldType+" UNIQUE, ";
+						createquery.append(fieldNewName).append(" ").append(fieldType).append(" UNIQUE, ");
 						fieldTypeValue += " UNIQUE, ";
 					} else if ((field.hasAttribute(DatabaseTag.FIELD_FOREIGNTABLE)) &&
 							(field.hasAttribute(DatabaseTag.FIELD_FOREIGNFIELD))) {
 						String foreignTableId = field.getAttribute(DatabaseTag.FIELD_FOREIGNTABLE);
 						String foreignFieldId = field.getAttribute(DatabaseTag.FIELD_FOREIGNFIELD);
 						fieldTypeValue += foreignTableId+" "+foreignFieldId;
-						createquery += fieldNewName+" "+fieldType+", ";
+						createquery.append(fieldNewName).append(" ").append(fieldType).append(", ");
 						foreignKey.add(tableId);
 						foreignKey.add(fieldId);
 						foreignKey.add(foreignTableId);
@@ -233,7 +237,7 @@ public class DatabaseAdapter {
 						sForeignKeyList.add(foreignKey);	
 						foreignKeyTable.add(foreignKey);
 					} else {
-						createquery += fieldNewName+" "+fieldType+", ";
+						createquery.append(fieldNewName).append(" ").append(fieldType).append(", ");
 					}
 					
 					//check system fields setting
@@ -250,11 +254,11 @@ public class DatabaseAdapter {
 			
 			sTablesMap.put(tableId, tableElements);
 			
-			createquery = createquery.substring(0, createquery.length()-2);
-			createquery += ");";
+			String createSql = createquery.substring(0, createquery.length()-2);
+			createSql += ");";
 			
-			Log.i("info", "query "+createquery);
-			sSqlite.execSQL(createquery);
+			Log.i("info", "query "+createSql);
+			sSqlite.execSQL(createSql);
 			
 			if (systemFields.size() > 0) {
 				//insert system fields value (contacts, events, tasks)
@@ -396,7 +400,10 @@ public class DatabaseAdapter {
 	}
 	
 	public void saveBlobData(byte[] data, int index) {
-		File file = new File(Constant.PACKAGENAME+ApplicationListView.getApplicationName()+"/"+sBlobRecords.get(index).get(2).toString());
+		StringBuffer filePath = new StringBuffer(Constant.PACKAGENAME);
+		filePath.append(ApplicationListView.getApplicationName()).append("/");
+		filePath.append(sBlobRecords.get(index).get(2).toString());
+		File file = new File(filePath.toString());
 		FileOutputStream fos = null;
 		try {
 			fos = new FileOutputStream(file);
@@ -422,29 +429,33 @@ public class DatabaseAdapter {
 		} else {
 			keys = new HashSet<String>(tables);
 		}
-		//Set<String> keys = tablesMap.keySet();
+
 		HashMap<String, ArrayList<HashMap<Object, Object>>> tidMap = 
 			new HashMap<String, ArrayList<HashMap<Object, Object>>>();
 		int count = 0;
 		for (String key : keys) {
 			String table = DatabaseAttribute.TABLE+key;
-			//String selection = table+".STATE != "+DatabaseField.SYNCHRONIZED;
-			String selection = "STATE != "+DatabaseAttribute.SYNCHRONIZED;
-			Log.i("info", "selection "+selection);
+			StringBuffer selection = new StringBuffer("STATE != ");
+			selection.append(DatabaseAttribute.SYNCHRONIZED);
 			
 			if ((filters != null) && (((ArrayList<Object>)filters).get(count) != null)) {
 				ArrayList<Object> filter = (ArrayList<Object>) ((ArrayList<Object>)filters).get(count);
 				if (count == 0) {
-					selection +=  " AND ";
+					selection.append(" AND ");
 				} else {
-					selection += Function.getOperator(filter.get(3)).toString();
+					selection.append(Function.getOperator(filter.get(3)).toString());
 				}
-				selection += DatabaseAttribute.FIELD+filter.get(0).toString();
-				selection += " "+Function.getOperator(filter.get(1))+" ";
-				selection += "\'"+filter.get(2)+"\'";
+				selection.append(DatabaseAttribute.FIELD);
+				selection.append(filter.get(0).toString());
+				selection.append(" ");
+				selection.append(Function.getOperator(filter.get(1)));
+				selection.append(" ");
+				selection.append("\'");
+				selection.append(filter.get(2));
+				selection.append("\'");
 			}
 			
-			Cursor cursor = sSqlite.query(table, null, selection, null, null, null, null);
+			Cursor cursor = sSqlite.query(table, null, selection.toString(), null, null, null, null);
 			
 			Log.i("info", "cursor count "+cursor.getCount());
 			if (cursor.getCount() > 0) {
@@ -599,14 +610,19 @@ public class DatabaseAdapter {
 		ContentValues values = new ContentValues();
 		values.put(DatabaseAttribute.GID+tableId, String.valueOf(gid));
 		values.put(DatabaseAttribute.STATE, DatabaseAttribute.SYNCHRONIZED);   //update sync type at the same time 
-		String whereClause = "";
+		StringBuffer whereClause = new StringBuffer(DatabaseAttribute.ID);
+		whereClause.append(tableId);
+		whereClause.append("=\'");
 		if (tableId == 0) {
-			String idValue = tableId+""+lid;
-			whereClause = DatabaseAttribute.ID+tableId+"=\'"+idValue+"\'";
+			StringBuffer idValue = new StringBuffer(tableId);
+			idValue.append("").append(lid);
+			whereClause.append(idValue.toString());
+			whereClause.append("\'");
 		} else {
-			whereClause = DatabaseAttribute.ID+tableId+"=\'"+lid+"\'";
+			whereClause.append(lid);
+			whereClause.append("\'");			 
 		}
-		sSqlite.update(table, values, whereClause, null);
+		sSqlite.update(table, values, whereClause.toString(), null);
 	}
 	
 	private void updateTable(int tableId, ArrayList<Integer> fields, ArrayList<Integer> syncTypeList,
@@ -638,9 +654,10 @@ public class DatabaseAdapter {
 		Cursor cursorAllRows = selectQuery(String.valueOf(tableId), null, null);
 		int newId = cursorAllRows.getCount()+1;
 		DatabaseAdapter.closeCursor(cursorAllRows);
-		String idValue = tableId+""+newId;
+		StringBuffer idValue = new StringBuffer(tableId);
+		idValue.append("").append(newId);
 		ContentValues values = new ContentValues();
-		values.put(DatabaseAttribute.ID+tableId, idValue);
+		values.put(DatabaseAttribute.ID+tableId, idValue.toString());
 		values.put(DatabaseAttribute.GID+tableId, (String)record.get(1));
 		values.put(DatabaseAttribute.STATE, DatabaseAttribute.SYNCHRONIZED);
 		int fieldsNb = fieldsList.size();
@@ -672,26 +689,52 @@ public class DatabaseAdapter {
 		int fieldsNb = fieldsList.size();
 		String tableName = DatabaseAttribute.TABLE+tableId;
 		//String newValue = DatabaseField.STATE+"="+DatabaseField.SYNCHRONIZED+" AND "+DatabaseField.GID+tableId+"="+record.get(1);
-		String newValue = "";
+		StringBuffer newValue = new StringBuffer("");
 		for (int i=0; i<fieldsNb; i++) {
 			if (i == fieldsNb-1) {
-				newValue += DatabaseAttribute.STATE+"="+DatabaseAttribute.SYNCHRONIZED+" ,"+DatabaseAttribute.FIELD+fieldsList.get(i)+"=\'"+record.get(i+2)+"\'";
+				newValue.append(DatabaseAttribute.STATE);
+				newValue.append("=");
+				newValue.append(DatabaseAttribute.SYNCHRONIZED);
+				newValue.append(" ,");
+				newValue.append(DatabaseAttribute.FIELD);
+				newValue.append(fieldsList.get(i));
+				newValue.append("=\'");
+				newValue.append(record.get(i+2));
+				newValue.append("\'");
 			} else {
-				newValue += DatabaseAttribute.FIELD+fieldsList.get(i)+"=\'"+record.get(i+2)+"\', ";
+				newValue.append(DatabaseAttribute.FIELD);
+				newValue.append(fieldsList.get(i));
+				newValue.append("=\'");
+				newValue.append(record.get(i+2));
+				newValue.append("\', ");
 			}
 		}
-		String update = "UPDATE "+tableName+" SET "+newValue+" WHERE "+DatabaseAttribute.GID+tableId+"=\'"+record.get(1)+"\';";
-		Log.i("info", "update "+update);
-		sSqlite.execSQL(update);
+		StringBuffer update = new StringBuffer("UPDATE ");
+		update.append(tableName);
+		update.append(" SET ");
+		update.append(newValue.toString());
+		update.append(" WHERE ");
+		update.append(DatabaseAttribute.GID);
+		update.append(tableId);
+		update.append("=\'");
+		update.append(record.get(1));
+		update.append("\';");
+		Log.i("info", "update "+update.toString());
+		sSqlite.execSQL(update.toString());
 	}
 	
 	private void deleteValues(int tableId, ArrayList<Integer> fieldsList, ArrayList<Object> record) {
-		String selectionString = DatabaseAttribute.GID+tableId+"=\'"+record.get(1)+"\'";
+		StringBuffer selectionString = new StringBuffer(DatabaseAttribute.GID);
+		selectionString.append(tableId);
+		selectionString.append("=\'");
+		selectionString.append(record.get(1));
+		selectionString.append("\'");
 		//Check if table has blob data
-		DatabaseAdapter.deleteBlobFiles(String.valueOf(tableId), selectionString);
-		String delete = "DELETE FROM "+DatabaseAttribute.TABLE+tableId+" WHERE "+selectionString+";";
+		DatabaseAdapter.deleteBlobFiles(String.valueOf(tableId), selectionString.toString());
+		StringBuffer delete = new StringBuffer("DELETE FROM ");
+		delete.append(DatabaseAttribute.TABLE).append(tableId).append(" WHERE ").append(selectionString).append(";");
 		//String delete = "DELETE FROM "+DatabaseAttribute.TABLE+tableId+" WHERE "+DatabaseAttribute.GID+tableId+"=\'"+record.get(1)+"\';";
-		sSqlite.execSQL(delete);
+		sSqlite.execSQL(delete.toString());
 	}
 	
 	/**
@@ -713,7 +756,7 @@ public class DatabaseAdapter {
 	
 	@SuppressWarnings("unchecked")
 	public static void clearTable(String tableId, Object filters) {
-		String selectionString = null;
+		StringBuffer selectionString = new StringBuffer();
 		if (filters != null) {
 			int filtersNb = ((ArrayList<Object>)filters).size();
 			for (int i=0; i<filtersNb; i++) {
@@ -721,19 +764,23 @@ public class DatabaseAdapter {
 				if (i != 0) {
 					//Add link
 				}
-				selectionString += DatabaseAttribute.FIELD+filter.get(0).toString();
-				selectionString += " "+Function.getOperator(filter.get(1))+" ";
-				selectionString += "\'"+filter.get(2)+"\'";
+				selectionString.append(DatabaseAttribute.FIELD).append(filter.get(0).toString());
+				selectionString.append(" ").append(Function.getOperator(filter.get(1))).append(" ");
+				selectionString.append("\'").append(filter.get(2)).append("\'");
 			}
 		}
 		
 		//Check if table has blob data
-		DatabaseAdapter.deleteBlobFiles(tableId, selectionString);
+		DatabaseAdapter.deleteBlobFiles(tableId, selectionString.toString());
 		
-		if (selectionString == null) {
-			sSqlite.execSQL("DELETE FROM "+DatabaseAttribute.TABLE+tableId+";");
+		StringBuffer delete = new StringBuffer("DELETE FROM ");
+		delete.append(DatabaseAttribute.TABLE).append(tableId);
+		if (selectionString.length() > 0) {
+			delete.append(";");
+			sSqlite.execSQL(delete.toString());
 		} else {
-			sSqlite.execSQL("DELETE FROM "+DatabaseAttribute.TABLE+tableId+" WHERE "+selectionString+";");
+			delete.append(" WHERE ").append(selectionString.toString()).append(";");
+			sSqlite.execSQL(delete.toString());
 		}
 	}
 	
@@ -825,8 +872,11 @@ public class DatabaseAdapter {
 		String id = DatabaseAttribute.ID+tableId;
 		String gid = DatabaseAttribute.GID+tableId;
 		String idValue = String.valueOf(tableId+""+record.get(0));
-		String fields = "("+id+", "+gid+", "+DatabaseAttribute.STATE+", ";
-		String values = "('"+idValue+"\', 0, "+DatabaseAttribute.ADDVALUE+", ";
+		StringBuffer fields = new StringBuffer("(");
+		fields.append(id).append(", ").append(gid).append(", ");
+		fields.append(DatabaseAttribute.STATE).append(", ");
+		StringBuffer values = new StringBuffer("('");
+		values.append(idValue).append("\', 0, ").append(DatabaseAttribute.ADDVALUE).append(", ");
 		for (int i=0; i<fieldsNb; i++) {
 			if ((sFieldsPKMap.containsKey(String.valueOf(tableId))) && 
 					(sFieldsPKMap.get(String.valueOf(tableId)).equals(fieldsList.get(i))) &&
@@ -836,26 +886,32 @@ public class DatabaseAdapter {
 				record.add(i+1, generatePK(sFieldsTypeMap.get(fieldsList.get(i)), record.get(0)));
 			}
 			
-			fields += DatabaseAttribute.FIELD+fieldsList.get(i);
-			values += "\'"+record.get(i+1)+"\'";
+			fields.append(DatabaseAttribute.FIELD).append(fieldsList.get(i));
+			values.append("\'").append(record.get(i+1)).append("\'");
 			
 			if (i != fieldsNb-1) {
-				fields += ", ";
-				values += ", ";
+				fields.append(", ");
+				values.append(", ");
 			}
 		}
 		if ((!fieldsList.contains(sFieldsPKMap.get(String.valueOf(tableId)))) &&
 				(sFieldsPKMap.containsKey(String.valueOf(tableId)))) {
 			Log.i("info", "in case of field list hasn't pk field, generate its value");
-			fields += ", "+DatabaseAttribute.FIELD+sFieldsPKMap.get(String.valueOf(tableId));
-			values += ", \'"+generatePK(sFieldsTypeMap.get(sFieldsPKMap.get(String.valueOf(tableId))), record.get(0))+"\'";
+			fields.append(", ").append(DatabaseAttribute.FIELD).append(sFieldsPKMap.get(String.valueOf(tableId)));
+			values.append(", \'");
+			values.append(generatePK(sFieldsTypeMap.get(sFieldsPKMap.get(String.valueOf(tableId))), record.get(0)));
+			values.append("\'");
 		}
-		fields += ")";
-		values += ")";
-		String tableName = DatabaseAttribute.TABLE+tableId;
-		String insert = "INSERT INTO "+tableName+" "+fields+" VALUES"+values+";";
-		Log.i("info", "query "+insert);
-		sSqlite.execSQL(insert);
+		fields.append(")");
+		values.append(")");
+		StringBuffer tableName = new StringBuffer(DatabaseAttribute.TABLE);
+		tableName.append(tableId);
+		StringBuffer insert = new StringBuffer("INSERT INTO ");
+		insert.append(tableName.toString());
+		insert.append(" ").append(fields.toString());
+		insert.append(" VALUES").append(values.toString()).append(";");
+		Log.i("info", "query "+insert.toString());
+		sSqlite.execSQL(insert.toString());
 	}
 	
 	public static void updateQuery(String tableId, ArrayList<Integer> fieldList, ArrayList<Object> valueList, HashMap<Object, Object> record) {
@@ -966,10 +1022,11 @@ public class DatabaseAdapter {
 			result.moveToFirst();
 			int count = result.getCount();
 			for (int i=0; i<count; i++) {
-				String whereClause = id+" = \'"+result.getString(result.getColumnIndexOrThrow(id))+"\'";
+				StringBuffer whereClause = new StringBuffer(id);
+				whereClause.append(" = \'").append(result.getString(result.getColumnIndexOrThrow(id))).append("\'");
 				if (result.getInt(result.getColumnIndexOrThrow(DatabaseAttribute.STATE)) == DatabaseAttribute.DELETEVALUE) {
 					Log.i("info", "delete value");
-					sSqlite.delete(table, whereClause, null);					
+					sSqlite.delete(table, whereClause.toString(), null);					
 				}
 				result.moveToNext();
 			}
@@ -1009,24 +1066,25 @@ public class DatabaseAdapter {
 	}
 	
 	private static String createWhereClause(String tableId, HashMap<Object, Object> record) {
-		String result = "";
+		StringBuffer result = new StringBuffer("");
 		if (record.containsKey(DatabaseAttribute.ID+tableId)) {
-			result += DatabaseAttribute.ID+tableId+" = \'"+record.get(DatabaseAttribute.ID+tableId)+"\'";
+			result.append(DatabaseAttribute.ID).append(tableId).append(" = \'");
+			result.append(record.get(DatabaseAttribute.ID+tableId)).append("\'");
 		}
-		return result;
+		return result.toString();
 	}
 	
 	private static String createTableString(ArrayList<String> tables) {
-		String result = "";
+		StringBuffer result = new StringBuffer("");
 		int size = tables.size();
 		for (int i=0; i<size; i++) {
 			if (i != size-1) {
-				result += DatabaseAttribute.TABLE+tables.get(i)+", ";
+				result.append(DatabaseAttribute.TABLE).append(tables.get(i)).append(", ");
 			} else {
-				result += DatabaseAttribute.TABLE+tables.get(i);
+				result.append(DatabaseAttribute.TABLE).append(tables.get(i));
 			}	
 		}
-		return result;
+		return result.toString();
 	}
 	
 	private static String[] createProjectionStrings(ArrayList<ArrayList<String>> columns) {
@@ -1037,7 +1095,9 @@ public class DatabaseAdapter {
 			String[] result = new String[size];
 			for (int i=0; i<size; i++) {
 				ArrayList<String> column = columns.get(i);
-				result[i] = DatabaseAttribute.TABLE+column.get(0)+"."+DatabaseAttribute.FIELD+column.get(1);
+				StringBuffer value = new StringBuffer(DatabaseAttribute.TABLE);
+				value.append(column.get(0)).append(".").append(DatabaseAttribute.FIELD).append(column.get(1));
+				result[i] = value.toString();
 			}
 			return result;
 		}
@@ -1045,66 +1105,71 @@ public class DatabaseAdapter {
 	
 	@SuppressWarnings("unchecked")
 	private static String createSelectionString(ArrayList<String> tables, Object filters) {
-		String result = "";
+		StringBuffer result = new StringBuffer("");
 		int tablesSize = tables.size();
 		for (int i=0; i<tablesSize; i++) {
 			if (i != 0) {
-				result +=  " AND ";
+				result.append(" AND ");
 			}
-			result +=  DatabaseAttribute.TABLE+tables.get(i)+".STATE != "+DatabaseAttribute.DELETEVALUE;
+			result.append(DatabaseAttribute.TABLE).append(tables.get(i)).append(".STATE != ").append(DatabaseAttribute.DELETEVALUE);
 		}
 		if (!createSelectionFKString(tables).equals("")) {
-			result += " AND "+createSelectionFKString(tables);	
+			result.append(" AND ").append(createSelectionFKString(tables));
 		}
 		if (filters != null) {
 			int filtersNb = ((ArrayList<Object>)filters).size();
 			for (int i=0; i<filtersNb; i++) {
 				ArrayList<Object> filter = (ArrayList<Object>) ((ArrayList<Object>)filters).get(i);
 				if (i == 0) {
-					result +=  " AND ";
+					result.append(" AND ");
 				} else {
-					result += Function.getOperator(filter.get(3)).toString();
+					result.append(Function.getOperator(filter.get(3)).toString());
 				}
-				result += DatabaseAttribute.FIELD+filter.get(0).toString();
-				result += " "+Function.getOperator(filter.get(1))+" ";
-				result += "\'"+filter.get(2)+"\'";
+				result.append(DatabaseAttribute.FIELD).append(filter.get(0).toString());
+				result.append(" ").append(Function.getOperator(filter.get(1))).append(" ");
+				result.append("\'").append(filter.get(2)).append("\'");
 			}
 		}
-		return result;
+		return result.toString();
 	}
 	
 	private static String createSelectionString(ArrayList<Integer> fieldList, ArrayList<Object> valueList) {
 		if ((fieldList == null) && (valueList == null)) {
 			return null;
 		} else {
-			String result = "";
+			StringBuffer result = new StringBuffer("");
 			int size = fieldList.size();
 			for (int i=0; i<size; i++) {
 				if (i == 0) {
-					result += "STATE != "+DatabaseAttribute.DELETEVALUE+" AND "+DatabaseAttribute.FIELD+fieldList.get(i)+" = \'"+valueList.get(i)+"\'";
+					result.append("STATE != ").append(DatabaseAttribute.DELETEVALUE).append(" AND ");
+					result.append(DatabaseAttribute.FIELD).append(fieldList.get(i));
+					result.append(" = \'").append(valueList.get(i)).append("\'");
 				} else {
-					result += " AND "+DatabaseAttribute.FIELD+fieldList.get(i)+" = \'"+valueList.get(i)+"\'";
+					result.append(" AND ").append(DatabaseAttribute.FIELD).append(fieldList.get(i)).append(" = \'");
+					result.append(valueList.get(i)).append("\'");
 				}
 			}
-			return result;
+			return result.toString();
 		}		
 	}
 	
 	private static String createSelectionFKString(ArrayList<String> tables) {
-		String result = "";
+		StringBuffer result = new StringBuffer("");
 		int size = sForeignKeyList.size();
 		if (tables.size() > 1) {
 			for (int i=0; i<size; i++) {
 				ArrayList<String> foreignKey = sForeignKeyList.get(i);
 				if ((tables.contains(foreignKey.get(0))) && (tables.contains(foreignKey.get(2)))) {
-					if (result != "") {
-						result += "AND ";
+					if (result.length() > 0) {
+						result.append("AND ");
 					}
-					result += DatabaseAttribute.TABLE+foreignKey.get(0)+"."+DatabaseAttribute.FIELD+foreignKey.get(1)+" = "+
-					DatabaseAttribute.TABLE+foreignKey.get(2)+"."+DatabaseAttribute.FIELD+foreignKey.get(3);
+					result.append(DatabaseAttribute.TABLE).append(foreignKey.get(0)).append(".");
+					result.append(DatabaseAttribute.FIELD).append(foreignKey.get(1)).append(" = ");
+					result.append(DatabaseAttribute.TABLE).append(foreignKey.get(2)).append(".");
+					result.append(DatabaseAttribute.FIELD).append(foreignKey.get(3));
 				}
 			}
 		}		
-		return result;
+		return result.toString();
 	}
 }

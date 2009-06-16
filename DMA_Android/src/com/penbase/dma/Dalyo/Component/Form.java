@@ -3,13 +3,14 @@ package com.penbase.dma.Dalyo.Component;
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.ImageView.ScaleType;
 
+import com.penbase.dma.R;
 import com.penbase.dma.Constant.Constant;
+import com.penbase.dma.Dalyo.Component.Custom.Barcode;
 import com.penbase.dma.Dalyo.Component.Custom.ComboBox;
 import com.penbase.dma.Dalyo.Component.Custom.TextField;
 import com.penbase.dma.Dalyo.Component.Custom.TextZone;
@@ -90,7 +91,6 @@ public class Form extends ScrollView {
 	public void clear() {
 		int viewLen = mLayout.getChildCount();
 		for (int i=0; i<viewLen; i++) {
-			Log.i("info", "this.getChildAt(i) "+mLayout.getChildAt(i));
 			if (mLayout.getChildAt(i) instanceof TextField) {
 				((TextField)mLayout.getChildAt(i)).clear();
 			} else if (mLayout.getChildAt(i) instanceof TextZone) {
@@ -149,10 +149,11 @@ public class Form extends ScrollView {
 					path.append(ApplicationListView.getApplicationName());
 					path.append("/");
 					path.append(fileName);
-					File file = new File(path.toString());
-					if (file.exists()) {
+					if (new File(path.toString()).exists()) {
 						((DoodleView)mLayout.getChildAt(i)).setText("");
 						((DoodleView)mLayout.getChildAt(i)).setBackgroundDrawable(Drawable.createFromPath(path.toString()));
+					} else {
+						((DoodleView)mLayout.getChildAt(i)).setText("Open Doodle");
 					}	
 				}
 			} else if (mLayout.getChildAt(i) instanceof PictureBoxView) {
@@ -162,13 +163,27 @@ public class Form extends ScrollView {
 					path.append(ApplicationListView.getApplicationName());
 					path.append("/");
 					path.append(fileName);
-					File file = new File(path.toString());
-					if (file.exists()) {
-						((BitmapDrawable)((PictureBoxView)mLayout.getChildAt(i)).getDrawable()).getBitmap().recycle();
+					((BitmapDrawable)((PictureBoxView)mLayout.getChildAt(i)).getDrawable()).getBitmap().recycle();
+					if (new File(path.toString()).exists()) {
 						((PictureBoxView)mLayout.getChildAt(i)).setImageDrawable(Drawable.createFromPath(path.toString()));
-						((PictureBoxView)mLayout.getChildAt(i)).setScaleType(ScaleType.FIT_XY);
+					} else {
+						((PictureBoxView)mLayout.getChildAt(i)).setImageResource(R.drawable.camera);	
 					}
+					((PictureBoxView)mLayout.getChildAt(i)).setScaleType(ScaleType.FIT_XY);
 				}
+			} else if (mLayout.getChildAt(i) instanceof Barcode) {
+				StringBuffer path = new StringBuffer(Constant.PACKAGENAME);
+				path.append(ApplicationListView.getApplicationName());
+				path.append("/barcode_");
+				path.append(((Barcode)mLayout.getChildAt(i)).getTag().toString());
+				path.append("_tmp.jpg");
+				((BitmapDrawable)((Barcode)mLayout.getChildAt(i)).getDrawable()).getBitmap().recycle();
+				if (new File(path.toString()).exists()) {
+					((Barcode)mLayout.getChildAt(i)).setImageDrawable(Drawable.createFromPath(path.toString()));	
+				} else {
+					((Barcode)mLayout.getChildAt(i)).setImageResource(R.drawable.barcode);	
+				}
+				((Barcode)mLayout.getChildAt(i)).setScaleType(ScaleType.FIT_XY);
 			}
 		}
 	}

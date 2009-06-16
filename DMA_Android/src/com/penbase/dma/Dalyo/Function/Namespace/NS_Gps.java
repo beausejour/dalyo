@@ -62,6 +62,8 @@ public class NS_Gps {
 	}
 	
 	public static void Stop() {
-		gps.stop();
+		if (gps != null) {
+			gps.stop();	
+		}
 	}
 }
