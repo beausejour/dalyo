@@ -59,14 +59,6 @@ public class ApplicationView extends Activity {
 					createView();
 					display();
 					break;
-				case 1:
-					Log.i("info", "show dialog");
-					mLoadingDialog = ProgressDialog.show(ApplicationView.this, "Please wait...", "Building application ...", true, false);
-					break;
-				case 2:
-					Log.i("info", "dismiss dialog");
-					mLoadingDialog.dismiss();
-					break;
 			}
 		}
 	};
@@ -252,6 +244,7 @@ public class ApplicationView extends Activity {
 						mComponent.setFieldId(element.getAttribute(DesignTag.COMPONENT_COMMON_FIELDID));
 					}
 					if (element.hasAttribute(DesignTag.COMPONENT_COMMON_BACKGROUND)) {
+						Log.i("info", "COMPONENT_COMMON_BACKGROUND");
 						mComponent.setBackGround(Integer.valueOf(element.getAttribute(DesignTag.COMPONENT_COMMON_BACKGROUND)));
 						mComponent.setExtension(sResourcesFileMap.get(element.getAttribute(DesignTag.COMPONENT_COMMON_BACKGROUND)));
 					}
@@ -480,6 +473,7 @@ public class ApplicationView extends Activity {
 	protected void onRestart() {
 		super.onRestart();
 		//Check if there is doodle image or picturebox
+		Log.i("info", "restart");
 		getLayoutsMap().get(getCurrentFormId()).setPreview();
 	}
 

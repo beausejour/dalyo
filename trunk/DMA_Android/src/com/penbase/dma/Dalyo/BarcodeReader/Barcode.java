@@ -1,7 +1,6 @@
-package com.penbase.dma.Dalyo.Component.Custom;
+package com.penbase.dma.Dalyo.BarcodeReader;
 
 import com.penbase.dma.R;
-import com.penbase.dma.Dalyo.BarcodeReader.CaptureActivity;
 
 import android.content.Context;
 import android.content.Intent;
