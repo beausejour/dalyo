@@ -12,11 +12,11 @@ public class DoodleView extends Button {
 	
 	public DoodleView(Context c, String i) {
 		super(c);
-		this.mContext = c;
-		this.mId = i;
-		this.mImageName = "";
-		this.setText("Open Doodle");
-		this.setOnClickListener(new OnClickListener() {
+		mContext = c;
+		mId = i;
+		mImageName = "";
+		setText("Open Doodle");
+		setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				Intent myIntent = new Intent(mContext, Doodle.class);

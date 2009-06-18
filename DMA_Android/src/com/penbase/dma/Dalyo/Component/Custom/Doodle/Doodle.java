@@ -13,14 +13,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-
 import com.penbase.dma.Constant.Constant;
 import com.penbase.dma.View.ApplicationListView;
 import com.penbase.dma.View.ApplicationView;
 
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -33,8 +29,6 @@ public class Doodle extends Activity implements ColorPickerDialog.OnColorChanged
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setDither(true);
@@ -140,6 +134,7 @@ public class Doodle extends Activity implements ColorPickerDialog.OnColorChanged
 	   switch (item.getItemId()) {
 	   		case 0:
 	   			saveImage();
+	   			finish();
 	   			break;
 	   		case 1:
 	   			clearImage();
@@ -151,7 +146,7 @@ public class Doodle extends Activity implements ColorPickerDialog.OnColorChanged
 	   			changeColor();
 	   			break;
 	   }
-	   return super.onOptionsItemSelected(item);
+	   return true;
    }
    
    /**
@@ -164,18 +159,16 @@ public class Doodle extends Activity implements ColorPickerDialog.OnColorChanged
        File file = new File(filePath.toString());
        FileOutputStream fos;
        try{
-               fos = new FileOutputStream(file);
-               //DataOutputStream dos = new DataOutputStream(fos);
-               if (mDoodleView.mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)) {
-            	   Log.i("info", "image compressed ok");
-               } else {
-            	   Log.i("info", "image compressed failed");
-               }
+    	   fos = new FileOutputStream(file);
+    	   if (mDoodleView.mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)) {
+    		   Log.i("info", "image compressed ok");
+    		   ((DoodleView)ApplicationView.getComponents().get(mId).getView()).setImageName(imageName);
+    	   } else {
+    		   Log.i("info", "image compressed failed");
+    	   }
        } catch (FileNotFoundException e) {
     	   e.printStackTrace();
        }
-       ((DoodleView)ApplicationView.getComponents().get(mId).getView()).setImageName(imageName);
-       this.finish();
    }
    
    private void clearImage() {

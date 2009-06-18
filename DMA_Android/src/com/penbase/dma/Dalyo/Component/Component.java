@@ -16,6 +16,7 @@ import android.widget.AdapterView.OnItemClickListener;
 
 import com.penbase.dma.Constant.Constant;
 import com.penbase.dma.Constant.DesignTag;
+import com.penbase.dma.Dalyo.BarcodeReader.Barcode;
 import com.penbase.dma.Dalyo.Component.Custom.*;
 import com.penbase.dma.Dalyo.Component.Custom.Dataview.DataView;
 import com.penbase.dma.Dalyo.Component.Custom.Doodle.DoodleView;
@@ -186,7 +187,7 @@ public class Component {
 			button.setText(mLabel);
 			button.setTypeface(getFontType(mFontType));
 			button.setTextSize(getFontSize(mFontSize));
-			if (mBackground != 0) {
+			if ((mBackground != 0) && (mExtension != null)) {
 				StringBuffer path = new StringBuffer(DmaHttpClient.getFilesPath());
 				path.append(mBackground);
 				path.append(".");
@@ -332,6 +333,7 @@ public class Component {
 				@Override
 				public void onClick(View arg0) {
 					Function.createFunction(funcName);
+					view.setEnabled(true);
 				}
 			});
 		}

@@ -3,6 +3,7 @@ package com.penbase.dma.Dalyo.Component;
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
@@ -10,7 +11,7 @@ import android.widget.ImageView.ScaleType;
 
 import com.penbase.dma.R;
 import com.penbase.dma.Constant.Constant;
-import com.penbase.dma.Dalyo.Component.Custom.Barcode;
+import com.penbase.dma.Dalyo.BarcodeReader.Barcode;
 import com.penbase.dma.Dalyo.Component.Custom.ComboBox;
 import com.penbase.dma.Dalyo.Component.Custom.TextField;
 import com.penbase.dma.Dalyo.Component.Custom.TextZone;
@@ -145,6 +146,7 @@ public class Form extends ScrollView {
 			if (mLayout.getChildAt(i) instanceof DoodleView) {
 				String fileName = ((DoodleView)mLayout.getChildAt(i)).getImageName();
 				if (!fileName.equals("")) {
+					Log.i("info"," found doodle image");
 					StringBuffer path = new StringBuffer(Constant.PACKAGENAME);
 					path.append(ApplicationListView.getApplicationName());
 					path.append("/");
