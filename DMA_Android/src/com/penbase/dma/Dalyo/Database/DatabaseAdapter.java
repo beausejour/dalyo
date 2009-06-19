@@ -382,9 +382,6 @@ public class DatabaseAdapter {
 						}
 					}
 					recordsList.add(valueList);
-					/*if (syncTypeInt != DatabaseAttribute.SYNCHRONIZED) {
-						recordsList.add(valueList);
-					}*/
 				}
 			}
 			updateTable(tableIdInt, fieldList, syncTypeList, recordsList);
@@ -456,19 +453,14 @@ public class DatabaseAdapter {
 			}
 			
 			Cursor cursor = sSqlite.query(table, null, selection.toString(), null, null, null, null);
-			
-			Log.i("info", "cursor count "+cursor.getCount());
+			String[] columns = cursor.getColumnNames();
 			if (cursor.getCount() > 0) {
-				int cursorCount = cursor.getCount();
 				ArrayList<HashMap<Object, Object>> records = new ArrayList<HashMap<Object, Object>>();
-				cursor.moveToFirst();
-				for (int i=0; i<cursorCount; i++) {
+				while (cursor.moveToNext()) {
 					HashMap<Object, Object> record = new HashMap<Object, Object>();
-					String[] columns = cursor.getColumnNames();
 					int columnsNb = columns.length;
 					boolean checkSyncType = true;
 					for (int column=0; column<columnsNb; column++) {
-						Log.i("info", "column name "+columns[column]+" its value "+getCursorValue(cursor, columns[column]));
 						record.put(columns[column], getCursorValue(cursor, columns[column]));
 						if ((columns[column].equals(DatabaseAttribute.STATE)) && (Integer.valueOf(getCursorValue(cursor, columns[column]).toString()) == DatabaseAttribute.SYNCHRONIZED)) {
 							checkSyncType = false;
@@ -477,7 +469,6 @@ public class DatabaseAdapter {
 					if (checkSyncType) {
 						records.add(record);
 					}
-					cursor.moveToNext();
 				}
 				tidMap.put(key, records);
 				tableNbInt += 1;
@@ -543,7 +534,6 @@ public class DatabaseAdapter {
 								valueLenth = Binary.intToByteArray(valueLengthInt);
 							} else if (DmaHttpClient.getServerInfo() == 2) {
 								value = Binary.stringToByteArray(null);
-								Log.i("info", "synchronized value "+value);
 								valueLenth = Binary.intToByteArray(-1);
 							}
 						} else {
@@ -733,7 +723,6 @@ public class DatabaseAdapter {
 		DatabaseAdapter.deleteBlobFiles(String.valueOf(tableId), selectionString.toString());
 		StringBuffer delete = new StringBuffer("DELETE FROM ");
 		delete.append(DatabaseAttribute.TABLE).append(tableId).append(" WHERE ").append(selectionString).append(";");
-		//String delete = "DELETE FROM "+DatabaseAttribute.TABLE+tableId+" WHERE "+DatabaseAttribute.GID+tableId+"=\'"+record.get(1)+"\';";
 		sSqlite.execSQL(delete.toString());
 	}
 	
@@ -775,7 +764,7 @@ public class DatabaseAdapter {
 		
 		StringBuffer delete = new StringBuffer("DELETE FROM ");
 		delete.append(DatabaseAttribute.TABLE).append(tableId);
-		if (selectionString.length() > 0) {
+		if (selectionString.length() == 0) {
 			delete.append(";");
 			sSqlite.execSQL(delete.toString());
 		} else {
@@ -799,15 +788,12 @@ public class DatabaseAdapter {
 			}
 			int blobColumnArraySize = blobColumnArray.size();
 			if (blobColumnArraySize > 0) {
-				int cursorCount = cursor.getCount();
-				cursor.moveToFirst();
-				for (int i=0; i<cursorCount; i++) {
+				while (cursor.moveToNext()) {
 					for (int j=0; j<blobColumnArraySize; j++) {
 						String imageName = (String)getCursorValue(cursor, columnsNames[blobColumnArray.get(j)]);
 						//Delete the image
 						new File(Constant.PACKAGENAME+ApplicationListView.getApplicationName()+"/"+imageName).delete();
-					}
-					cursor.moveToNext();
+					}	
 				}
 			}
 		}
@@ -1013,24 +999,21 @@ public class DatabaseAdapter {
 	public static void cleanTables() {
 		Log.i("info", "cleantables");
 		Set<String> keys = sTablesMap.keySet();
+		SQLiteDatabase sqlite = sSqlite;
 		for (String key : keys) {
 			String table = DatabaseAttribute.TABLE+key;
 			Log.i("info", "table "+table);
 			String id = DatabaseAttribute.ID+key;
 			String[] projectionIn = new String[]{id, DatabaseAttribute.STATE};
-			Cursor result = sSqlite.query(table, projectionIn, null, null, null, null, null);
-			result.moveToFirst();
-			int count = result.getCount();
-			for (int i=0; i<count; i++) {
+			Cursor deleteCursor = sqlite.query(table, projectionIn, null, null, null, null, null);
+			while (deleteCursor.moveToNext()) {
 				StringBuffer whereClause = new StringBuffer(id);
-				whereClause.append(" = \'").append(result.getString(result.getColumnIndexOrThrow(id))).append("\'");
-				if (result.getInt(result.getColumnIndexOrThrow(DatabaseAttribute.STATE)) == DatabaseAttribute.DELETEVALUE) {
-					Log.i("info", "delete value");
-					sSqlite.delete(table, whereClause.toString(), null);					
+				whereClause.append(" = \'").append(deleteCursor.getString(deleteCursor.getColumnIndexOrThrow(id))).append("\'");
+				if (deleteCursor.getInt(deleteCursor.getColumnIndexOrThrow(DatabaseAttribute.STATE)) == DatabaseAttribute.DELETEVALUE) {
+					sqlite.delete(table, whereClause.toString(), null);					
 				}
-				result.moveToNext();
 			}
-			DatabaseAdapter.closeCursor(result);
+			DatabaseAdapter.closeCursor(deleteCursor);
 		}
 	}
 	
@@ -1048,7 +1031,6 @@ public class DatabaseAdapter {
 				} else {
 					return value;
 				}
-				//return cursor.getString(cursor.getColumnIndexOrThrow(field));
 			}
 		} else {
 			return cursor.getString(cursor.getColumnIndexOrThrow(field));
@@ -1155,10 +1137,11 @@ public class DatabaseAdapter {
 	
 	private static String createSelectionFKString(ArrayList<String> tables) {
 		StringBuffer result = new StringBuffer("");
-		int size = sForeignKeyList.size();
+		ArrayList<ArrayList<String>> foreignKeyList = sForeignKeyList;
+		int size = foreignKeyList.size();
 		if (tables.size() > 1) {
 			for (int i=0; i<size; i++) {
-				ArrayList<String> foreignKey = sForeignKeyList.get(i);
+				ArrayList<String> foreignKey = foreignKeyList.get(i);
 				if ((tables.contains(foreignKey.get(0))) && (tables.contains(foreignKey.get(2)))) {
 					if (result.length() > 0) {
 						result.append("AND ");

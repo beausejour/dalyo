@@ -660,7 +660,7 @@ public class DmaHttpClient{
                 	DataOutputStream dos = new DataOutputStream(fos);
                     dos.writeBytes(stream);	
                 } else {
-                	BufferedWriter out = new BufferedWriter(new OutputStreamWriter(fos, "UTF8"));
+                	BufferedWriter out = new BufferedWriter(new OutputStreamWriter(fos, "UTF8"), 8 * 1024);
                     out.write(stream);
                     out.close();	
                 }

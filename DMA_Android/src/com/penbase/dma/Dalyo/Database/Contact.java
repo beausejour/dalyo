@@ -52,6 +52,7 @@ public class Contact {
 	}
 	
 	private void readContacts() {
+		String[] contactsColumns = mContactsCursor.getColumnNames();
 		int contactsCursorCount = mContactsCursor.getCount();
 		if (contactsCursorCount > 0) {
 			mContactsCursor.moveToFirst();
@@ -62,7 +63,6 @@ public class Contact {
 				int newId = allRowsCursor.getCount()+1;
 				DatabaseAdapter.closeCursor(allRowsCursor);
 				record.add(newId);
-				String[] contactsColumns = mContactsCursor.getColumnNames();
 				setValue(mContactsCursor, contactsColumns);
 				for (String key : mFields.keySet()) {
 					fieldsList.add(Integer.valueOf(key));
@@ -106,7 +106,7 @@ public class Contact {
 		DatabaseAdapter.closeCursor(mContactsCursor);
 	}
 	
-	private void setValue (Cursor cursor, String[] columns) {
+	private void setValue(Cursor cursor, String[] columns) {
 		for (String column : columns) {
 			if (column.equals(People.NAME)) {
 				String name = cursor.getString(cursor.getColumnIndex(column));

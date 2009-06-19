@@ -32,7 +32,10 @@ public class Function {
 		//parametersMap = new HashMap<String, String>();
 		sBehaviorDocument = document;
 		sIsFirstTime = true;
+		long start = System.currentTimeMillis();
 		createMaps();
+		long end = System.currentTimeMillis();
+		Log.i("info", "create variable used "+(end - start)+" ms");
 	}
 	
 	/*
@@ -42,12 +45,14 @@ public class Function {
 	private void createMaps() {
 		NodeList funcList = sBehaviorDocument.getElementsByTagName(ScriptTag.FUNCTION);
 		int functionSize = funcList.getLength();
+		HashMap<String, ArrayList<String>> functionsMap = sFuncsMap;
 		for (int i=0; i<functionSize; i++) {
 			Element funcElement = (Element) funcList.item(i);
 			ArrayList<String> funcParams = new ArrayList<String>();
 			funcParams.add(String.valueOf(i));
 			funcParams.add(funcElement.getAttribute(ScriptTag.OUTPUT));
-			sFuncsMap.put(funcElement.getAttribute(ScriptTag.NAME), funcParams);
+			functionsMap.put(funcElement.getAttribute(ScriptTag.NAME), funcParams);
+
 			NodeList nodesList = funcElement.getChildNodes();
 			int itemLen = nodesList.getLength();
 			for (int j=0; j<itemLen; j++) {
@@ -63,9 +68,10 @@ public class Function {
 	public static Object createFunction(String name) {
 		//Log.i("info", "create function name "+name);
 		Object result = null;
+		HashMap<String, ArrayList<String>> functionsMap = sFuncsMap;
 		NodeList funcList = sBehaviorDocument.getElementsByTagName(ScriptTag.FUNCTION);
-		if (sFuncsMap.containsKey(name)) {
-			final Element funcElement = (Element) funcList.item(Integer.valueOf(sFuncsMap.get(name).get(0)));
+		if (functionsMap.containsKey(name)) {
+			final Element funcElement = (Element) funcList.item(Integer.valueOf(functionsMap.get(name).get(0)));
 			final NodeList nodeList = funcElement.getChildNodes();
 			int nodeLen = nodeList.getLength();
 		
@@ -257,14 +263,68 @@ public class Function {
 				}
 				break;
 		}
-		//Log.i("info", "left "+left+" operator "+operator+" right "+right+" result "+result);
+		Log.i("info", "left "+left+" operator "+operator+" right "+right+" result "+result);
 		return result;
 	}
 	
 	private static Object ifCondition(Element element) {
 		Object result = "";
-		//Log.i("info", "if called");
-		NodeList nodes = element.getChildNodes();
+		Log.i("info", "if called");
+		
+		Node child = element.getFirstChild();
+		boolean conditionCheck = false;
+		while (child != null) {
+			String childName = child.getNodeName();
+			if (childName.equals(ScriptTag.CONDITIONS)) {
+				NodeList conditions = child.getChildNodes();
+				int conditionsLen = conditions.getLength();
+				boolean[] checkList = new boolean[conditionsLen];
+				for (int k=0; k<conditionsLen; k++) {
+					Element condition = (Element)conditions.item(k);
+					if (condition.getNodeName().equals(ScriptTag.CONDITION)) {
+						Object left = getValue(condition, ScriptTag.LEFT, null, null);
+						Object operator = getValue(condition, ScriptTag.OPERATOR, null, null);
+						Object right = getValue(condition, ScriptTag.RIGHT, null, null);
+						checkList[k] = checkCondition(left, operator, right); 
+					}
+				}
+				conditionCheck = checkConditions(checkList); 
+			} else if (childName.equals(ScriptTag.THEN)) {
+				if (conditionCheck) {
+					Log.i("info", "pass to then");
+					Node thenChild = child.getFirstChild();
+					while (thenChild != null) {
+						result = distributeAction((Element)thenChild);
+						try {
+							thenChild = thenChild.getNextSibling();	
+						} catch (IndexOutOfBoundsException ioobe) {
+							thenChild = null;
+						}
+					}
+				}
+			} else if (childName.equals(ScriptTag.ELSE)) {
+				if (!conditionCheck) {
+					Log.i("info", "pass to else");
+					Node elseChild = child.getFirstChild();
+					while (elseChild != null) {
+						result = distributeAction((Element)elseChild);
+						try {
+							elseChild = elseChild.getNextSibling();	
+						} catch (IndexOutOfBoundsException ioobe) {
+							elseChild = null;
+						}
+					}
+				}
+			}
+			try {
+				child = child.getNextSibling();	
+			} catch (IndexOutOfBoundsException ioobe) {
+				child = null;
+			}
+		}
+		
+		
+		/*NodeList nodes = element.getChildNodes();
 		int elementLen = nodes.getLength();
 		boolean conditionCheck = false;
 		for (int i=0; i<elementLen; i++) {
@@ -304,12 +364,13 @@ public class Function {
 					}
 				}
 			}
-		}
+		}*/
 		return result;
 	}
 	
 	public static Object createCalculateFunction(String name, HashMap<Object, Object> record) {
 		Object result = null;
+		HashMap<String, Object> varsMap = sVarsMap;
 		NodeList funcList = sBehaviorDocument.getElementsByTagName(ScriptTag.FUNCTION);
 		if (sFuncsMap.containsKey(name)) {
 			Element funcElement = (Element) funcList.item(Integer.valueOf(sFuncsMap.get(name).get(0)));
@@ -320,7 +381,7 @@ public class Function {
 					Element element = (Element) nodesList.item(i);
 					if ((element.getNodeName().equals(ScriptTag.PARAMETER)) &&
 							element.getAttribute(ScriptTag.TYPE).equals(ScriptAttribute.RECORD)) {
-						sVarsMap.put(element.getAttribute(ScriptTag.NAME), record);
+						varsMap.put(element.getAttribute(ScriptTag.NAME), record);
 					} else {
 						distributeAction(element);
 					}
@@ -342,281 +403,283 @@ public class Function {
 	 */
 	private static Object distributeCall(Element element) {
 		Object result = null;
-		/*if (!sIsFirstTime) {
+		if (!sIsFirstTime) {
 			Log.i("info", "namespace "+element.getAttribute(ScriptTag.NAMESPACE)+" function name "+element.getAttribute(ScriptTag.FUNCTION));	
-		}*/
-		if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.COMPONENT)) {
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETLABEL)) {
+		}
+		String namespace = element.getAttribute(ScriptTag.NAMESPACE);
+		String function = element.getAttribute(ScriptTag.FUNCTION);
+		if (namespace.equals(ScriptAttribute.COMPONENT)) {
+			if (function.equals(ScriptAttribute.FUNCTION_GETLABEL)) {
 				result = NS_Component.GetLabel(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETVALUE)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_GETVALUE)) {
 				result = NS_Component.GetValue(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ISENABLED)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_ISENABLED)) {
 				result = NS_Component.IsEnabled(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ISVISIBLE)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_ISVISIBLE)) {
 				result = NS_Component.IsVisible(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_RESET)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_RESET)) {
 				NS_Component.ReSet(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETENABLED)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_SETENABLED)) {
 				NS_Component.SetEnabled(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETFOCUS)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_SETFOCUS)) {
 				NS_Component.SetFocus(element);
-			} else if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETTEXT)) || 
-					(element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETLABEL))) {
+			} else if ((function.equals(ScriptAttribute.FUNCTION_SETTEXT)) || 
+					(function.equals(ScriptAttribute.FUNCTION_SETLABEL))) {
 				NS_Component.SetText(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETVISIBLE)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_SETVISIBLE)) {
 				NS_Component.SetVisible(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETVALUE)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_SETVALUE)) {
 				NS_Component.SetValue(element);
 			}
-		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_COMPONENT_CHECK)) {
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CHECK)) {
+		} else if (namespace.equals(ScriptAttribute.NAMESPACE_COMPONENT_CHECK)) {
+			if (function.equals(ScriptAttribute.FUNCTION_CHECK)) {
 				NS_ComponentCheckbox.Check(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ISCHECKED)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_ISCHECKED)) {
 				result = NS_ComponentCheckbox.IsChecked(element);
 			}
-		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_COMPONENT_CB)) {
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ADDITEM)) {
+		} else if (namespace.equals(ScriptAttribute.NAMESPACE_COMPONENT_CB)) {
+			if (function.equals(ScriptAttribute.FUNCTION_ADDITEM)) {
 				NS_ComponentCombobox.AddItem(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_COUNT)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_COUNT)) {
 				result = NS_ComponentCombobox.Count(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSELECTEDINDEX)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_GETSELECTEDINDEX)) {
 				result = NS_ComponentCombobox.GetSelectedIndex(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSELECTEDRECORD)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_GETSELECTEDRECORD)) {
 				result = NS_ComponentCombobox.GetSelectedRecord(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_REFRESH)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_REFRESH)) {
 				NS_ComponentCombobox.Refresh(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_REMOVEALLITEMS)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_REMOVEALLITEMS)) {
 				NS_ComponentCombobox.RemoveAllItems(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETSELECTEDINDEX)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_SETSELECTEDINDEX)) {
 				NS_ComponentCombobox.SetSelectedIndex(element);
 			}
-		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_COMPONENT_DV)) {
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETCELLVALUE)) {
+		} else if (namespace.equals(ScriptAttribute.NAMESPACE_COMPONENT_DV)) {
+			if (function.equals(ScriptAttribute.FUNCTION_GETCELLVALUE)) {
 				result = NS_ComponentDataview.GetCellValue(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETCOLUMNINDEX)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_GETCOLUMNINDEX)) {
 				result = NS_ComponentDataview.GetColumnIndex(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETROWCOUNT)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_GETROWCOUNT)) {
 				result = NS_ComponentDataview.GetRowCount(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSELECTEDRECORD)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_GETSELECTEDRECORD)) {
 				if (!sIsFirstTime) {
 					result = NS_ComponentDataview.GetSelectedRecord(element);
 				}
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSELECTEDROW)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_GETSELECTEDROW)) {
 				result = NS_ComponentDataview.GetSelectedRow(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_REFRESH)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_REFRESH)) {
 				NS_ComponentDataview.Refresh(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETNUMERICFORMAT)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_SETNUMERICFORMAT)) {
 				NS_ComponentDataview.SetNumericFormat(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETSELECTEDROW)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_SETSELECTEDROW)) {
 				NS_ComponentDataview.SetSelectedRow(element);
 			}
-		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_COMPONENT_NB)) {
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETMAX)) {
+		} else if (namespace.equals(ScriptAttribute.NAMESPACE_COMPONENT_NB)) {
+			if (function.equals(ScriptAttribute.FUNCTION_SETMAX)) {
 				NS_ComponentNumberBox.SetMax(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETMIN)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_SETMIN)) {
 				NS_ComponentNumberBox.SetMin(element);
 			}
-		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_COMPONENT_RB)) {
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ISSELECTED)) {
+		} else if (namespace.equals(ScriptAttribute.NAMESPACE_COMPONENT_RB)) {
+			if (function.equals(ScriptAttribute.FUNCTION_ISSELECTED)) {
 				result = NS_ComponentRadioButton.IsSelected(element);
 			}
-		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_COMPONENT_TF)) {
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETTEXT)) {
+		} else if (namespace.equals(ScriptAttribute.NAMESPACE_COMPONENT_TF)) {
+			if (function.equals(ScriptAttribute.FUNCTION_GETTEXT)) {
 				result = NS_ComponentTextField.GetText(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ISEMPTY)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_ISEMPTY)) {
 				result = NS_ComponentTextField.IsEmpty(element);
 			}
-		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DATE)) {
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ADDMINUTES)) {
+		} else if (namespace.equals(ScriptAttribute.NAMESPACE_DATE)) {
+			if (function.equals(ScriptAttribute.FUNCTION_ADDMINUTES)) {
 				result = NS_Date.AddMinutes(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_FORMAT)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_FORMAT)) {
 				result = NS_Date.Format(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NOW)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_NOW)) {
 				result = NS_Date.CurrentDate();
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NOWHOUR)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_NOWHOUR)) {
 				result = NS_Date.CurrentHour();
 			}
-		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB)) {
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CANCELTRANSACTION)) {
+		} else if (namespace.equals(ScriptAttribute.NAMESPACE_DB)) {
+			if (function.equals(ScriptAttribute.FUNCTION_CANCELTRANSACTION)) {
 				NS_Database.CancelTransaction();
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_EXPORT)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_EXPORT)) {
 				if (!sIsFirstTime) {
 					result = NS_Database.Export(element);
 				}
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_IMPORT)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_IMPORT)) {
 				if (!sIsFirstTime) {
 					result =  NS_Database.Import(element);
 				}
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETTABLEBYNAME)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_GETTABLEBYNAME)) {
 				result = NS_Database.GetTableByName(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_STARTTRANSACTION)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_STARTTRANSACTION)) {
 				NS_Database.StartTransaction();
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_VALIDATETRANSACTION)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_VALIDATETRANSACTION)) {
 				NS_Database.ValidateTransaction();
 			}
-		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB_DATASET)) {
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETVALUE)) {
+		} else if (namespace.equals(ScriptAttribute.NAMESPACE_DB_DATASET)) {
+			if (function.equals(ScriptAttribute.FUNCTION_GETVALUE)) {
 				result = NS_DatabaseDataset.GetValue(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SELECT)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_SELECT)) {
 				result = NS_DatabaseDataset.Select(element);
 			}
-		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB_FIELD)) {
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETFIELDNAME)) {
+		} else if (namespace.equals(ScriptAttribute.NAMESPACE_DB_FIELD)) {
+			if (function.equals(ScriptAttribute.FUNCTION_GETFIELDNAME)) {
 				result = NS_DatabaseField.GetFieldName(element);
 			}
-		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_DB_TABLE)) {
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_AVERAGE)) {
+		} else if (namespace.equals(ScriptAttribute.NAMESPACE_DB_TABLE)) {
+			if (function.equals(ScriptAttribute.FUNCTION_AVERAGE)) {
 				result = NS_DatabaseTable.Average(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CANCELNRECORD)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_CANCELNRECORD)) {
 
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CLEAR)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_CLEAR)) {
 				NS_DatabaseTable.Clear(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_COUNT)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_COUNT)) {
 				result = NS_DatabaseTable.Count(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_DELETERECORD)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_DELETERECORD)) {
 				NS_DatabaseTable.DeleteRecord(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_DELETERECORDS)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_DELETERECORDS)) {
 				NS_DatabaseTable.DeleteRecords(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_EDITRECORD)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_EDITRECORD)) {
 				NS_DatabaseTable.EditRecord(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETFIELDBYNAME)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_GETFIELDBYNAME)) {
 				result = NS_DatabaseTable.GetFieldByName(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETFIELDS)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_GETFIELDS)) {
 				result = NS_DatabaseTable.GetFields(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETFIELDVALUE)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_GETFIELDVALUE)) {
 				result = NS_DatabaseTable.GetFieldValue(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETFIELDVALUEBYPRIMARYKEY)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_GETFIELDVALUEBYPRIMARYKEY)) {
 				result = NS_DatabaseTable.GetFieldValueByPrimaryKey(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETFILTEREDRECORD)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_GETFILTEREDRECORD)) {
 				result = NS_DatabaseTable.GetFilteredRecord(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETFILTEREDRECORDS)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_GETFILTEREDRECORDS)) {
 				result = NS_DatabaseTable.GetFilteredRecords(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETRECORD)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_GETRECORD)) {
 				result = NS_DatabaseTable.GetRecord(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETRECORDS)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_GETRECORDS)) {
 				result = NS_DatabaseTable.GetRecords(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_MAX)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_MAX)) {
 				result = NS_DatabaseTable.Max(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_MIN)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_MIN)) {
 				result = NS_DatabaseTable.Min(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NEWRECORD)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_NEWRECORD)) {
 				if (!sIsFirstTime) {
 					result = NS_DatabaseTable.CreateNewRecord(element);
 				}
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_STARTNEWRECORD)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_STARTNEWRECORD)) {
 
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SUM)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_SUM)) {
 				result = NS_DatabaseTable.Sum(element);
 			}
-		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.FILTER)) {
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ADDCRITERIA)) {
+		} else if (namespace.equals(ScriptAttribute.FILTER)) {
+			if (function.equals(ScriptAttribute.FUNCTION_ADDCRITERIA)) {
 				NS_Filter.AddCriteria(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CLEAR)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_CLEAR)) {
 				NS_Filter.Clear(element);
 			}
-		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.FORM)) {
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CLEAR)) {
+		} else if (namespace.equals(ScriptAttribute.FORM)) {
+			if (function.equals(ScriptAttribute.FUNCTION_CLEAR)) {
 				NS_Form.Clear(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETCURRENTFORM)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_GETCURRENTFORM)) {
 				result = NS_Form.GetCurrentForm(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_NAVIGATE)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_NAVIGATE)) {
 				NS_Form.Navigate(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETCURRENTRECORD)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_SETCURRENTRECORD)) {
 				NS_Form.SetCurrentRecord(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SETTITLE)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_SETTITLE)) {
 				NS_Form.SetTitle(element);
 			}
-		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_GPS)) {
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETALTITUDE)) {
+		} else if (namespace.equals(ScriptAttribute.NAMESPACE_GPS)) {
+			if (function.equals(ScriptAttribute.FUNCTION_GETALTITUDE)) {
 				result = NS_Gps.GetAltitude(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETLATITUDE)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_GETLATITUDE)) {
 				result = NS_Gps.GetLatitude(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETLOCATION)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_GETLOCATION)) {
 				if (!sIsFirstTime) {
 					result = NS_Gps.GetLocation();	
 				}
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETLONGITUDE)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_GETLONGITUDE)) {
 				result = NS_Gps.GetLogitude(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSPEED)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_GETSPEED)) {
 				result = NS_Gps.GetSpeed(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSTATUS)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_GETSTATUS)) {
 				result = NS_Gps.GetStatus();
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_INIT)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_INIT)) {
 				NS_Gps.Init(sContext);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_STOP)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_STOP)) {
 				NS_Gps.Stop();
 			}
-		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.LIST)) {
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ADD)) {
+		} else if (namespace.equals(ScriptAttribute.LIST)) {
+			if (function.equals(ScriptAttribute.FUNCTION_ADD)) {
 				NS_List.AddValue(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CLEAR)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_CLEAR)) {
 				NS_List.Clear(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GET)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_GET)) {
 				result = NS_List.Get(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETSIZE)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_GETSIZE)) {
 				result = NS_List.Size(element);
 			}
-		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_MATH)) {
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ABS)) {
+		} else if (namespace.equals(ScriptAttribute.NAMESPACE_MATH)) {
+			if (function.equals(ScriptAttribute.FUNCTION_ABS)) {
 				result = NS_Math.Abs(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ADD)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_ADD)) {
 				result = NS_Math.Sum(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CEIL)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_CEIL)) {
 				result = NS_Math.Ceil(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_DIVISION)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_DIVISION)) {
 				result = NS_Math.Division(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_FLOOR)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_FLOOR)) {
 				result = NS_Math.Floor(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_FORMAT)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_FORMAT)) {
 				result = NS_Math.Format(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_MULTIPLE)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_MULTIPLE)) {
 				result = NS_Math.Multiple(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_PERCANTAGE)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_PERCANTAGE)) {
 				result = NS_Math.Percentage(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_RANDOM)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_RANDOM)) {
 				result = NS_Math.Random(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ROUND)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_ROUND)) {
 				result = NS_Math.Round(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SUB)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_SUB)) {
 				result = NS_Math.Subtract(element);
 			}
-		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.OBJECT)) {
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TOBOOLEAN)) {
+		} else if (namespace.equals(ScriptAttribute.OBJECT)) {
+			if (function.equals(ScriptAttribute.FUNCTION_TOBOOLEAN)) {
 				if (!sIsFirstTime) {
 					result = NS_Object.ToBoolean(element);
 				}
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TODATE)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_TODATE)) {
 				if (!sIsFirstTime) {
 					result = NS_Object.ToDate(element);
 				}
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TOINT)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_TOINT)) {
 				if (!sIsFirstTime) {
 					result = NS_Object.ToInt(element);
 				}
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TONUMERIC)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_TONUMERIC)) {
 				if (!sIsFirstTime) {
 					result = NS_Object.ToNumeric(element);
 				}
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TOSTRING)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_TOSTRING)) {
 				result = NS_Object.ToString(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TORECORD)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_TORECORD)) {
 				result = NS_Object.ToRecord(element);
 			}
-		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.ORDER)) {
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ADDCRITERIA)) {
+		} else if (namespace.equals(ScriptAttribute.ORDER)) {
+			if (function.equals(ScriptAttribute.FUNCTION_ADDCRITERIA)) {
 				NS_Order.AddCriteria(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CLEAR)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_CLEAR)) {
 				//NS_Order.Clear(element);
 			}
-		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_RUNTIME)) {
-			if ((element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ALERT)) ||
-					(element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_ERROR))) {
+		} else if (namespace.equals(ScriptAttribute.NAMESPACE_RUNTIME)) {
+			if ((function.equals(ScriptAttribute.FUNCTION_ALERT)) ||
+					(function.equals(ScriptAttribute.FUNCTION_ERROR))) {
 				NS_Runtime.Error(sContext, element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_EXIT)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_EXIT)) {
 				NS_Runtime.Exit(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_BROWSE)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_BROWSE)) {
 				NS_Runtime.Browse(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CONFIRM)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_CONFIRM)) {
 				ConfirmDialog confirmDialog = new ConfirmDialog(element.getElementsByTagName(ScriptTag.PARAMETER), sContext);
 				confirmDialog.start();
 				try{
@@ -627,53 +690,55 @@ public class Function {
 				result = confirmDialog.getValue();
 				//Cancel the thread, because the stop() method is deprecated
 				//confirmDialog = null;
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETAPPLICATIONVERSION)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_GETAPPLICATIONVERSION)) {
 				result = NS_Runtime.getApplicationVersion(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_GETCURRENTUSER)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_GETCURRENTUSER)) {
 				result = NS_Runtime.GetCurrentUser(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_STARTAPP)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_SETWAITCURSOR)) {
+				NS_Runtime.SetWaitCursor(element);
+			} else if (function.equals(ScriptAttribute.FUNCTION_STARTAPP)) {
 				NS_Runtime.StartApp(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SYNC)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_SYNC)) {
 				if (!sIsFirstTime) {
 					Log.i("info", "not first time synchro");
 					result = NS_Runtime.Synchronize(element);
 				}
 			}
-		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_STRING)) {
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CONCAT)) {
+		} else if (namespace.equals(ScriptAttribute.NAMESPACE_STRING)) {
+			if (function.equals(ScriptAttribute.FUNCTION_CONCAT)) {
 				result = NS_String.Concat(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_EXPLODE)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_EXPLODE)) {
 				result = NS_String.Explode(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_IMPLODE)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_IMPLODE)) {
 				result = NS_String.Implode(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_INDEXOF)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_INDEXOF)) {
 				if (!sIsFirstTime) {
 					result = NS_String.Indexof(element);	
 				}
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_LENGTH)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_LENGTH)) {
 				result = NS_String.Length(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_REPLACE)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_REPLACE)) {
 				result = NS_String.Replace(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_SUBSTRING)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_SUBSTRING)) {
 				result = NS_String.Substring(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TOLOWER)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_TOLOWER)) {
 				result = NS_String.ToLower(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TOUPPER)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_TOUPPER)) {
 				result = NS_String.ToUpper(element);
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_TRIM)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_TRIM)) {
 				result = NS_String.Trim(element);
 			}
-		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_TIMER)) {
-			if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_CANCEL)) {
+		} else if (namespace.equals(ScriptAttribute.NAMESPACE_TIMER)) {
+			if (function.equals(ScriptAttribute.FUNCTION_CANCEL)) {
 				if (!sIsFirstTime) {
 					NS_Timer.Cancel(element);	
 				}
-			} else if (element.getAttribute(ScriptTag.FUNCTION).equals(ScriptAttribute.FUNCTION_START)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_START)) {
 				if (!sIsFirstTime) {
 					result = NS_Timer.Start(element);
 				}
 			}
-		} else if (element.getAttribute(ScriptTag.NAMESPACE).equals(ScriptAttribute.NAMESPACE_USER)) {
+		} else if (namespace.equals(ScriptAttribute.NAMESPACE_USER)) {
 			NodeList nodes = element.getChildNodes();
 			if (nodes.getLength() > 0) {
 				int childrenLen = nodes.getLength();
@@ -682,12 +747,9 @@ public class Function {
 					if (child.getNodeName().equals(ScriptTag.PARAMETER)) {
 						setVariable(child);
 					}
-					/*if ((child.getNodeName().equals(ScriptTag.PARAMETER)) && (child.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE)) {
-						parametersMap.put(element.getAttribute(ScriptTag.FUNCTION)+"_"+child.getAttribute(ScriptTag.NAME), child.getChildNodes().item(0).getNodeValue());
-					}*/
 				}
 			}
-			result = createFunction(element.getAttribute(ScriptTag.FUNCTION));
+			result = createFunction(function);
 		}
 		return result;
 	}
@@ -699,8 +761,9 @@ public class Function {
 	 */
 	private static Object getVariableValue(Element item) {
 		Object result = null;
-		if (sVarsMap.containsKey(item.getAttribute(ScriptTag.NAME))) {
-			result = sVarsMap.get(item.getAttribute(ScriptTag.NAME));
+		HashMap<String, Object> varsMap = sVarsMap;
+		if (varsMap.containsKey(item.getAttribute(ScriptTag.NAME))) {
+			result = varsMap.get(item.getAttribute(ScriptTag.NAME));
 		} else {
 			Node parent = item.getParentNode();
 			while (!parent.getNodeName().equals(ScriptTag.FUNCTION)) {
@@ -709,18 +772,15 @@ public class Function {
 			StringBuffer varName = new StringBuffer(((Element) parent).getAttribute(ScriptTag.NAME));
 			varName.append("_");
 			varName.append(item.getAttribute(ScriptTag.NAME));
-			if (sVarsMap.containsKey(varName.toString())) {
-				result = sVarsMap.get(varName.toString());
+			if (varsMap.containsKey(varName.toString())) {
+				result = varsMap.get(varName.toString());
 			}
 		}
 		return result;
 	}
 	
 	private static void setVariable(Element element) {
-		/*if (varsMap.containsKey(element.getAttribute(ScriptTag.NAME))) {
-			Log.i("info", "remove var "+element.getAttribute(ScriptTag.NAME));
-			varsMap.remove(element.getAttribute(ScriptTag.NAME));
-		}*/
+		HashMap<String, Object> varsMap = sVarsMap;
 		NodeList nodes = element.getChildNodes();
 		int nodesLength = nodes.getLength();
 		if (nodesLength == 0) {
@@ -728,32 +788,37 @@ public class Function {
 			if ((element.getAttribute(ScriptTag.TYPE).equals(ScriptAttribute.FILTER)) ||
 					(element.getAttribute(ScriptTag.TYPE).equals(ScriptAttribute.LIST)) ||
 					(element.getAttribute(ScriptTag.TYPE).equals(ScriptAttribute.ORDER))) {
-				sVarsMap.put(element.getAttribute(ScriptTag.NAME), new ArrayList<Object>());
+				//sVarsMap.put(element.getAttribute(ScriptTag.NAME), new ArrayList<Object>());
+				varsMap.put(element.getAttribute(ScriptTag.NAME), new ArrayList<Object>());
 			} else {
-				sVarsMap.put(element.getAttribute(ScriptTag.NAME), null);
+				//sVarsMap.put(element.getAttribute(ScriptTag.NAME), null);
+				varsMap.put(element.getAttribute(ScriptTag.NAME), null);
 			}
 		} else if ((nodesLength == 1) && (nodes.item(0).getNodeType() == Node.TEXT_NODE)) {
-			sVarsMap.put(element.getAttribute(ScriptTag.NAME), nodes.item(0).getNodeValue());	
+			//sVarsMap.put(element.getAttribute(ScriptTag.NAME), nodes.item(0).getNodeValue());	
+			varsMap.put(element.getAttribute(ScriptTag.NAME), nodes.item(0).getNodeValue());
 		} else {
 			Object value = getValue(element, nodes.item(0).getNodeName(), "", "");
-			sVarsMap.put(element.getAttribute(ScriptTag.NAME), value);
+			//sVarsMap.put(element.getAttribute(ScriptTag.NAME), value);
+			varsMap.put(element.getAttribute(ScriptTag.NAME), value);
 		}
 	}
 
 	public static Object getKeyWord(Element element)
 	{
 		Object result = null;
-		NodeList nodes = element.getChildNodes();
-		if (nodes.item(0).getNodeType() == Node.TEXT_NODE) {
-			if (nodes.item(0).getNodeValue().equals(ScriptAttribute.CONST_NULL)) {
+		Node child = element.getFirstChild();
+		if (child.getNodeType() == Node.TEXT_NODE) {
+			String nodeValue = child.getNodeValue();
+			if (nodeValue.equals(ScriptAttribute.CONST_NULL)) {
 				result = null;
-			} else if (nodes.item(0).getNodeValue().equals(ScriptAttribute.CONST_TRUE)) {
+			} else if (nodeValue.equals(ScriptAttribute.CONST_TRUE)) {
 				result = true;
-			} else if (nodes.item(0).getNodeValue().equals(ScriptAttribute.CONST_FALSE)) {
+			} else if (nodeValue.equals(ScriptAttribute.CONST_FALSE)) {
 				result = false;
-			} else if (nodes.item(0).getNodeValue().equals(ScriptAttribute.CONST_GPS_SIGNAL_OK)) {
+			} else if (nodeValue.equals(ScriptAttribute.CONST_GPS_SIGNAL_OK)) {
 				result = GpsStatus.GPS_SIGNAL_OK;
-			} else if (nodes.item(0).getNodeValue().equals(ScriptAttribute.CONST_EMPTY_STRING)) {
+			} else if (nodeValue.equals(ScriptAttribute.CONST_EMPTY_STRING)) {
 				result = Constant.EMPTY_STRING;
 			}
 		}
@@ -785,21 +850,42 @@ public class Function {
 	
 	private static String getReturnValue(Element element) {
 		String result = "";
-		NodeList nodes = element.getChildNodes();
-		int length = nodes.getLength();
-		if (length > 0) {
-			if (nodes.item(0).getNodeType() == Node.TEXT_NODE) {
-				result = nodes.item(0).getNodeValue();
-			} else {
-				result = distributeAction((Element)nodes.item(0)).toString();
-			}
+		Node child = element.getFirstChild();
+		if (child.getNodeType() == Node.TEXT_NODE) {
+			result = child.getNodeValue();
+		} else {
+			result = distributeAction((Element)child).toString();
 		}
 		return result;
 	}
 	
 	public static Object getVariableName(Element element, String tag, String name, String type) {
 		Object value = null;
-		NodeList nodes = element.getChildNodes();
+		Node child = element.getFirstChild();
+		while (child != null) {
+			if ((child.getNodeName().equals(tag)) &&
+					(((Element)child).getAttribute(ScriptTag.NAME).equals(name)) &&
+					(((Element)child).getAttribute(ScriptTag.TYPE).equals(type))) {
+				if (child.hasChildNodes()) {
+					Node grandChild = child.getFirstChild();
+					if (grandChild.getNodeType() == Node.ELEMENT_NODE) {
+						if (grandChild.getNodeName().equals(ScriptTag.VAR)) {
+							value = ((Element)grandChild).getAttribute(ScriptTag.NAME);
+						}
+					} else if (grandChild.getNodeType() == Node.TEXT_NODE) {
+						value = grandChild.getNodeValue();
+					}
+				}
+			}
+			
+			try {
+				child = child.getNextSibling();	
+			} catch (IndexOutOfBoundsException ioobe) {
+				child = null;
+			}
+		}
+		
+		/*NodeList nodes = element.getChildNodes();
 		int itemsLen = nodes.getLength();
 		for (int i=0; i<itemsLen; i++) {
 			Element child = (Element)nodes.item(i);
@@ -815,11 +901,11 @@ public class Function {
 							value = item.getAttribute(ScriptTag.NAME);
 						}
 					} else if (childNodes.item(0).getNodeType() == Node.TEXT_NODE) {
-						
+						value = childNodes.item(0).getNodeValue();
 					}
 				}
 			}
-		}
+		}*/
 		return value;
 	}
 	
@@ -833,7 +919,6 @@ public class Function {
 	 */
 	public static Object getValue(Element element, String tag, String name, String type) {
 		Object value = null;
-		
 		Node child = element.getFirstChild();
 		while (child != null) {
 			String childName = child.getNodeName();

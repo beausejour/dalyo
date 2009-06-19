@@ -23,7 +23,6 @@ public class NS_DatabaseTable {
 		Cursor cursor = DatabaseAdapter.selectQuery(tableId, fieldId, filter, "AVG");
 		cursor.moveToFirst();
 		String result = cursor.getString(0);
-		cursor.moveToLast();
 		DatabaseAdapter.closeCursor(cursor);
 		return result; 
 	}
@@ -194,17 +193,14 @@ public class NS_DatabaseTable {
 		valueList.add(value);
 		ArrayList<HashMap<Object, Object>> records = new ArrayList<HashMap<Object, Object>>();
 		Cursor cursor = DatabaseAdapter.selectQuery(tableId, fieldList, valueList);
-		cursor.moveToFirst();
-		int cursorLen = cursor.getCount();
 		String[] columnNames = cursor.getColumnNames();
 		int columnsNb = columnNames.length;
-		for (int i=0; i<cursorLen; i++) {
+		while (cursor.moveToNext()) {
 			HashMap<Object, Object> record = new HashMap<Object, Object>();
 			for (int j=0; j<columnsNb; j++) {
 				record.put(columnNames[j], DatabaseAdapter.getCursorValue(cursor, columnNames[j]));
 			}
 			records.add(record);
-			cursor.moveToNext();
 		}
 		DatabaseAdapter.closeCursor(cursor);
 		return records;
@@ -217,7 +213,6 @@ public class NS_DatabaseTable {
 		Cursor cursor = DatabaseAdapter.selectQuery(tableId, fieldId, filter, "MAX");
 		cursor.moveToFirst();
 		String result = cursor.getString(0);
-		cursor.moveToLast();
 		DatabaseAdapter.closeCursor(cursor);
 		return result; 
 	}
@@ -229,7 +224,6 @@ public class NS_DatabaseTable {
 		Cursor cursor = DatabaseAdapter.selectQuery(tableId, fieldId, filter, "MIN");
 		cursor.moveToFirst();
 		String result = cursor.getString(0);
-		cursor.moveToLast();
 		DatabaseAdapter.closeCursor(cursor);
 		return result; 
 	}
@@ -241,7 +235,6 @@ public class NS_DatabaseTable {
 		Cursor cursor = DatabaseAdapter.selectQuery(tableId, fieldId, filter, "SUM");
 		cursor.moveToFirst();
 		String result = cursor.getString(0);
-		cursor.moveToLast();
 		DatabaseAdapter.closeCursor(cursor);
 		return result; 
 	}
@@ -251,9 +244,7 @@ public class NS_DatabaseTable {
 		ArrayList<String> tables = new ArrayList<String>();
 		tables.add(tableId);
 		Cursor cursor = DatabaseAdapter.selectQuery(tables, null, filter, null, null);
-		cursor.moveToFirst();
-		int cursorCount = cursor.getCount(); 
-		for (int i=0; i<cursorCount; i++) {
+		while (cursor.moveToNext()) {
 			HashMap<Object, Object> record = new HashMap<Object, Object>();
 			String[] columnNames = cursor.getColumnNames();
 			int columnsRecordSize = columnNames.length;
@@ -261,7 +252,6 @@ public class NS_DatabaseTable {
 				record.put(columnNames[j], DatabaseAdapter.getCursorValue(cursor, columnNames[j]));
 			}
 			records.add(record);
-			cursor.moveToNext();
 		}
 		DatabaseAdapter.closeCursor(cursor);
 		return records; 

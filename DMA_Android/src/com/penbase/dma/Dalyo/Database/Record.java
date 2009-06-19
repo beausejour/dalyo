@@ -12,6 +12,7 @@ public class Record {
 		if ((fList != null) && (vList != null) && (fList.size() == vList.size())) {
 			Cursor cursorAllRows = DatabaseAdapter.selectQuery(tableId, null, null);
 			int newId = cursorAllRows.getCount()+1;
+			DatabaseAdapter.closeCursor(cursorAllRows);
 			ArrayList<Integer> fieldList = new ArrayList<Integer>();
 			ArrayList<Object> valueList = new ArrayList<Object>();
 			valueList.add(newId);
@@ -24,15 +25,12 @@ public class Record {
 			mCurrentRecord = new HashMap<Object, Object>();
 			valueList.remove(0);
 			Cursor cursor = DatabaseAdapter.selectQuery(tableId, fieldList, valueList);
-			cursor.moveToFirst();
-			int cursorCount = cursor.getCount();
-			for (int i=0; i<cursorCount; i++) {
+			while (cursor.moveToNext()) {
 				String[] columnNames = cursor.getColumnNames();
 				int columnsRecordSize = columnNames.length;
 				for (int j=0; j<columnsRecordSize; j++) {
 					mCurrentRecord.put(columnNames[j], cursor.getString(j));
 				}
-				cursor.moveToNext();
 			}
 			DatabaseAdapter.closeCursor(cursor);
 		}
