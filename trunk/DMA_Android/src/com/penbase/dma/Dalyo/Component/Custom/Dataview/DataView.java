@@ -217,11 +217,11 @@ public class DataView extends LinearLayout implements OnGestureListener {
 				}
 			}
 			Cursor cursor = DatabaseAdapter.selectQuery(tables, null, filter, order, null);
+			String[] columnNames = cursor.getColumnNames();
 			int count = cursor.getCount();
 			if (count > 0) {
 				cursor.moveToFirst();
 				for (int i=0; i<count; i++) {
-					String[] columnNames = cursor.getColumnNames();
 					ArrayList<String> data = new ArrayList<String>();
 					HashMap<Object, Object> record = new HashMap<Object, Object>();
 					int mColumnsmRecordsize = columnNames.length;

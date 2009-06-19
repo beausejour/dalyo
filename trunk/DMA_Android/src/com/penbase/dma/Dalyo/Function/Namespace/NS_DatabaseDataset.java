@@ -50,9 +50,7 @@ public class NS_DatabaseDataset {
 		}
 		ArrayList<HashMap<Object, Object>> records = new ArrayList<HashMap<Object, Object>>();
 		Cursor cursor = DatabaseAdapter.selectQuery(tables, columns, filter, order, null);
-		cursor.moveToFirst();
-		int cursorCount = cursor.getCount(); 
-		for (int i=0; i<cursorCount; i++) {
+		while (cursor.moveToNext()) {
 			HashMap<Object, Object> record = new HashMap<Object, Object>();
 			String[] columnNames = cursor.getColumnNames();
 			int columnsRecordSize = columnNames.length;
@@ -60,7 +58,6 @@ public class NS_DatabaseDataset {
 				record.put(columnNames[j], DatabaseAdapter.getCursorValue(cursor, columnNames[j]));
 			}
 			records.add(record);
-			cursor.moveToNext();
 		}
 		DatabaseAdapter.closeCursor(cursor);
 		return records;

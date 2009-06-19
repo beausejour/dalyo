@@ -123,7 +123,6 @@ public class DmaHttpBinarySync {
 						getBlobAction.append(blob.get(0));
 						getBlobAction.append("&fieldid=");
 						getBlobAction.append(blob.get(1));
-						Log.i("info", "blob.get(2).toString() "+blob.get(2).toString());
 						String recordId = blob.get(2).toString().split("_")[4].split("\\.")[0];
 						getBlobAction.append("&record=");
 						getBlobAction.append(recordId);
@@ -145,12 +144,10 @@ public class DmaHttpBinarySync {
 				//Get response
 				byte[] responsedata = createConnection(mResponseAction, returnByte);
 				String codeReportStr = getErrorCode(responsedata);
-				Log.i("info", "report code "+Integer.valueOf(codeReportStr));
 				if (Integer.valueOf(codeReportStr) == ErrorCode.OK) {
 					DatabaseAdapter.commitTransaction();
 					wellDone = true;
 				} else{
-					Log.i("info", "cancel transaction");
 					DatabaseAdapter.rollbackTransaction();
 				}
 				
@@ -185,7 +182,7 @@ public class DmaHttpBinarySync {
 				
 				byte[] responsedata = createConnection(mResponseAction, null);
 				String codeResponseStr = getErrorCode(responsedata);
-				Log.i("info", "responsea "+mResponseAction+" code "+codeResponseStr);
+				Log.i("info", "response "+mResponseAction+" code "+codeResponseStr);
 				if (Integer.valueOf(codeResponseStr) == ErrorCode.OK) {
 					//DatabaseAdapter.cleanTables();
 					wellDone = true;
