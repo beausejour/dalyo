@@ -29,19 +29,15 @@ public class Function {
 		sContext = c;
 		sVarsMap = new HashMap<String, Object>();
 		sFuncsMap = new HashMap<String, ArrayList<String>>();
-		//parametersMap = new HashMap<String, String>();
 		sBehaviorDocument = document;
 		sIsFirstTime = true;
-		long start = System.currentTimeMillis();
 		createMaps();
-		long end = System.currentTimeMillis();
-		Log.i("info", "create variable used "+(end - start)+" ms");
 	}
 	
-	/*
+	/**
 	 * This method need to be modified if we don't need global variables anymore in Dalyo studio
 	 * Create 2 maps which contains variables and the positions of function
-	 * */
+	 */
 	private void createMaps() {
 		NodeList funcList = sBehaviorDocument.getElementsByTagName(ScriptTag.FUNCTION);
 		int functionSize = funcList.getLength();
@@ -263,13 +259,13 @@ public class Function {
 				}
 				break;
 		}
-		Log.i("info", "left "+left+" operator "+operator+" right "+right+" result "+result);
+		//Log.i("info", "left "+left+" operator "+operator+" right "+right+" result "+result);
 		return result;
 	}
 	
 	private static Object ifCondition(Element element) {
 		Object result = "";
-		Log.i("info", "if called");
+		//Log.i("info", "if called");
 		
 		Node child = element.getFirstChild();
 		boolean conditionCheck = false;
@@ -291,7 +287,7 @@ public class Function {
 				conditionCheck = checkConditions(checkList); 
 			} else if (childName.equals(ScriptTag.THEN)) {
 				if (conditionCheck) {
-					Log.i("info", "pass to then");
+					//Log.i("info", "pass to then");
 					Node thenChild = child.getFirstChild();
 					while (thenChild != null) {
 						result = distributeAction((Element)thenChild);
@@ -304,7 +300,7 @@ public class Function {
 				}
 			} else if (childName.equals(ScriptTag.ELSE)) {
 				if (!conditionCheck) {
-					Log.i("info", "pass to else");
+					//Log.i("info", "pass to else");
 					Node elseChild = child.getFirstChild();
 					while (elseChild != null) {
 						result = distributeAction((Element)elseChild);
@@ -322,49 +318,6 @@ public class Function {
 				child = null;
 			}
 		}
-		
-		
-		/*NodeList nodes = element.getChildNodes();
-		int elementLen = nodes.getLength();
-		boolean conditionCheck = false;
-		for (int i=0; i<elementLen; i++) {
-			Element child = (Element)nodes.item(i);
-			if (child.getNodeName().equals(ScriptTag.CONDITIONS)) {
-				NodeList conditions = child.getChildNodes();
-				int conditionsLen = conditions.getLength();
-				boolean[] checkList = new boolean[conditionsLen];
-				for (int k=0; k<conditionsLen; k++) {
-					Element condition = (Element)conditions.item(k);
-					if (condition.getNodeName().equals(ScriptTag.CONDITION)) {
-						Object left = getValue(condition, ScriptTag.LEFT, null, null);
-						Object operator = getValue(condition, ScriptTag.OPERATOR, null, null);
-						Object right = getValue(condition, ScriptTag.RIGHT, null, null);
-						checkList[k] = checkCondition(left, operator, right); 
-					}
-				}
-				conditionCheck = checkConditions(checkList); 
-			} else if (child.getNodeName().equals(ScriptTag.THEN)) {
-				if (conditionCheck) {
-					//Log.i("info", "pass to then");
-					NodeList thenchildren = child.getChildNodes();
-					int thenchildrenLen = thenchildren.getLength();
-					for (int k=0; k<thenchildrenLen; k++) {
-						Element thenChild = (Element) thenchildren.item(k);
-						result = distributeAction(thenChild);
-					} 
-				}
-			} else if (child.getNodeName().equals(ScriptTag.ELSE)) {
-				if (!conditionCheck) {
-					//Log.i("info", "pass to else");
-					NodeList elsechildren = child.getChildNodes();
-					int elsechildrenLen = elsechildren.getLength();
-					for (int k=0; k<elsechildrenLen; k++) {
-						Element elseChild = (Element) elsechildren.item(k);
-						result = distributeAction(elseChild);
-					}
-				}
-			}
-		}*/
 		return result;
 	}
 	
@@ -404,7 +357,7 @@ public class Function {
 	private static Object distributeCall(Element element) {
 		Object result = null;
 		if (!sIsFirstTime) {
-			Log.i("info", "namespace "+element.getAttribute(ScriptTag.NAMESPACE)+" function name "+element.getAttribute(ScriptTag.FUNCTION));	
+			//Log.i("info", "namespace "+element.getAttribute(ScriptTag.NAMESPACE)+" function name "+element.getAttribute(ScriptTag.FUNCTION));	
 		}
 		String namespace = element.getAttribute(ScriptTag.NAMESPACE);
 		String function = element.getAttribute(ScriptTag.FUNCTION);
@@ -700,7 +653,6 @@ public class Function {
 				NS_Runtime.StartApp(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_SYNC)) {
 				if (!sIsFirstTime) {
-					Log.i("info", "not first time synchro");
 					result = NS_Runtime.Synchronize(element);
 				}
 			}
@@ -884,28 +836,6 @@ public class Function {
 				child = null;
 			}
 		}
-		
-		/*NodeList nodes = element.getChildNodes();
-		int itemsLen = nodes.getLength();
-		for (int i=0; i<itemsLen; i++) {
-			Element child = (Element)nodes.item(i);
-			NodeList childNodes = child.getChildNodes();
-			int childNodesLength = childNodes.getLength();
-			if ((child.getNodeName().equals(tag)) &&
-					(child.getAttribute(ScriptTag.NAME).equals(name)) &&
-					(child.getAttribute(ScriptTag.TYPE).equals(type))) {
-				if (childNodesLength == 1) {
-					if (childNodes.item(0).getNodeType() == Node.ELEMENT_NODE) {
-						Element item = (Element)childNodes.item(0);
-						if (item.getNodeName().equals(ScriptTag.VAR)) {
-							value = item.getAttribute(ScriptTag.NAME);
-						}
-					} else if (childNodes.item(0).getNodeType() == Node.TEXT_NODE) {
-						value = childNodes.item(0).getNodeValue();
-					}
-				}
-			}
-		}*/
 		return value;
 	}
 	

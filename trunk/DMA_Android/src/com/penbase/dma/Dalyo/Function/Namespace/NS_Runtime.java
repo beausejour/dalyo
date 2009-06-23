@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.util.Log;
 
 import com.penbase.dma.Constant.Constant;
 import com.penbase.dma.Constant.ScriptAttribute;
@@ -48,6 +47,7 @@ public class NS_Runtime {
 		ApplicationView.getCurrentView().quit();
 		NS_Timer.cancelAll();
 		NS_Gps.Stop();
+		ApplicationListView.quit();
 	}
 	
 	public static String getApplicationVersion(Element element) {
@@ -63,10 +63,10 @@ public class NS_Runtime {
 		Object willShow = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_SHOW, ScriptAttribute.PARAMETER_TYPE_BOOLEAN);
 		String text = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_TEXT, ScriptAttribute.STRING).toString();
 		if ((Boolean)willShow) {
-			syncProgressDialog.dismiss();
+			syncProgressDialog = ProgressDialog.show(Function.getContext(), "Please wait...", text, true, false);
 		} else {
 			if (syncProgressDialog.isShowing()) {
-				syncProgressDialog = ProgressDialog.show(Function.getContext(), "Please wait...", text, true, false);
+				syncProgressDialog.dismiss();
 			}
 		}
 	}
@@ -84,7 +84,6 @@ public class NS_Runtime {
 	
 	public static boolean Synchronize(Element element) {
 		Object type = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_FACELESS, ScriptAttribute.PARAMETER_TYPE_BOOLEAN);
-		Log.i("info", "synchronize type "+type);
 		boolean showProgress = false;
 		
 		if ((type == null) || (((Boolean)type).booleanValue())) {
@@ -128,37 +127,5 @@ public class NS_Runtime {
 			}
 		});
 		return syncResult;
-		/*if (showProgress) {
-			syncProgressDialog = ProgressDialog.show(Function.getContext(), "Please wait...", "Synchronizing application's data...", true, false);
-			
-			boolean importResult = ApplicationView.getCurrentClient().importData(
-					ApplicationListView.getApplicationsInfo().get("AppId"),
-					ApplicationListView.getApplicationsInfo().get("DbId"), 
-					ApplicationListView.getApplicationsInfo().get("Username"),
-					ApplicationListView.getApplicationsInfo().get("Userpassword"), null, null);
-			if (importResult) {
-				result = ApplicationView.getCurrentClient().exportData(
-						ApplicationListView.getApplicationsInfo().get("AppId"),
-						ApplicationListView.getApplicationsInfo().get("DbId"), 
-						ApplicationListView.getApplicationsInfo().get("Username"),
-						ApplicationListView.getApplicationsInfo().get("Userpassword"), null, null);
-			}
-			syncProgressDialog.dismiss();
-			return result;
-		} else {
-			boolean importResult = ApplicationView.getCurrentClient().importData(
-					ApplicationListView.getApplicationsInfo().get("AppId"),
-					ApplicationListView.getApplicationsInfo().get("DbId"), 
-					ApplicationListView.getApplicationsInfo().get("Username"),
-					ApplicationListView.getApplicationsInfo().get("Userpassword"), null, null);
-			if (importResult) {
-				result = ApplicationView.getCurrentClient().exportData(
-						ApplicationListView.getApplicationsInfo().get("AppId"),
-						ApplicationListView.getApplicationsInfo().get("DbId"), 
-						ApplicationListView.getApplicationsInfo().get("Username"),
-						ApplicationListView.getApplicationsInfo().get("Userpassword"), null, null);
-			}
-			return result;
-		}*/
 	}
 }

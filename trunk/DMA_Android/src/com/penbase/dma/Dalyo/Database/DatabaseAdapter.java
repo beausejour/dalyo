@@ -66,19 +66,13 @@ public class DatabaseAdapter {
 	}
 	
 	private void createDatabase(String database) throws SQLException{
-		Log.i("info", "dbName "+mDbName);
 		closeDatabase();
 		try{
 			if (!databaseExists(database)) {
-				Log.i("info", "the database doesn't exist");
-				sSqlite = mContext.openOrCreateDatabase(database, 0, null);
-				createTable();
-			} else if (!checkDatabaseExists()) {
-				Log.i("info", "the database isn't the same");
 				sSqlite = mContext.openOrCreateDatabase(database, 0, null);
 				createTable();
 			} else {
-				Log.i("info", "the database have nothing to change");
+				checkDatabase();
 				sSqlite = mContext.openOrCreateDatabase(database, 0, null);
 			}
 		} catch (Exception e) {
@@ -99,7 +93,11 @@ public class DatabaseAdapter {
 		return dbFile.exists();
 	}
 	
-	private boolean checkDatabaseExists() {
+	/**
+	 * Check database setting
+	 * @return
+	 */
+	private boolean checkDatabase() {
 		boolean result = true;
 		HashMap<String, ArrayList<String>> tsMap = new HashMap<String, ArrayList<String>>();
 		HashMap<String, String> tnMap = new HashMap<String, String>();
@@ -257,7 +255,6 @@ public class DatabaseAdapter {
 			String createSql = createquery.substring(0, createquery.length()-2);
 			createSql += ");";
 			
-			Log.i("info", "query "+createSql);
 			sSqlite.execSQL(createSql);
 			
 			if (systemFields.size() > 0) {
@@ -289,10 +286,6 @@ public class DatabaseAdapter {
 		}
 		editorTablePref.commit();
 		editorFieldPref.commit();
-	}
-	
-	private void deleteDatabase(String database) {
-		mContext.deleteDatabase(database);
 	}
 
 	public byte[] syncImportTable(byte[] bytes) {
@@ -418,7 +411,6 @@ public class DatabaseAdapter {
 		if (sBlobRecords.size() > 0) {
 			sBlobRecords.clear();
 		}
-		Log.i("info", "syncExportTable ");
 		int tableNbInt = 0;
 		Set<String> keys = null;
 		if (tables == null) {
@@ -475,7 +467,6 @@ public class DatabaseAdapter {
 			}
 			DatabaseAdapter.closeCursor(cursor);
 		}
-		Log.i("info", "tidmap "+tidMap.toString());
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		//tableNb
 		byte[] tableNb = Binary.intToByteArray(tableNbInt);
@@ -500,7 +491,6 @@ public class DatabaseAdapter {
 			}
 			//recordsNb
 			int recordsNbInt = tidMap.get(tidKey).size();
-			Log.i("info", "export record nb "+recordsNbInt);
 			byte[] recordsNb = Binary.intToByteArray(recordsNbInt);
 			bos.write(recordsNb, 0, recordsNb.length);
 			for (int k=0; k<recordsNbInt; k++) {
@@ -640,7 +630,6 @@ public class DatabaseAdapter {
 	 * @param record
 	 */
 	private void insertValues(int tableId, ArrayList<Integer> fieldsList, ArrayList<Object> record) {
-		Log.i("info", "add table value "+DatabaseAttribute.TABLE+tableId+" record "+record);
 		Cursor cursorAllRows = selectQuery(String.valueOf(tableId), null, null);
 		int newId = cursorAllRows.getCount()+1;
 		DatabaseAdapter.closeCursor(cursorAllRows);
@@ -652,33 +641,15 @@ public class DatabaseAdapter {
 		values.put(DatabaseAttribute.STATE, DatabaseAttribute.SYNCHRONIZED);
 		int fieldsNb = fieldsList.size();
 		for (int i=0; i<fieldsNb; i++) {
-			//check field's type
-			/*if (fieldsTypeMap.get(fieldsList.get(i).toString()).equals(DatabaseAttribute.BLOB)) {
-				ByteArrayOutputStream bos = new ByteArrayOutputStream();
-				ObjectOutputStream oos;
-				try {
-					oos = new ObjectOutputStream(bos);
-					oos.writeObject(record.get(i+2));
-				}
-				catch (IOException e) {
-					e.printStackTrace();
-				}
-				values.put(DatabaseAttribute.FIELD+fieldsList.get(i), bos.toByteArray());
-			} else {
-				values.put(DatabaseAttribute.FIELD+fieldsList.get(i), (String)record.get(i+2));
-			}*/
 			values.put(DatabaseAttribute.FIELD+fieldsList.get(i), (String)record.get(i+2));
 		}
 		String tableName = DatabaseAttribute.TABLE+tableId;
-		long insertResult = sSqlite.insert(tableName, null, values);
-		Log.i("info", "insertresult "+insertResult);
+		sSqlite.insert(tableName, null, values);
 	}
 	
 	private void updateValues(int tableId, ArrayList<Integer> fieldsList, ArrayList<Object> record) {
-		Log.i("info", "update table value "+DatabaseAttribute.TABLE+tableId+" fieldList "+fieldsList+" record "+record);
 		int fieldsNb = fieldsList.size();
 		String tableName = DatabaseAttribute.TABLE+tableId;
-		//String newValue = DatabaseField.STATE+"="+DatabaseField.SYNCHRONIZED+" AND "+DatabaseField.GID+tableId+"="+record.get(1);
 		StringBuffer newValue = new StringBuffer("");
 		for (int i=0; i<fieldsNb; i++) {
 			if (i == fieldsNb-1) {
@@ -709,7 +680,6 @@ public class DatabaseAdapter {
 		update.append("=\'");
 		update.append(record.get(1));
 		update.append("\';");
-		Log.i("info", "update "+update.toString());
 		sSqlite.execSQL(update.toString());
 	}
 	
@@ -737,7 +707,6 @@ public class DatabaseAdapter {
 		if (type.equals(DatabaseAttribute.KEY)) {
 			result = KeyGenerator.getKeyGenerated();
 		} else if (type.equals(DatabaseAttribute.INTEGER)) {
-			Log.i("info", "idValue "+idValue);
 			result = idValue;
 		}
 		return result;
@@ -867,7 +836,6 @@ public class DatabaseAdapter {
 			if ((sFieldsPKMap.containsKey(String.valueOf(tableId))) && 
 					(sFieldsPKMap.get(String.valueOf(tableId)).equals(fieldsList.get(i))) &&
 					(record.get(i+1) == null)) {
-				Log.i("info", "in case of filed has pk field, generate its value");
 				record.remove(i+1);
 				record.add(i+1, generatePK(sFieldsTypeMap.get(fieldsList.get(i)), record.get(0)));
 			}
@@ -882,7 +850,6 @@ public class DatabaseAdapter {
 		}
 		if ((!fieldsList.contains(sFieldsPKMap.get(String.valueOf(tableId)))) &&
 				(sFieldsPKMap.containsKey(String.valueOf(tableId)))) {
-			Log.i("info", "in case of field list hasn't pk field, generate its value");
 			fields.append(", ").append(DatabaseAttribute.FIELD).append(sFieldsPKMap.get(String.valueOf(tableId)));
 			values.append(", \'");
 			values.append(generatePK(sFieldsTypeMap.get(sFieldsPKMap.get(String.valueOf(tableId))), record.get(0)));
@@ -896,12 +863,10 @@ public class DatabaseAdapter {
 		insert.append(tableName.toString());
 		insert.append(" ").append(fields.toString());
 		insert.append(" VALUES").append(values.toString()).append(";");
-		Log.i("info", "query "+insert.toString());
 		sSqlite.execSQL(insert.toString());
 	}
 	
 	public static void updateQuery(String tableId, ArrayList<Integer> fieldList, ArrayList<Object> valueList, HashMap<Object, Object> record) {
-		Log.i("info", "updateQuery Record "+record+" fieldList "+fieldList+" valueList "+valueList);
 		//Check if state is Synchronized, update to updatevalue. Otherwise, don't change state's value.
 		String table = DatabaseAttribute.TABLE+tableId;
 		int newState = DatabaseAttribute.ADDVALUE;
@@ -918,24 +883,19 @@ public class DatabaseAdapter {
 			values.put(DatabaseAttribute.FIELD+fieldList.get(i).toString(), valueList.get(i).toString());
 			record.remove(DatabaseAttribute.FIELD+fieldList.get(i));
 		}
-		Log.i("info", "values "+values);
 		String whereClause = createWhereClause(tableId, record);
-		Log.i("info", "whereclause "+whereClause);
 		sSqlite.update(table, values, whereClause, null);
 	}
 	
 	public static void deleteQuery(String tableId, HashMap<Object, Object> record) {
-		Log.i("info", "deletequery table "+tableId+" record "+record);
 		if (record.containsKey(DatabaseAttribute.STATE)) {
 			String table = DatabaseAttribute.TABLE+tableId;
 			String whereClause = createWhereClause(tableId, record);
 			if (Integer.valueOf(record.get(DatabaseAttribute.STATE).toString()) == DatabaseAttribute.SYNCHRONIZED) {
 				ContentValues values = new ContentValues();
 				values.put(DatabaseAttribute.STATE, DatabaseAttribute.DELETEVALUE);
-				Log.i("info", "whereclause "+whereClause+" values "+values);
 				sSqlite.update(table, values, whereClause, null);
 			} else {
-				Log.i("info", "whereclause "+whereClause);
 				sSqlite.delete(table, whereClause, null);
 			}
 		}
@@ -997,12 +957,10 @@ public class DatabaseAdapter {
 	}
 	
 	public static void cleanTables() {
-		Log.i("info", "cleantables");
 		Set<String> keys = sTablesMap.keySet();
 		SQLiteDatabase sqlite = sSqlite;
 		for (String key : keys) {
 			String table = DatabaseAttribute.TABLE+key;
-			Log.i("info", "table "+table);
 			String id = DatabaseAttribute.ID+key;
 			String[] projectionIn = new String[]{id, DatabaseAttribute.STATE};
 			Cursor deleteCursor = sqlite.query(table, projectionIn, null, null, null, null, null);

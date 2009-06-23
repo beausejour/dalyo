@@ -24,6 +24,7 @@ import com.penbase.dma.Dalyo.Component.Custom.PictureBox.PictureBoxView;
 import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -45,17 +46,11 @@ public class Component {
 	private String mChecked = null;	
 
 	//Variables for combobox
-	private ArrayList<String> mItemList = new ArrayList<String>();
 	private ArrayList<String> mLabelList = null;
 	private ArrayList<String> mValueList = null;
 	
 	//Variable for image
-	private int mBackground = 0;
-	private String mExtension = null;
-	
-	//Variable for dataview
-	private ArrayList<ArrayList<String>> mColumnInfos = new ArrayList<ArrayList<String>>();
-	private HashMap<Integer, String> mOnCalculateMap = new HashMap<Integer, String>();
+	private String mBackground = null;
 	
 	//Variable for Label
 	private String mAlign = null;
@@ -90,7 +85,7 @@ public class Component {
 		this.mId = i;
 	}
 	
-	public void setBackGround(int bg) {
+	public void setBackGround(String bg) {
 		this.mBackground = bg;
 	}
 	
@@ -114,12 +109,8 @@ public class Component {
 		this.mChecked = check;
 	}
 	
-	public void setExtension(String ext) {
-		this.mExtension = ext;
-	}
-	
 	public void setItemList(ArrayList<String> l) {
-		this.mItemList = l;
+		((ComboBox)getView()).setItemList(l);
 	}
 	
 	public void setLabelList(ArrayList<String> l) {
@@ -131,11 +122,11 @@ public class Component {
 	}
 	
 	public void setDataviewColumns(ArrayList<ArrayList<String>> l) {
-		this.mColumnInfos = l;
+		((DataView)getView()).setColumnInfo(l);
 	}
 	
 	public void setDataviewOncalculate(HashMap<Integer, String> onc) {
-		this.mOnCalculateMap = onc;
+		((DataView)getView()).setOncalculate(onc);
 	}
 	
 	public void setMultiLine(String ml) {
@@ -187,13 +178,12 @@ public class Component {
 			button.setText(mLabel);
 			button.setTypeface(getFontType(mFontType));
 			button.setTextSize(getFontSize(mFontSize));
-			if ((mBackground != 0) && (mExtension != null)) {
-				StringBuffer path = new StringBuffer(DmaHttpClient.getFilesPath());
-				path.append(mBackground);
-				path.append(".");
-				path.append(mExtension);
-				Drawable d = Drawable.createFromPath(path.toString());
-				button.setBackgroundDrawable(d);
+			if (mBackground != null) {
+				String path = findResourceFile(mBackground);
+				if (path.length() > 0) {
+					Drawable d = Drawable.createFromPath(path);
+					button.setBackgroundDrawable(d);	
+				}
 			}
 			mView = button;
 		} else if (mType.equals(DesignTag.COMPONENT_CHECKBOX)) {
@@ -210,7 +200,7 @@ public class Component {
 			if ((mValueList != null) && (mLabelList != null)) {
 				combobox = new ComboBox(mContext, mLabelList, mValueList);
 			} else {
-				combobox = new ComboBox(mContext, mItemList);
+				combobox = new ComboBox(mContext);
 			}
 			mView = combobox;
 		} else if (mType.equals(DesignTag.COMPONENT_LABEL)) {
@@ -274,20 +264,17 @@ public class Component {
 			mView = pictureBox;
 		} else if (mType.equals(DesignTag.COMPONENT_IMAGE)) {
 			ImageView imageview = new ImageView(mContext);
-			if (mBackground != 0) {
-				StringBuffer path = new StringBuffer(DmaHttpClient.getFilesPath());
-				path.append(mBackground);
-				path.append(".");
-				path.append(mExtension);
-				Drawable d = Drawable.createFromPath(path.toString());
-				imageview.setBackgroundDrawable(d);
+			if (mBackground != null) {
+				String path = findResourceFile(mBackground);
+				if (path.length() > 0) {
+					Drawable d = Drawable.createFromPath(path);
+					imageview.setBackgroundDrawable(d);	
+				}
 			}
 			mView = imageview;
 		} else if (mType.equals(DesignTag.COMPONENT_DATAVIEW)) {
 			DataView dataview = new DataView(mContext, mTableID);
 			dataview.setText(getFontSize(mFontSize), getFontType(mFontType));
-			dataview.setColumnInfo(mColumnInfos);
-			dataview.setOncalculate(mOnCalculateMap);
 			mView = dataview;
 		} else if (mType.equals(DesignTag.COMPONENT_DOODLE)) {
 			DoodleView doodleView= new DoodleView(mContext, mId);
@@ -302,6 +289,36 @@ public class Component {
 			Button button = new Button(mContext);
 			button.setText(mLabel);
 			mView = button;
+		}
+	}
+	
+	/**
+	 * Parse resource directory to find name
+	 * @param name resource file name
+	 * @return resource file path
+	 */
+	private String findResourceFile(String name) {
+		String result = "";
+		StringBuffer testName = new StringBuffer(name);
+		testName.append(".");
+		StringBuffer path = new StringBuffer(DmaHttpClient.getResourcePath());
+		path.append("/");
+		File resourceDirectory = new File(path.toString());
+		String[] files = resourceDirectory.list();
+		int count = files.length;
+		int i = 0;
+		while (i < count) {
+			if (files[i].startsWith(testName.toString())) {
+				result = files[i];
+				i = count;
+			}
+			i++;
+		}
+		if (result.equals("")) {
+			return result;
+		} else {
+			path.append(result);
+			return path.toString();
 		}
 	}
 	

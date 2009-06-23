@@ -37,25 +37,14 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.penbase.dma.Constant.Constant;
-import com.penbase.dma.Constant.DesignTag;
 import com.penbase.dma.Constant.ErrorCode;
-import com.penbase.dma.Dalyo.Application;
 import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
 import com.penbase.dma.View.ApplicationListView;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 
 /**
  * Authentication interface of DMA
  */
 public class Dma extends Activity implements OnClickListener {
-	private static ArrayList<Application> sApplicationList = null;
 	private TextView mTx_login;
 	private TextView mTx_password;
 	private CheckBox mCb_remember_me;
@@ -98,69 +87,8 @@ public class Dma extends Activity implements OnClickListener {
 			mAboutDialog = new AlertDialog.Builder(this).setIcon(android.R.drawable.ic_dialog_info)
 	        .setTitle(R.string.menu_about).setView(mInflater.inflate(R.layout.about, null, false)).create();
 		} else {
-			String xml = settings.getString("ApplicationList", null);
-			createApplicationListFromXml(xml);
 			this.finish();
 			startActivityForResult(new Intent(this, ApplicationListView.class), 0);
-		}
-	}
-
-	/**
-	 * Parses the given xml to get the necessary values and creates applications
-	 * @param xml Xml which contains application information
-	 */
-	private void createApplicationListFromXml(String xml) {
-		HashMap<String, Application> applicationMap = new HashMap<String, Application>();
-		Document doc = DmaHttpClient.CreateParseDocument(xml, null);
-		NodeList root = doc.getElementsByTagName(DesignTag.ROOT);
-		NodeList apps = root.item(0).getChildNodes();
-		int appsLen = apps.getLength();
-		for (int s = 0; s < appsLen; s++) {
-			NodeList els = apps.item(s).getChildNodes();
-			Application app = new Application();
-			int elsLength = els.getLength();
-			for (int t = 0; t < elsLength; t++) {
-				Node node = els.item(t);
-				NodeList nodes = node.getChildNodes();
-				if (node.getNodeType() == Node.ELEMENT_NODE) {
-					if (node.getNodeName().equals(DesignTag.LOGIN_ID)) {
-						app.setAppId(nodes.item(0).getNodeValue());
-					} else if (node.getNodeName().equals(DesignTag.LOGIN_TIT)) {
-						app.setName(nodes.item(0).getNodeValue());
-					} else if (node.getNodeName().equals(DesignTag.LOGIN_BLD)) {
-						app.setAppBuild(nodes.item(0).getNodeValue());
-					} else if (node.getNodeName().equals(DesignTag.LOGIN_SUB)) {
-						app.setSubId(nodes.item(0).getNodeValue());
-					} else if (node.getNodeName().equals(DesignTag.LOGIN_DBID)) {
-						app.setDbId(nodes.item(0).getNodeValue());
-					} else if (node.getNodeName().equals(DesignTag.LOGIN_VER)) {
-						app.setAppVer(nodes.item(0).getNodeValue());
-					}
-				}
-			}
-			app.setIconRes(R.drawable.splash);
-			applicationMap.put(app.getName(), app);
-		}
-		
-		sortApplicationsList(applicationMap);
-	}
-	
-	/**
-	 * Sorts the applications list in alphabetical order
-	 * @param applicationMap The application hashmap, key is application's name and value is application
-	 */
-	public static void sortApplicationsList(HashMap<String, Application> applicationMap) {
-		if (sApplicationList == null) {
-			sApplicationList = new ArrayList<Application>();
-		} else {
-			sApplicationList.clear();
-		}
-		ArrayList<String> tempList = new ArrayList<String>();
-		tempList.addAll(applicationMap.keySet());
-		Collections.sort(tempList);
-		int appsLen = applicationMap.size();
-		for (int i=0; i<appsLen; i++) {
-			sApplicationList.add(applicationMap.get(tempList.get(i)));
 		}
 	}
 	
@@ -185,7 +113,7 @@ public class Dma extends Activity implements OnClickListener {
 			@Override
 			public void run() {
 				if (mHandler != null) {
-					mServerResponse = new DmaHttpClient(Dma.this).Authentication(mTx_login.getText().toString().trim(),
+					mServerResponse = new DmaHttpClient(Dma.this, mTx_login.getText().toString().trim()).Authentication(mTx_login.getText().toString().trim(),
 							mTx_password.getText().toString().trim());
 					mHandler.sendEmptyMessage(0);
 				}
@@ -218,7 +146,6 @@ public class Dma extends Activity implements OnClickListener {
 						editorPrefs.putString("Userpassword", mTx_password.getText().toString());
 						editorPrefs.putString("ApplicationList", mServerResponse);
 						editorPrefs.commit();
-						createApplicationListFromXml(mServerResponse);
 					} catch(Exception e) {
 						e.printStackTrace();
 					}
@@ -269,9 +196,5 @@ public class Dma extends Activity implements OnClickListener {
 		if (mLoadApps != null) {
 			mLoadApps.dismiss();
 		}
-	}
-	
-	public static ArrayList<Application> getApplications() {
-		return sApplicationList;
 	}
 }

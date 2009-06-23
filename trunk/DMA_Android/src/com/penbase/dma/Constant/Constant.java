@@ -4,6 +4,9 @@ public class Constant {
 	//Package name
 	public static final String PACKAGENAME = "data/data/com.penbase.dma/";
 	
+	//Database directory
+	public static final String DATABASEDIRECTORY = "databases/";
+	
 	//Text alignment
 	public static final String LEFT = "left";
 	public static final String CENTER = "center";
@@ -39,4 +42,16 @@ public class Constant {
 	public static String NONE = "none";
 	
 	public static final String BARCODEFILE = "barcode_";
+	
+	//Xml files
+	public static final String DBXML = "db.xml";
+	public static final String DESIGNXML = "design.xml";
+	public static final String BEHAVIORXML = "behavior.xml";
+	public static final String RESOURCEXML = "resources.xml";
+	
+	//Resource directory
+	public static final String RESOURCE = "resource";
+	
+	public static final String IMPORTACTION = "import";
+	public static final String EXPORTACTION = "export";
 }
