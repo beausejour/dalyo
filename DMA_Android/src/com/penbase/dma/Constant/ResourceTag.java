@@ -1,6 +1,6 @@
 package com.penbase.dma.Constant;
 
-public class RessourceTag {
+public class ResourceTag {
 	//Resources     
 	public static final String RESOURCES_RL = "rl";
 	public static final String RESOURCES_RL_ID = "id";

@@ -1,7 +1,6 @@
 package com.penbase.dma.Dalyo.Component;
 
 import android.content.Context;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.View;
@@ -18,7 +17,7 @@ import com.penbase.dma.Dalyo.Component.Custom.TextZone;
 import com.penbase.dma.Dalyo.Component.Custom.Doodle.DoodleView;
 import com.penbase.dma.Dalyo.Component.Custom.PictureBox.PictureBoxView;
 import com.penbase.dma.Dalyo.Function.Function;
-import com.penbase.dma.View.ApplicationListView;
+import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -147,9 +146,7 @@ public class Form extends ScrollView {
 				String fileName = ((DoodleView)mLayout.getChildAt(i)).getImageName();
 				if (!fileName.equals("")) {
 					Log.i("info"," found doodle image");
-					StringBuffer path = new StringBuffer(Constant.PACKAGENAME);
-					path.append(ApplicationListView.getApplicationName());
-					path.append("/");
+					StringBuffer path = new StringBuffer(DmaHttpClient.getFilesPath());
 					path.append(fileName);
 					if (new File(path.toString()).exists()) {
 						((DoodleView)mLayout.getChildAt(i)).setText("");
@@ -161,11 +158,8 @@ public class Form extends ScrollView {
 			} else if (mLayout.getChildAt(i) instanceof PictureBoxView) {
 				String fileName = ((PictureBoxView)mLayout.getChildAt(i)).getPhotoName();
 				if (!fileName.equals("")) {
-					StringBuffer path = new StringBuffer(Constant.PACKAGENAME);
-					path.append(ApplicationListView.getApplicationName());
-					path.append("/");
+					StringBuffer path = new StringBuffer(DmaHttpClient.getFilesPath());
 					path.append(fileName);
-					((BitmapDrawable)((PictureBoxView)mLayout.getChildAt(i)).getDrawable()).getBitmap().recycle();
 					if (new File(path.toString()).exists()) {
 						((PictureBoxView)mLayout.getChildAt(i)).setImageDrawable(Drawable.createFromPath(path.toString()));
 					} else {
@@ -174,12 +168,10 @@ public class Form extends ScrollView {
 					((PictureBoxView)mLayout.getChildAt(i)).setScaleType(ScaleType.FIT_XY);
 				}
 			} else if (mLayout.getChildAt(i) instanceof Barcode) {
-				StringBuffer path = new StringBuffer(Constant.PACKAGENAME);
-				path.append(ApplicationListView.getApplicationName());
-				path.append("/barcode_");
+				StringBuffer path = new StringBuffer(DmaHttpClient.getFilesPath());
+				path.append(Constant.BARCODEFILE);
 				path.append(((Barcode)mLayout.getChildAt(i)).getTag().toString());
 				path.append("_tmp.jpg");
-				((BitmapDrawable)((Barcode)mLayout.getChildAt(i)).getDrawable()).getBitmap().recycle();
 				if (new File(path.toString()).exists()) {
 					((Barcode)mLayout.getChildAt(i)).setImageDrawable(Drawable.createFromPath(path.toString()));	
 				} else {

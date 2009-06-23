@@ -36,8 +36,12 @@ public class ComboBox extends Spinner {
 		this.mValueList = valueList;
 	}
 	
-	public ComboBox(Context context, ArrayList<String> il) {
+	public ComboBox(Context context) {
 		super(context);
+		this.mContext = context;
+	}
+	
+	public void setItemList(ArrayList<String> il) {
 		this.mLabelList = new ArrayList<String>();
 		this.mValueList = new ArrayList<String>();
 		this.mItemsList = il;
@@ -45,8 +49,8 @@ public class ComboBox extends Spinner {
 			mLabelList.add(s);
 			mValueList.add(s);
 		}
-		mSpinnerArrayAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, il);
-		this.setAdapter(mSpinnerArrayAdapter);	
+		mSpinnerArrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_spinner_item, il);
+		this.setAdapter(mSpinnerArrayAdapter);
 	}
 	
 	public void setCurrentValue(String fid, HashMap<Object, Object> record) {

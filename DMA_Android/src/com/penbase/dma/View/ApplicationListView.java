@@ -41,29 +41,45 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import com.penbase.dma.Dma;
 import com.penbase.dma.R;
 import com.penbase.dma.Constant.Constant;
+import com.penbase.dma.Constant.DesignTag;
+import com.penbase.dma.Dalyo.Application;
 import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Set;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
 
 /**
  * Displays a GridView which contains all applications' icons
  */
 public class ApplicationListView extends Activity implements OnItemSelectedListener, OnItemClickListener {
+	private static ApplicationListView sApplicationListView;
 	private ApplicationAdapter mAdapter;
 	private TextView mApplicationName;
 	private static ProgressDialog sLoadProgressDialog = null;
 	private static ProgressDialog sUpdateProgressDialog = null;
 	private Intent mIntent = null;
 	private static HashMap<String, String> sApplicationInfos = new HashMap<String, String>();
-	private DmaHttpClient mDmahttpclient = new DmaHttpClient();
+	private DmaHttpClient mDmahttpclient;
 	private static String sApplicationName;
 	private GridView mGridView;
 	private AlertDialog mAboutDialog;
 	private LayoutInflater mInflater;
+	private ArrayList<Application> mApplicationList;
 
 	@Override
 	protected void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
+		sApplicationListView = this;
 		Animation animation = AnimationUtils.loadAnimation(this, R.anim.wave_scale);
 		setContentView(R.layout.applicationlist);
 		
@@ -76,12 +92,15 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		
 		mApplicationName = (TextView)findViewById(R.id.appnametv);
 		mAdapter = new ApplicationAdapter(this);
-
-		int size = Dma.getApplications().size();
+		
+		SharedPreferences settings = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE);
+		String xml = settings.getString("ApplicationList", null);
+		createApplicationListFromXml(xml, false);
+		int size = mApplicationList.size();
 		for (int i =0; i < size; i++) {
-			mAdapter.addApplication(Dma.getApplications().get(i));
+			mAdapter.addApplication(mApplicationList.get(i));
 			if (i == 0) {
-				mApplicationName.setText(Dma.getApplications().get(i).getName());
+				mApplicationName.setText(mApplicationList.get(i).getName());
 			}
 		}
 		
@@ -138,6 +157,206 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		}
 		return true;
 	}
+	
+	/**
+	 * Parses the given xml to get the necessary values and creates applications
+	 * @param xml which contains application's information
+	 */
+	private void createApplicationListFromXml(String xml, boolean update) {
+		HashMap<String, Application> applicationMap = new HashMap<String, Application>();
+		Application app = null;
+		boolean isInAppId = false;
+		boolean isInAppTitle = false;
+		boolean isInAppBuild = false;
+		boolean isInAppSub = false;
+		boolean isInAppDBID = false;
+		boolean isInAppVer = false;
+    	XmlPullParserFactory factory;
+		try {
+			factory = XmlPullParserFactory.newInstance();
+	        factory.setNamespaceAware(true);
+	        XmlPullParser xpp = factory.newPullParser();
+	        xpp.setInput(new StringReader(xml));
+	        int eventType = xpp.getEventType();
+	        while (eventType != XmlPullParser.END_DOCUMENT) {
+	        	String tagName = xpp.getName();
+	        	if(eventType == XmlPullParser.START_DOCUMENT) {
+
+	        	} else if(eventType == XmlPullParser.END_DOCUMENT) {
+
+	        	} else if(eventType == XmlPullParser.START_TAG) {
+	        		if (tagName.equals(DesignTag.APP)) {
+	        			app = new Application();
+	        		} else if (tagName.equals(DesignTag.LOGIN_ID)) {
+	        			isInAppId = true;
+	        		} else if (tagName.equals(DesignTag.LOGIN_TIT)) {
+	        			isInAppTitle = true;
+	        		} else if (tagName.equals(DesignTag.LOGIN_BLD)) {
+	        			isInAppBuild = true;
+	        		} else if (tagName.equals(DesignTag.LOGIN_SUB)) {
+	        			isInAppSub = true;
+	        		} else if (tagName.equals(DesignTag.LOGIN_DBID)) {
+	        			isInAppDBID = true;
+	        		} else if (tagName.equals(DesignTag.LOGIN_VER)) {
+	        			isInAppVer = true;
+	        		}
+	        	} else if(eventType == XmlPullParser.END_TAG) {
+	        		if (tagName.equals(DesignTag.APP)) {
+	        			app.setIconRes(R.drawable.splash);
+	        			applicationMap.put(app.getName(), app);
+	        		} else if (tagName.equals(DesignTag.LOGIN_ID)) {
+	        			isInAppId = false;
+	        		} else if (tagName.equals(DesignTag.LOGIN_TIT)) {
+	        			isInAppTitle = false;
+	        		} else if (tagName.equals(DesignTag.LOGIN_BLD)) {
+	        			isInAppBuild = false;
+	        		} else if (tagName.equals(DesignTag.LOGIN_SUB)) {
+	        			isInAppSub = false;
+	        		} else if (tagName.equals(DesignTag.LOGIN_DBID)) {
+	        			isInAppDBID = false;
+	        		} else if (tagName.equals(DesignTag.LOGIN_VER)) {
+	        			isInAppVer = false;
+	        		}
+	        	} else if(eventType == XmlPullParser.TEXT) {
+	        		String value = xpp.getText();
+	        		if (isInAppId) {
+	        			app.setAppId(value);
+	        		} else if (isInAppTitle) {
+	        			app.setName(value);
+	        		} else if (isInAppBuild) {
+	        			app.setAppBuild(value);
+	        		} else if (isInAppSub) {
+	        			app.setSubId(value);
+	        		} else if (isInAppDBID) {
+	        			app.setDbId(value);
+	        		} else if (isInAppVer) {
+	        			app.setAppVer(value);
+	        		}
+	        	}
+	        	eventType = xpp.next();
+	        }
+		} catch (XmlPullParserException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		if (update) {
+			Set<String> applicationNames = applicationMap.keySet();
+			ArrayList<Application> applications = mApplicationList;
+			for (Application application : applications) {
+				String appName = application.getName();
+				boolean deleteApplication = true;
+				if (applicationNames.contains(appName)) {
+					deleteApplication = false;
+					Application newApplication = applicationMap.get(appName);
+					//If db id changed, rename database file and delete db.xml
+					if (!application.getDbId().equals(newApplication.getDbId())) {
+						backupDatabase(appName);
+					}
+					
+					//If other id changed, delete design.xml, behavior.xml, resource.xml
+					if ((!application.getAppBuild().equals(newApplication.getAppBuild())) ||
+							(!application.getAppVer().equals(newApplication.getAppVer())) ||
+							(!application.getSubId().equals(newApplication.getSubId()))) {
+						deleteXmlFile(appName, Constant.DESIGNXML);
+						deleteXmlFile(appName, Constant.BEHAVIORXML);
+						deleteXmlFile(appName, Constant.RESOURCEXML);
+					}
+				}
+				if (deleteApplication) {
+					deleteApplication(appName);
+				}
+			}
+		}
+		sortApplicationsList(applicationMap);
+	}
+	
+	/**
+	 * Get user name
+	 * @return
+	 */
+	private String getUserName() {
+		SharedPreferences settings = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE);
+		return settings.getString("Username", "");
+	}
+	
+	private void backupDatabase(String appName) {
+		String userName = getUserName();
+		StringBuffer databaseFilePath = new StringBuffer(Constant.PACKAGENAME);
+		databaseFilePath.append(Constant.DATABASEDIRECTORY).append(userName).append("_").append(appName);
+		StringBuffer backupdatabaseFilePath = new StringBuffer(databaseFilePath.toString());
+		backupdatabaseFilePath.append("_backup");
+		File backupDatabaseFile = new File(backupdatabaseFilePath.toString());
+		if (backupDatabaseFile.exists()) {
+			backupDatabaseFile.delete();
+		}
+		File databaseFile = new File(databaseFilePath.toString());
+		databaseFile.renameTo(backupDatabaseFile);
+	}
+	
+	/**
+	 * Delete xml file
+	 * @param appName application name
+	 * @param xmlName xml name
+	 */
+	private void deleteXmlFile(String appName, String xmlName) {
+		String userName = getUserName();
+		StringBuffer filePath = new StringBuffer(Constant.PACKAGENAME);
+		filePath.append(userName).append("/").append(appName).append("/").append(xmlName);
+		File xmlFile = new File(filePath.toString());
+		if (xmlFile.exists()) {
+			xmlFile.delete();
+		}
+	}
+	
+	/**
+	 * Delete application directory and rename database file(backup user old data)
+	 * @param appName application name
+	 */
+	private void deleteApplication(String appName) {
+		String userName = getUserName();
+		StringBuffer directoryPath = new StringBuffer(Constant.PACKAGENAME);
+		directoryPath.append(userName).append("/").append(appName).append("/");
+		File appDirectory = new File(directoryPath.toString());
+		if (deleteDirectory(appDirectory)) {
+			//Delete all xml files
+		}
+		backupDatabase(appName);
+	}
+	
+	/**
+	 * Delete directory's content
+	 * @param directory
+	 * @return
+	 */
+	private boolean deleteDirectory(File directory) {
+        if (directory.isDirectory()) {
+            String[] children = directory.list();
+            int length = children.length;
+            for (int i=0; i<length; i++) {
+                boolean success = deleteDirectory(new File(directory, children[i]));
+                if (!success) {
+                    return false;
+                }
+            }
+        }
+        return directory.delete();
+    }
+	
+	/**
+	 * Sorts the applications list in alphabetical order
+	 * @param applicationMap The application hashmap, key is application's name and value is application
+	 */
+	private void sortApplicationsList(HashMap<String, Application> applicationMap) {
+		mApplicationList = new ArrayList<Application>();
+		ArrayList<String> tempList = new ArrayList<String>();
+		tempList.addAll(applicationMap.keySet());
+		Collections.sort(tempList);
+		int appsLen = applicationMap.size();
+		for (int i=0; i<appsLen; i++) {
+			mApplicationList.add(applicationMap.get(tempList.get(i)));
+		}
+	}
 
 	/**
 	 * Deletes preference data and finishes this activity 
@@ -158,10 +377,11 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				SharedPreferences prefs = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE);
-				String appsList = mDmahttpclient.Authentication(prefs.getString("Username", ""),
-						prefs.getString("Userpassword", ""));
-				mDmahttpclient.update(appsList);
+				SharedPreferences settings = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE);
+				mDmahttpclient = new DmaHttpClient(settings.getString("Username", ""));
+				String appsList = mDmahttpclient.Authentication(settings.getString("Username", ""),
+						settings.getString("Userpassword", ""));
+				createApplicationListFromXml(appsList, true);
 				SharedPreferences.Editor editorPrefs = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE).edit();
 				editorPrefs.remove("ApplicationList");
 				editorPrefs.putString("ApplicationList", appsList);
@@ -176,7 +396,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View v, int position, long id) {
-		mApplicationName.setText(Dma.getApplications().get(position).getName());
+		mApplicationName.setText(mApplicationList.get(position).getName());
 	}
 
 	@Override
@@ -188,23 +408,27 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	@Override
 	public void onItemClick(AdapterView<?> parent, View v, final int position, long id) {
 		SharedPreferences prefs = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE);
-		sApplicationName = Dma.getApplications().get(position).getName();
+		Application application = mApplicationList.get(position);
+		sApplicationName = application.getName();
 		sApplicationInfos.put("Username", prefs.getString("Username", ""));
 		sApplicationInfos.put("Userpassword", prefs.getString("Userpassword", ""));
-		sApplicationInfos.put("AppId", Dma.getApplications().get(position).getAppId());
-		sApplicationInfos.put("AppVer", Dma.getApplications().get(position).getAppVer());
-		sApplicationInfos.put("AppBuild", Dma.getApplications().get(position).getAppBuild());
-		sApplicationInfos.put("SubId", Dma.getApplications().get(position).getSubId());
-		sApplicationInfos.put("DbId", Dma.getApplications().get(position).getDbId());
+		sApplicationInfos.put("AppId", application.getAppId());
+		sApplicationInfos.put("AppVer", application.getAppVer());
+		sApplicationInfos.put("AppBuild", application.getAppBuild());
+		sApplicationInfos.put("SubId", application.getSubId());
+		sApplicationInfos.put("DbId", application.getDbId());
 		sLoadProgressDialog = ProgressDialog.show(this, "Please wait...", "Preparing application...", true, false);
 		mIntent = new Intent(this, ApplicationView.class);
-		
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				ApplicationView.prepareData(position, sApplicationInfos.get("Username"),
-						sApplicationInfos.get("Userpassword"));
-				startActivityForResult(mIntent, 0);	
+				try {
+					ApplicationView.prepareData(position, sApplicationInfos.get("Username"),
+							sApplicationInfos.get("Userpassword"));
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				}
+				startActivity(mIntent);
 			}
 		}).start();
 	}
@@ -224,5 +448,9 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 			sLoadProgressDialog = null;
 		}
 		super.onStop();
+	}
+	
+	public static void quit() {
+		sApplicationListView.finish();
 	}
 }

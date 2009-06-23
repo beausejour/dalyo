@@ -102,13 +102,11 @@ public class DmaHttpBinarySync {
 		boolean wellDone = false;
 		byte[] data = createConnection(mRequestAction, mInputbytes);
 		String codeStr = getErrorCode(data);
-
-		Log.i("info", "code of action "+mRequestAction+" : "+Integer.valueOf(codeStr));
 		if ((Integer.valueOf(codeStr) == ErrorCode.OK) || (Integer.valueOf(codeStr) == ErrorCode.CONTINUE)) {
 			int newLength = data.length - codeStr.length() - 1;
 			byte[] result = new byte[newLength];
 			System.arraycopy(data, codeStr.length()+1, result, 0, result.length);
-			if (mSyncType.equals("Import")) {
+			if (mSyncType.equals(Constant.IMPORTACTION)) {
 				DatabaseAdapter.beginTransaction();
 				byte[] returnByte = ApplicationView.getDataBase().syncImportTable(result);
 				
@@ -144,6 +142,7 @@ public class DmaHttpBinarySync {
 				//Get response
 				byte[] responsedata = createConnection(mResponseAction, returnByte);
 				String codeReportStr = getErrorCode(responsedata);
+				Log.i("info", "response "+codeReportStr+" "+mResponseAction);
 				if (Integer.valueOf(codeReportStr) == ErrorCode.OK) {
 					DatabaseAdapter.commitTransaction();
 					wellDone = true;
@@ -152,11 +151,10 @@ public class DmaHttpBinarySync {
 				}
 				
 				if (Integer.valueOf(codeStr) == ErrorCode.CONTINUE) {
-					Log.i("info", "continue import action");
 					//continue to receive
 					wellDone = new DmaHttpBinarySync(mUrlString, mRequestAction, mBlobAction, mResponseAction, mInputbytes, "Import").run();
 				}
-			} else if (mSyncType.equals("Export")) {
+			} else if (mSyncType.equals(Constant.EXPORTACTION)) {
 				//check if there is blob data to send
 				ArrayList<ArrayList<Object>> blobs = DatabaseAdapter.getBlobRecords();
 				int blobNb = blobs.size();

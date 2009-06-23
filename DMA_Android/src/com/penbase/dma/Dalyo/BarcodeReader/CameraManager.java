@@ -24,7 +24,6 @@ import android.graphics.Rect;
 import android.hardware.Camera;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.Display;
 import android.view.SurfaceHolder;
 import android.view.WindowManager;
@@ -36,8 +35,6 @@ import com.google.zxing.ResultPoint;
  * both preview and decoding.
  */
 final class CameraManager {
-
-  private static final String TAG = "CameraManager";
 
   private static CameraManager mCameraManager;
   private Camera mCamera;
