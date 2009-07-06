@@ -13,7 +13,6 @@ import com.penbase.dma.Constant.Constant;
 import com.penbase.dma.Constant.DatabaseAttribute;
 import com.penbase.dma.Constant.DatabaseTag;
 import com.penbase.dma.Dalyo.Function.Function;
-import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
 import com.penbase.dma.View.ApplicationListView;
 
 import org.w3c.dom.Document;
@@ -136,16 +135,17 @@ public class DatabaseAdapter {
 						if (fieldType.equals(DatabaseAttribute.VARCHAR)) {
 							fieldType = fieldType+"("+fieldSize+")";
 						}
-						String fieldTypeValue = fieldType;
+						StringBuffer fieldTypeValue = new StringBuffer(fieldType);
 						if (field.hasAttribute(DatabaseTag.FIELD_PK)) {
 							fsPkMap.put(tableId, fieldId);
-							fieldTypeValue += " UNIQUE, ";
+							fieldTypeValue.append(" UNIQUE, ");
 						} else if ((field.hasAttribute(DatabaseTag.FIELD_FOREIGNTABLE)) 
 								&& (field.hasAttribute(DatabaseTag.FIELD_FOREIGNFIELD))) {
 							ArrayList<String> fk = new ArrayList<String>();
 							String foreignTableId = field.getAttribute(DatabaseTag.FIELD_FOREIGNTABLE);
 							String foreignFieldId = field.getAttribute(DatabaseTag.FIELD_FOREIGNFIELD);
-							fieldTypeValue += foreignTableId+" "+foreignFieldId;
+							fieldTypeValue.append(foreignTableId).append(" ").append(foreignFieldId);
+							 
 							fk.add(tableId);
 							fk.add(fieldId);
 							fk.add(foreignTableId);
@@ -153,7 +153,7 @@ public class DatabaseAdapter {
 							fkList.add(fk);
 							
 						}
-						if (!fieldPref.getString(fieldId, "null").equals(fieldTypeValue)) {
+						if (!fieldPref.getString(fieldId, "null").equals(fieldTypeValue.toString())) {
 							result = false;
 							j = fieldLen;
 							i = tableLen;
@@ -185,7 +185,7 @@ public class DatabaseAdapter {
 		for (int i=0; i<tableLen; i++) {
 			StringBuffer createquery = new StringBuffer("CREATE TABLE IF NOT EXISTS ");
 			Element table = (Element) tableList.item(i);
-			//String typeSync = table.getAttribute(DatabaseTag.TABLE_SYNC);
+			String typeSync = table.getAttribute(DatabaseTag.TABLE_SYNC);
 			String tableId = table.getAttribute(DatabaseTag.TABLE_ID);
 			String tableOriginalName = table.getAttribute(DatabaseTag.TABLE_NAME);
 			sTablesNameMap.put(tableOriginalName, tableId);
@@ -217,16 +217,16 @@ public class DatabaseAdapter {
 						fieldType = fieldType+"("+fieldSize+")";
 					}
 					String fieldSync = field.getAttribute(DatabaseTag.FIELD_SYNC);
-					String fieldTypeValue = fieldType;
+					StringBuffer fieldTypeValue = new StringBuffer(fieldType);
 					if (field.hasAttribute(DatabaseTag.FIELD_PK)) {
 						sFieldsPKMap.put(tableId, fieldId);
 						createquery.append(fieldNewName).append(" ").append(fieldType).append(" UNIQUE, ");
-						fieldTypeValue += " UNIQUE, ";
+						fieldTypeValue.append(" UNIQUE, ");
 					} else if ((field.hasAttribute(DatabaseTag.FIELD_FOREIGNTABLE)) &&
 							(field.hasAttribute(DatabaseTag.FIELD_FOREIGNFIELD))) {
 						String foreignTableId = field.getAttribute(DatabaseTag.FIELD_FOREIGNTABLE);
 						String foreignFieldId = field.getAttribute(DatabaseTag.FIELD_FOREIGNFIELD);
-						fieldTypeValue += foreignTableId+" "+foreignFieldId;
+						fieldTypeValue.append(foreignTableId).append(" ").append(foreignFieldId);
 						createquery.append(fieldNewName).append(" ").append(fieldType).append(", ");
 						foreignKey.add(tableId);
 						foreignKey.add(fieldId);
@@ -246,7 +246,7 @@ public class DatabaseAdapter {
 						systemFields.put(fieldId, systemField);
 					}
 					
-					editorFieldPref.putString(fieldId, fieldTypeValue);
+					editorFieldPref.putString(fieldId, fieldTypeValue.toString());
 				}
 			}
 			
@@ -518,11 +518,12 @@ public class DatabaseAdapter {
 						byte[] valueLenth = null;
 						
 						if (record.get(fields.get(fid)) == null) {
-							if (DmaHttpClient.getServerInfo() == 1) {
+							int serverVersion = getServerVersion();
+							if (serverVersion == 1) {
 								value = Binary.objectToByteArray(record.get(fields.get(fid)), valueType);
 								int valueLengthInt = value.length;
 								valueLenth = Binary.intToByteArray(valueLengthInt);
-							} else if (DmaHttpClient.getServerInfo() == 2) {
+							} else if (serverVersion == 2) {
 								value = Binary.stringToByteArray(null);
 								valueLenth = Binary.intToByteArray(-1);
 							}
@@ -811,7 +812,8 @@ public class DatabaseAdapter {
 				isDisctinct = true;
 			}
 		}
-		result = sSqlite.query(isDisctinct, table, projectionIn, selection, null, null, null, orderBy, null);
+		SQLiteDatabase sqlite = sSqlite;
+		result = sqlite.query(isDisctinct, table, projectionIn, selection, null, null, null, orderBy, null);
 		return result;
 	}
 
@@ -1112,5 +1114,10 @@ public class DatabaseAdapter {
 			}
 		}		
 		return result.toString();
+	}
+	
+	private int getServerVersion() {
+		//Modify this method when the server has immigrate to spv2
+		return 1;
 	}
 }

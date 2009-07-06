@@ -21,7 +21,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -75,6 +79,22 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	private AlertDialog mAboutDialog;
 	private LayoutInflater mInflater;
 	private ArrayList<Application> mApplicationList;
+	private AlertDialog mAlertDialog;
+	private Handler mHandler = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+				case 0:
+					mAlertDialog.setMessage("Connection unavailable !");
+					mAlertDialog.show();
+					break;
+				case 1:
+					mAlertDialog.setMessage("Connection error !");
+					mAlertDialog.show();
+					break;
+			}
+		}
+	};
 
 	@Override
 	protected void onCreate(Bundle icicle) {
@@ -82,6 +102,21 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		sApplicationListView = this;
 		Animation animation = AnimationUtils.loadAnimation(this, R.anim.wave_scale);
 		setContentView(R.layout.applicationlist);
+		
+		StringBuffer title = new StringBuffer("Dalyo ");
+		
+		SharedPreferences settings = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE);
+		String username = settings.getString("Username", "");
+		if (username.length() > 0) {
+			title.append("(");
+			title.append(username);
+			title.append(")");
+		}
+		
+		setTitle(title.toString());
+		
+		mAlertDialog = new AlertDialog.Builder(ApplicationListView.this).create();
+		mAlertDialog.setTitle("Dalyo");
 		
 		ImageView imageView = (ImageView)findViewById(R.id.banner);
 		if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -93,7 +128,6 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		mApplicationName = (TextView)findViewById(R.id.appnametv);
 		mAdapter = new ApplicationAdapter(this);
 		
-		SharedPreferences settings = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE);
 		String xml = settings.getString("ApplicationList", null);
 		createApplicationListFromXml(xml, false);
 		int size = mApplicationList.size();
@@ -381,15 +415,26 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 				mDmahttpclient = new DmaHttpClient(settings.getString("Username", ""));
 				String appsList = mDmahttpclient.Authentication(settings.getString("Username", ""),
 						settings.getString("Userpassword", ""));
-				createApplicationListFromXml(appsList, true);
-				SharedPreferences.Editor editorPrefs = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE).edit();
-				editorPrefs.remove("ApplicationList");
-				editorPrefs.putString("ApplicationList", appsList);
-				editorPrefs.commit();
 				
-				sUpdateProgressDialog.dismiss();
-				ApplicationListView.this.finish();
-				startActivityForResult(new Intent(ApplicationListView.this, ApplicationListView.class), 0);				
+				if (getNetworkInfo() == null) {
+					sUpdateProgressDialog.dismiss();
+					mHandler.sendEmptyMessage(0);
+				} else {
+					if (appsList != null) {
+						createApplicationListFromXml(appsList, true);
+						SharedPreferences.Editor editorPrefs = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE).edit();
+						editorPrefs.remove("ApplicationList");
+						editorPrefs.putString("ApplicationList", appsList);
+						editorPrefs.commit();
+						
+						sUpdateProgressDialog.dismiss();
+						ApplicationListView.this.finish();
+						startActivityForResult(new Intent(ApplicationListView.this, ApplicationListView.class), 0);	
+					} else {
+						sUpdateProgressDialog.dismiss();
+						mHandler.sendEmptyMessage(1);
+					}	
+				}
 			}
 		}).start();
 	}
@@ -452,5 +497,10 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	
 	public static void quit() {
 		sApplicationListView.finish();
+	}
+	
+	public static NetworkInfo getNetworkInfo() {
+		ConnectivityManager manager = (ConnectivityManager) sApplicationListView.getSystemService(Context.CONNECTIVITY_SERVICE);
+		return manager.getActiveNetworkInfo();
 	}
 }

@@ -272,7 +272,25 @@ public class Function {
 		while (child != null) {
 			String childName = child.getNodeName();
 			if (childName.equals(ScriptTag.CONDITIONS)) {
-				NodeList conditions = child.getChildNodes();
+				Node condition = child.getFirstChild();
+				boolean[] checkList = new boolean[child.getChildNodes().getLength()];
+				int k = 0;
+				while (condition != null) {
+					if (condition.getNodeName().equals(ScriptTag.CONDITION)) {
+						Object left = getValue((Element)condition, ScriptTag.LEFT, null, null);
+						Object operator = getValue((Element)condition, ScriptTag.OPERATOR, null, null);
+						Object right = getValue((Element)condition, ScriptTag.RIGHT, null, null);
+						checkList[k] = checkCondition(left, operator, right); 
+					}
+					try {
+						condition = condition.getNextSibling();
+						k ++;
+					} catch (IndexOutOfBoundsException ioobe) {
+						condition = null;
+					}
+				}
+				
+				/*NodeList conditions = child.getChildNodes();
 				int conditionsLen = conditions.getLength();
 				boolean[] checkList = new boolean[conditionsLen];
 				for (int k=0; k<conditionsLen; k++) {
@@ -283,7 +301,7 @@ public class Function {
 						Object right = getValue(condition, ScriptTag.RIGHT, null, null);
 						checkList[k] = checkCondition(left, operator, right); 
 					}
-				}
+				}*/
 				conditionCheck = checkConditions(checkList); 
 			} else if (childName.equals(ScriptTag.THEN)) {
 				if (conditionCheck) {
@@ -357,7 +375,7 @@ public class Function {
 	private static Object distributeCall(Element element) {
 		Object result = null;
 		if (!sIsFirstTime) {
-			//Log.i("info", "namespace "+element.getAttribute(ScriptTag.NAMESPACE)+" function name "+element.getAttribute(ScriptTag.FUNCTION));	
+			Log.i("info", "namespace "+element.getAttribute(ScriptTag.NAMESPACE)+" function name "+element.getAttribute(ScriptTag.FUNCTION));	
 		}
 		String namespace = element.getAttribute(ScriptTag.NAMESPACE);
 		String function = element.getAttribute(ScriptTag.FUNCTION);

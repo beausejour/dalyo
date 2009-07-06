@@ -6,18 +6,18 @@ public class KeyGenerator {
 	private static Random sRandom = new Random();
 	
 	public static String getKeyGenerated() {
-		String result = "";
+		StringBuffer result = new StringBuffer("");
 		for (int i=0; i<16; i++) {
 			if (sRandom.nextInt(2) == 0) {
-				result += getAlphabet();
+				result.append(getAlphabet());
 			} else {
-				result += getNumeric();
+				result.append(getNumeric());
 			}
 			if ((((i+1) % 4) == 0) && (i != 15)) {
-				result += "-";
+				result.append("-");
 			}
 		}
-		return result;
+		return result.toString();
 	}
 	
 	private static char getAlphabet() {
