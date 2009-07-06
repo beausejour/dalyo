@@ -19,6 +19,7 @@ import org.w3c.dom.Element;
 public class NS_Runtime {
 	private static ProgressDialog syncProgressDialog;
 	private static boolean syncResult = false;
+	private static boolean sSyncEnd = false;
 	
 	public static void Browse(Element element) {
 		String url = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_URL, ScriptAttribute.STRING).toString();
@@ -84,7 +85,7 @@ public class NS_Runtime {
 	
 	public static boolean Synchronize(Element element) {
 		Object type = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_FACELESS, ScriptAttribute.PARAMETER_TYPE_BOOLEAN);
-		boolean showProgress = false;
+		//boolean showProgress = false;
 		
 		if ((type == null) || (((Boolean)type).booleanValue())) {
 			//showProgress = true;    ProgressDialog has not done yet.
@@ -93,7 +94,10 @@ public class NS_Runtime {
 		ApplicationView.getCurrentView().runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				syncProgressDialog = ProgressDialog.show(Function.getContext(), "Veuillez patienter...", "Synchronizing application's data...", true, false);
+				/*if (!sSyncEnd) {
+					syncProgressDialog = ProgressDialog.show(Function.getContext(), "Veuillez patienter...", "Synchronisation en cours...", true, false);	
+				}*/
+				syncProgressDialog = ProgressDialog.show(Function.getContext(), "Veuillez patienter...", "Synchronisation en cours...", true, false);
 			}
 		});
 		
@@ -112,6 +116,7 @@ public class NS_Runtime {
 							ApplicationListView.getApplicationsInfo().get("Username"),
 							ApplicationListView.getApplicationsInfo().get("Userpassword"), null, null);
 				}
+				sSyncEnd = true;
 			}
 		});
 		syncThread.start();
@@ -123,7 +128,9 @@ public class NS_Runtime {
 		ApplicationView.getCurrentView().runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				syncProgressDialog.dismiss();
+				if (syncProgressDialog.isShowing()) {
+					syncProgressDialog.dismiss();	
+				}
 			}
 		});
 		return syncResult;

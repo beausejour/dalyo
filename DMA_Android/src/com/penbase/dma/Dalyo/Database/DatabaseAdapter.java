@@ -2,7 +2,6 @@ package com.penbase.dma.Dalyo.Database;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -27,7 +26,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Set;
 
 public class DatabaseAdapter {
@@ -44,7 +42,9 @@ public class DatabaseAdapter {
 	private String mTABLEPREF = "TablePrefFile";
 	private String mFIELDPREF = "FieldPrefFile";
 	private static boolean STARTTRANSACTION = false;
-	private static  ArrayList<ArrayList<Object>> sBlobRecords;
+	private static ArrayList<ArrayList<Object>> sBlobRecords;
+	private static HashMap<String, String> sTablesSyncMap;
+	private static HashMap<String, Boolean> sFieldsSyncMap;
 	
 	public DatabaseAdapter(Context c, Document d, String database) {
 		this.mContext = c;
@@ -59,6 +59,8 @@ public class DatabaseAdapter {
 		sFieldsPKMap = new HashMap<String, String>();
 		sForeignKeyList = new ArrayList<ArrayList<String>>();
 		sBlobRecords = new ArrayList<ArrayList<Object>>();
+		sTablesSyncMap = new HashMap<String, String>();
+		sFieldsSyncMap = new HashMap<String, Boolean>();
 		if (mDbDocument.getElementsByTagName(DatabaseTag.TABLE).getLength() > 0) {
 			createDatabase(mDbName);
 		}
@@ -67,7 +69,7 @@ public class DatabaseAdapter {
 	private void createDatabase(String database) throws SQLException{
 		closeDatabase();
 		try{
-			if (!databaseExists(database)) {
+			if (!isDatabaseExists(database)) {
 				sSqlite = mContext.openOrCreateDatabase(database, 0, null);
 				createTable();
 			} else {
@@ -85,7 +87,7 @@ public class DatabaseAdapter {
 		}
 	}
 	
-	private boolean databaseExists(String database) {
+	private boolean isDatabaseExists(String database) {
 		StringBuffer filePath = new StringBuffer(Constant.PACKAGENAME);
 		filePath.append("databases/").append(database);
 		File dbFile = new File(filePath.toString());
@@ -98,98 +100,73 @@ public class DatabaseAdapter {
 	 */
 	private boolean checkDatabase() {
 		boolean result = true;
-		HashMap<String, ArrayList<String>> tsMap = new HashMap<String, ArrayList<String>>();
-		HashMap<String, String> tnMap = new HashMap<String, String>();
-		HashMap<String, String> fsMap = new HashMap<String, String>();
-		HashMap<String, String> fNMap = new HashMap<String, String>();
-		HashMap<String, String> fsPkMap = new HashMap<String, String>();
-		ArrayList<ArrayList<String>> fkList = new ArrayList<ArrayList<String>>();
-		SharedPreferences tablePref = mContext.getSharedPreferences(mTABLEPREF, Context.MODE_PRIVATE);
-		SharedPreferences fieldPref = mContext.getSharedPreferences(mFIELDPREF, Context.MODE_PRIVATE);
 		NodeList tableList = mDbDocument.getElementsByTagName(DatabaseTag.TABLE);
 		int tableLen = tableList.getLength();
 		int i = 0;
 		while (i < tableLen) {
 			Element table = (Element) tableList.item(i);
+			String tableSync = table.getAttribute(DatabaseTag.TABLE_SYNC);
 			String tableId = table.getAttribute(DatabaseTag.TABLE_ID);
 			String tableName = table.getAttribute(DatabaseTag.TABLE_NAME);
-			tnMap.put(tableName, tableId);
-			if (!tablePref.getString(tableId, "null").equals("")) {
-				result = false;
-				i = tableLen;
-			} else {
-				NodeList fieldList = table.getChildNodes();
-				int fieldLen = fieldList.getLength();
-				if (fieldLen > 0) {
-					int j = 0;
-					ArrayList<String> tableElements = new ArrayList<String>();
-					while (j < fieldLen) {
-						Element field = (Element) fieldList.item(j);
-						String fieldId = field.getAttribute(DatabaseTag.FIELD_ID);
-						String fieldType = field.getAttribute(DatabaseTag.FIELD_TYPE);
-						String fieldSize = field.getAttribute(DatabaseTag.FIELD_SIZE);
-						String fieldName = field.getAttribute(DatabaseTag.FIELD_NAME);
-						fNMap.put(fieldId, fieldName);
-						fsMap.put(fieldId, fieldType);
-						tableElements.add(DatabaseAttribute.FIELD+fieldId);
-						if (fieldType.equals(DatabaseAttribute.VARCHAR)) {
-							fieldType = fieldType+"("+fieldSize+")";
-						}
-						StringBuffer fieldTypeValue = new StringBuffer(fieldType);
-						if (field.hasAttribute(DatabaseTag.FIELD_PK)) {
-							fsPkMap.put(tableId, fieldId);
-							fieldTypeValue.append(" UNIQUE, ");
-						} else if ((field.hasAttribute(DatabaseTag.FIELD_FOREIGNTABLE)) 
-								&& (field.hasAttribute(DatabaseTag.FIELD_FOREIGNFIELD))) {
-							ArrayList<String> fk = new ArrayList<String>();
-							String foreignTableId = field.getAttribute(DatabaseTag.FIELD_FOREIGNTABLE);
-							String foreignFieldId = field.getAttribute(DatabaseTag.FIELD_FOREIGNFIELD);
-							fieldTypeValue.append(foreignTableId).append(" ").append(foreignFieldId);
-							 
-							fk.add(tableId);
-							fk.add(fieldId);
-							fk.add(foreignTableId);
-							fk.add(foreignFieldId);
-							fkList.add(fk);
-							
-						}
-						if (!fieldPref.getString(fieldId, "null").equals(fieldTypeValue.toString())) {
-							result = false;
-							j = fieldLen;
-							i = tableLen;
-						} else {
-							j++;
-						}
+			sTablesNameMap.put(tableName, tableId);
+			sTablesSyncMap.put(tableId, tableSync);
+			NodeList fieldList = table.getChildNodes();
+			int fieldLen = fieldList.getLength();
+			if (fieldLen > 0) {
+				int j = 0;
+				ArrayList<String> tableElements = new ArrayList<String>();
+				while (j < fieldLen) {
+					Element field = (Element) fieldList.item(j);
+					String fieldId = field.getAttribute(DatabaseTag.FIELD_ID);
+					String fieldType = field.getAttribute(DatabaseTag.FIELD_TYPE);
+					String fieldSize = field.getAttribute(DatabaseTag.FIELD_SIZE);
+					String fieldName = field.getAttribute(DatabaseTag.FIELD_NAME);
+					String fieldSync = field.getAttribute(DatabaseTag.FIELD_SYNC);
+					sFieldsNameMap.put(fieldId, fieldName);
+					sFieldsTypeMap.put(fieldId, fieldType);
+					sFieldsSyncMap.put(DatabaseAttribute.FIELD+fieldId, Boolean.valueOf(fieldSync));
+					tableElements.add(DatabaseAttribute.FIELD+fieldId);
+					if (fieldType.equals(DatabaseAttribute.VARCHAR)) {
+						fieldType = fieldType+"("+fieldSize+")";
 					}
-					tsMap.put(tableId, tableElements);
+					StringBuffer fieldTypeValue = new StringBuffer(fieldType);
+					if (field.hasAttribute(DatabaseTag.FIELD_PK)) {
+						sFieldsPKMap.put(tableId, fieldId);
+						fieldTypeValue.append(" UNIQUE, ");
+					} else if ((field.hasAttribute(DatabaseTag.FIELD_FOREIGNTABLE)) 
+							&& (field.hasAttribute(DatabaseTag.FIELD_FOREIGNFIELD))) {
+						ArrayList<String> fk = new ArrayList<String>();
+						String foreignTableId = field.getAttribute(DatabaseTag.FIELD_FOREIGNTABLE);
+						String foreignFieldId = field.getAttribute(DatabaseTag.FIELD_FOREIGNFIELD);
+						fieldTypeValue.append(foreignTableId).append(" ").append(foreignFieldId);
+						 
+						fk.add(tableId);
+						fk.add(fieldId);
+						fk.add(foreignTableId);
+						fk.add(foreignFieldId);
+						sForeignKeyList.add(fk);
+						
+					}
+					j++;
 				}
-				i++;
+				sTablesMap.put(tableId, tableElements);
 			}
-		}
-		if (result) {
-			sTablesMap = tsMap;
-			sTablesNameMap = tnMap;
-			sFieldsNameMap = fNMap;
-			sFieldsTypeMap = fsMap;
-			sFieldsPKMap = fsPkMap;
-			sForeignKeyList = fkList;
+			i++;
 		}
 		return result;
 	}
 	
 	private void createTable() {
-		SharedPreferences.Editor editorTablePref = mContext.getSharedPreferences(mTABLEPREF, Context.MODE_PRIVATE).edit();
-		SharedPreferences.Editor editorFieldPref = mContext.getSharedPreferences(mFIELDPREF, Context.MODE_PRIVATE).edit();
 		NodeList tableList = mDbDocument.getElementsByTagName(DatabaseTag.TABLE);
 		int tableLen = tableList.getLength();
 		for (int i=0; i<tableLen; i++) {
 			StringBuffer createquery = new StringBuffer("CREATE TABLE IF NOT EXISTS ");
 			Element table = (Element) tableList.item(i);
-			String typeSync = table.getAttribute(DatabaseTag.TABLE_SYNC);
+			String tableSync = table.getAttribute(DatabaseTag.TABLE_SYNC);
 			String tableId = table.getAttribute(DatabaseTag.TABLE_ID);
 			String tableOriginalName = table.getAttribute(DatabaseTag.TABLE_NAME);
 			sTablesNameMap.put(tableOriginalName, tableId);
-			editorTablePref.putString(tableId, "");
+			sTablesSyncMap.put(tableId, tableSync);
 			String tableName = DatabaseAttribute.TABLE+tableId;
 			ArrayList<String> tableElements = new ArrayList<String>();
 			String id = DatabaseAttribute.ID+tableId;
@@ -217,6 +194,7 @@ public class DatabaseAdapter {
 						fieldType = fieldType+"("+fieldSize+")";
 					}
 					String fieldSync = field.getAttribute(DatabaseTag.FIELD_SYNC);
+					sFieldsSyncMap.put(fieldNewName, Boolean.valueOf(fieldSync));
 					StringBuffer fieldTypeValue = new StringBuffer(fieldType);
 					if (field.hasAttribute(DatabaseTag.FIELD_PK)) {
 						sFieldsPKMap.put(tableId, fieldId);
@@ -245,8 +223,6 @@ public class DatabaseAdapter {
 						systemField.add(field.getAttribute(DatabaseTag.FIELD_SYSFIELD));
 						systemFields.put(fieldId, systemField);
 					}
-					
-					editorFieldPref.putString(fieldId, fieldTypeValue.toString());
 				}
 			}
 			
@@ -284,8 +260,6 @@ public class DatabaseAdapter {
 				}
 			}
 		}
-		editorTablePref.commit();
-		editorFieldPref.commit();
 	}
 
 	public byte[] syncImportTable(byte[] bytes) {
@@ -412,11 +386,12 @@ public class DatabaseAdapter {
 			sBlobRecords.clear();
 		}
 		int tableNbInt = 0;
-		Set<String> keys = null;
+
+		ArrayList<String> keys = null;
 		if (tables == null) {
-			keys = sTablesMap.keySet();
+			keys = getExportTableId();
 		} else {
-			keys = new HashSet<String>(tables);
+			keys = tables;
 		}
 
 		HashMap<String, ArrayList<HashMap<Object, Object>>> tidMap = 
@@ -438,12 +413,11 @@ public class DatabaseAdapter {
 				selection.append(filter.get(0).toString());
 				selection.append(" ");
 				selection.append(Function.getOperator(filter.get(1)));
-				selection.append(" ");
-				selection.append("\'");
+				selection.append(" \'");
 				selection.append(filter.get(2));
 				selection.append("\'");
 			}
-			
+
 			Cursor cursor = sSqlite.query(table, null, selection.toString(), null, null, null, null);
 			String[] columns = cursor.getColumnNames();
 			if (cursor.getCount() > 0) {
@@ -453,8 +427,11 @@ public class DatabaseAdapter {
 					int columnsNb = columns.length;
 					boolean checkSyncType = true;
 					for (int column=0; column<columnsNb; column++) {
-						record.put(columns[column], getCursorValue(cursor, columns[column]));
-						if ((columns[column].equals(DatabaseAttribute.STATE)) && (Integer.valueOf(getCursorValue(cursor, columns[column]).toString()) == DatabaseAttribute.SYNCHRONIZED)) {
+						String columnName = columns[column];
+						record.put(columnName, getCursorValue(cursor, columnName));
+						if ((columnName.equals(DatabaseAttribute.STATE)) && (Integer.valueOf(getCursorValue(cursor, columnName).toString()) == DatabaseAttribute.SYNCHRONIZED)) {
+							checkSyncType = false;
+						} else if (sFieldsSyncMap.containsKey(columnName) && !sFieldsSyncMap.get(columnName)) {
 							checkSyncType = false;
 						}
 					}
@@ -903,8 +880,30 @@ public class DatabaseAdapter {
 		}
 	}
 	
-	public static int getTableNb() {
-		return sTablesMap.size();
+	public static ArrayList<Integer> getImportTableId() {
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		HashMap<String, String> tablesSyncMap = sTablesSyncMap;
+		Set<String> idSet = tablesSyncMap.keySet();
+		for (String id : idSet) {
+			String syncType = tablesSyncMap.get(id);
+			if (syncType.contains(DatabaseTag.IMPORT)) {
+				result.add(Integer.valueOf(id));
+			}
+		}
+		return result;
+	}
+	
+	private ArrayList<String> getExportTableId() {
+		ArrayList<String> result = new ArrayList<String>();
+		HashMap<String, String> tablesSyncMap = sTablesSyncMap;
+		Set<String> idSet = tablesSyncMap.keySet();
+		for (String id : idSet) {
+			String syncType = tablesSyncMap.get(id);
+			if (syncType.contains(DatabaseTag.EXPORT)) {
+				result.add(id);
+			}
+		}
+		return result;
 	}
 	
 	public static Set<String> getTableIds() {
@@ -936,8 +935,10 @@ public class DatabaseAdapter {
 	}
 	
 	public static void beginTransaction() {
-		STARTTRANSACTION = true;
-		sSqlite.execSQL("BEGIN TRANSACTION;");
+		if (!STARTTRANSACTION) {
+			STARTTRANSACTION = true;
+			sSqlite.execSQL("BEGIN TRANSACTION;");	
+		}
 	}
 	
 	public static void rollbackTransaction() {
@@ -952,10 +953,6 @@ public class DatabaseAdapter {
 			sSqlite.execSQL("COMMIT TRANSACTION;");
 			STARTTRANSACTION = false;
 		}
-	}
-	
-	public static boolean hasStartTransaction() {
-		return STARTTRANSACTION;
 	}
 	
 	public static void cleanTables() {

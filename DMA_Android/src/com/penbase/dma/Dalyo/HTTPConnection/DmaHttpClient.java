@@ -455,9 +455,10 @@ public class DmaHttpClient{
 						baos.write(Binary.intToByteArray(Integer.valueOf(tables.get(i))));
 					}
 				} else {
-					baos.write(Binary.intToByteArray(DatabaseAdapter.getTableNb()));
-					for (String s : DatabaseAdapter.getTableIds()) {
-						baos.write(Binary.intToByteArray(Integer.valueOf(s)));
+					ArrayList<Integer> importTableList = DatabaseAdapter.getImportTableId();
+					baos.write(Binary.intToByteArray(importTableList.size()));
+					for (int id : importTableList) {
+						baos.write(Binary.intToByteArray(id));
 					}
 				}
 				byte[] inputbytes = baos.toByteArray();
