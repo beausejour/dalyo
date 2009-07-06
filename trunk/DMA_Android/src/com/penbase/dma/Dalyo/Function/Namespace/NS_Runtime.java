@@ -63,7 +63,7 @@ public class NS_Runtime {
 		Object willShow = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_SHOW, ScriptAttribute.PARAMETER_TYPE_BOOLEAN);
 		String text = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_TEXT, ScriptAttribute.STRING).toString();
 		if ((Boolean)willShow) {
-			syncProgressDialog = ProgressDialog.show(Function.getContext(), "Please wait...", text, true, false);
+			syncProgressDialog = ProgressDialog.show(Function.getContext(), "Veuillez patienter...", text, true, false);
 		} else {
 			if (syncProgressDialog.isShowing()) {
 				syncProgressDialog.dismiss();
@@ -93,7 +93,7 @@ public class NS_Runtime {
 		ApplicationView.getCurrentView().runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				syncProgressDialog = ProgressDialog.show(Function.getContext(), "Please wait...", "Synchronizing application's data...", true, false);
+				syncProgressDialog = ProgressDialog.show(Function.getContext(), "Veuillez patienter...", "Synchronizing application's data...", true, false);
 			}
 		});
 		

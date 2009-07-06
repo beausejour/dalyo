@@ -413,62 +413,65 @@ public class Component {
 	}
 	
 	public void setValue(Object value) {
-		if (getView() instanceof NumberBox) {
-			((NumberBox)getView()).setValue(value);
-		} else if (getView() instanceof TextField) {
-			((TextField)getView()).setText(value.toString());
-		} else if (getView() instanceof Label) {
-			((Label)getView()).setText(value.toString());
-		} else if (getView() instanceof TextZone) {
-			((TextZone)getView()).setText(value.toString());
-		} else if (getView() instanceof TimeField) {
-			((TimeField)getView()).setTime(value.toString());
-		} else if (getView() instanceof DateField) {
-			((DateField)getView()).setDate(value.toString());
-		} else if (getView() instanceof Gauge) {
-			((Gauge)getView()).setValue(Integer.valueOf(value.toString()));
-		} else if (getView() instanceof ImageView) {
+		View view = mView;
+		if (view instanceof NumberBox) {
+			((NumberBox)view).setValue(value);
+		} else if (view instanceof TextField) {
+			((TextField)view).setText(value.toString());
+		} else if (view instanceof Label) {
+			((Label)view).setText(value.toString());
+		} else if (view instanceof TextZone) {
+			((TextZone)view).setText(value.toString());
+		} else if (view instanceof TimeField) {
+			((TimeField)view).setTime(value.toString());
+		} else if (view instanceof DateField) {
+			((DateField)view).setDate(value.toString());
+		} else if (view instanceof Gauge) {
+			((Gauge)view).setValue(Integer.valueOf(value.toString()));
+		} else if (view instanceof ImageView) {
 			Drawable d = Drawable.createFromPath(DmaHttpClient.getFilesPath()+value.toString());
-			((ImageView)getView()).setBackgroundDrawable(d);
+			((ImageView)view).setBackgroundDrawable(d);
 		}
 	}
 	
 	public Object getValue() {
 		Object result = null;
-		if (getView() instanceof Barcode) {
-			result = ((Barcode)getView()).getContent();
-		} else if (getView() instanceof ComboBox) {
-			result = ((ComboBox)getView()).getValue();
-		} else if (getView() instanceof DateField) {
-			result = ((DateField)getView()).getDate();
-		} else if (getView() instanceof DoodleView) {
-			result = ((DoodleView)getView()).getImageName();
-		} else if (getView() instanceof Gauge) {
-			result = ((Gauge)getView()).getValue();
-		} else if (getView() instanceof Label) {
-			result = ((Label)getView()).getText();
-		} else if (getView() instanceof NumberBox) {
-			result = ((NumberBox)getView()).getValue();
-		} else if (getView() instanceof PictureBoxView) {
-			result = ((PictureBoxView)getView()).getPhotoName();
-		} else if (getView() instanceof TextZone) {
-			result = ((TextZone)getView()).getValue();
-		} else if (getView() instanceof TimeField) {
-			result = ((TimeField)getView()).getTime();
-		}     
+		View view = mView;
+		if (view instanceof Barcode) {
+			result = ((Barcode)view).getContent();
+		} else if (view instanceof ComboBox) {
+			result = ((ComboBox)view).getValue();
+		} else if (view instanceof DateField) {
+			result = ((DateField)view).getDate();
+		} else if (view instanceof DoodleView) {
+			result = ((DoodleView)view).getImageName();
+		} else if (view instanceof Gauge) {
+			result = ((Gauge)view).getValue();
+		} else if (view instanceof Label) {
+			result = ((Label)view).getText();
+		} else if (view instanceof NumberBox) {
+			result = ((NumberBox)view).getValue();
+		} else if (view instanceof PictureBoxView) {
+			result = ((PictureBoxView)view).getPhotoName();
+		} else if (view instanceof TextZone) {
+			result = ((TextZone)view).getValue();
+		} else if (view instanceof TimeField) {
+			result = ((TimeField)view).getTime();
+		}
 		return result;
 	}
 	
 	public String getLabel() {
 		String result = "";
-		if (getView() instanceof Label) {
-			result = ((Label)getView()).getText().toString();
-		} else if (getView() instanceof TextZone) {
-			result = ((TextZone)getView()).getValue();
-		} else if (getView() instanceof TextField) {
-			result = ((TextField)getView()).getValue();
-		} else if (getView() instanceof ComboBox) {
-			result = ((ComboBox)getView()).getLabel();
+		View view = mView;
+		if (view instanceof Label) {
+			result = ((Label)view).getText().toString();
+		} else if (view instanceof TextZone) {
+			result = ((TextZone)view).getValue();
+		} else if (view instanceof TextField) {
+			result = ((TextField)view).getValue();
+		} else if (view instanceof ComboBox) {
+			result = ((ComboBox)view).getLabel();
 		}
 		return result;
 	}
@@ -478,43 +481,48 @@ public class Component {
 		if (!text.equals("null")) {
 			newText = text;
 		}
-		if (getView() instanceof TextZone) {
-			((TextZone)getView()).setText(newText);
-		} else if (getView() instanceof Label) {
-			((Label)getView()).setText(newText);
-		} else if (getView() instanceof TextField) {
-			((TextField)getView()).setText(newText);
-		} else if (getView() instanceof Button) {
-			((Button)getView()).setText(newText);
+		View view = mView;
+		if (view instanceof TextZone) {
+			((TextZone)view).setText(newText);
+		} else if (view instanceof Label) {
+			((Label)view).setText(newText);
+		} else if (view instanceof TextField) {
+			((TextField)view).setText(newText);
+		} else if (view instanceof Button) {
+			((Button)view).setText(newText);
 		}
 	}
 	
 	public void setEnabled(boolean state) {
-		if (getView() instanceof Button) {
-			((Button)getView()).setEnabled(state);
+		View view = mView;
+		if (view instanceof Button) {
+			((Button)view).setEnabled(state);
 		}
 	}
 	
 	public boolean isEnabled() {
-		return getView().isEnabled();
+		return mView.isEnabled();
 	}
 	
 	public void setFocus() {
-		if (getView().isFocusableInTouchMode()) {
-			getView().requestFocus();
+		View view = mView;
+		if (view.isFocusableInTouchMode()) {
+			view.requestFocus();
 		}
 	}
 	
 	public void setVisible(boolean state) {
+		View view = mView;
 		if (state) {
-			getView().setVisibility(View.VISIBLE);
+			view.setVisibility(View.VISIBLE);
 		} else {
-			getView().setVisibility(View.INVISIBLE);
+			view.setVisibility(View.INVISIBLE);
 		}
 	}
 	
 	public boolean isVisible() {
-		if (getView().getVisibility() == View.VISIBLE) {
+		View view = mView;
+		if (view.getVisibility() == View.VISIBLE) {
 			return true;
 		} else {
 			return false;

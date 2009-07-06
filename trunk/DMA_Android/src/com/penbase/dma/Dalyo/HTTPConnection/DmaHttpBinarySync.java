@@ -28,16 +28,14 @@ public class DmaHttpBinarySync {
 	private String mResponseAction;
 	private String mBlobAction;
 	private byte[] mInputbytes;
-	private String mUrlString;
 	private String mCookie = null;
 	private String mSyncType;
 	
-	public DmaHttpBinarySync(String url, String request, String blob, String response, byte[] inputbytes, String syncType) {
+	public DmaHttpBinarySync(String request, String blob, String response, byte[] inputbytes, String syncType) {
 		this.mRequestAction = request;
 		this.mBlobAction = blob;
 		this.mResponseAction = response;
 		this.mInputbytes = inputbytes;
-		this.mUrlString = url;
 		this.mSyncType = syncType;
 	}
 	
@@ -50,9 +48,9 @@ public class DmaHttpBinarySync {
 	private byte[] createConnection(String action, byte[] bytes) {
 		byte[] result = null;
 		try{
-			URL newUrl = new URL(mUrlString+"?"+action);
+			URL newUrl = new URL(Constant.SERVER+action);
 			HttpURLConnection connection = (HttpURLConnection) newUrl.openConnection();
-			String boundary = DmaHttpClient.getBoundary();
+			String boundary = getBoundary();
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			bos.write("\r\n".getBytes());
 			bos.write("--".getBytes());
@@ -127,7 +125,6 @@ public class DmaHttpBinarySync {
 						
 						byte[] responsedata = createConnection(getBlobAction.toString(), null);
 						String codeResponseStr = getErrorCode(responsedata);
-						Log.i("info", "responsea "+getBlobAction+" code "+codeResponseStr);
 						
 						if (Integer.valueOf(codeResponseStr) == ErrorCode.OK) {
 							//Save picture
@@ -142,7 +139,6 @@ public class DmaHttpBinarySync {
 				//Get response
 				byte[] responsedata = createConnection(mResponseAction, returnByte);
 				String codeReportStr = getErrorCode(responsedata);
-				Log.i("info", "response "+codeReportStr+" "+mResponseAction);
 				if (Integer.valueOf(codeReportStr) == ErrorCode.OK) {
 					DatabaseAdapter.commitTransaction();
 					wellDone = true;
@@ -152,7 +148,7 @@ public class DmaHttpBinarySync {
 				
 				if (Integer.valueOf(codeStr) == ErrorCode.CONTINUE) {
 					//continue to receive
-					wellDone = new DmaHttpBinarySync(mUrlString, mRequestAction, mBlobAction, mResponseAction, mInputbytes, "Import").run();
+					wellDone = new DmaHttpBinarySync(mRequestAction, mBlobAction, mResponseAction, mInputbytes, "Import").run();
 				}
 			} else if (mSyncType.equals(Constant.EXPORTACTION)) {
 				//check if there is blob data to send
@@ -180,7 +176,6 @@ public class DmaHttpBinarySync {
 				
 				byte[] responsedata = createConnection(mResponseAction, null);
 				String codeResponseStr = getErrorCode(responsedata);
-				Log.i("info", "response "+mResponseAction+" code "+codeResponseStr);
 				if (Integer.valueOf(codeResponseStr) == ErrorCode.OK) {
 					//DatabaseAdapter.cleanTables();
 					wellDone = true;
@@ -188,7 +183,7 @@ public class DmaHttpBinarySync {
 				
 				if (Integer.valueOf(codeStr) == ErrorCode.CONTINUE) {
 					//continue to receive
-					wellDone = new DmaHttpBinarySync(mUrlString, mRequestAction, mBlobAction, mResponseAction, result, "Export").run();
+					wellDone = new DmaHttpBinarySync(mRequestAction, mBlobAction, mResponseAction, result, "Export").run();
 				}
 			}
 		}
@@ -209,8 +204,8 @@ public class DmaHttpBinarySync {
 		        int offset = 0;
 		        int numRead = 0;
 				while (offset < bytes.length
-					       && (numRead=is.read(bytes, offset, bytes.length-offset)) >= 0) {
-					    offset += numRead;
+						&& (numRead=is.read(bytes, offset, bytes.length-offset)) >= 0) {
+					offset += numRead;
 				}
 		    
 		        // Ensure all the bytes have been read in
@@ -243,18 +238,25 @@ public class DmaHttpBinarySync {
 			in.close();
 			connection.disconnect();
 		} catch (IOException e) {
-			Log.i("info", "ioe in getdata "+e.getMessage());
+			e.printStackTrace();
 		}
 		return bos.toByteArray();
 	}
 	
 	private String getErrorCode(byte[] data) {
-		String codeStr = "";
+		StringBuffer codeStr = new StringBuffer("");
+		//String codeStr = "";
 		int i = 0;
 		while(i < data.length && data[i] != (int)'\n') {
-			codeStr += (char)data[i];
+			//codeStr += (char)data[i];
+			codeStr.append((char)data[i]);
 			i++;
 		}
-		return codeStr;
+		//return codeStr;
+		return codeStr.toString();
+	}
+	
+	private String getBoundary() {
+		return new java.util.Date(System.currentTimeMillis()).toString();
 	}
 }

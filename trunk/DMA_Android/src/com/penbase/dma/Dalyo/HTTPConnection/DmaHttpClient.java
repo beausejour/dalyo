@@ -27,6 +27,12 @@ import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.View.ApplicationListView;
 import com.penbase.dma.View.ApplicationView;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
@@ -46,16 +52,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -66,7 +69,6 @@ import javax.xml.parsers.SAXParserFactory;
  * Manages HTTP connection
  */
 public class DmaHttpClient{
-	private URL mUrl;
 	private int mLastError = 0;
 	private int mErrorCode = 0;
 	
@@ -82,7 +84,7 @@ public class DmaHttpClient{
 	private boolean mSendResource = true;
 	
 	//XML files
-	private static String sDirectory;
+	private static StringBuffer sDirectory;
 	private static String sDb_XML;
 	private String mDesign_XML;
 	private String mBehavior_XML;
@@ -91,25 +93,8 @@ public class DmaHttpClient{
 	//Resource file's path
 	private static String sResourceFilePath;
 	
-	private Dma mDma;
-	
 	public DmaHttpClient(String login) {
 		createFilesPath(login);
-		try {
-			mUrl = new URL(Constant.LOCAL);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public DmaHttpClient(Dma dma, String login) {
-		mDma = dma;
-		createFilesPath(login);
-		try {
-			mUrl = new URL(Constant.LOCAL);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
 	}
 
 	private void createFilesPath(String login) {
@@ -128,13 +113,16 @@ public class DmaHttpClient{
 				applicationName = applicationName.replace(">", "");
 			}
 
-			sDirectory = Constant.PACKAGENAME + login + "/";
-			if (!new File(sDirectory).exists()) {
-				new File(sDirectory).mkdir();
+			sDirectory = new StringBuffer(Constant.PACKAGENAME);
+			sDirectory.append(login).append("/");
+
+			if (!new File(sDirectory.toString()).exists()) {
+				new File(sDirectory.toString()).mkdir();
 			}
-			sDirectory += applicationName + "/";
-			if (!new File(sDirectory).exists()) {
-				new File(sDirectory).mkdir();
+			sDirectory.append(applicationName).append("/");
+
+			if (!new File(sDirectory.toString()).exists()) {
+				new File(sDirectory.toString()).mkdir();
 			}
 			sDb_XML = sDirectory + Constant.DBXML;
 			mDesign_XML = sDirectory + Constant.DESIGNXML;
@@ -157,9 +145,12 @@ public class DmaHttpClient{
 		loginAction.append("&passwd_md5=");
 		loginAction.append(md5(password));
 		loginAction.append("&useragent=ANDROID");
-		String result = "";
+		String result = null;
 		try {
-			result = new String(sendPost(loginAction.toString()), "UTF8");
+			byte[] bytes = sendPost(loginAction.toString());
+			if (bytes != null) {
+				result = new String(bytes, "UTF8");
+			}
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
@@ -167,7 +158,7 @@ public class DmaHttpClient{
 	}
 	
 	public static String getFilesPath() {
-		return sDirectory;
+		return sDirectory.toString();
 	}
 	
 	public static String getResourcePath() {
@@ -176,44 +167,45 @@ public class DmaHttpClient{
 	
 	private byte[] sendPost(String parameters) {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		HttpURLConnection connection = null;
-		try{
-			connection = (HttpURLConnection) mUrl.openConnection();
-			connection.setRequestMethod("POST");
-			connection.setDoOutput(true);
-			connection.setDoInput(true);
-			connection.connect();
-			OutputStream out = connection.getOutputStream();
-			out.write(parameters.getBytes());
-			out.close();
-			InputStream in =  connection.getInputStream();
+		HttpClient httpClient = new DefaultHttpClient();
+		HttpPost httpPost = new HttpPost(Constant.SECUREDSERVER + parameters);
+		try {
+			HttpResponse response = httpClient.execute(httpPost);
+			HttpEntity entity = response.getEntity();
+			InputStream in =  entity.getContent();
 			int c;
 			byte[] readByte = new byte[32 * 1024];
 			while ((c = in.read(readByte)) > 0) {
 				bos.write(readByte, 0, c);
 			}
 			in.close();
-			connection.disconnect();
+			httpPost.abort();
+			httpClient.getConnectionManager().shutdown();   
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
 		} catch (IOException e) {
-			//e.printStackTrace();
-			mDma.showMessage("Connection error");
+			e.printStackTrace();
 		}
-		byte[] data = bos.toByteArray();
-		String codeStr = "";
-		int i = 0;
-		int length = data.length;
-		while(i < length && data[i] != (int)'\n') {
-			codeStr += (char)data[i];
-			i++;
-		}
-		mErrorCode = Integer.valueOf(codeStr);
-		if (mErrorCode != ErrorCode.OK) {
-			return null;
+		if (bos.size() > 0) {
+			byte[] data = bos.toByteArray();
+			String codeStr = "";
+			int i = 0;
+			int length = data.length;
+			while(i < length && data[i] != (int)'\n') {
+				codeStr += (char)data[i];
+				i++;
+			}
+			mErrorCode = Integer.valueOf(codeStr);
+			if (mErrorCode != ErrorCode.OK) {
+				return null;
+			} else {
+				int newLength = data.length - codeStr.length() - 1;
+				byte[] result = new byte[newLength];
+				System.arraycopy(data, codeStr.length()+1, result, 0, result.length);
+				return result;	
+			}	
 		} else {
-			int newLength = data.length - codeStr.length() - 1;
-			byte[] result = new byte[newLength];
-			System.arraycopy(data, codeStr.length()+1, result, 0, result.length);
-			return result;	
+			return null;
 		}
 	}
 	
@@ -418,60 +410,64 @@ public class DmaHttpClient{
 	 */
 	@SuppressWarnings("unchecked")
 	public boolean importData(String AppId, String DbId, String login, String pwd, ArrayList<String> tables, Object filters) {
-		boolean result = false;
-		String syncUrlRequest = generateSyncUrlRequest(AppId, DbId, login, pwd);
-		StringBuffer ask = new StringBuffer("act=ask");
-		ask.append(syncUrlRequest);
-		StringBuffer getBlob = new StringBuffer("act=getblob");
-		getBlob.append(syncUrlRequest);
-		StringBuffer report = new StringBuffer("act=rep");
-		report.append(syncUrlRequest);
-		
-		if (filters != null) {
-			int filtersSize = ((ArrayList<?>)filters).size();
-			if (filtersSize > 0) {
-				ask.append("&fcount=");
-				ask.append(filtersSize);
-				for (int i=0; i<filtersSize; i++) {
-					ArrayList<Object> filter = (ArrayList<Object>)((ArrayList<Object>)filters).get(i);
-					ask.append("&ff");
-					ask.append(i);
-					ask.append("=");
-					ask.append(filter.get(0).toString());
-					Object operator = Function.getOperator(((ArrayList<?>)filters).get(1));
-					ask.append("&fo");
-					ask.append(i);
-					ask.append("=");
-					ask.append(urlEncode(operator.toString()));
-					ask.append("&fv");
-					ask.append(i);
-					ask.append("=");
-					ask.append(filter.get(2).toString());
+		if (ApplicationListView.getNetworkInfo() == null) {
+			return false;
+		} else {
+			boolean result = false;
+			String syncUrlRequest = generateSyncUrlRequest(AppId, DbId, login, pwd);
+			StringBuffer ask = new StringBuffer("act=ask");
+			ask.append(syncUrlRequest);
+			StringBuffer getBlob = new StringBuffer("act=getblob");
+			getBlob.append(syncUrlRequest);
+			StringBuffer report = new StringBuffer("act=rep");
+			report.append(syncUrlRequest);
+			
+			if (filters != null) {
+				int filtersSize = ((ArrayList<?>)filters).size();
+				if (filtersSize > 0) {
+					ask.append("&fcount=");
+					ask.append(filtersSize);
+					for (int i=0; i<filtersSize; i++) {
+						ArrayList<Object> filter = (ArrayList<Object>)((ArrayList<Object>)filters).get(i);
+						ask.append("&ff");
+						ask.append(i);
+						ask.append("=");
+						ask.append(filter.get(0).toString());
+						Object operator = Function.getOperator(((ArrayList<?>)filters).get(1));
+						ask.append("&fo");
+						ask.append(i);
+						ask.append("=");
+						ask.append(urlEncode(operator.toString()));
+						ask.append("&fv");
+						ask.append(i);
+						ask.append("=");
+						ask.append(filter.get(2).toString());
+					}
 				}
 			}
-		}
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		DmaHttpBinarySync importSync = null;
-		try {
-			if (tables != null) {
-				int tablesNb = tables.size();
-				baos.write(Binary.intToByteArray(tablesNb));
-				for (int i=0; i<tablesNb; i++) {
-					baos.write(Binary.intToByteArray(Integer.valueOf(tables.get(i))));
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			DmaHttpBinarySync importSync = null;
+			try {
+				if (tables != null) {
+					int tablesNb = tables.size();
+					baos.write(Binary.intToByteArray(tablesNb));
+					for (int i=0; i<tablesNb; i++) {
+						baos.write(Binary.intToByteArray(Integer.valueOf(tables.get(i))));
+					}
+				} else {
+					baos.write(Binary.intToByteArray(DatabaseAdapter.getTableNb()));
+					for (String s : DatabaseAdapter.getTableIds()) {
+						baos.write(Binary.intToByteArray(Integer.valueOf(s)));
+					}
 				}
-			} else {
-				baos.write(Binary.intToByteArray(DatabaseAdapter.getTableNb()));
-				for (String s : DatabaseAdapter.getTableIds()) {
-					baos.write(Binary.intToByteArray(Integer.valueOf(s)));
-				}
+				byte[] inputbytes = baos.toByteArray();
+				importSync = new DmaHttpBinarySync(ask.toString(), getBlob.toString(), report.toString(), inputbytes, Constant.IMPORTACTION);
+				result = importSync.run();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-			byte[] inputbytes = baos.toByteArray();
-			importSync = new DmaHttpBinarySync(mUrl.toString(), ask.toString(), getBlob.toString(), report.toString(), inputbytes, Constant.IMPORTACTION);
-			result = importSync.run();
-		} catch (IOException e) {
-			e.printStackTrace();
+			return result;
 		}
-		return result;
 	}
 	
 	/**
@@ -485,17 +481,21 @@ public class DmaHttpClient{
 	 * @return
 	 */
 	public boolean exportData(String AppId, String DbId, String login, String pwd, ArrayList<String> tables, Object filters) {
-		String syncUrlRequest = generateSyncUrlRequest(AppId, DbId, login, pwd);
-		StringBuffer sync = new StringBuffer("act=sync");
-		sync.append(syncUrlRequest);
-		StringBuffer send = new StringBuffer("act=send");
-		send.append(syncUrlRequest);
-		StringBuffer commit = new StringBuffer("act=commit");
-		commit.append(syncUrlRequest);
-		
-		byte[] exportData = ApplicationView.getDataBase().syncExportTable(tables, filters);
-		DmaHttpBinarySync exportSync = new DmaHttpBinarySync(mUrl.toString(), sync.toString(), send.toString(), commit.toString(), exportData, Constant.EXPORTACTION);
-		return exportSync.run();
+		if (ApplicationListView.getNetworkInfo() == null) {
+			return false;
+		} else {
+			String syncUrlRequest = generateSyncUrlRequest(AppId, DbId, login, pwd);
+			StringBuffer sync = new StringBuffer("act=sync");
+			sync.append(syncUrlRequest);
+			StringBuffer send = new StringBuffer("act=send");
+			send.append(syncUrlRequest);
+			StringBuffer commit = new StringBuffer("act=commit");
+			commit.append(syncUrlRequest);
+			
+			byte[] exportData = ApplicationView.getDataBase().syncExportTable(tables, filters);
+			DmaHttpBinarySync exportSync = new DmaHttpBinarySync(sync.toString(), send.toString(), commit.toString(), exportData, Constant.EXPORTACTION);
+			return exportSync.run();	
+		}
 	}
 	
 	private String urlEncode(String s) {
@@ -567,7 +567,7 @@ public class DmaHttpClient{
         } 
 	}
 	
-	public static String md5(String string) {
+	private String md5(String string) {
 		java.security.MessageDigest messageDigest = null;
 		try {
 			messageDigest = java.security.MessageDigest.getInstance("MD5");
@@ -577,15 +577,8 @@ public class DmaHttpClient{
 		messageDigest.update(string.getBytes(),0,string.length());
 		return new BigInteger(1, messageDigest.digest()).toString(16);
 	}
-
-	public static String getBoundary() {
-		return new java.util.Date(System.currentTimeMillis()).toString();
-	}
 	
-	public static int getServerInfo() {
-		//Modify this method when the server has immigrate to spv2
-		return 1;
-	}
+	/**/
 	
 	 /**
 	 * Return a hexadecimal string for the given byte array.
@@ -593,7 +586,7 @@ public class DmaHttpClient{
 	 * @param b the byte array to convert
 	 * @return the hexadecimal string
 	 */
-	private static String hexStringFromBytes(byte[] b) {
+	private String hexStringFromBytes(byte[] b) {
 		char[] hexChars ={'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
 		String hex = "";
 		int msb;

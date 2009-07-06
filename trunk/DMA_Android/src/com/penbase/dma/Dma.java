@@ -20,6 +20,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
@@ -64,6 +66,7 @@ public class Dma extends Activity implements OnClickListener {
 	};
 	private AlertDialog mAboutDialog;
 	private LayoutInflater mInflater;
+	private static String sVersion;
 	
 	@Override
 	public void onCreate(Bundle icicle) {
@@ -72,6 +75,15 @@ public class Dma extends Activity implements OnClickListener {
 		SharedPreferences settings = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE);
 		boolean rememberMe = settings.getBoolean("RememberMe", false);
 		mAlertDialog = new AlertDialog.Builder(this).create();
+		
+		PackageInfo pi = null;
+		try {
+			pi = getPackageManager().getPackageInfo(getPackageName(), 0);
+		} catch (NameNotFoundException e) {
+			e.printStackTrace();
+		}
+		sVersion = pi.versionName;
+		
 		if (!rememberMe) {
 			if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
 				setContentView(R.layout.login_layout);
@@ -113,7 +125,7 @@ public class Dma extends Activity implements OnClickListener {
 			@Override
 			public void run() {
 				if (mHandler != null) {
-					mServerResponse = new DmaHttpClient(Dma.this, mTx_login.getText().toString().trim()).Authentication(mTx_login.getText().toString().trim(),
+					mServerResponse = new DmaHttpClient(mTx_login.getText().toString().trim()).Authentication(mTx_login.getText().toString().trim(),
 							mTx_password.getText().toString().trim());
 					mHandler.sendEmptyMessage(0);
 				}
@@ -187,7 +199,7 @@ public class Dma extends Activity implements OnClickListener {
 	}
 	
 	public static String getVersion() {
-		return "1.0.0";
+		return sVersion; 
 	}
 
 	@Override

@@ -1,7 +1,5 @@
 package com.penbase.dma.Dalyo.Function.Namespace;
 
-import android.util.Log;
-
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Function.Function;
@@ -22,7 +20,6 @@ public class NS_Object {
 	
 	public static Date ToDate(Element element) {
 		Object value = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
-		Log.i("info", "value "+value);
 		if (value instanceof DalyoDate) {
 			return ((DalyoDate)value).toDate();
 		} else {
@@ -73,7 +70,6 @@ public class NS_Object {
 	
 	public static Number ToNumeric(Element element) {
 		Object value = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
-		Log.i("info", "value "+value);
 		if (value instanceof DalyoDate) {
 			return ((DalyoDate) value).toInt();
 		} else if (value instanceof Time) {
