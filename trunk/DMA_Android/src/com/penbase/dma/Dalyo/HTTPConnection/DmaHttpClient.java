@@ -16,6 +16,7 @@ package com.penbase.dma.Dalyo.HTTPConnection;
 
 import android.util.Log;
 
+import com.penbase.dma.Common;
 import com.penbase.dma.Dma;
 import com.penbase.dma.Binary.Binary;
 import com.penbase.dma.Constant.Constant;
@@ -41,22 +42,17 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
-import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -143,7 +139,7 @@ public class DmaHttpClient{
 		StringBuffer loginAction = new StringBuffer("act=login&login=");
 		loginAction.append(login);
 		loginAction.append("&passwd_md5=");
-		loginAction.append(md5(password));
+		loginAction.append(password);
 		loginAction.append("&useragent=ANDROID");
 		String result = null;
 		try {
@@ -253,7 +249,7 @@ public class DmaHttpClient{
 	}
 	
 	public int getIdDb(File dbXml) {
-		Log.i("info", "getiddb");
+		//Log.i("info", "getiddb");
 		Document dbDoc = createParseDocument(null, dbXml);
 		Element tagID = (Element)dbDoc.getElementsByTagName(DatabaseTag.DB).item(0);
 		return Integer.valueOf(tagID.getAttribute(DatabaseTag.DB_ID));
@@ -265,11 +261,11 @@ public class DmaHttpClient{
 	 */
 	public Reader getDesignReader(String urlRequest) throws FileNotFoundException {
 		if (mSendDesign) {
-			Log.i("info", "download design xml");
+			//Log.i("info", "download design xml");
 			StringBuffer getDesign = new StringBuffer("act=getdesign");
 			getDesign.append(urlRequest);
 			byte[] bytes = sendPost(getDesign.toString());
-			streamToFile(bytes, mDesign_XML, false);
+			Common.streamToFile(bytes, mDesign_XML, false);
 			return new InputStreamReader(new ByteArrayInputStream(bytes));
 		} else {
 			return new FileReader(new File(mDesign_XML));
@@ -302,17 +298,36 @@ public class DmaHttpClient{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			streamToFile(bytes, mResources_XML, false);
+			Common.streamToFile(bytes, mResources_XML, false);
 		} else {
-			
+			SAXParserFactory spFactory = SAXParserFactory.newInstance();
+	    	SAXParser saxParser;
+			try {
+				saxParser = spFactory.newSAXParser();
+				XMLReader xmlReader = saxParser.getXMLReader();
+				EventsHandler eventsHandler = new EventsHandler(urlRequest);
+		    	xmlReader.setContentHandler(eventsHandler);
+		    	xmlReader.parse(new InputSource(new FileInputStream(new File(mResources_XML))));
+			}
+	    	 catch (ParserConfigurationException e) {
+	 			e.printStackTrace();
+	 		} catch (SAXException e) {
+	 			e.printStackTrace();
+	 		} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
 	private class EventsHandler extends DefaultHandler {
 		private String mUrlRequest;
+		private boolean mWillDownload;
 		
 		public EventsHandler(String url) {
 			mUrlRequest = url;
+			mWillDownload = true;
 		}
 		
 		@Override
@@ -335,22 +350,30 @@ public class DmaHttpClient{
 				fileName.append(id);
 				fileName.append(".");
 				fileName.append(ext);
-				StringBuffer getResource = new StringBuffer("act=getresource");
-				getResource.append(mUrlRequest);
-				getResource.append("&resourceid=");
-				getResource.append(id);
-				byte[] resourceStream = sendPost(getResource.toString());
-				java.security.MessageDigest messageDigest = null;
-				try {
-					messageDigest = java.security.MessageDigest.getInstance("MD5");
-				}  catch (NoSuchAlgorithmException e) {
-					e.printStackTrace();
+				File resourceFile = new File(fileName.toString());
+				if (resourceFile.exists()) {
+					byte[] bytes = null;
+					try {
+						bytes = Common.getBytesFromFile(resourceFile);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					String hexString = Common.md5HexStringFromBytes(bytes);
+					if (hexString.equals(hashcode)) {
+						mWillDownload = false;
+					}
 				}
-				messageDigest.update(resourceStream, 0, resourceStream.length);
-				String hexString = hexStringFromBytes(messageDigest.digest()).toUpperCase();
+				if (mWillDownload) {
+					StringBuffer getResource = new StringBuffer("act=getresource");
+					getResource.append(mUrlRequest);
+					getResource.append("&resourceid=");
+					getResource.append(id);
+					byte[] resourceStream = sendPost(getResource.toString());
+					String hexString = Common.md5HexStringFromBytes(resourceStream);
 
-				if (hexString.equals(hashcode)) {
-					streamToFile(resourceStream, fileName.toString(), true);
+					if (hexString.equals(hashcode)) {
+						Common.streamToFile(resourceStream, fileName.toString(), true);
+					}	
 				}
         	}
         }
@@ -375,7 +398,7 @@ public class DmaHttpClient{
 			StringBuffer getDB = new StringBuffer("act=getdb");
 			getDB.append(urlRequest);
 			byte[] bytes = sendPost(getDB.toString());
-			streamToFile(bytes, sDb_XML, false);
+			Common.streamToFile(bytes, sDb_XML, false);
 			return createParseDocument(bytes, null);
 		} else {
 			return createParseDocument(null, new File(sDb_XML));
@@ -391,7 +414,7 @@ public class DmaHttpClient{
 			StringBuffer getBehavior = new StringBuffer("act=getbehavior");
 			getBehavior.append(urlRequest);
 			byte[] bytes = sendPost(getBehavior.toString());
-			streamToFile(bytes, mBehavior_XML, false);
+			Common.streamToFile(bytes, mBehavior_XML, false);
 			return createParseDocument(bytes, null);
 		} else {
 			return createParseDocument(null, new File(mBehavior_XML));
@@ -517,7 +540,7 @@ public class DmaHttpClient{
 		result.append("&login=");
 		result.append(login);
 		result.append("&passwd_md5=");
-		result.append(md5(pwd));
+		result.append(pwd);
 		result.append("&stream=1&useragent=ANDROID&did=");
 		result.append(Dma.getDeviceID());
 		return result.toString();
@@ -537,69 +560,8 @@ public class DmaHttpClient{
 		result.append("&login=");
 		result.append(login);
 		result.append("&passwd_md5=");
-		result.append(md5(pwd));
+		result.append(pwd);
 		result.append("&useragent=ANDROID");
 		return result.toString();
-	}
-	
-	/**
-	 * Saves the downloaded xml stream or images to file
-	 * @param stream
-	 * @param filePath
-	 */
-	private void streamToFile(byte[] bytes, String filePath, boolean isImage) {
-        File file = new File(filePath);
-        FileOutputStream fos;
-        try{
-        	fos = new FileOutputStream(file);
-        	if (isImage) {
-        		DataOutputStream dos = new DataOutputStream(fos);
-        		dos.write(bytes);
-        		dos.close();
-        	} else {
-        		BufferedWriter out = new BufferedWriter(new OutputStreamWriter(fos), 8 * 1024);
-        		out.write(new String(bytes, "UTF8"));
-        		out.close();	
-        	}
-        } catch (FileNotFoundException e) {
-        	e.printStackTrace();
-        } catch (IOException e) {
-        	e.printStackTrace();
-        } 
-	}
-	
-	private String md5(String string) {
-		java.security.MessageDigest messageDigest = null;
-		try {
-			messageDigest = java.security.MessageDigest.getInstance("MD5");
-		}  catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		}
-		messageDigest.update(string.getBytes(),0,string.length());
-		return new BigInteger(1, messageDigest.digest()).toString(16);
-	}
-	
-	/**/
-	
-	 /**
-	 * Return a hexadecimal string for the given byte array.
-	 *
-	 * @param b the byte array to convert
-	 * @return the hexadecimal string
-	 */
-	private String hexStringFromBytes(byte[] b) {
-		char[] hexChars ={'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
-		String hex = "";
-		int msb;
-		int lsb = 0;
-
-		// MSB maps to idx 0
-		for (int i = 0; i < b.length; i++) {
-			msb = ((int)b[i] & 0x000000FF) / 16;
-			lsb = ((int)b[i] & 0x000000FF) % 16;
-			hex = hex + hexChars[msb] + hexChars[lsb];
-		}
-
-		return hex;
 	}
 }

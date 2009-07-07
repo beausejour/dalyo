@@ -132,9 +132,10 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		createApplicationListFromXml(xml, false);
 		int size = mApplicationList.size();
 		for (int i =0; i < size; i++) {
-			mAdapter.addApplication(mApplicationList.get(i));
+			Application application = mApplicationList.get(i); 
+			mAdapter.addApplication(application);
 			if (i == 0) {
-				mApplicationName.setText(mApplicationList.get(i).getName());
+				mApplicationName.setText(application.getName());
 			}
 		}
 		

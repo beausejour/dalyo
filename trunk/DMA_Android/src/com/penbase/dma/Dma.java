@@ -126,7 +126,7 @@ public class Dma extends Activity implements OnClickListener {
 			public void run() {
 				if (mHandler != null) {
 					mServerResponse = new DmaHttpClient(mTx_login.getText().toString().trim()).Authentication(mTx_login.getText().toString().trim(),
-							mTx_password.getText().toString().trim());
+							Common.md5(mTx_password.getText().toString().trim()));
 					mHandler.sendEmptyMessage(0);
 				}
 			}
@@ -155,7 +155,7 @@ public class Dma extends Activity implements OnClickListener {
 						SharedPreferences.Editor editorPrefs = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE).edit();
 						editorPrefs.putBoolean("RememberMe", mCb_remember_me.isChecked());
 						editorPrefs.putString("Username", mTx_login.getText().toString());
-						editorPrefs.putString("Userpassword", mTx_password.getText().toString());
+						editorPrefs.putString("Userpassword", Common.md5(mTx_password.getText().toString().trim()));
 						editorPrefs.putString("ApplicationList", mServerResponse);
 						editorPrefs.commit();
 					} catch(Exception e) {

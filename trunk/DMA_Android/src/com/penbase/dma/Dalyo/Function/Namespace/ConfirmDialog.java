@@ -14,7 +14,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 public class ConfirmDialog extends Thread{
 	Object value = null;
@@ -32,10 +31,8 @@ public class ConfirmDialog extends Thread{
 			Element element = (Element) params.item(i);
 			if ((element.getNodeName().equals(ScriptTag.PARAMETER)) && 
 					(element.getAttribute(ScriptTag.NAME).equals(ScriptAttribute.PARAMETER_NAME_TEXT))) {
-				Log.i("info", "find message node type "+element.getNodeType());
 				if (element.getChildNodes().item(0).getNodeType() == Node.TEXT_NODE) {
 					message = element.getChildNodes().item(0).getNodeValue();
-					Log.i("info", "message "+message);
 				}
 			} else if ((element.getNodeName().equals(ScriptTag.PARAMETER)) && 
 					(element.getAttribute(ScriptTag.NAME).equals(ScriptAttribute.PARAMETER_NAME_CAPTION))) {
@@ -54,7 +51,6 @@ public class ConfirmDialog extends Thread{
 	}
 	
 	public void displayDialog() {
-		Log.i("info", "display dialog");
 		builder = new AlertDialog.Builder(context);
 		builder.setTitle(title);
 		builder.setMessage(message);		
@@ -62,7 +58,6 @@ public class ConfirmDialog extends Thread{
 		builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int whichButton) {
 				value = true;
-				Log.i("info", "end dialog");
 				Looper.myLooper().quit();
 			}
 		});
@@ -70,7 +65,6 @@ public class ConfirmDialog extends Thread{
 		builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int whichButton) {
 				value = false;
-				Log.i("info", "end dialog");
 				Looper.myLooper().quit();
 			}
 		});
@@ -78,11 +72,8 @@ public class ConfirmDialog extends Thread{
 	}
 	
 	public void run() {
-		Log.i("info", "prepare");
 		Looper.prepare();
-		Log.i("info", "displaydialog");
 		displayDialog();
-		Log.i("info", "loop");
 		Looper.loop();
 	}
 	

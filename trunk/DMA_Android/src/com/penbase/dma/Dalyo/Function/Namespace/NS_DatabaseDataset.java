@@ -55,7 +55,8 @@ public class NS_DatabaseDataset {
 			String[] columnNames = cursor.getColumnNames();
 			int columnsRecordSize = columnNames.length;
 			for (int j=0; j<columnsRecordSize; j++) {
-				record.put(columnNames[j], DatabaseAdapter.getCursorValue(cursor, columnNames[j]));
+				String columnName = columnNames[j];
+				record.put(columnName, DatabaseAdapter.getCursorValue(cursor, columnName));
 			}
 			records.add(record);
 		}

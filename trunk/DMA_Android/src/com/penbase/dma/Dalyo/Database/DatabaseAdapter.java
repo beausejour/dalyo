@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import com.penbase.dma.Binary.Binary;
 import com.penbase.dma.Constant.Constant;
@@ -372,7 +371,6 @@ public class DatabaseAdapter {
 		try {
 			fos = new FileOutputStream(file);
 			fos.write(data);
-			Log.i("info", "blob saved "+file.getPath());
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		} catch (IOException e) {
@@ -563,7 +561,6 @@ public class DatabaseAdapter {
 	}
 	
 	private static void updateGid(int tableId, int lid, int gid) {
-		Log.i("info", "updategid tableId "+tableId+" lid "+lid+" gid "+gid);
 		String table = DatabaseAttribute.TABLE+tableId;
 		ContentValues values = new ContentValues();
 		values.put(DatabaseAttribute.GID+tableId, String.valueOf(gid));
@@ -748,15 +745,12 @@ public class DatabaseAdapter {
 	}
 	
 	public static Cursor selectQuery(String tableId, ArrayList<Integer> fieldList, ArrayList<Object> valueList) {
-		Cursor result = null;
 		String table = DatabaseAttribute.TABLE+tableId;
 		String selection = createSelectionString(fieldList, valueList);
-		result = sSqlite.query(table, null, selection, null, null, null, null);
-		return result;
+		return sSqlite.query(table, null, selection, null, null, null, null);
 	}
 	
 	public static Cursor selectQuery(String tableId, String fieldId, Object filter, String type) {
-		Cursor result = null;
 		StringBuffer projectionIn = new StringBuffer(type);
 		projectionIn.append("(");
 		projectionIn.append(DatabaseAttribute.FIELD);
@@ -765,13 +759,11 @@ public class DatabaseAdapter {
 		ArrayList<String> tables = new ArrayList<String>();
 		tables.add(tableId);
 		String selection = createSelectionString(tables, filter);
-		result = sSqlite.query(DatabaseAttribute.TABLE + tableId, new String[]{projectionIn.toString()}, selection, null, null, null, null);
-		return result;
+		return sSqlite.query(DatabaseAttribute.TABLE + tableId, new String[]{projectionIn.toString()}, selection, null, null, null, null);
 	}
 	
 	@SuppressWarnings("unchecked")
 	public static Cursor selectQuery(ArrayList<String> tables, ArrayList<ArrayList<String>> columns, Object filter, Object order, Object distinct) {
-		Cursor result = null;
 		String table = createTableString(tables);
 		String[] projectionIn = createProjectionStrings(columns);
 		String selection = createSelectionString(tables, filter);
@@ -790,8 +782,7 @@ public class DatabaseAdapter {
 			}
 		}
 		SQLiteDatabase sqlite = sSqlite;
-		result = sqlite.query(isDisctinct, table, projectionIn, selection, null, null, null, orderBy, null);
-		return result;
+		return sqlite.query(isDisctinct, table, projectionIn, selection, null, null, null, orderBy, null);
 	}
 
 	/**

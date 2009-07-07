@@ -1,7 +1,5 @@
 package com.penbase.dma.Dalyo.HTTPConnection;
 
-import android.util.Log;
-
 import com.penbase.dma.Dma;
 import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
 import com.penbase.dma.Constant.Constant;
@@ -169,7 +167,6 @@ public class DmaHttpBinarySync {
 						File image = new File(imagePath.toString());
 						byte[] responsedata = createConnection(sendAction.toString(), this.getBytesFromFile(image));
 						String codeResponseStr = getErrorCode(responsedata);
-						Log.i("info", "responsea "+sendAction+" code "+codeResponseStr);
 					}
 				}
 				DatabaseAdapter.updateIds(result);

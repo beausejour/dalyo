@@ -43,8 +43,9 @@ public class NS_Date {
 		int indexArraySize = indexArray.size();
 		if (indexArraySize > 0) {
 			for (int i=0; i<indexArraySize; i++) {
-				if (indexArray.get(i) + 1 < format.length()) {
-					tempPattern = tempPattern.replace(tempPattern.charAt(indexArray.get(i) + 1), ' ');
+				int index = indexArray.get(i);
+				if (index + 1 < format.length()) {
+					tempPattern = tempPattern.replace(tempPattern.charAt(index + 1), ' ');
 				}
 			}
 		}
@@ -53,10 +54,11 @@ public class NS_Date {
 		StringBuffer formatedDate = new StringBuffer(formatter.format(date));
 		
 		for (int i=0; i<indexArraySize; i++) {
-			if (indexArray.get(i) + 1 < format.length()) {
+			int index = indexArray.get(i);
+			if (index + 1 < format.length()) {
 				StringBuffer newString = new StringBuffer("");
-				newString.append(format.charAt(indexArray.get(i) + 1));
-				formatedDate = formatedDate.replace(indexArray.get(i) + 1, indexArray.get(i) + 2, newString.toString());
+				newString.append(format.charAt(index + 1));
+				formatedDate = formatedDate.replace(index + 1, index + 2, newString.toString());
 			}
 		}
 		

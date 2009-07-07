@@ -7,6 +7,7 @@ import com.penbase.dma.Dalyo.Function.Function;
 import org.w3c.dom.Element;
 
 import java.util.HashMap;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -25,7 +26,8 @@ public class NS_Timer {
 	
 	public static void cancelAll() {
 		if (mTimerMap.size() > 0) {
-			for (int timerId : mTimerMap.keySet()) {
+			Set<Integer> keys = mTimerMap.keySet();
+			for (int timerId : keys) {
 				mTimerMap.get(timerId).cancel();
 			}
 		}

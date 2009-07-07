@@ -67,7 +67,8 @@ public class NS_Math {
 			String decimalString = "";
 			if (Integer.valueOf(decimal.toString()) > 0) {
 				decimalString = "0.";
-				for (int i=0; i<Integer.valueOf(decimal.toString()); i++) {
+				int decimalInt = Integer.valueOf(decimal.toString());
+				for (int i=0; i<decimalInt; i++) {
 					decimalString += "0";
 				}
 			}
@@ -141,7 +142,8 @@ public class NS_Math {
 			String decimalString = "";
 			if (Integer.valueOf(decimal.toString()) > 0) {
 				decimalString = "0.";
-				for (int i=0; i<Integer.valueOf(decimal.toString()); i++) {
+				int decimalInt = Integer.valueOf(decimal.toString());
+				for (int i=0; i<decimalInt; i++) {
 					decimalString += "0";
 				}
 			}

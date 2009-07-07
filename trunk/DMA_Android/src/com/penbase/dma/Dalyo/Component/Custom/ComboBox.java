@@ -75,19 +75,20 @@ public class ComboBox extends Spinner {
 		mItemsList = new ArrayList<String>();
 		Cursor cursor = DatabaseAdapter.selectQuery(tables, null, filter, order, distinct);
 		String[] columnNames = cursor.getColumnNames();
-		cursor.moveToFirst();
-		int cursorCount = cursor.getCount();
-		for (int i=0; i<cursorCount; i++) {
+		int i = 0;
+		while (cursor.moveToNext()) {
 			HashMap<Object, Object> record = new HashMap<Object, Object>();
 			int columnsSize = columnNames.length;
 			for (int j=0; j<columnsSize; j++) {
-				if (columnNames[j].equals(DatabaseAttribute.FIELD+mLabelList.get(1))) {
-					mItemsList.add(cursor.getString(j));
+				String columnName = columnNames[j];
+				String value = cursor.getString(j);
+				if (columnName.equals(DatabaseAttribute.FIELD+mLabelList.get(1))) {
+					mItemsList.add(value);
 				}
-				record.put(columnNames[j], cursor.getString(j));
+				record.put(columnName, value);
 			}
 			mRecords.put(i, record);
-			cursor.moveToNext();
+			i++;
 		}
 		DatabaseAdapter.closeCursor(cursor);
 		mSpinnerArrayAdapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_spinner_item, mItemsList);
