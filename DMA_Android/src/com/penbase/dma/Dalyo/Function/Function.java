@@ -49,12 +49,15 @@ public class Function {
 			funcParams.add(funcElement.getAttribute(ScriptTag.OUTPUT));
 			functionsMap.put(funcElement.getAttribute(ScriptTag.NAME), funcParams);
 
-			NodeList nodesList = funcElement.getChildNodes();
-			int itemLen = nodesList.getLength();
-			for (int j=0; j<itemLen; j++) {
-				Element element = (Element) nodesList.item(j);
-				if (element.getNodeName().equals(ScriptTag.SET)) {
-					setVariable(element);
+			Node childNode = funcElement.getFirstChild();
+			while (childNode != null) {
+				if (childNode.getNodeName().equals(ScriptTag.SET)) {
+					setVariable((Element)childNode);
+				}
+				try {
+					childNode = childNode.getNextSibling();
+				} catch (IndexOutOfBoundsException ioobe) {
+					childNode = null;
 				}
 			}
 		}
@@ -68,12 +71,14 @@ public class Function {
 		NodeList funcList = sBehaviorDocument.getElementsByTagName(ScriptTag.FUNCTION);
 		if (functionsMap.containsKey(name)) {
 			final Element funcElement = (Element) funcList.item(Integer.valueOf(functionsMap.get(name).get(0)));
-			final NodeList nodeList = funcElement.getChildNodes();
-			int nodeLen = nodeList.getLength();
-		
-			for (int i=0; i<nodeLen; i++) {
-				Element element = (Element) nodeList.item(i);
-				result = distributeAction(element);
+			Node childNode = funcElement.getFirstChild();
+			while (childNode != null) {
+				result = distributeAction((Element)childNode);
+				try {
+					childNode = childNode.getNextSibling();
+				} catch (IndexOutOfBoundsException ioobe) {
+					childNode = null;
+				}
 			}
 		}
 		return result;
@@ -104,20 +109,18 @@ public class Function {
 	}
 	
 	private static void forEach(Element element) {
-		NodeList nodes = element.getChildNodes();
-		int elementsNb = nodes.getLength();
 		Object list = null;
 		String cursorName = null;
 		String cursorType = null;
-		for (int i=0; i<elementsNb; i++) {
-			Element child = (Element)nodes.item(i);
+		Node child = element.getFirstChild();
+		while (child != null) {
 			NodeList childNodes = child.getChildNodes();
 			if (child.getNodeName().equals(ScriptTag.LIST)) {
 				list = distributeAction((Element)childNodes.item(0));
 			} else if (child.getNodeName().equals(ScriptTag.CURSOR)) {
-				cursorName = child.getAttribute(ScriptTag.NAME);
-				cursorType = child.getAttribute(ScriptTag.TYPE);
-				setVariable(child);
+				cursorName = ((Element)child).getAttribute(ScriptTag.NAME);
+				cursorType = ((Element)child).getAttribute(ScriptTag.TYPE);
+				setVariable((Element)child);
 			} else if (child.getNodeName().equals(ScriptTag.DO)) {
 				for (Object eachValue : (ArrayList<?>)list) {
 					if (checkValueType(cursorType, eachValue)) {
@@ -130,6 +133,11 @@ public class Function {
 					}
 				}
 			}
+			try {
+				child = child.getNextSibling();
+			} catch (IndexOutOfBoundsException ioobe) {
+				child = null;
+			}	
 		}
 	}
 	
@@ -289,19 +297,6 @@ public class Function {
 						condition = null;
 					}
 				}
-				
-				/*NodeList conditions = child.getChildNodes();
-				int conditionsLen = conditions.getLength();
-				boolean[] checkList = new boolean[conditionsLen];
-				for (int k=0; k<conditionsLen; k++) {
-					Element condition = (Element)conditions.item(k);
-					if (condition.getNodeName().equals(ScriptTag.CONDITION)) {
-						Object left = getValue(condition, ScriptTag.LEFT, null, null);
-						Object operator = getValue(condition, ScriptTag.OPERATOR, null, null);
-						Object right = getValue(condition, ScriptTag.RIGHT, null, null);
-						checkList[k] = checkCondition(left, operator, right); 
-					}
-				}*/
 				conditionCheck = checkConditions(checkList); 
 			} else if (childName.equals(ScriptTag.THEN)) {
 				if (conditionCheck) {
@@ -346,15 +341,18 @@ public class Function {
 		if (sFuncsMap.containsKey(name)) {
 			Element funcElement = (Element) funcList.item(Integer.valueOf(sFuncsMap.get(name).get(0)));
 			if (funcElement.getAttribute(ScriptTag.NAME).equals(name)) {
-				NodeList nodesList = funcElement.getChildNodes();
-				int itemLen = nodesList.getLength();
-				for (int i=0; i<itemLen; i++) {
-					Element element = (Element) nodesList.item(i);
+				Node element = funcElement.getFirstChild();
+				while (element != null) {
 					if ((element.getNodeName().equals(ScriptTag.PARAMETER)) &&
-							element.getAttribute(ScriptTag.TYPE).equals(ScriptAttribute.RECORD)) {
-						varsMap.put(element.getAttribute(ScriptTag.NAME), record);
+							((Element)element).getAttribute(ScriptTag.TYPE).equals(ScriptAttribute.RECORD)) {
+						varsMap.put(((Element)element).getAttribute(ScriptTag.NAME), record);
 					} else {
-						distributeAction(element);
+						distributeAction((Element)element);
+					}
+					try {
+						element = element.getNextSibling();	
+					} catch (IndexOutOfBoundsException ioobe) {
+						element = null;
 					}
 				}
 			}
@@ -374,9 +372,9 @@ public class Function {
 	 */
 	private static Object distributeCall(Element element) {
 		Object result = null;
-		if (!sIsFirstTime) {
+		/*if (!sIsFirstTime) {
 			Log.i("info", "namespace "+element.getAttribute(ScriptTag.NAMESPACE)+" function name "+element.getAttribute(ScriptTag.FUNCTION));	
-		}
+		}*/
 		String namespace = element.getAttribute(ScriptTag.NAMESPACE);
 		String function = element.getAttribute(ScriptTag.FUNCTION);
 		if (namespace.equals(ScriptAttribute.COMPONENT)) {
@@ -709,14 +707,15 @@ public class Function {
 				}
 			}
 		} else if (namespace.equals(ScriptAttribute.NAMESPACE_USER)) {
-			NodeList nodes = element.getChildNodes();
-			if (nodes.getLength() > 0) {
-				int childrenLen = nodes.getLength();
-				for (int i=0; i<childrenLen; i++) {
-					Element child = (Element)nodes.item(i);
-					if (child.getNodeName().equals(ScriptTag.PARAMETER)) {
-						setVariable(child);
-					}
+			Node child = element.getFirstChild();
+			while (child != null) {
+				if (child.getNodeName().equals(ScriptTag.PARAMETER)) {
+					setVariable((Element)child);
+				}
+				try {
+					child = child.getNextSibling();	
+				} catch (IndexOutOfBoundsException ioobe) {
+					child = null;
 				}
 			}
 			result = createFunction(function);
@@ -758,18 +757,14 @@ public class Function {
 			if ((element.getAttribute(ScriptTag.TYPE).equals(ScriptAttribute.FILTER)) ||
 					(element.getAttribute(ScriptTag.TYPE).equals(ScriptAttribute.LIST)) ||
 					(element.getAttribute(ScriptTag.TYPE).equals(ScriptAttribute.ORDER))) {
-				//sVarsMap.put(element.getAttribute(ScriptTag.NAME), new ArrayList<Object>());
 				varsMap.put(element.getAttribute(ScriptTag.NAME), new ArrayList<Object>());
 			} else {
-				//sVarsMap.put(element.getAttribute(ScriptTag.NAME), null);
 				varsMap.put(element.getAttribute(ScriptTag.NAME), null);
 			}
-		} else if ((nodesLength == 1) && (nodes.item(0).getNodeType() == Node.TEXT_NODE)) {
-			//sVarsMap.put(element.getAttribute(ScriptTag.NAME), nodes.item(0).getNodeValue());	
+		} else if ((nodesLength == 1) && (nodes.item(0).getNodeType() == Node.TEXT_NODE)) {	
 			varsMap.put(element.getAttribute(ScriptTag.NAME), nodes.item(0).getNodeValue());
 		} else {
 			Object value = getValue(element, nodes.item(0).getNodeName(), "", "");
-			//sVarsMap.put(element.getAttribute(ScriptTag.NAME), value);
 			varsMap.put(element.getAttribute(ScriptTag.NAME), value);
 		}
 	}

@@ -103,10 +103,11 @@ public class ApplicationView extends Activity {
 		sClient = new DmaHttpClient(login);
 		sClient.checkXmlFiles();
 		sClientLogin = login;
-		String urlRequest = sClient.generateRegularUrlRequest(ApplicationListView.getApplicationsInfo().get("AppId"),
-				ApplicationListView.getApplicationsInfo().get("AppVer"),
-				ApplicationListView.getApplicationsInfo().get("AppBuild"),
-				ApplicationListView.getApplicationsInfo().get("SubId"), login, pwd);
+		HashMap<String, String> applciationsInfo = ApplicationListView.getApplicationsInfo();
+		String urlRequest = sClient.generateRegularUrlRequest(applciationsInfo.get("AppId"),
+				applciationsInfo.get("AppVer"),
+				applciationsInfo.get("AppBuild"),
+				applciationsInfo.get("SubId"), login, pwd);
 		sClient.getResource(urlRequest);
 		sDesignReader = sClient.getDesignReader(urlRequest);
 		sBehaviorDocument = sClient.getBehavior(urlRequest);
@@ -211,8 +212,9 @@ public class ApplicationView extends Activity {
 						@Override
 						public boolean onMenuItemClick(MenuItem item) {
 							ArrayList<String> menuItemOnClickList = sLayoutsMap.get(sCurrentFormId).getMenuItemOnClickList();
-							if (!menuItemOnClickList.get(item.getItemId()).equals("")) {
-								Function.createFunction(menuItemOnClickList.get(item.getItemId()));
+							String menuId = menuItemOnClickList.get(item.getItemId());
+							if (!menuId.equals("")) {
+								Function.createFunction(menuId);
 							}
 							return false;
 						}

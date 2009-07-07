@@ -148,8 +148,8 @@ public class NS_DatabaseTable {
 		String[] columnNames = cursor.getColumnNames();
 		int columnsNb = columnNames.length;
 		for (int i=0; i<columnsNb; i++) {
-			if (columnNames[i].contains(DatabaseAttribute.FIELD)) {
-				String fieldName = columnNames[i];
+			String fieldName = columnNames[i];
+			if (fieldName.contains(DatabaseAttribute.FIELD)) {
 				if (fieldName.split(DatabaseAttribute.FIELD)[1].equals(field)) {
 					value = DatabaseAdapter.getCursorValue(cursor, fieldName);
 				}
@@ -198,7 +198,8 @@ public class NS_DatabaseTable {
 		while (cursor.moveToNext()) {
 			HashMap<Object, Object> record = new HashMap<Object, Object>();
 			for (int j=0; j<columnsNb; j++) {
-				record.put(columnNames[j], DatabaseAdapter.getCursorValue(cursor, columnNames[j]));
+				String columnName = columnNames[j];
+				record.put(columnName, DatabaseAdapter.getCursorValue(cursor, columnName));
 			}
 			records.add(record);
 		}
@@ -249,7 +250,8 @@ public class NS_DatabaseTable {
 			String[] columnNames = cursor.getColumnNames();
 			int columnsRecordSize = columnNames.length;
 			for (int j=0; j<columnsRecordSize; j++) {
-				record.put(columnNames[j], DatabaseAdapter.getCursorValue(cursor, columnNames[j]));
+				String columnName = columnNames[j];
+				record.put(columnName, DatabaseAdapter.getCursorValue(cursor, columnName));
 			}
 			records.add(record);
 		}

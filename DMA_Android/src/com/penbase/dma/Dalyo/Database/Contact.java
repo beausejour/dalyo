@@ -66,33 +66,35 @@ public class Contact {
 				setValue(mContactsCursor, contactsColumns);
 				for (String key : mFields.keySet()) {
 					fieldsList.add(Integer.valueOf(key));
-					if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.LASTNAME) {
+					//String field
+					int fieldType = Integer.valueOf(mFields.get(key).get(1));
+					if (fieldType == DatabaseAttribute.LASTNAME) {
 						record.add(mLastName);
-					} else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.FIRSTNAME) {
+					} else if (fieldType == DatabaseAttribute.FIRSTNAME) {
 						record.add(mFirstName);
-					} else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.PHONEWORK) {
+					} else if (fieldType == DatabaseAttribute.PHONEWORK) {
 						record.add(mWorkPhone);
-					} else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.HOMEPHONE) {
+					} else if (fieldType == DatabaseAttribute.HOMEPHONE) {
 						record.add(mHomePhone);
-					} else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.MOBILEPHONE) {
+					} else if (fieldType == DatabaseAttribute.MOBILEPHONE) {
 						record.add(mMobilePhone);
-					} else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.PHONE2WORK) {
+					} else if (fieldType == DatabaseAttribute.PHONE2WORK) {
 						record.add(mOtherPhone);
-					} else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.FAXWORK) {
+					} else if (fieldType == DatabaseAttribute.FAXWORK) {
 						record.add(mFaxWork);
-					} else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.COMPANYPHONE) {
+					} else if (fieldType == DatabaseAttribute.COMPANYPHONE) {
 						record.add(mCompanyPhone);
-					} else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.EMAIL) {
+					} else if (fieldType == DatabaseAttribute.EMAIL) {
 						record.add(mEmail);
-					} else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.EMAILWORK) {
+					} else if (fieldType == DatabaseAttribute.EMAILWORK) {
 						record.add(mEmailWork);
-					} else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.IMWORK) {
+					} else if (fieldType == DatabaseAttribute.IMWORK) {
 						record.add(mImWork);
-					} else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.STREET) {
+					} else if (fieldType == DatabaseAttribute.STREET) {
 						record.add(mStreet);
-					} else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.STREETWORK) {
+					} else if (fieldType == DatabaseAttribute.STREETWORK) {
 						record.add(mStreetWork);
-					} else if (Integer.valueOf(mFields.get(key).get(1)) == DatabaseAttribute.COMPANY) {
+					} else if (fieldType == DatabaseAttribute.COMPANY) {
 						record.add(mCompany);
 					} else {
 						record.add(null);
@@ -196,7 +198,11 @@ public class Contact {
 				
 				String[] organizationsProjection = new String[] {Organizations.COMPANY};
 				Cursor organizationsCursor = ApplicationView.getCurrentView().managedQuery(Contacts.Organizations.CONTENT_URI, organizationsProjection, whereClause, null, null);
-				int organizationsCursorCount = organizationsCursor.getCount();
+				while (organizationsCursor.moveToNext()) {
+					int organizationColumn = organizationsCursor.getColumnIndex(Organizations.COMPANY);
+					mCompany = organizationsCursor.getString(organizationColumn);
+				}
+				/*int organizationsCursorCount = organizationsCursor.getCount();
 				if (organizationsCursorCount > 0) {
 					organizationsCursor.moveToFirst();
 					int organizationColumn = organizationsCursor.getColumnIndex(Organizations.COMPANY);
@@ -204,7 +210,7 @@ public class Contact {
 						mCompany = organizationsCursor.getString(organizationColumn);
 						organizationsCursor.moveToNext();
 					}
-				}
+				}*/
 				DatabaseAdapter.closeCursor(organizationsCursor);
 			}
 		}

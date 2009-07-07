@@ -24,9 +24,12 @@ public class Constant {
 	public static final String ITALICBOLD = "italicbold";
 	
 	//Server name
-	//public static final String LOCAL = "http://192.168.0.1/server/com.penbase.arbiter.Arbiter";
 	public static final String SERVER = "http://my.dalyo.com/server/com.penbase.arbiter.Arbiter?";
 	public static final String SECUREDSERVER = "https://my.dalyo.com/server/com.penbase.arbiter.Arbiter?";
+	
+	//Local server
+	//public static final String SERVER = "http://192.168.0.1/server/com.penbase.arbiter.Arbiter?";
+	//public static final String SECUREDSERVER = "http://192.168.0.1/server/com.penbase.arbiter.Arbiter?";
 	
 	//Preference file name
 	public static final String PREFNAME = "DmaPrefsFile";

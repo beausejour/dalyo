@@ -18,26 +18,12 @@ public class DataViewAdapter extends BaseAdapter{
 	}
 
 	public void addItem(CustomLinearLayout cll) {
-		boolean isAdded = false;
-		int count = getCount();
-		for (int i=0; i<count; i++) {
-			CustomLinearLayout item = mItems.get(i);
-			if (item.getDataList().equals(cll.getDataList())) {
-				isAdded = true;
-			}
-		}
-		if (!isAdded) {
-			mItems.add(cll);
-		}
+		mItems.add(cll);
 	}
 	
 	@Override
 	public Object getItem(int position) {
-		Object result = null;
-		if (position < getCount()-1) {
-			result = mItems.get(position);
-		}
-		return result;
+		return mItems.get(position);
 	}
 
 	@Override

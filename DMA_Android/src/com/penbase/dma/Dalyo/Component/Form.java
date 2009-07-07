@@ -2,7 +2,6 @@ package com.penbase.dma.Dalyo.Component;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
@@ -91,12 +90,13 @@ public class Form extends ScrollView {
 	public void clear() {
 		int viewLen = mLayout.getChildCount();
 		for (int i=0; i<viewLen; i++) {
-			if (mLayout.getChildAt(i) instanceof TextField) {
-				((TextField)mLayout.getChildAt(i)).clear();
-			} else if (mLayout.getChildAt(i) instanceof TextZone) {
-				((TextZone)mLayout.getChildAt(i)).clear();
-			} else if (mLayout.getChildAt(i) instanceof PictureBoxView) {
-				((PictureBoxView)mLayout.getChildAt(i)).clear();
+			View view = mLayout.getChildAt(i);
+			if (view instanceof TextField) {
+				((TextField)view).clear();
+			} else if (view instanceof TextZone) {
+				((TextZone)view).clear();
+			} else if (view instanceof PictureBoxView) {
+				((PictureBoxView)view).clear();
 			}
 		}
 	}
@@ -109,12 +109,13 @@ public class Form extends ScrollView {
 	public void setRecord(String formId, HashMap<Object, Object> record) {
 		int viewLen = mLayout.getChildCount();
 		for (int i=0; i<viewLen; i++) {
-			if (mLayout.getChildAt(i) instanceof ComboBox) {
-				((ComboBox)mLayout.getChildAt(i)).setCurrentValue(formId, record);
-			} else if (mLayout.getChildAt(i) instanceof TextField) {
-				((TextField)mLayout.getChildAt(i)).refresh(record);
-			} else if (mLayout.getChildAt(i) instanceof TextZone) {
-				((TextZone)mLayout.getChildAt(i)).refresh(record);
+			View view = mLayout.getChildAt(i);
+			if (view instanceof ComboBox) {
+				((ComboBox)view).setCurrentValue(formId, record);
+			} else if (view instanceof TextField) {
+				((TextField)view).refresh(record);
+			} else if (view instanceof TextZone) {
+				((TextZone)view).refresh(record);
 			}
 		}
 	}
@@ -127,10 +128,11 @@ public class Form extends ScrollView {
 		if (record.size() > 0) {
 			int viewLen = mLayout.getChildCount();
 			for (int i=0; i<viewLen; i++) {
-				if (mLayout.getChildAt(i) instanceof TextField) {
-					((TextField)mLayout.getChildAt(i)).refresh(record);
-				} else if (mLayout.getChildAt(i) instanceof TextZone) {
-					((TextZone)mLayout.getChildAt(i)).refresh(record);
+				View view = mLayout.getChildAt(i);
+				if (view instanceof TextField) {
+					((TextField)view).refresh(record);
+				} else if (view instanceof TextZone) {
+					((TextZone)view).refresh(record);
 				}
 			}
 		}
@@ -142,42 +144,42 @@ public class Form extends ScrollView {
 	public void setPreview() {
 		int viewLen = mLayout.getChildCount();
 		for (int i=0; i<viewLen; i++) {
-			if (mLayout.getChildAt(i) instanceof DoodleView) {
-				String fileName = ((DoodleView)mLayout.getChildAt(i)).getImageName();
+			View view = mLayout.getChildAt(i);
+			if (view instanceof DoodleView) {
+				String fileName = ((DoodleView)view).getImageName();
 				if (!fileName.equals("")) {
-					Log.i("info"," found doodle image");
 					StringBuffer path = new StringBuffer(DmaHttpClient.getFilesPath());
 					path.append(fileName);
 					if (new File(path.toString()).exists()) {
-						((DoodleView)mLayout.getChildAt(i)).setText("");
-						((DoodleView)mLayout.getChildAt(i)).setBackgroundDrawable(Drawable.createFromPath(path.toString()));
+						((DoodleView)view).setText("");
+						((DoodleView)view).setBackgroundDrawable(Drawable.createFromPath(path.toString()));
 					} else {
-						((DoodleView)mLayout.getChildAt(i)).setText("Open Doodle");
+						((DoodleView)view).setText("Open Doodle");
 					}	
 				}
-			} else if (mLayout.getChildAt(i) instanceof PictureBoxView) {
-				String fileName = ((PictureBoxView)mLayout.getChildAt(i)).getPhotoName();
+			} else if (view instanceof PictureBoxView) {
+				String fileName = ((PictureBoxView)view).getPhotoName();
 				if (!fileName.equals("")) {
 					StringBuffer path = new StringBuffer(DmaHttpClient.getFilesPath());
 					path.append(fileName);
 					if (new File(path.toString()).exists()) {
-						((PictureBoxView)mLayout.getChildAt(i)).setImageDrawable(Drawable.createFromPath(path.toString()));
+						((PictureBoxView)view).setImageDrawable(Drawable.createFromPath(path.toString()));
 					} else {
-						((PictureBoxView)mLayout.getChildAt(i)).setImageResource(R.drawable.camera);	
+						((PictureBoxView)view).setImageResource(R.drawable.camera);	
 					}
-					((PictureBoxView)mLayout.getChildAt(i)).setScaleType(ScaleType.FIT_XY);
+					((PictureBoxView)view).setScaleType(ScaleType.FIT_XY);
 				}
-			} else if (mLayout.getChildAt(i) instanceof Barcode) {
+			} else if (view instanceof Barcode) {
 				StringBuffer path = new StringBuffer(DmaHttpClient.getFilesPath());
 				path.append(Constant.BARCODEFILE);
-				path.append(((Barcode)mLayout.getChildAt(i)).getTag().toString());
+				path.append(((Barcode)view).getTag().toString());
 				path.append("_tmp.jpg");
 				if (new File(path.toString()).exists()) {
-					((Barcode)mLayout.getChildAt(i)).setImageDrawable(Drawable.createFromPath(path.toString()));	
+					((Barcode)view).setImageDrawable(Drawable.createFromPath(path.toString()));	
 				} else {
-					((Barcode)mLayout.getChildAt(i)).setImageResource(R.drawable.barcode);	
+					((Barcode)view).setImageResource(R.drawable.barcode);	
 				}
-				((Barcode)mLayout.getChildAt(i)).setScaleType(ScaleType.FIT_XY);
+				((Barcode)view).setScaleType(ScaleType.FIT_XY);
 			}
 		}
 	}

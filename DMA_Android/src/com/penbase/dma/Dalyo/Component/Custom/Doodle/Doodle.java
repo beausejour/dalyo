@@ -161,10 +161,10 @@ public class Doodle extends Activity implements ColorPickerDialog.OnColorChanged
        try{
     	   fos = new FileOutputStream(file);
     	   if (mDoodleView.mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)) {
-    		   Log.i("info", "image compressed ok");
+    		   //Log.i("info", "image compressed ok");
     		   ((DoodleView)ApplicationView.getComponents().get(mId).getView()).setImageName(imageName);
     	   } else {
-    		   Log.i("info", "image compressed failed");
+    		   //Log.i("info", "image compressed failed");
     	   }
        } catch (FileNotFoundException e) {
     	   e.printStackTrace();

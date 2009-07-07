@@ -141,21 +141,22 @@ public class DataView extends LinearLayout implements OnGestureListener {
 	 * 
 	 * @param list information's list
 	 */
-	public void setColumnInfo(ArrayList<ArrayList<String>> list) {
+	public void setColumnInfo(ArrayList<ArrayList<String>> lists) {
 		int width = 0;
-		if (list.size() > 0) {
-			int listSize = list.size();
+		int listsSize = lists.size();
+		if (listsSize > 0) {
 			ArrayList<String> headerList = new ArrayList<String>();
-			for (int i=0; i<listSize; i++) {
+			for (int i=0; i<listsSize; i++) {
+				ArrayList<String> list = lists.get(i);
 				ArrayList<String> column = new ArrayList<String>();
-				column.add(list.get(i).get(0));		//tid
-				column.add(list.get(i).get(1));		//fid
-				if (list.get(i).get(2).equals("")) {
+				column.add(list.get(0));		//tid
+				column.add(list.get(1));		//fid
+				if (list.get(2).equals("")) {
 					mHasHeader = false;
 				}
-				headerList.add(list.get(i).get(2));
-				mPwidthList.add(list.get(i).get(3));
-				mLwidthList.add(list.get(i).get(4));
+				headerList.add(list.get(2));
+				mPwidthList.add(list.get(3));
+				mLwidthList.add(list.get(4));
 				mColumns.add(column);
 			}
 			if (ApplicationView.getOrientation() == Configuration.ORIENTATION_PORTRAIT) {
@@ -218,60 +219,60 @@ public class DataView extends LinearLayout implements OnGestureListener {
 			}
 			Cursor cursor = DatabaseAdapter.selectQuery(tables, null, filter, order, null);
 			String[] columnNames = cursor.getColumnNames();
-			int count = cursor.getCount();
-			if (count > 0) {
-				cursor.moveToFirst();
-				for (int i=0; i<count; i++) {
-					ArrayList<String> data = new ArrayList<String>();
-					HashMap<Object, Object> record = new HashMap<Object, Object>();
-					int mColumnsmRecordsize = columnNames.length;
-					int mColumnsSize = mColumns.size();
-					int calculateColumn = -1;
-					for (int k=0; k<mColumnsSize; k++) {
-						if (mOnCalculateMap.containsKey(k)) {
-							calculateColumn = k;
-							data.add("");
-						} else {
-							for (int j=0; j<mColumnsmRecordsize; j++) {
-								String field = DatabaseAttribute.FIELD+mColumns.get(k).get(1);
-								if (columnNames[j].equals(field)) {
-									//Check numeric format
-									Object cursorValue = DatabaseAdapter.getCursorValue(cursor, field);
-									if (mFormatsMap.containsKey(mColumns.get(k).get(1))) {
-										String formatResult = "";
-										if (cursorValue.toString().indexOf(",") != -1) {
-											formatResult = mFormatsMap.get(mColumns.get(k).get(1)).format(Double.parseDouble(cursorValue.toString().replace(",", ".")));
-										} else {
-											formatResult = mFormatsMap.get(mColumns.get(k).get(1)).format(Double.parseDouble(cursorValue.toString()));
-											formatResult = formatResult.replace(",", ".");
-										}
-										data.add(formatResult);
+			int i = 0;
+			while (cursor.moveToNext()) {
+				ArrayList<String> data = new ArrayList<String>();
+				HashMap<Object, Object> record = new HashMap<Object, Object>();
+				int mColumnsmRecordsize = columnNames.length;
+				int mColumnsSize = mColumns.size();
+				int calculateColumn = -1;
+				for (int k=0; k<mColumnsSize; k++) {
+					if (mOnCalculateMap.containsKey(k)) {
+						calculateColumn = k;
+						data.add("");
+					} else {
+						for (int j=0; j<mColumnsmRecordsize; j++) {
+							String fieldId = mColumns.get(k).get(1);
+							String field = DatabaseAttribute.FIELD + fieldId;
+							String columnName = columnNames[j];
+							if (columnName.equals(field)) {
+								//Check numeric format
+								Object cursorValue = DatabaseAdapter.getCursorValue(cursor, field);
+								if (mFormatsMap.containsKey(fieldId)) {
+									String formatResult = "";
+									if (cursorValue.toString().indexOf(",") != -1) {
+										formatResult = mFormatsMap.get(fieldId).format(Double.parseDouble(cursorValue.toString().replace(",", ".")));
 									} else {
-										data.add(cursorValue.toString());
+										formatResult = mFormatsMap.get(fieldId).format(Double.parseDouble(cursorValue.toString()));
+										formatResult = formatResult.replace(",", ".");
 									}
+									data.add(formatResult);
+								} else {
+									data.add(cursorValue.toString());
 								}
-								record.put(columnNames[j], DatabaseAdapter.getCursorValue(cursor, columnNames[j]).toString());
-							}	
-						}
+							}
+							record.put(columnName, DatabaseAdapter.getCursorValue(cursor, columnName).toString());
+						}	
 					}
-					if (calculateColumn != -1) {
-						String value = Function.createCalculateFunction(mOnCalculateMap.get(calculateColumn), record).toString();
-						data.remove(calculateColumn);
-						data.add(calculateColumn, value);
-					}
-					CustomLinearLayout layout = null;
-					if (mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-						layout = new CustomLinearLayout(mContext, data, getmLwidthList(), false);
-					} else if (mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-						layout = new CustomLinearLayout(mContext, data, getmPwidthList(), false);
-					}
-
-					mAdapter.addItem(layout);
-					mRecords.put(i, record);
-					cursor.moveToNext();
 				}
-				mAdapter.notifyDataSetChanged();
+				if (calculateColumn != -1) {
+					String value = Function.createCalculateFunction(mOnCalculateMap.get(calculateColumn), record).toString();
+					data.remove(calculateColumn);
+					data.add(calculateColumn, value);
+				}
+				CustomLinearLayout layout = null;
+				int orientation = mContext.getResources().getConfiguration().orientation;
+				if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+					layout = new CustomLinearLayout(mContext, data, getmLwidthList(), false);
+				} else if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+					layout = new CustomLinearLayout(mContext, data, getmPwidthList(), false);
+				}
+
+				mAdapter.addItem(layout);
+				mRecords.put(i, record);
+				i++;
 			}
+			mAdapter.notifyDataSetChanged();
 			DatabaseAdapter.closeCursor(cursor);
 		}
 	}
