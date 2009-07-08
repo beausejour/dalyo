@@ -9,16 +9,15 @@
     <ImageView
     	android:layout_width="wrap_content"
     	android:layout_height="wrap_content"
-    	android:src="@drawable/icon"	
+    	android:src="@drawable/splash"	
     	/>
-    <TextView
+    <TextView android:id="@+id/nameversion"
     	android:layout_width="wrap_content"
     	android:layout_height="wrap_content"
     	android:layout_marginTop="5px"
     	android:textSize="15px"
     	android:padding="5px"
     	android:textColor="#FF000000"
-    	android:text="@string/aboutmsg"
     	/>
     <TextView
     	android:layout_width="wrap_content"

@@ -96,8 +96,13 @@ public class Dma extends Activity implements OnClickListener {
 			mTx_password = (TextView) findViewById(R.id.textePasswd);
 			mCb_remember_me = (CheckBox) findViewById(R.id.remember_me_cb);
 			mInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			View aboutView = mInflater.inflate(R.layout.about, null, false);
+			TextView nameVersionView = (TextView) aboutView.findViewById(R.id.nameversion);
+			nameVersionView.setText("Dalyo Mobile Agent "+Dma.getVersion());
 			mAboutDialog = new AlertDialog.Builder(this).setIcon(android.R.drawable.ic_dialog_info)
-	        .setTitle(R.string.menu_about).setView(mInflater.inflate(R.layout.about, null, false)).create();
+	        .setTitle(R.string.menu_about).setView(aboutView).create();
+			/*mAboutDialog = new AlertDialog.Builder(this).setIcon(android.R.drawable.ic_dialog_info)
+	        .setTitle(R.string.menu_about).setView(mInflater.inflate(R.layout.about, null, false)).create();*/
 		} else {
 			this.finish();
 			startActivityForResult(new Intent(this, ApplicationListView.class), 0);

@@ -5,7 +5,6 @@
     <string name="menu_logout">Sign out</string>
     <string name="menu_update">Update application list</string>
     <string name="menu_quit">Exit</string>
-    <string name="aboutmsg">Dalyo Mobile Agent 1.0.0</string>
 	<string name="login">Login :</string>
 	<string name="pwd">Password :</string>
 	<string name="rememberme">Remember me</string>
