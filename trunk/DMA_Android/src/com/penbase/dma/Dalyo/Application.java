@@ -1,5 +1,7 @@
 package com.penbase.dma.Dalyo;
 
+import android.graphics.drawable.Drawable;
+
 public class Application {
 	private int mIconRes;
 	private String mName;
@@ -8,6 +10,7 @@ public class Application {
 	private String mAppBuild;
 	private String mSubId;
 	private String mDbId;
+	private String mIconPath;
 
 	public Application() {}
 
@@ -65,5 +68,17 @@ public class Application {
 	
 	public void setDbId(String dbid) {
 		this.mDbId = dbid;
+	}
+	
+	public Drawable getIcon() {
+		if (mIconPath != null) {
+			return Drawable.createFromPath(mIconPath);
+		} else {
+			return null;
+		}
+	}
+	
+	public void setIconPath(String path) {
+		mIconPath = path;
 	}
 }

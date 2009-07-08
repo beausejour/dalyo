@@ -101,8 +101,6 @@ public class Dma extends Activity implements OnClickListener {
 			nameVersionView.setText("Dalyo Mobile Agent "+Dma.getVersion());
 			mAboutDialog = new AlertDialog.Builder(this).setIcon(android.R.drawable.ic_dialog_info)
 	        .setTitle(R.string.menu_about).setView(aboutView).create();
-			/*mAboutDialog = new AlertDialog.Builder(this).setIcon(android.R.drawable.ic_dialog_info)
-	        .setTitle(R.string.menu_about).setView(mInflater.inflate(R.layout.about, null, false)).create();*/
 		} else {
 			this.finish();
 			startActivityForResult(new Intent(this, ApplicationListView.class), 0);

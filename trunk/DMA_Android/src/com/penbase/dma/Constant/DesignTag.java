@@ -12,6 +12,7 @@ public class DesignTag {
 	public static final String LOGIN_SUB = "sub";
 	public static final String LOGIN_DBID = "dbid";
 	public static final String LOGIN_TIT = "tit";
+	public static final String APPICON = "ico";
 	
 	//Design
 	public static final String DESIGN_S = "s";
