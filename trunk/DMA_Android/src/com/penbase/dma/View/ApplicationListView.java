@@ -161,8 +161,11 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		mGridView.setOnItemClickListener(this);
 		mGridView.setOnItemSelectedListener(this);
 		mInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		View aboutView = mInflater.inflate(R.layout.about, null, false);
+		TextView nameVersionView = (TextView) aboutView.findViewById(R.id.nameversion);
+		nameVersionView.setText("Dalyo Mobile Agent "+Dma.getVersion());
 		mAboutDialog = new AlertDialog.Builder(this).setIcon(android.R.drawable.ic_dialog_info)
-        .setTitle(R.string.menu_about).setView(mInflater.inflate(R.layout.about, null, false)).create();
+        .setTitle(R.string.menu_about).setView(aboutView).create();
 	}
 
 	@Override

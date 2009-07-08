@@ -140,6 +140,8 @@ public class DmaHttpClient{
 		loginAction.append(login);
 		loginAction.append("&passwd_md5=");
 		loginAction.append(password);
+		loginAction.append("&probe=");
+		loginAction.append(Dma.getVersion());
 		loginAction.append("&useragent=ANDROID");
 		String result = null;
 		try {
@@ -541,6 +543,8 @@ public class DmaHttpClient{
 		result.append(login);
 		result.append("&passwd_md5=");
 		result.append(pwd);
+		result.append("&probe=");
+		result.append(Dma.getVersion());
 		result.append("&stream=1&useragent=ANDROID&did=");
 		result.append(Dma.getDeviceID());
 		return result.toString();
@@ -561,6 +565,8 @@ public class DmaHttpClient{
 		result.append(login);
 		result.append("&passwd_md5=");
 		result.append(pwd);
+		result.append("&probe=");
+		result.append(Dma.getVersion());
 		result.append("&useragent=ANDROID");
 		return result.toString();
 	}
