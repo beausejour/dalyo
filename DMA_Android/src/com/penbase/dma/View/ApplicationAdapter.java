@@ -3,6 +3,7 @@ package com.penbase.dma.View;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +30,7 @@ public class ApplicationAdapter extends BaseAdapter {
 	 */
 	public View getView(int position, View convertView, ViewGroup parent) {
 		ViewHolder holder;
+		Application application = mApps.get(position);
 		if (convertView == null) {
 			convertView = mInflater.inflate(R.layout.application, parent, false);
 			holder = new ViewHolder();
@@ -38,9 +40,14 @@ public class ApplicationAdapter extends BaseAdapter {
 		} else {
 			holder = (ViewHolder)convertView.getTag();
 		}
-		holder.icon.setImageResource(mApps.get(position).getIconRes());
+		Drawable iconDrawable = application.getIcon();
+		if (iconDrawable != null) {
+			holder.icon.setImageDrawable(iconDrawable);
+		} else {
+			holder.icon.setImageResource(R.drawable.splash);	
+		}
 		holder.icon.setBackgroundResource(android.R.drawable.picture_frame);
-		holder.text.setText(mApps.get(position).getName());
+		holder.text.setText(application.getName());
 		return convertView;
 	}
 

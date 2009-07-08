@@ -42,10 +42,12 @@ import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 
+import com.penbase.dma.Common;
 import com.penbase.dma.Dma;
 import com.penbase.dma.R;
 import com.penbase.dma.Constant.Constant;
 import com.penbase.dma.Constant.DesignTag;
+import com.penbase.dma.Constant.ResourceTag;
 import com.penbase.dma.Dalyo.Application;
 import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
 
@@ -95,6 +97,9 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 			}
 		}
 	};
+	private SharedPreferences mSettings;
+	private String mUsername;
+	private String mPassword;
 
 	@Override
 	protected void onCreate(Bundle icicle) {
@@ -105,11 +110,12 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		
 		StringBuffer title = new StringBuffer("Dalyo ");
 		
-		SharedPreferences settings = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE);
-		String username = settings.getString("Username", "");
-		if (username.length() > 0) {
+		mSettings = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE);
+		mUsername = mSettings.getString("Username", "");
+		mPassword = mSettings.getString("Userpassword", "");
+		if (mUsername.length() > 0) {
 			title.append("(");
-			title.append(username);
+			title.append(mUsername);
 			title.append(")");
 		}
 		
@@ -128,7 +134,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		mApplicationName = (TextView)findViewById(R.id.appnametv);
 		mAdapter = new ApplicationAdapter(this);
 		
-		String xml = settings.getString("ApplicationList", null);
+		String xml = mSettings.getString("ApplicationList", null);
 		createApplicationListFromXml(xml, false);
 		int size = mApplicationList.size();
 		for (int i =0; i < size; i++) {
@@ -237,6 +243,11 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	        			isInAppDBID = true;
 	        		} else if (tagName.equals(DesignTag.LOGIN_VER)) {
 	        			isInAppVer = true;
+	        		} else if (tagName.equals(DesignTag.APPICON)) {
+	        			String iconId = xpp.getAttributeValue(null, ResourceTag.RESOURCES_R_ID);
+	        			String iconHashcode = xpp.getAttributeValue(null, ResourceTag.RESOURCES_R_HASHCODE);
+	        			String iconExt = xpp.getAttributeValue(null, ResourceTag.RESOURCES_R_EXT);
+	        			checkApplicationIcon(app, iconId, iconHashcode, iconExt);
 	        		}
 	        	} else if(eventType == XmlPullParser.END_TAG) {
 	        		if (tagName.equals(DesignTag.APP)) {
@@ -307,6 +318,52 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 			}
 		}
 		sortApplicationsList(applicationMap);
+	}
+	
+	private void checkApplicationIcon(Application application, String iconId, String hashcode, String ext) {
+		boolean willDownload = true;
+		StringBuffer iconFilePath = new StringBuffer(Constant.PACKAGENAME);
+		iconFilePath.append(mUsername).append("/");
+		File directory = new File(iconFilePath.toString());
+		if (!directory.exists()) {
+			directory.mkdir();
+		}
+		
+		iconFilePath.append(application.getName()).append("/");
+		directory = new File(iconFilePath.toString());
+		if (!directory.exists()) {
+			directory.mkdir();
+		}
+		
+		iconFilePath.append(iconId).append(".").append(ext);
+		File iconFile = new File(iconFilePath.toString());
+		if (iconFile.exists()) {
+			//check icon's hashcode
+			byte[] bytes = null;
+			try {
+				bytes = Common.getBytesFromFile(iconFile);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			String hexString = Common.md5HexStringFromBytes(bytes);
+			if (hexString.equals(hashcode)) {
+				willDownload = false;
+			}
+		}
+		if (willDownload) {
+			//download icon file
+			mDmahttpclient = new DmaHttpClient(mUsername);
+			String urlRequest = mDmahttpclient.generateRegularUrlRequest(application.getAppId(), application.getAppVer(), 
+					application.getAppBuild(), application.getSubId(), mUsername, mPassword);
+			StringBuffer action = new StringBuffer("act=getresource");
+			action.append(urlRequest).append("&resourceid=").append(iconId);
+			byte[] resourceStream = mDmahttpclient.sendPost(action.toString());
+			String hexString = Common.md5HexStringFromBytes(resourceStream);
+			if (hexString.equals(hashcode)) {
+				Common.streamToFile(resourceStream, iconFilePath.toString(), true);
+			}
+		}
+		application.setIconPath(iconFilePath.toString());
 	}
 	
 	/**
@@ -415,10 +472,9 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				SharedPreferences settings = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE);
-				mDmahttpclient = new DmaHttpClient(settings.getString("Username", ""));
-				String appsList = mDmahttpclient.Authentication(settings.getString("Username", ""),
-						settings.getString("Userpassword", ""));
+//				SharedPreferences settings = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE);
+				mDmahttpclient = new DmaHttpClient(mUsername);
+				String appsList = mDmahttpclient.Authentication(mUsername, mPassword);
 				
 				if (getNetworkInfo() == null) {
 					sUpdateProgressDialog.dismiss();
@@ -456,11 +512,10 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	 */
 	@Override
 	public void onItemClick(AdapterView<?> parent, View v, final int position, long id) {
-		SharedPreferences prefs = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE);
 		Application application = mApplicationList.get(position);
 		sApplicationName = application.getName();
-		sApplicationInfos.put("Username", prefs.getString("Username", ""));
-		sApplicationInfos.put("Userpassword", prefs.getString("Userpassword", ""));
+		sApplicationInfos.put("Username", mUsername);
+		sApplicationInfos.put("Userpassword", mPassword);
 		sApplicationInfos.put("AppId", application.getAppId());
 		sApplicationInfos.put("AppVer", application.getAppVer());
 		sApplicationInfos.put("AppBuild", application.getAppBuild());

@@ -68,11 +68,6 @@ public class DmaHttpClient{
 	private int mLastError = 0;
 	private int mErrorCode = 0;
 	
-	/**
-	 * TODO
-	 * <icon h="md5" id="">
-	 */
-	
 	//Booleans of sending requests
 	private boolean mSendBehavior = true;
 	private boolean mSendDb = true;
@@ -111,14 +106,16 @@ public class DmaHttpClient{
 
 			sDirectory = new StringBuffer(Constant.PACKAGENAME);
 			sDirectory.append(login).append("/");
-
-			if (!new File(sDirectory.toString()).exists()) {
-				new File(sDirectory.toString()).mkdir();
+			
+			File directory = new File(sDirectory.toString());
+			if (!directory.exists()) {
+				directory.mkdir();
 			}
 			sDirectory.append(applicationName).append("/");
 
-			if (!new File(sDirectory.toString()).exists()) {
-				new File(sDirectory.toString()).mkdir();
+			directory = new File(sDirectory.toString());
+			if (!directory.exists()) {
+				directory.mkdir();
 			}
 			sDb_XML = sDirectory + Constant.DBXML;
 			mDesign_XML = sDirectory + Constant.DESIGNXML;
@@ -152,6 +149,7 @@ public class DmaHttpClient{
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
+		Log.i("info", "authentication "+result);
 		return result;
 	}
 	
@@ -163,7 +161,7 @@ public class DmaHttpClient{
 		return sResourceFilePath;
 	}
 	
-	private byte[] sendPost(String parameters) {
+	public byte[] sendPost(String parameters) {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		HttpClient httpClient = new DefaultHttpClient();
 		HttpPost httpPost = new HttpPost(Constant.SECUREDSERVER + parameters);
@@ -375,7 +373,7 @@ public class DmaHttpClient{
 
 					if (hexString.equals(hashcode)) {
 						Common.streamToFile(resourceStream, fileName.toString(), true);
-					}	
+					}
 				}
         	}
         }
