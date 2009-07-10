@@ -12,6 +12,7 @@ import com.penbase.dma.Constant.DatabaseAttribute;
 import com.penbase.dma.Constant.DatabaseTag;
 import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.View.ApplicationListView;
+import com.penbase.dma.View.ApplicationView;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -364,7 +365,8 @@ public class DatabaseAdapter {
 	
 	public void saveBlobData(byte[] data, int index) {
 		StringBuffer filePath = new StringBuffer(Constant.PACKAGENAME);
-		filePath.append(ApplicationListView.getApplicationName()).append("/");
+		filePath.append(ApplicationView.getUsername()).append("/");
+		filePath.append(ApplicationView.getApplicationId()).append("/");
 		filePath.append(sBlobRecords.get(index).get(2).toString());
 		File file = new File(filePath.toString());
 		FileOutputStream fos = null;
@@ -736,7 +738,11 @@ public class DatabaseAdapter {
 					for (int j=0; j<blobColumnArraySize; j++) {
 						String imageName = (String)getCursorValue(cursor, columnsNames[blobColumnArray.get(j)]);
 						//Delete the image
-						new File(Constant.PACKAGENAME+ApplicationListView.getApplicationName()+"/"+imageName).delete();
+						StringBuffer filePath = new StringBuffer(Constant.PACKAGENAME);
+						filePath.append(ApplicationView.getUsername()).append("/");
+						filePath.append(ApplicationView.getApplicationId()).append("/");
+						filePath.append(imageName);
+						new File(filePath.toString()).delete();
 					}	
 				}
 			}

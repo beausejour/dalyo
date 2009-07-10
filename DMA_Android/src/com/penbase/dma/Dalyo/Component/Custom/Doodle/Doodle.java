@@ -8,13 +8,11 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import com.penbase.dma.Constant.Constant;
-import com.penbase.dma.View.ApplicationListView;
 import com.penbase.dma.View.ApplicationView;
 
 import java.io.File;
@@ -134,7 +132,6 @@ public class Doodle extends Activity implements ColorPickerDialog.OnColorChanged
 	   switch (item.getItemId()) {
 	   		case 0:
 	   			saveImage();
-	   			finish();
 	   			break;
 	   		case 1:
 	   			clearImage();
@@ -155,7 +152,9 @@ public class Doodle extends Activity implements ColorPickerDialog.OnColorChanged
    private void saveImage() {
 	   String imageName = System.currentTimeMillis()+".jpg";
 	   StringBuffer filePath = new StringBuffer(Constant.PACKAGENAME);
-	   filePath.append(ApplicationListView.getApplicationName()).append("/").append(imageName);
+	   filePath.append(ApplicationView.getUsername()).append("/");
+	   filePath.append(ApplicationView.getApplicationId()).append("/");
+	   filePath.append(imageName);
        File file = new File(filePath.toString());
        FileOutputStream fos;
        try{
@@ -163,6 +162,7 @@ public class Doodle extends Activity implements ColorPickerDialog.OnColorChanged
     	   if (mDoodleView.mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)) {
     		   //Log.i("info", "image compressed ok");
     		   ((DoodleView)ApplicationView.getComponents().get(mId).getView()).setImageName(imageName);
+    		   finish();
     	   } else {
     		   //Log.i("info", "image compressed failed");
     	   }

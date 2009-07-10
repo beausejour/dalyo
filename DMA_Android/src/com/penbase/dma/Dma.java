@@ -128,7 +128,7 @@ public class Dma extends Activity implements OnClickListener {
 			@Override
 			public void run() {
 				if (mHandler != null) {
-					mServerResponse = new DmaHttpClient(mTx_login.getText().toString().trim()).Authentication(mTx_login.getText().toString().trim(),
+					mServerResponse = new DmaHttpClient(mTx_login.getText().toString().trim(), null).Authentication(mTx_login.getText().toString().trim(),
 							Common.md5(mTx_password.getText().toString().trim()));
 					mHandler.sendEmptyMessage(0);
 				}

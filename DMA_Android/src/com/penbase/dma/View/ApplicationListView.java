@@ -76,7 +76,8 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	private Intent mIntent = null;
 	private static HashMap<String, String> sApplicationInfos = new HashMap<String, String>();
 	private DmaHttpClient mDmahttpclient;
-	private static String sApplicationName;
+	//private static String sApplicationName;
+	//private static String sApplicationId;
 	private GridView mGridView;
 	private AlertDialog mAboutDialog;
 	private LayoutInflater mInflater;
@@ -352,7 +353,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		}
 		if (willDownload) {
 			//download icon file
-			mDmahttpclient = new DmaHttpClient(mUsername);
+			mDmahttpclient = new DmaHttpClient(mUsername, null);
 			String urlRequest = mDmahttpclient.generateRegularUrlRequest(application.getAppId(), application.getAppVer(), 
 					application.getAppBuild(), application.getSubId(), mUsername, mPassword);
 			StringBuffer action = new StringBuffer("act=getresource");
@@ -473,7 +474,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 			@Override
 			public void run() {
 //				SharedPreferences settings = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE);
-				mDmahttpclient = new DmaHttpClient(mUsername);
+				mDmahttpclient = new DmaHttpClient(mUsername, null);
 				String appsList = mDmahttpclient.Authentication(mUsername, mPassword);
 				
 				if (getNetworkInfo() == null) {
@@ -512,8 +513,9 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	 */
 	@Override
 	public void onItemClick(AdapterView<?> parent, View v, final int position, long id) {
-		Application application = mApplicationList.get(position);
-		sApplicationName = application.getName();
+		final Application application = mApplicationList.get(position);
+		//sApplicationId = application.getAppId();
+		final String applicationId = application.getAppId();
 		sApplicationInfos.put("Username", mUsername);
 		sApplicationInfos.put("Userpassword", mPassword);
 		sApplicationInfos.put("AppId", application.getAppId());
@@ -527,11 +529,13 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 			@Override
 			public void run() {
 				try {
-					ApplicationView.prepareData(position, sApplicationInfos.get("Username"),
-							sApplicationInfos.get("Userpassword"));
+					ApplicationView.prepareData(applicationId, mUsername, mPassword);
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
 				}
+				mIntent.putExtra("ID", applicationId);
+				mIntent.putExtra("USERNAME", mUsername);
+				mIntent.putExtra("TITLE", application.getName());
 				startActivity(mIntent);
 			}
 		}).start();
@@ -541,9 +545,9 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		return sApplicationInfos;
 	}
 	
-	public static String getApplicationName() {
+	/*public static String getApplicationId() {
 		return sApplicationName;
-	}
+	}*/
 
 	@Override
 	protected void onStop() {

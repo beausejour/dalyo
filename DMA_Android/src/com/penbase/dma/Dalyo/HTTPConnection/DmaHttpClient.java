@@ -14,8 +14,6 @@
  */
 package com.penbase.dma.Dalyo.HTTPConnection;
 
-import android.util.Log;
-
 import com.penbase.dma.Common;
 import com.penbase.dma.Dma;
 import com.penbase.dma.Binary.Binary;
@@ -84,26 +82,12 @@ public class DmaHttpClient{
 	//Resource file's path
 	private static String sResourceFilePath;
 	
-	public DmaHttpClient(String login) {
-		createFilesPath(login);
+	public DmaHttpClient(String login, String id) {
+		createFilesPath(login, id);
 	}
 
-	private void createFilesPath(String login) {
-		if (ApplicationListView.getApplicationName() != null) {
-			String applicationName = ApplicationListView.getApplicationName();
-			if (applicationName.indexOf("(") != -1) {
-				applicationName = applicationName.replace("(", "");
-			}
-			if (applicationName.indexOf(")") != -1) {
-				applicationName = applicationName.replace(")", "");
-			}
-			if (applicationName.indexOf("<") != -1) {
-				applicationName = applicationName.replace("<", "");
-			}
-			if (applicationName.indexOf(">") != -1) {
-				applicationName = applicationName.replace(">", "");
-			}
-
+	private void createFilesPath(String login, String id) {
+		if (id != null) {
 			sDirectory = new StringBuffer(Constant.PACKAGENAME);
 			sDirectory.append(login).append("/");
 			
@@ -111,7 +95,7 @@ public class DmaHttpClient{
 			if (!directory.exists()) {
 				directory.mkdir();
 			}
-			sDirectory.append(applicationName).append("/");
+			sDirectory.append(id).append("/");
 
 			directory = new File(sDirectory.toString());
 			if (!directory.exists()) {
@@ -149,7 +133,6 @@ public class DmaHttpClient{
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-		Log.i("info", "authentication "+result);
 		return result;
 	}
 	

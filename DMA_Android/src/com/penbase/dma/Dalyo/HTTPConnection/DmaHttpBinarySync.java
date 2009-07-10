@@ -4,7 +4,6 @@ import com.penbase.dma.Dma;
 import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
 import com.penbase.dma.Constant.Constant;
 import com.penbase.dma.Constant.ErrorCode;
-import com.penbase.dma.View.ApplicationListView;
 import com.penbase.dma.View.ApplicationView;
 
 import java.io.ByteArrayOutputStream;
@@ -161,7 +160,8 @@ public class DmaHttpBinarySync {
 						sendAction.append(blob.get(1));
 						sendAction.append("&format=jpg");
 						StringBuffer imagePath = new StringBuffer(Constant.PACKAGENAME);
-						imagePath.append(ApplicationListView.getApplicationName());
+						imagePath.append(ApplicationView.getUsername()).append("/");
+						imagePath.append(ApplicationView.getApplicationId());
 						imagePath.append("/");
 						imagePath.append(blob.get(1));
 						File image = new File(imagePath.toString());
