@@ -4,10 +4,12 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -53,7 +55,7 @@ public class ApplicationView extends Activity {
 	private static HashMap<String, Component> sComponentsMap;
 	private static DatabaseAdapter sDatabase;
 	private ProgressDialog mLoadingDialog;
-	private static String sClientLogin;
+	//private static String sClientLogin;
 	private static String sCurrentFormId;
 	private static String sApplicationVersion;
 	private Handler mHandler = new Handler() {
@@ -71,6 +73,8 @@ public class ApplicationView extends Activity {
 	private static Reader sDesignReader = null;
 	private String mOnLoadFunctionName = null;
 	private String mStartFormId = null;
+	private static String sApplicationId;
+	private static String sUsername;
 
 	@Override
 	public void onCreate(Bundle icicle) {	
@@ -78,13 +82,16 @@ public class ApplicationView extends Activity {
 		ApplicationView.sApplicationView = this;
 		sComponentsMap = new HashMap<String, Component>();
 		mLoadingDialog = ProgressDialog.show(this, "Please wait...", "Building application ...", true, false);
-		setTitle(ApplicationListView.getApplicationName());
+		Intent intent = getIntent();
+		sApplicationId = intent.getStringExtra("ID");
+		sUsername = intent.getStringExtra("USERNAME");
+		setTitle(intent.getStringExtra("TITLE"));
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				StringBuffer databaseName = new StringBuffer(sClientLogin);
+				StringBuffer databaseName = new StringBuffer(sUsername);
 				databaseName.append("_");
-				databaseName.append(ApplicationListView.getApplicationName());
+				databaseName.append(sApplicationId);
 				sDatabase = new DatabaseAdapter(ApplicationView.this, sDbDoc, databaseName.toString());
 				new Function(ApplicationView.this, sBehaviorDocument);
 				mHandler.sendEmptyMessage(0);	
@@ -94,15 +101,13 @@ public class ApplicationView extends Activity {
 
 	/**
 	 * Prepares necessary xml data
-	 * @param position Position of application
 	 * @param login Login name
 	 * @param pwd Password
 	 * @throws FileNotFoundException 
 	 */
-	public static void prepareData(int position, String login, String pwd) throws FileNotFoundException {
-		sClient = new DmaHttpClient(login);
+	public static void prepareData(String id, String login, String pwd) throws FileNotFoundException {
+		sClient = new DmaHttpClient(login, id);
 		sClient.checkXmlFiles();
-		sClientLogin = login;
 		HashMap<String, String> applciationsInfo = ApplicationListView.getApplicationsInfo();
 		String urlRequest = sClient.generateRegularUrlRequest(applciationsInfo.get("AppId"),
 				applciationsInfo.get("AppVer"),
@@ -245,8 +250,15 @@ public class ApplicationView extends Activity {
 	@Override
 	protected void onRestart() {
 		super.onRestart();
+		Log.i("info", "restart");
 		//Check if there is doodle image or picturebox
 		getLayoutsMap().get(getCurrentFormId()).setPreview();
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		Log.i("info", "resume");
 	}
 
 	@Override
@@ -257,6 +269,14 @@ public class ApplicationView extends Activity {
 	
 	public Handler getHandler() {
 		return mHandler;
+	}
+	
+	public static String getApplicationId() {
+		return sApplicationId;
+	}
+	
+	public static String getUsername() {
+		return sUsername;
 	}
 	
 	private class EventsHandler extends DefaultHandler {

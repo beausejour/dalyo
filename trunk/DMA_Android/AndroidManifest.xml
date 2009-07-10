@@ -19,6 +19,8 @@
   	  	<activity android:name=".View.ApplicationListView"></activity>
 		<activity android:name=".View.ApplicationView"></activity>
 		<activity android:name=".Dalyo.Component.Custom.Doodle.Doodle"
+			android:screenOrientation="portrait"
+			android:configChanges="orientation|keyboardHidden"
 			android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>
 		<activity android:name=".Dalyo.Component.Custom.PictureBox.PictureBox"
 			android:screenOrientation="landscape"
