@@ -4,10 +4,8 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 
-import com.penbase.dma.Constant.Constant;
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Function.Function;
@@ -56,8 +54,7 @@ public class NS_Runtime {
 	}
 	
 	public static String GetCurrentUser(Element element) {
-		SharedPreferences prefs = ApplicationView.getCurrentView().getSharedPreferences(Constant.PREFNAME, Context.MODE_PRIVATE);
-		return prefs.getString("Username", "");
+		return ApplicationListView.getApplicationsInfo().get("Username");
 	}
 	
 	public static void SetWaitCursor(Element element) {

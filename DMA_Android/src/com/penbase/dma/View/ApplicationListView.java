@@ -17,10 +17,11 @@ package com.penbase.dma.View;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -76,8 +77,6 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	private Intent mIntent = null;
 	private static HashMap<String, String> sApplicationInfos = new HashMap<String, String>();
 	private DmaHttpClient mDmahttpclient;
-	//private static String sApplicationName;
-	//private static String sApplicationId;
 	private GridView mGridView;
 	private AlertDialog mAboutDialog;
 	private LayoutInflater mInflater;
@@ -88,19 +87,27 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 				case 0:
-					mAlertDialog.setMessage("Connection unavailable !");
+					if (Dma.sLocale.contains(Constant.FRENCH)) {
+						mAlertDialog.setMessage("Connexion indisponible !");	
+					} else {
+						mAlertDialog.setMessage("Connection unavailable !");	
+					}
 					mAlertDialog.show();
 					break;
 				case 1:
-					mAlertDialog.setMessage("Connection error !");
+					if (Dma.sLocale.contains(Constant.FRENCH)) {
+						mAlertDialog.setMessage("Erreur de connexion !");
+					} else {
+						mAlertDialog.setMessage("Connection error !");
+					}
 					mAlertDialog.show();
 					break;
 			}
 		}
 	};
-	private SharedPreferences mSettings;
 	private String mUsername;
-	private String mPassword;
+	private String mUserpassword;
+	private SQLiteDatabase mSqlite;
 
 	@Override
 	protected void onCreate(Bundle icicle) {
@@ -111,9 +118,9 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		
 		StringBuffer title = new StringBuffer("Dalyo ");
 		
-		mSettings = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE);
-		mUsername = mSettings.getString("Username", "");
-		mPassword = mSettings.getString("Userpassword", "");
+		mUsername = getIntent().getStringExtra("USERNAME");
+		mUserpassword = getIntent().getStringExtra("USERPWD");
+		
 		if (mUsername.length() > 0) {
 			title.append("(");
 			title.append(mUsername);
@@ -135,7 +142,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		mApplicationName = (TextView)findViewById(R.id.appnametv);
 		mAdapter = new ApplicationAdapter(this);
 		
-		String xml = mSettings.getString("ApplicationList", null);
+		String xml = getIntent().getStringExtra("APPLICATIONLIST");
 		createApplicationListFromXml(xml, false);
 		int size = mApplicationList.size();
 		for (int i =0; i < size; i++) {
@@ -173,6 +180,13 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		nameVersionView.setText("Dalyo Mobile Agent "+Dma.getVersion());
 		mAboutDialog = new AlertDialog.Builder(this).setIcon(android.R.drawable.ic_dialog_info)
         .setTitle(R.string.menu_about).setView(aboutView).create();
+		checkSystemTable();
+	}
+	
+	private void checkSystemTable() {
+		StringBuffer systemTable = new StringBuffer(Constant.APPPACKAGE);
+		systemTable.append(Constant.DATABASEDIRECTORY).append(Constant.SYSTEMTABLE);
+		mSqlite = SQLiteDatabase.openOrCreateDatabase(systemTable.toString(), null);
 	}
 
 	@Override
@@ -216,7 +230,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		boolean isInAppSub = false;
 		boolean isInAppDBID = false;
 		boolean isInAppVer = false;
-    	XmlPullParserFactory factory;
+		XmlPullParserFactory factory;
 		try {
 			factory = XmlPullParserFactory.newInstance();
 	        factory.setNamespaceAware(true);
@@ -299,9 +313,11 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 				if (applicationNames.contains(appName)) {
 					deleteApplication = false;
 					Application newApplication = applicationMap.get(appName);
+					String oldDbid = application.getDbId();
 					//If db id changed, rename database file and delete db.xml
-					if (!application.getDbId().equals(newApplication.getDbId())) {
-						backupDatabase(appName);
+					if (!oldDbid.equals(newApplication.getDbId())) {
+						backupDatabase(appName, oldDbid);
+						deleteXmlFile(appName, Constant.DBXML);
 					}
 					
 					//If other id changed, delete design.xml, behavior.xml, resource.xml
@@ -323,7 +339,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	
 	private void checkApplicationIcon(Application application, String iconId, String hashcode, String ext) {
 		boolean willDownload = true;
-		StringBuffer iconFilePath = new StringBuffer(Constant.PACKAGENAME);
+		StringBuffer iconFilePath = new StringBuffer(Constant.APPPACKAGE);
 		iconFilePath.append(mUsername).append("/");
 		File directory = new File(iconFilePath.toString());
 		if (!directory.exists()) {
@@ -352,10 +368,10 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 			}
 		}
 		if (willDownload) {
-			//download icon file
+			//download application's icon
 			mDmahttpclient = new DmaHttpClient(mUsername, null);
 			String urlRequest = mDmahttpclient.generateRegularUrlRequest(application.getAppId(), application.getAppVer(), 
-					application.getAppBuild(), application.getSubId(), mUsername, mPassword);
+					application.getAppBuild(), application.getSubId(), mUsername, mUserpassword);
 			StringBuffer action = new StringBuffer("act=getresource");
 			action.append(urlRequest).append("&resourceid=").append(iconId);
 			byte[] resourceStream = mDmahttpclient.sendPost(action.toString());
@@ -372,16 +388,16 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	 * @return
 	 */
 	private String getUserName() {
-		SharedPreferences settings = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE);
-		return settings.getString("Username", "");
+		return mUsername;
 	}
 	
-	private void backupDatabase(String appName) {
+	private void backupDatabase(String appName, String dbId) {
+		//TODO backup db file with its old dbid
 		String userName = getUserName();
-		StringBuffer databaseFilePath = new StringBuffer(Constant.PACKAGENAME);
+		StringBuffer databaseFilePath = new StringBuffer(Constant.APPPACKAGE);
 		databaseFilePath.append(Constant.DATABASEDIRECTORY).append(userName).append("_").append(appName);
 		StringBuffer backupdatabaseFilePath = new StringBuffer(databaseFilePath.toString());
-		backupdatabaseFilePath.append("_backup");
+		backupdatabaseFilePath.append("_").append(dbId);
 		File backupDatabaseFile = new File(backupdatabaseFilePath.toString());
 		if (backupDatabaseFile.exists()) {
 			backupDatabaseFile.delete();
@@ -397,7 +413,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	 */
 	private void deleteXmlFile(String appName, String xmlName) {
 		String userName = getUserName();
-		StringBuffer filePath = new StringBuffer(Constant.PACKAGENAME);
+		StringBuffer filePath = new StringBuffer(Constant.APPPACKAGE);
 		filePath.append(userName).append("/").append(appName).append("/").append(xmlName);
 		File xmlFile = new File(filePath.toString());
 		if (xmlFile.exists()) {
@@ -411,13 +427,12 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	 */
 	private void deleteApplication(String appName) {
 		String userName = getUserName();
-		StringBuffer directoryPath = new StringBuffer(Constant.PACKAGENAME);
+		StringBuffer directoryPath = new StringBuffer(Constant.APPPACKAGE);
 		directoryPath.append(userName).append("/").append(appName).append("/");
 		File appDirectory = new File(directoryPath.toString());
 		if (deleteDirectory(appDirectory)) {
 			//Delete all xml files
 		}
-		backupDatabase(appName);
 	}
 	
 	/**
@@ -430,10 +445,12 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
             String[] children = directory.list();
             int length = children.length;
             for (int i=0; i<length; i++) {
-                boolean success = deleteDirectory(new File(directory, children[i]));
-                if (!success) {
-                    return false;
-                }
+            		if (!children[i].equals(Constant.DBXML)) {
+            			boolean success = deleteDirectory(new File(directory, children[i]));
+                    if (!success) {
+                        return false;
+                    }	
+            		}
             }
         }
         return directory.delete();
@@ -458,9 +475,12 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	 * Deletes preference data and finishes this activity 
 	 */
 	public void logout() {
-		SharedPreferences.Editor editor = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE).edit();
-		editor.clear();
-		editor.commit();
+		ContentValues values = new ContentValues();
+		values.put("Username", "");
+		values.put("Userpassword", "");
+		values.put("Rememberme", "");
+		values.put("Applicationlist", "");
+		mSqlite.update(Constant.SYSTEMTABLE, values, "ID = \"0\"", null);
 		this.finish();
 		startActivityForResult(new Intent(this, Dma.class), 0);
 	}
@@ -469,13 +489,16 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	 * Updates the application list
 	 */
 	public void update() {
-		sUpdateProgressDialog = ProgressDialog.show(this, "Please wait...", "Updaing application list...", true, false);
+		if (Dma.sLocale.contains(Constant.FRENCH)) {
+			sUpdateProgressDialog = ProgressDialog.show(this, "Veuillez patienter...", "Mettre à jour en cours...", true, false);	
+		} else {
+			sUpdateProgressDialog = ProgressDialog.show(this, "Please wait...", "Updaing application list...", true, false);
+		}
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-//				SharedPreferences settings = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE);
 				mDmahttpclient = new DmaHttpClient(mUsername, null);
-				String appsList = mDmahttpclient.Authentication(mUsername, mPassword);
+				String appsList = mDmahttpclient.Authentication(mUsername, mUserpassword);
 				
 				if (getNetworkInfo() == null) {
 					sUpdateProgressDialog.dismiss();
@@ -483,14 +506,18 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 				} else {
 					if (appsList != null) {
 						createApplicationListFromXml(appsList, true);
-						SharedPreferences.Editor editorPrefs = getSharedPreferences(Constant.PREFNAME, MODE_PRIVATE).edit();
-						editorPrefs.remove("ApplicationList");
-						editorPrefs.putString("ApplicationList", appsList);
-						editorPrefs.commit();
+						ContentValues values = new ContentValues();
+						values.put("Applicationlist", appsList);
+						mSqlite.update(Constant.SYSTEMTABLE, values, "ID = \"0\"", null);
 						
 						sUpdateProgressDialog.dismiss();
 						ApplicationListView.this.finish();
-						startActivityForResult(new Intent(ApplicationListView.this, ApplicationListView.class), 0);	
+						
+						Intent intent = new Intent(ApplicationListView.this, ApplicationListView.class);
+						intent.putExtra("USERNAME", mUsername);
+						intent.putExtra("USERPWD", mUserpassword);
+						intent.putExtra("APPLICATIONLIST", appsList);
+						startActivityForResult(intent, 0);
 					} else {
 						sUpdateProgressDialog.dismiss();
 						mHandler.sendEmptyMessage(1);
@@ -514,22 +541,25 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	@Override
 	public void onItemClick(AdapterView<?> parent, View v, final int position, long id) {
 		final Application application = mApplicationList.get(position);
-		//sApplicationId = application.getAppId();
 		final String applicationId = application.getAppId();
 		sApplicationInfos.put("Username", mUsername);
-		sApplicationInfos.put("Userpassword", mPassword);
+		sApplicationInfos.put("Userpassword", mUserpassword);
 		sApplicationInfos.put("AppId", application.getAppId());
 		sApplicationInfos.put("AppVer", application.getAppVer());
 		sApplicationInfos.put("AppBuild", application.getAppBuild());
 		sApplicationInfos.put("SubId", application.getSubId());
 		sApplicationInfos.put("DbId", application.getDbId());
-		sLoadProgressDialog = ProgressDialog.show(this, "Please wait...", "Preparing application...", true, false);
+		if (Dma.sLocale.contains(Constant.FRENCH)) {
+			sLoadProgressDialog = ProgressDialog.show(this, "Veuillez patienter...", "Préparer l'application...", true, false);	
+		} else {
+			sLoadProgressDialog = ProgressDialog.show(this, "Please wait...", "Preparing application...", true, false);	
+		}
 		mIntent = new Intent(this, ApplicationView.class);
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
 				try {
-					ApplicationView.prepareData(applicationId, mUsername, mPassword);
+					ApplicationView.prepareData(applicationId, mUsername, mUserpassword);
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
 				}
@@ -544,10 +574,6 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	public static HashMap<String, String> getApplicationsInfo() {
 		return sApplicationInfos;
 	}
-	
-	/*public static String getApplicationId() {
-		return sApplicationName;
-	}*/
 
 	@Override
 	protected void onStop() {
@@ -556,6 +582,12 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 			sLoadProgressDialog = null;
 		}
 		super.onStop();
+	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		mSqlite.close();
 	}
 	
 	public static void quit() {

@@ -1,7 +1,6 @@
 package com.penbase.dma.Dalyo.Function;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.penbase.dma.Constant.Constant;
 import com.penbase.dma.Constant.GpsStatus;

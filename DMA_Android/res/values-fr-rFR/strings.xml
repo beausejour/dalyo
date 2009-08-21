@@ -14,4 +14,5 @@
     <string name="email">support@penbase.com</string>
     <string name="ok">Ok</string>
     <string name="cancel">Annuler</string>
+    <string name="nosdcard">Veuillez insérer une carte mémoire pour utiliser le Dalyo Mobile Agent</string>
 </resources>

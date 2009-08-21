@@ -1,11 +1,16 @@
 package com.penbase.dma.Constant;
 
+import android.os.Environment;
+
 public class Constant {
 	//Package name
-	public static final String PACKAGENAME = "data/data/com.penbase.dma/";
+	public static final String APPPACKAGE = Environment.getExternalStorageDirectory() + "/Dalyo/";
 	
 	//Database directory
 	public static final String DATABASEDIRECTORY = "databases/";
+	public static final String SYSTEMTABLE = "System";
+	public static final String CREATE_SYSTEMTABLE = "CREATE TABLE System (ID VARCHAR(255), Username VARCHAR(255), " +
+			"Userpassword VARCHAR(255), Rememberme VARCHAR(255), Applicationlist TEXT)";
 	
 	//Text alignment
 	public static final String LEFT = "left";
@@ -24,15 +29,12 @@ public class Constant {
 	public static final String ITALICBOLD = "italicbold";
 	
 	//Server name
-	/*public static final String SERVER = "http://my.dalyo.com/server/com.penbase.arbiter.Arbiter?";
-	public static final String SECUREDSERVER = "https://my.dalyo.com/server/com.penbase.arbiter.Arbiter?";*/
+	public static final String SERVER = "http://my.dalyo.com/server/com.penbase.arbiter.Arbiter?";
+	public static final String SECUREDSERVER = "https://my.dalyo.com/server/com.penbase.arbiter.Arbiter?";
 	
 	//Local server
-	public static final String SERVER = "http://192.168.0.1/server/com.penbase.arbiter.Arbiter?";
-	public static final String SECUREDSERVER = "http://192.168.0.1/server/com.penbase.arbiter.Arbiter?";
-	
-	//Preference file name
-	public static final String PREFNAME = "DmaPrefsFile";
+	//public static final String SERVER = "http://192.168.0.1/server/com.penbase.arbiter.Arbiter?";
+	//public static final String SECUREDSERVER = "http://192.168.0.1/server/com.penbase.arbiter.Arbiter?";
 	
 	public static final String FALSE = "false";
 	public static final String TRUE = "true";
@@ -58,4 +60,7 @@ public class Constant {
 	
 	public static final String IMPORTACTION = "import";
 	public static final String EXPORTACTION = "export";
+	
+	//Locales
+	public static final String FRENCH = "fr";
 }

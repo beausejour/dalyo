@@ -9,7 +9,6 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +16,8 @@ import android.view.MenuItem.OnMenuItemClickListener;
 import android.widget.RelativeLayout;
 import android.graphics.Color;
 
+import com.penbase.dma.Dma;
+import com.penbase.dma.Constant.Constant;
 import com.penbase.dma.Constant.DesignTag;
 import com.penbase.dma.Dalyo.Component.Component;
 import com.penbase.dma.Dalyo.Component.Form;
@@ -55,7 +56,6 @@ public class ApplicationView extends Activity {
 	private static HashMap<String, Component> sComponentsMap;
 	private static DatabaseAdapter sDatabase;
 	private ProgressDialog mLoadingDialog;
-	//private static String sClientLogin;
 	private static String sCurrentFormId;
 	private static String sApplicationVersion;
 	private Handler mHandler = new Handler() {
@@ -81,7 +81,11 @@ public class ApplicationView extends Activity {
 		super.onCreate(icicle);
 		ApplicationView.sApplicationView = this;
 		sComponentsMap = new HashMap<String, Component>();
-		mLoadingDialog = ProgressDialog.show(this, "Please wait...", "Building application ...", true, false);
+		if (Dma.sLocale.contains(Constant.FRENCH)) {
+			mLoadingDialog = ProgressDialog.show(this, "Veuillez patienter...", "Chargement en cours ...", true, false);
+		} else {
+			mLoadingDialog = ProgressDialog.show(this, "Please wait...", "Building application ...", true, false);
+		}
 		Intent intent = getIntent();
 		sApplicationId = intent.getStringExtra("ID");
 		sUsername = intent.getStringExtra("USERNAME");
@@ -250,15 +254,8 @@ public class ApplicationView extends Activity {
 	@Override
 	protected void onRestart() {
 		super.onRestart();
-		Log.i("info", "restart");
 		//Check if there is doodle image or picturebox
 		getLayoutsMap().get(getCurrentFormId()).setPreview();
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		Log.i("info", "resume");
 	}
 
 	@Override
