@@ -88,7 +88,7 @@ public class DmaHttpClient{
 
 	private void createFilesPath(String login, String id) {
 		if (id != null) {
-			sDirectory = new StringBuffer(Constant.PACKAGENAME);
+			sDirectory = new StringBuffer(Constant.APPPACKAGE);
 			sDirectory.append(login).append("/");
 			
 			File directory = new File(sDirectory.toString());
@@ -105,7 +105,7 @@ public class DmaHttpClient{
 			mDesign_XML = sDirectory + Constant.DESIGNXML;
 			mBehavior_XML = sDirectory + Constant.BEHAVIORXML;
 			mResources_XML = sDirectory + Constant.RESOURCEXML;
-			sResourceFilePath = Constant.PACKAGENAME + "/" + login + "/" + Constant.RESOURCE;
+			sResourceFilePath = Constant.APPPACKAGE + login + "/" + Constant.RESOURCE;
 			if (!new File(sResourceFilePath).exists()) {
 				new File(sResourceFilePath).mkdir();
 			}
@@ -117,7 +117,7 @@ public class DmaHttpClient{
 	}
 
 	public String Authentication(String login, String password) {
-		StringBuffer loginAction = new StringBuffer("act=login&login=");
+		StringBuffer loginAction = new StringBuffer("act=login&from=runtime&login=");
 		loginAction.append(login);
 		loginAction.append("&passwd_md5=");
 		loginAction.append(password);
@@ -232,7 +232,6 @@ public class DmaHttpClient{
 	}
 	
 	public int getIdDb(File dbXml) {
-		//Log.i("info", "getiddb");
 		Document dbDoc = createParseDocument(null, dbXml);
 		Element tagID = (Element)dbDoc.getElementsByTagName(DatabaseTag.DB).item(0);
 		return Integer.valueOf(tagID.getAttribute(DatabaseTag.DB_ID));
@@ -244,7 +243,6 @@ public class DmaHttpClient{
 	 */
 	public Reader getDesignReader(String urlRequest) throws FileNotFoundException {
 		if (mSendDesign) {
-			//Log.i("info", "download design xml");
 			StringBuffer getDesign = new StringBuffer("act=getdesign");
 			getDesign.append(urlRequest);
 			byte[] bytes = sendPost(getDesign.toString());
@@ -264,7 +262,7 @@ public class DmaHttpClient{
 			getResources.append(urlRequest);
 			byte[] bytes = sendPost(getResources.toString());
 			SAXParserFactory spFactory = SAXParserFactory.newInstance();
-	    	SAXParser saxParser;
+	    		SAXParser saxParser;
 			try {
 				saxParser = spFactory.newSAXParser();
 				XMLReader xmlReader = saxParser.getXMLReader();
@@ -284,13 +282,13 @@ public class DmaHttpClient{
 			Common.streamToFile(bytes, mResources_XML, false);
 		} else {
 			SAXParserFactory spFactory = SAXParserFactory.newInstance();
-	    	SAXParser saxParser;
+	    		SAXParser saxParser;
 			try {
 				saxParser = spFactory.newSAXParser();
 				XMLReader xmlReader = saxParser.getXMLReader();
 				EventsHandler eventsHandler = new EventsHandler(urlRequest);
-		    	xmlReader.setContentHandler(eventsHandler);
-		    	xmlReader.parse(new InputSource(new FileInputStream(new File(mResources_XML))));
+		    		xmlReader.setContentHandler(eventsHandler);
+		    		xmlReader.parse(new InputSource(new FileInputStream(new File(mResources_XML))));
 			}
 	    	 catch (ParserConfigurationException e) {
 	 			e.printStackTrace();

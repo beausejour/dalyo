@@ -159,7 +159,8 @@ public class DmaHttpBinarySync {
 						sendAction.append("&blob=");
 						sendAction.append(blob.get(1));
 						sendAction.append("&format=jpg");
-						StringBuffer imagePath = new StringBuffer(Constant.PACKAGENAME);
+						//TODO use arbitary table to save the blob data
+						StringBuffer imagePath = new StringBuffer(Constant.APPPACKAGE);
 						imagePath.append(ApplicationView.getUsername()).append("/");
 						imagePath.append(ApplicationView.getApplicationId());
 						imagePath.append("/");
@@ -167,6 +168,9 @@ public class DmaHttpBinarySync {
 						File image = new File(imagePath.toString());
 						byte[] responsedata = createConnection(sendAction.toString(), this.getBytesFromFile(image));
 						String codeResponseStr = getErrorCode(responsedata);
+						if (Integer.valueOf(codeResponseStr) == ErrorCode.OK) {
+							
+						}
 					}
 				}
 				DatabaseAdapter.updateIds(result);
@@ -242,14 +246,11 @@ public class DmaHttpBinarySync {
 	
 	private String getErrorCode(byte[] data) {
 		StringBuffer codeStr = new StringBuffer("");
-		//String codeStr = "";
 		int i = 0;
 		while(i < data.length && data[i] != (int)'\n') {
-			//codeStr += (char)data[i];
 			codeStr.append((char)data[i]);
 			i++;
 		}
-		//return codeStr;
 		return codeStr.toString();
 	}
 	

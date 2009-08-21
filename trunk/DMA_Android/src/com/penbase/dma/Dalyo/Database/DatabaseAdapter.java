@@ -11,7 +11,6 @@ import com.penbase.dma.Constant.Constant;
 import com.penbase.dma.Constant.DatabaseAttribute;
 import com.penbase.dma.Constant.DatabaseTag;
 import com.penbase.dma.Dalyo.Function.Function;
-import com.penbase.dma.View.ApplicationListView;
 import com.penbase.dma.View.ApplicationView;
 
 import org.w3c.dom.Document;
@@ -39,8 +38,6 @@ public class DatabaseAdapter {
 	private static HashMap<String, String> sFieldsPKMap;
 	private static ArrayList<ArrayList<String>> sForeignKeyList;
 	private String mDbName = null;
-	private String mTABLEPREF = "TablePrefFile";
-	private String mFIELDPREF = "FieldPrefFile";
 	private static boolean STARTTRANSACTION = false;
 	private static ArrayList<ArrayList<Object>> sBlobRecords;
 	private static HashMap<String, String> sTablesSyncMap;
@@ -50,8 +47,6 @@ public class DatabaseAdapter {
 		this.mContext = c;
 		this.mDbDocument = d;
 		this.mDbName = database;
-		this.mTABLEPREF = mDbName+"_"+mTABLEPREF;
-		this.mFIELDPREF = mDbName+"_"+mFIELDPREF;
 		sTablesMap = new HashMap<String, ArrayList<String>>();		//{tid, [tablename, fieldnames...]}
 		sTablesNameMap = new HashMap<String, String>();
 		sFieldsTypeMap = new HashMap<String, String>();
@@ -88,8 +83,8 @@ public class DatabaseAdapter {
 	}
 	
 	private boolean isDatabaseExists(String database) {
-		StringBuffer filePath = new StringBuffer(Constant.PACKAGENAME);
-		filePath.append("databases/").append(database);
+		StringBuffer filePath = new StringBuffer(Constant.APPPACKAGE);
+		filePath.append(Constant.DATABASEDIRECTORY).append(database);
 		File dbFile = new File(filePath.toString());
 		return dbFile.exists();
 	}
@@ -364,7 +359,7 @@ public class DatabaseAdapter {
 	}
 	
 	public void saveBlobData(byte[] data, int index) {
-		StringBuffer filePath = new StringBuffer(Constant.PACKAGENAME);
+		StringBuffer filePath = new StringBuffer(Constant.APPPACKAGE);
 		filePath.append(ApplicationView.getUsername()).append("/");
 		filePath.append(ApplicationView.getApplicationId()).append("/");
 		filePath.append(sBlobRecords.get(index).get(2).toString());
@@ -738,7 +733,7 @@ public class DatabaseAdapter {
 					for (int j=0; j<blobColumnArraySize; j++) {
 						String imageName = (String)getCursorValue(cursor, columnsNames[blobColumnArray.get(j)]);
 						//Delete the image
-						StringBuffer filePath = new StringBuffer(Constant.PACKAGENAME);
+						StringBuffer filePath = new StringBuffer(Constant.APPPACKAGE);
 						filePath.append(ApplicationView.getUsername()).append("/");
 						filePath.append(ApplicationView.getApplicationId()).append("/");
 						filePath.append(imageName);
