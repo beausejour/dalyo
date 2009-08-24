@@ -80,7 +80,7 @@ public class DmaHttpClient{
 	private String mResources_XML;
 	
 	//Resource file's path
-	private static String sResourceFilePath;
+	private static StringBuffer sResourceFilePath;
 	
 	public DmaHttpClient(String login, String id) {
 		createFilesPath(login, id);
@@ -89,26 +89,36 @@ public class DmaHttpClient{
 	private void createFilesPath(String login, String id) {
 		if (id != null) {
 			sDirectory = new StringBuffer(Constant.APPPACKAGE);
-			sDirectory.append(login).append("/");
-			
+			sDirectory.append(Constant.USERDIRECTORY);
 			File directory = new File(sDirectory.toString());
 			if (!directory.exists()) {
 				directory.mkdir();
 			}
-			sDirectory.append(id).append("/");
-
+			
+			sDirectory.append(login).append("/");
 			directory = new File(sDirectory.toString());
 			if (!directory.exists()) {
 				directory.mkdir();
 			}
+			
+			sResourceFilePath = new StringBuffer(sDirectory);
+			sResourceFilePath.append(Constant.RESOURCE).append("/");
+			File resourceFileDirectory = new File(sResourceFilePath.toString());
+			if (!resourceFileDirectory.exists()) {
+				resourceFileDirectory.mkdir();
+			}
+			
+			sDirectory.append(id).append("/");
+			directory = new File(sDirectory.toString());
+			if (!directory.exists()) {
+				directory.mkdir();
+			}
+			
 			sDb_XML = sDirectory + Constant.DBXML;
 			mDesign_XML = sDirectory + Constant.DESIGNXML;
 			mBehavior_XML = sDirectory + Constant.BEHAVIORXML;
 			mResources_XML = sDirectory + Constant.RESOURCEXML;
-			sResourceFilePath = Constant.APPPACKAGE + login + "/" + Constant.RESOURCE;
-			if (!new File(sResourceFilePath).exists()) {
-				new File(sResourceFilePath).mkdir();
-			}
+			
 		}
 	}
 	
@@ -141,13 +151,14 @@ public class DmaHttpClient{
 	}
 	
 	public static String getResourcePath() {
-		return sResourceFilePath;
+		return sResourceFilePath.toString();
 	}
 	
 	public byte[] sendPost(String parameters) {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		HttpClient httpClient = new DefaultHttpClient();
-		HttpPost httpPost = new HttpPost(Constant.SECUREDSERVER + parameters);
+		//HttpPost httpPost = new HttpPost(Constant.SECUREDSERVER + parameters);
+		HttpPost httpPost = new HttpPost(Constant.SERVER + parameters);
 		try {
 			HttpResponse response = httpClient.execute(httpPost);
 			HttpEntity entity = response.getEntity();

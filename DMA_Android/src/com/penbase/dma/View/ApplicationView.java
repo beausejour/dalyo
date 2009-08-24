@@ -93,10 +93,12 @@ public class ApplicationView extends Activity {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				StringBuffer databaseName = new StringBuffer(sUsername);
-				databaseName.append("_");
-				databaseName.append(sApplicationId);
-				sDatabase = new DatabaseAdapter(ApplicationView.this, sDbDoc, databaseName.toString());
+				StringBuffer databasePath = new StringBuffer(Constant.APPPACKAGE);
+				databasePath.append(Constant.USERDIRECTORY);
+				databasePath.append(sUsername).append("/");
+				databasePath.append(sApplicationId).append("/");
+				databasePath.append(Constant.APPDB);
+				sDatabase = new DatabaseAdapter(sDbDoc, databasePath.toString());
 				new Function(ApplicationView.this, sBehaviorDocument);
 				mHandler.sendEmptyMessage(0);	
 			}
@@ -146,15 +148,15 @@ public class ApplicationView extends Activity {
 		sLayoutsMap = new HashMap<String, Form>();
 		sOnLoadFuncMap = new HashMap<String, String>();
 		SAXParserFactory spFactory = SAXParserFactory.newInstance();
-    	SAXParser saxParser;
+    		SAXParser saxParser;
 		try {
 			saxParser = spFactory.newSAXParser();
 			XMLReader xmlReader = saxParser.getXMLReader();
-	    	EventsHandler eventsHandler = new EventsHandler();
-	    	xmlReader.setContentHandler(eventsHandler);
-	    	xmlReader.parse(new InputSource(sDesignReader));
+	    		EventsHandler eventsHandler = new EventsHandler();
+	    		xmlReader.setContentHandler(eventsHandler);
+	    		xmlReader.parse(new InputSource(sDesignReader));
 		}
-    	 catch (ParserConfigurationException e) {
+    	 	catch (ParserConfigurationException e) {
  			e.printStackTrace();
  		} catch (SAXException e) {
  			e.printStackTrace();

@@ -152,6 +152,7 @@ public class Doodle extends Activity implements ColorPickerDialog.OnColorChanged
    private void saveImage() {
 	   String imageName = System.currentTimeMillis()+".jpg";
 	   StringBuffer filePath = new StringBuffer(Constant.APPPACKAGE);
+	   filePath.append(Constant.USERDIRECTORY);
 	   filePath.append(ApplicationView.getUsername()).append("/");
 	   filePath.append(ApplicationView.getApplicationId()).append("/");
 	   filePath.append(imageName);
