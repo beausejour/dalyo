@@ -6,11 +6,17 @@ public class Constant {
 	//Package name
 	public static final String APPPACKAGE = Environment.getExternalStorageDirectory() + "/Dalyo/";
 	
+	//User directory
+	public static final String USERDIRECTORY = "user/";
+	
 	//Database directory
-	public static final String DATABASEDIRECTORY = "databases/";
-	public static final String SYSTEMTABLE = "System";
-	public static final String CREATE_SYSTEMTABLE = "CREATE TABLE System (ID VARCHAR(255), Username VARCHAR(255), " +
+	public static final String DATABASEDIRECTORY = "data/";
+	public static final String SYSTEMTABLE = "system";
+	public static final String CREATE_SYSTEMTABLE = "CREATE TABLE system (ID VARCHAR(255), Username VARCHAR(255), " +
 			"Userpassword VARCHAR(255), Rememberme VARCHAR(255), Applicationlist TEXT)";
+	
+	//Application database
+	public static final String APPDB = "db";
 	
 	//Text alignment
 	public static final String LEFT = "left";
@@ -29,11 +35,11 @@ public class Constant {
 	public static final String ITALICBOLD = "italicbold";
 	
 	//Server name
-	public static final String SERVER = "http://my.dalyo.com/server/com.penbase.arbiter.Arbiter?";
-	public static final String SECUREDSERVER = "https://my.dalyo.com/server/com.penbase.arbiter.Arbiter?";
+	//public static final String SERVER = "http://my.dalyo.com/server/com.penbase.arbiter.Arbiter?";
+	//public static final String SECUREDSERVER = "https://my.dalyo.com/server/com.penbase.arbiter.Arbiter?";
 	
 	//Local server
-	//public static final String SERVER = "http://192.168.0.1/server/com.penbase.arbiter.Arbiter?";
+	public static final String SERVER = "http://192.168.0.1/server/com.penbase.arbiter.Arbiter?";
 	//public static final String SECUREDSERVER = "http://192.168.0.1/server/com.penbase.arbiter.Arbiter?";
 	
 	public static final String FALSE = "false";

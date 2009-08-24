@@ -309,6 +309,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 			ArrayList<Application> applications = mApplicationList;
 			for (Application application : applications) {
 				String appName = application.getName();
+				String appId = application.getAppId();
 				boolean deleteApplication = true;
 				if (applicationNames.contains(appName)) {
 					deleteApplication = false;
@@ -316,21 +317,21 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 					String oldDbid = application.getDbId();
 					//If db id changed, rename database file and delete db.xml
 					if (!oldDbid.equals(newApplication.getDbId())) {
-						backupDatabase(appName, oldDbid);
-						deleteXmlFile(appName, Constant.DBXML);
+						backupDatabase(appId, oldDbid);
+						deleteXmlFile(appId, Constant.DBXML);
 					}
 					
 					//If other id changed, delete design.xml, behavior.xml, resource.xml
 					if ((!application.getAppBuild().equals(newApplication.getAppBuild())) ||
 							(!application.getAppVer().equals(newApplication.getAppVer())) ||
 							(!application.getSubId().equals(newApplication.getSubId()))) {
-						deleteXmlFile(appName, Constant.DESIGNXML);
-						deleteXmlFile(appName, Constant.BEHAVIORXML);
-						deleteXmlFile(appName, Constant.RESOURCEXML);
+						deleteXmlFile(appId, Constant.DESIGNXML);
+						deleteXmlFile(appId, Constant.BEHAVIORXML);
+						deleteXmlFile(appId, Constant.RESOURCEXML);
 					}
 				}
 				if (deleteApplication) {
-					deleteApplication(appName);
+					deleteApplication(appId);
 				}
 			}
 		}
@@ -340,6 +341,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	private void checkApplicationIcon(Application application, String iconId, String hashcode, String ext) {
 		boolean willDownload = true;
 		StringBuffer iconFilePath = new StringBuffer(Constant.APPPACKAGE);
+		iconFilePath.append(Constant.USERDIRECTORY);
 		iconFilePath.append(mUsername).append("/");
 		File directory = new File(iconFilePath.toString());
 		if (!directory.exists()) {
@@ -391,17 +393,17 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		return mUsername;
 	}
 	
-	private void backupDatabase(String appName, String dbId) {
-		//TODO backup db file with its old dbid
-		String userName = getUserName();
+	private void backupDatabase(String appId, String dbId) {
+		String userName = getUserName();		
 		StringBuffer databaseFilePath = new StringBuffer(Constant.APPPACKAGE);
-		databaseFilePath.append(Constant.DATABASEDIRECTORY).append(userName).append("_").append(appName);
+		databaseFilePath.append(Constant.USERDIRECTORY).append(userName).append("/");
+		databaseFilePath.append(appId).append("/");
+		databaseFilePath.append(Constant.APPDB);
+		
 		StringBuffer backupdatabaseFilePath = new StringBuffer(databaseFilePath.toString());
 		backupdatabaseFilePath.append("_").append(dbId);
+
 		File backupDatabaseFile = new File(backupdatabaseFilePath.toString());
-		if (backupDatabaseFile.exists()) {
-			backupDatabaseFile.delete();
-		}
 		File databaseFile = new File(databaseFilePath.toString());
 		databaseFile.renameTo(backupDatabaseFile);
 	}
@@ -411,10 +413,11 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	 * @param appName application name
 	 * @param xmlName xml name
 	 */
-	private void deleteXmlFile(String appName, String xmlName) {
+	private void deleteXmlFile(String appId, String xmlName) {
 		String userName = getUserName();
 		StringBuffer filePath = new StringBuffer(Constant.APPPACKAGE);
-		filePath.append(userName).append("/").append(appName).append("/").append(xmlName);
+		filePath.append(Constant.USERDIRECTORY).append(userName).append("/");
+		filePath.append(appId).append("/").append(xmlName);
 		File xmlFile = new File(filePath.toString());
 		if (xmlFile.exists()) {
 			xmlFile.delete();
@@ -425,10 +428,11 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	 * Delete application directory and rename database file(backup user old data)
 	 * @param appName application name
 	 */
-	private void deleteApplication(String appName) {
+	private void deleteApplication(String appId) {
 		String userName = getUserName();
 		StringBuffer directoryPath = new StringBuffer(Constant.APPPACKAGE);
-		directoryPath.append(userName).append("/").append(appName).append("/");
+		directoryPath.append(Constant.USERDIRECTORY).append(userName).append("/");
+		directoryPath.append(appId).append("/");
 		File appDirectory = new File(directoryPath.toString());
 		if (deleteDirectory(appDirectory)) {
 			//Delete all xml files

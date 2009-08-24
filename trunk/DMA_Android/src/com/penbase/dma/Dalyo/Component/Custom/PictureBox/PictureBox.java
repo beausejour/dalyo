@@ -130,6 +130,7 @@ public class PictureBox extends Activity implements SurfaceHolder.Callback {
 						public void run() {
 							String photoName = System.currentTimeMillis()+".jpg";
 							StringBuffer filePath = new StringBuffer(Constant.APPPACKAGE);
+							filePath.append(Constant.USERDIRECTORY);
 							filePath.append(ApplicationView.getUsername()).append("/");
 							filePath.append(ApplicationView.getApplicationId()).append("/");
 							filePath.append(photoName);

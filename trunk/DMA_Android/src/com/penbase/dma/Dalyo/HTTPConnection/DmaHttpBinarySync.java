@@ -161,6 +161,7 @@ public class DmaHttpBinarySync {
 						sendAction.append("&format=jpg");
 						//TODO use arbitary table to save the blob data
 						StringBuffer imagePath = new StringBuffer(Constant.APPPACKAGE);
+						imagePath.append(Constant.USERDIRECTORY);
 						imagePath.append(ApplicationView.getUsername()).append("/");
 						imagePath.append(ApplicationView.getApplicationId());
 						imagePath.append("/");

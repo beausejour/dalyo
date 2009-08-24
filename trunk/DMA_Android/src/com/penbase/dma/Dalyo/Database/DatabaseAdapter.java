@@ -1,7 +1,6 @@
 package com.penbase.dma.Dalyo.Database;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -29,7 +28,6 @@ import java.util.Set;
 
 public class DatabaseAdapter {
 	private Document mDbDocument;
-	private Context mContext;
 	private static SQLiteDatabase sSqlite = null;
 	private static HashMap<String, ArrayList<String>> sTablesMap;
 	private static HashMap<String, String> sTablesNameMap;
@@ -37,17 +35,19 @@ public class DatabaseAdapter {
 	private static HashMap<String, String> sFieldsNameMap;
 	private static HashMap<String, String> sFieldsPKMap;
 	private static ArrayList<ArrayList<String>> sForeignKeyList;
-	private String mDbName = null;
+	private String mDbPath = null;
 	private static boolean STARTTRANSACTION = false;
 	private static ArrayList<ArrayList<Object>> sBlobRecords;
 	private static HashMap<String, String> sTablesSyncMap;
 	private static HashMap<String, Boolean> sFieldsSyncMap;
 	
-	public DatabaseAdapter(Context c, Document d, String database) {
-		this.mContext = c;
+	public DatabaseAdapter(Document d, String databasePath) {
 		this.mDbDocument = d;
-		this.mDbName = database;
-		sTablesMap = new HashMap<String, ArrayList<String>>();		//{tid, [tablename, fieldnames...]}
+		this.mDbPath = databasePath;
+		
+		//{tid, [tablename, fieldnames...]}
+		sTablesMap = new HashMap<String, ArrayList<String>>();
+		
 		sTablesNameMap = new HashMap<String, String>();
 		sFieldsTypeMap = new HashMap<String, String>();
 		sFieldsNameMap = new HashMap<String, String>();
@@ -57,19 +57,19 @@ public class DatabaseAdapter {
 		sTablesSyncMap = new HashMap<String, String>();
 		sFieldsSyncMap = new HashMap<String, Boolean>();
 		if (mDbDocument.getElementsByTagName(DatabaseTag.TABLE).getLength() > 0) {
-			createDatabase(mDbName);
+			createDatabase(mDbPath);
 		}
 	}
 	
-	private void createDatabase(String database) throws SQLException{
+	private void createDatabase(String databasePath) throws SQLException{
 		closeDatabase();
 		try{
-			if (!isDatabaseExists(database)) {
-				sSqlite = mContext.openOrCreateDatabase(database, 0, null);
+			if (!isDatabaseExists(databasePath)) {
+				sSqlite = SQLiteDatabase.openOrCreateDatabase(databasePath, null);
 				createTable();
 			} else {
 				checkDatabase();
-				sSqlite = mContext.openOrCreateDatabase(database, 0, null);
+				sSqlite = SQLiteDatabase.openOrCreateDatabase(databasePath, null);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -82,10 +82,8 @@ public class DatabaseAdapter {
 		}
 	}
 	
-	private boolean isDatabaseExists(String database) {
-		StringBuffer filePath = new StringBuffer(Constant.APPPACKAGE);
-		filePath.append(Constant.DATABASEDIRECTORY).append(database);
-		File dbFile = new File(filePath.toString());
+	private boolean isDatabaseExists(String databasePath) {
+		File dbFile = new File(databasePath);
 		return dbFile.exists();
 	}
 	
@@ -360,6 +358,7 @@ public class DatabaseAdapter {
 	
 	public void saveBlobData(byte[] data, int index) {
 		StringBuffer filePath = new StringBuffer(Constant.APPPACKAGE);
+		filePath.append(Constant.USERDIRECTORY);
 		filePath.append(ApplicationView.getUsername()).append("/");
 		filePath.append(ApplicationView.getApplicationId()).append("/");
 		filePath.append(sBlobRecords.get(index).get(2).toString());
@@ -734,6 +733,7 @@ public class DatabaseAdapter {
 						String imageName = (String)getCursorValue(cursor, columnsNames[blobColumnArray.get(j)]);
 						//Delete the image
 						StringBuffer filePath = new StringBuffer(Constant.APPPACKAGE);
+						filePath.append(Constant.USERDIRECTORY);
 						filePath.append(ApplicationView.getUsername()).append("/");
 						filePath.append(ApplicationView.getApplicationId()).append("/");
 						filePath.append(imageName);
