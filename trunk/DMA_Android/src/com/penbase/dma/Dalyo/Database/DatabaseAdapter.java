@@ -4,13 +4,14 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
+import com.penbase.dma.Common;
 import com.penbase.dma.Binary.Binary;
 import com.penbase.dma.Constant.Constant;
 import com.penbase.dma.Constant.DatabaseAttribute;
 import com.penbase.dma.Constant.DatabaseTag;
 import com.penbase.dma.Dalyo.Function.Function;
-import com.penbase.dma.View.ApplicationView;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -19,8 +20,6 @@ import org.w3c.dom.NodeList;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,6 +39,7 @@ public class DatabaseAdapter {
 	private static ArrayList<ArrayList<Object>> sBlobRecords;
 	private static HashMap<String, String> sTablesSyncMap;
 	private static HashMap<String, Boolean> sFieldsSyncMap;
+	private boolean mWillCreateBlobtable = false;
 	
 	public DatabaseAdapter(Document d, String databasePath) {
 		this.mDbDocument = d;
@@ -138,7 +138,6 @@ public class DatabaseAdapter {
 						fk.add(foreignTableId);
 						fk.add(foreignFieldId);
 						sForeignKeyList.add(fk);
-						
 					}
 					j++;
 				}
@@ -185,6 +184,11 @@ public class DatabaseAdapter {
 					sFieldsTypeMap.put(fieldId, fieldType);
 					if (fieldType.equals(DatabaseAttribute.VARCHAR)) {
 						fieldType = fieldType+"("+fieldSize+")";
+					} else if (fieldType.equals(DatabaseAttribute.BLOB)) {
+						if (!mWillCreateBlobtable) {
+							sSqlite.execSQL(Constant.CREATE_BLOBTABLE);
+							mWillCreateBlobtable = true;
+						}
 					}
 					String fieldSync = field.getAttribute(DatabaseTag.FIELD_SYNC);
 					sFieldsSyncMap.put(fieldNewName, Boolean.valueOf(fieldSync));
@@ -356,22 +360,34 @@ public class DatabaseAdapter {
 		return result;
 	}
 	
-	public void saveBlobData(byte[] data, int index) {
-		StringBuffer filePath = new StringBuffer(Constant.APPPACKAGE);
-		filePath.append(Constant.USERDIRECTORY);
-		filePath.append(ApplicationView.getUsername()).append("/");
-		filePath.append(ApplicationView.getApplicationId()).append("/");
-		filePath.append(sBlobRecords.get(index).get(2).toString());
-		File file = new File(filePath.toString());
-		FileOutputStream fos = null;
+	public void saveBlobData(String fileName, File file) {
+		ContentValues values = new ContentValues();
+		values.put(Constant.BLOBFILE, fileName);
 		try {
-			fos = new FileOutputStream(file);
-			fos.write(data);
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
+			values.put(Constant.BLOBDATA, Common.getBytesFromFile(file));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		sSqlite.insert(Constant.BLOBTABLE, null, values);
+	}
+	
+	public void saveBlobData(byte[] data, int index) {
+		ContentValues values = new ContentValues();
+		values.put(Constant.BLOBFILE, sBlobRecords.get(index).get(2).toString());
+		values.put(Constant.BLOBDATA, data);
+		sSqlite.insert(Constant.BLOBTABLE, null, values);
+	}
+	
+	public byte[] getBlobdata(String fileName) {
+		byte[] result = null;
+		StringBuffer selection = new StringBuffer("File = \"");
+		selection.append(fileName);
+		selection.append("\"");
+		Cursor cursor = sSqlite.query(Constant.BLOBTABLE, new String[]{Constant.BLOBDATA}, selection.toString(), null, null, null, null);
+		cursor.moveToFirst();
+		result = cursor.getBlob(0);
+		cursor.close();
+		return result;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -691,7 +707,7 @@ public class DatabaseAdapter {
 			for (int i=0; i<filtersNb; i++) {
 				ArrayList<Object> filter = (ArrayList<Object>) ((ArrayList<Object>)filters).get(i);
 				if (i != 0) {
-					//Add link
+					//TODO Add link
 				}
 				selectionString.append(DatabaseAttribute.FIELD).append(filter.get(0).toString());
 				selectionString.append(" ").append(Function.getOperator(filter.get(1))).append(" ");
@@ -731,13 +747,10 @@ public class DatabaseAdapter {
 				while (cursor.moveToNext()) {
 					for (int j=0; j<blobColumnArraySize; j++) {
 						String imageName = (String)getCursorValue(cursor, columnsNames[blobColumnArray.get(j)]);
-						//Delete the image
-						StringBuffer filePath = new StringBuffer(Constant.APPPACKAGE);
-						filePath.append(Constant.USERDIRECTORY);
-						filePath.append(ApplicationView.getUsername()).append("/");
-						filePath.append(ApplicationView.getApplicationId()).append("/");
-						filePath.append(imageName);
-						new File(filePath.toString()).delete();
+						StringBuffer selection = new StringBuffer("File = \"");
+						selection.append(imageName);
+						selection.append("\"");
+						sSqlite.delete(Constant.BLOBTABLE, selection.toString(), null);
 					}	
 				}
 			}

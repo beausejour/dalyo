@@ -143,43 +143,47 @@ public class Form extends ScrollView {
 	 */
 	public void setPreview() {
 		int viewLen = mLayout.getChildCount();
+		StringBuffer path = new StringBuffer(DmaHttpClient.getFilesPath());
+		path.append(Constant.TEMPDIRECTORY);
+		int start = path.length();
 		for (int i=0; i<viewLen; i++) {
 			View view = mLayout.getChildAt(i);
 			if (view instanceof DoodleView) {
 				String fileName = ((DoodleView)view).getImageName();
 				if (!fileName.equals("")) {
-					StringBuffer path = new StringBuffer(DmaHttpClient.getFilesPath());
+					path.delete(start, path.length());
 					path.append(fileName);
 					if (new File(path.toString()).exists()) {
 						((DoodleView)view).setText("");
 						((DoodleView)view).setBackgroundDrawable(Drawable.createFromPath(path.toString()));
 					} else {
-						((DoodleView)view).setText("Open Doodle");
+						((DoodleView)view).setText("Doodle");
 					}	
 				}
 			} else if (view instanceof PictureBoxView) {
 				String fileName = ((PictureBoxView)view).getPhotoName();
 				if (!fileName.equals("")) {
-					StringBuffer path = new StringBuffer(DmaHttpClient.getFilesPath());
+					path.delete(start, path.length());
 					path.append(fileName);
 					if (new File(path.toString()).exists()) {
 						((PictureBoxView)view).setImageDrawable(Drawable.createFromPath(path.toString()));
+						((PictureBoxView)view).setScaleType(ScaleType.FIT_XY);
 					} else {
 						((PictureBoxView)view).setImageResource(R.drawable.camera);	
 					}
-					((PictureBoxView)view).setScaleType(ScaleType.FIT_XY);
 				}
 			} else if (view instanceof Barcode) {
-				StringBuffer path = new StringBuffer(DmaHttpClient.getFilesPath());
-				path.append(Constant.BARCODEFILE);
-				path.append(((Barcode)view).getTag().toString());
-				path.append("_tmp.jpg");
-				if (new File(path.toString()).exists()) {
-					((Barcode)view).setImageDrawable(Drawable.createFromPath(path.toString()));	
-				} else {
-					((Barcode)view).setImageResource(R.drawable.barcode);	
+				String fileName = ((Barcode)view).getImageName();
+				if (!fileName.equals("")) {
+					path.delete(start, path.length());
+					path.append(fileName);
+					if (new File(path.toString()).exists()) {
+						((Barcode)view).setImageDrawable(Drawable.createFromPath(path.toString()));
+						((Barcode)view).setScaleType(ScaleType.FIT_XY);
+					} else {
+						((Barcode)view).setImageResource(R.drawable.barcode);	
+					}
 				}
-				((Barcode)view).setScaleType(ScaleType.FIT_XY);
 			}
 		}
 	}

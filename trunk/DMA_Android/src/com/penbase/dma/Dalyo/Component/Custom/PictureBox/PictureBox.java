@@ -15,7 +15,6 @@ import android.view.WindowManager;
 
 import com.penbase.dma.R;
 import com.penbase.dma.Constant.Constant;
-import com.penbase.dma.View.ApplicationListView;
 import com.penbase.dma.View.ApplicationView;
 
 import java.io.File;
@@ -117,7 +116,6 @@ public class PictureBox extends Activity implements SurfaceHolder.Callback {
 		return true;
 	}
 
-	//TODO save photo in temp mode, "picturebox_id_temp.jpg" if it is not saved, delete it when the activity destroyed
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		switch (item.getItemId()) {
@@ -133,8 +131,13 @@ public class PictureBox extends Activity implements SurfaceHolder.Callback {
 							filePath.append(Constant.USERDIRECTORY);
 							filePath.append(ApplicationView.getUsername()).append("/");
 							filePath.append(ApplicationView.getApplicationId()).append("/");
-							filePath.append(photoName);
+							filePath.append(Constant.TEMPDIRECTORY);
 							File file = new File(filePath.toString());
+							if (!file.exists()) {
+								file.mkdir();
+							}
+							filePath.append(photoName);
+							file = new File(filePath.toString());
 							FileOutputStream fos = null;
 							try{
 								fos = new FileOutputStream(file);
@@ -149,6 +152,7 @@ public class PictureBox extends Activity implements SurfaceHolder.Callback {
 							try {
 								mPhotoBytes = null;
 								fos.close();
+								ApplicationView.getDataBase().saveBlobData(photoName, file);
 							}  catch (IOException e) {
 								e.printStackTrace();
 							}

@@ -118,7 +118,6 @@ public class DmaHttpClient{
 			mDesign_XML = sDirectory + Constant.DESIGNXML;
 			mBehavior_XML = sDirectory + Constant.BEHAVIORXML;
 			mResources_XML = sDirectory + Constant.RESOURCEXML;
-			
 		}
 	}
 	

@@ -348,7 +348,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 			directory.mkdir();
 		}
 		
-		iconFilePath.append(application.getName()).append("/");
+		iconFilePath.append(application.getAppId()).append("/");
 		directory = new File(iconFilePath.toString());
 		if (!directory.exists()) {
 			directory.mkdir();

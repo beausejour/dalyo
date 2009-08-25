@@ -15,11 +15,7 @@ public class NS_Component {
 	
 	public static Object GetValue(Element element) {
 		String componentId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT).toString();
-		if (ApplicationView.getComponents().containsKey(componentId)) {
-			return ApplicationView.getComponents().get(componentId).getValue();
-		} else {
-			return null;
-		}
+		return ApplicationView.getComponents().get(componentId).getValue();
 	}
 	
 	public static boolean IsEnabled(Element element) {

@@ -5,8 +5,8 @@
     <string name="menu_logout">Sign out</string>
     <string name="menu_update">Update application list</string>
     <string name="menu_quit">Exit</string>
-	<string name="login">Login :</string>
-	<string name="pwd">Password :</string>
+	<string name="login">Login: </string>
+	<string name="pwd">Password: </string>
 	<string name="rememberme">Remember me</string>
 	<string name="run">Sign in</string>
 	<string name="applist">Applications list: </string>

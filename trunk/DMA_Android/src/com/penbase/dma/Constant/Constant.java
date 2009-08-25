@@ -53,8 +53,6 @@ public class Constant {
 	public static String POSITIVENUMERIC = "positivenumeric";
 	public static String NONE = "none";
 	
-	public static final String BARCODEFILE = "barcode_";
-	
 	//Xml files
 	public static final String DBXML = "db.xml";
 	public static final String DESIGNXML = "design.xml";
@@ -69,4 +67,13 @@ public class Constant {
 	
 	//Locales
 	public static final String FRENCH = "fr";
+	
+	//Blob table
+	public static final String BLOBTABLE = "Table_Blob";
+	public static final String CREATE_BLOBTABLE = "CREATE TABLE Table_Blob (File VARCHAR, Data BLOB)";
+	public static final String BLOBFILE = "File";
+	public static final String BLOBDATA = "Data";
+	
+	//Temporary directory for images (doodle or pictureBox)
+	public static final String TEMPDIRECTORY = "temp/";
 }

@@ -11,7 +11,6 @@ import com.google.zxing.client.result.ParsedResult;
 import com.google.zxing.client.result.ResultParser;
 import com.penbase.dma.R;
 import com.penbase.dma.Constant.Constant;
-import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
 import com.penbase.dma.View.ApplicationView;
 
 import android.app.Activity;
@@ -101,18 +100,23 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 	  }
 
 	  private void savePreview() {
-		  StringBuffer photoName = new StringBuffer(Constant.BARCODEFILE);
-		  photoName.append(mId).append("_tmp.jpg");
-		  StringBuffer filePath = new StringBuffer(DmaHttpClient.getFilesPath());
-		  filePath.append(photoName);
-		  File file = new File(filePath.toString());
-		  if (file.exists()) {
-			  file.delete();
-		  }
+		  String photoName = System.currentTimeMillis()+".jpg";
+		  StringBuffer tempFilePath = new StringBuffer(Constant.APPPACKAGE);
+		  tempFilePath.append(Constant.USERDIRECTORY);
+		  tempFilePath.append(ApplicationView.getUsername()).append("/");
+		  tempFilePath.append(ApplicationView.getApplicationId()).append("/");
+		  tempFilePath.append(Constant.TEMPDIRECTORY);
+		  File file = new File(tempFilePath.toString());
+		  if (!file.exists()) {
+			  file.mkdir();
+		  }	
+		  tempFilePath.append(photoName);
+		  file = new File(tempFilePath.toString());
 		  FileOutputStream fos = null;
 		  try {
 			  fos = new FileOutputStream(file);
 			  ((BitmapDrawable)mBarcodeImageView.getDrawable()).getBitmap().compress(Bitmap.CompressFormat .JPEG, 100, fos);
+			  ((Barcode)ApplicationView.getComponents().get(mId).getView()).setImageName(photoName);
 		  } catch (FileNotFoundException e) {
 			  e.printStackTrace();
 		  }

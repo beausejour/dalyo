@@ -173,14 +173,28 @@ public class Dma extends Activity implements OnClickListener {
 	private void callApplicationListView() {
 		if (mServerResponse == null) {
 			mLoadApps.dismiss();
-			mAlertDialog.setTitle("Error");
-			showMessage("Connection failed!");
+			if (sLocale.contains(Constant.FRENCH)) {
+				mAlertDialog.setTitle("Erreur");
+				showMessage("Erreur de connexion !");
+			} else {
+				mAlertDialog.setTitle("Error");
+				showMessage("Connection failed!");	
+			}
 		} else if (mServerResponse.equals(String.valueOf(ErrorCode.UNAUTHORIZED))) {
 			mLoadApps.dismiss();
-			mAlertDialog.setTitle("Error");
-			showMessage("Check your username or password!");
+			if (sLocale.contains(Constant.FRENCH)) {
+				mAlertDialog.setTitle("Erreur");
+				showMessage("Vérifier votre identifiant ou mot de passe !");
+			} else {
+				mAlertDialog.setTitle("Error");
+				showMessage("Check your username or password!");	
+			}
 		} else {
-			mLoadApps.setMessage("Loading application list...");
+			if (sLocale.contains(Constant.FRENCH)) {
+				mLoadApps.setMessage("Chargement en cours...");
+			} else {
+				mLoadApps.setMessage("Loading application list...");
+			}
 			new Thread(new Runnable() {
 				@Override
 				public void run() {

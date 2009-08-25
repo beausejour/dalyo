@@ -32,6 +32,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
@@ -103,8 +104,35 @@ public class ApplicationView extends Activity {
 				mHandler.sendEmptyMessage(0);	
 			}
 		}).start();
+		deleteTempDirectory();
 	}
 
+	private void deleteTempDirectory() {
+		StringBuffer tempFilePath = new StringBuffer(Constant.APPPACKAGE);
+		tempFilePath.append(Constant.USERDIRECTORY);
+		tempFilePath.append(sUsername).append("/");
+		tempFilePath.append(sApplicationId).append("/");
+		tempFilePath.append(Constant.TEMPDIRECTORY);
+		File tempDirectory = new File(tempFilePath.toString());
+		if (tempDirectory.exists()) {
+			deleteDirectory(tempDirectory);	
+		}
+	}
+	
+	private boolean deleteDirectory(File directory) {
+        if (directory.isDirectory()) {
+            String[] children = directory.list();
+            int length = children.length;
+            for (int i=0; i<length; i++) {
+            	boolean success = deleteDirectory(new File(directory, children[i]));
+                if (!success) {
+                    return false;
+                }
+            }
+        }
+        return directory.delete();
+    }
+	
 	/**
 	 * Prepares necessary xml data
 	 * @param login Login name
