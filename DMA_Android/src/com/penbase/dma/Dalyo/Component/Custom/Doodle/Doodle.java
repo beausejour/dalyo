@@ -151,21 +151,26 @@ public class Doodle extends Activity implements ColorPickerDialog.OnColorChanged
     */
    private void saveImage() {
 	   String imageName = System.currentTimeMillis()+".jpg";
-	   StringBuffer filePath = new StringBuffer(Constant.APPPACKAGE);
-	   filePath.append(Constant.USERDIRECTORY);
-	   filePath.append(ApplicationView.getUsername()).append("/");
-	   filePath.append(ApplicationView.getApplicationId()).append("/");
-	   filePath.append(imageName);
-       File file = new File(filePath.toString());
+	   StringBuffer tempFilePath = new StringBuffer(Constant.APPPACKAGE);
+	   tempFilePath.append(Constant.USERDIRECTORY);
+	   tempFilePath.append(ApplicationView.getUsername()).append("/");
+	   tempFilePath.append(ApplicationView.getApplicationId()).append("/");
+	   tempFilePath.append(Constant.TEMPDIRECTORY);
+	   File file = new File(tempFilePath.toString());
+	   if (!file.exists()) {
+		   file.mkdir();
+	   }
+	   tempFilePath.append(imageName);
+       file = new File(tempFilePath.toString());
        FileOutputStream fos;
        try{
     	   fos = new FileOutputStream(file);
     	   if (mDoodleView.mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)) {
-    		   //Log.i("info", "image compressed ok");
     		   ((DoodleView)ApplicationView.getComponents().get(mId).getView()).setImageName(imageName);
+    		   ApplicationView.getDataBase().saveBlobData(imageName, file);
     		   finish();
     	   } else {
-    		   //Log.i("info", "image compressed failed");
+    		   //Image compressed failed
     	   }
        } catch (FileNotFoundException e) {
     	   e.printStackTrace();

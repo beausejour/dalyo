@@ -8,9 +8,6 @@ import com.penbase.dma.View.ApplicationView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -153,24 +150,19 @@ public class DmaHttpBinarySync {
 				int blobNb = blobs.size();
 				if (blobNb > 0) {
 					for (ArrayList<Object> blob : blobs) {
+						String blobName = blob.get(1).toString();
+						String extension = blobName.split("\\.")[1];
 						StringBuffer sendAction = new StringBuffer(mBlobAction);
 						sendAction.append("&fieldid=");
 						sendAction.append(blob.get(0));
-						sendAction.append("&blob=");
-						sendAction.append(blob.get(1));
-						sendAction.append("&format=jpg");
-						//TODO use arbitary table to save the blob data
-						StringBuffer imagePath = new StringBuffer(Constant.APPPACKAGE);
-						imagePath.append(Constant.USERDIRECTORY);
-						imagePath.append(ApplicationView.getUsername()).append("/");
-						imagePath.append(ApplicationView.getApplicationId());
-						imagePath.append("/");
-						imagePath.append(blob.get(1));
-						File image = new File(imagePath.toString());
-						byte[] responsedata = createConnection(sendAction.toString(), this.getBytesFromFile(image));
+						sendAction.append("&blob=").append(blobName);
+						sendAction.append("&format=").append(extension);
+						
+						byte[] responsedata = createConnection(sendAction.toString(), 
+								ApplicationView.getDataBase().getBlobdata(blobName));
 						String codeResponseStr = getErrorCode(responsedata);
 						if (Integer.valueOf(codeResponseStr) == ErrorCode.OK) {
-							
+							//send blob ok
 						}
 					}
 				}
@@ -191,38 +183,6 @@ public class DmaHttpBinarySync {
 		}
 		return wellDone;
 	}
-	
-	private byte[] getBytesFromFile(File file) {
-        InputStream is;
-        byte[] bytes = null;
-		try {
-			is = new FileInputStream(file);
-		       long length = file.length();
-		       
-		        // Create the byte array to hold the data
-		        bytes = new byte[(int)length];
-		    
-		        // Read in the bytes
-		        int offset = 0;
-		        int numRead = 0;
-				while (offset < bytes.length
-						&& (numRead=is.read(bytes, offset, bytes.length-offset)) >= 0) {
-					offset += numRead;
-				}
-		    
-		        // Ensure all the bytes have been read in
-		        if (offset < bytes.length) {
-		            throw new IOException("Could not completely read file "+file.getName());
-		        }
-		        // Close the input stream and return bytes
-		        is.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-        return bytes;
-    }
 	
 	private byte[] getData(HttpURLConnection connection) {
 		if (mCookie == null) {

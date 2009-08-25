@@ -11,11 +11,13 @@ public class Barcode extends ImageButton {
 	private Context mContext;
 	private String mId;
 	private String mContent;
+	private String mName;
 
 	public Barcode(Context context, String id) {
 		super(context);
 		mContext = context;
 		mId = id;
+		mName = "";
 		setTag(mId);
 		setImageResource(R.drawable.barcode);
 		setOnClickListener(new OnClickListener() {
@@ -39,5 +41,13 @@ public class Barcode extends ImageButton {
 	
 	public String getContent() {
 		return mContent;
+	}
+	
+	public String getImageName() {
+		return mName;
+	}
+	
+	public void setImageName(String n) {
+		mName = n;
 	}
 }
