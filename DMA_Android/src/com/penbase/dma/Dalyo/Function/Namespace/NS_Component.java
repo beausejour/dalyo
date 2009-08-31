@@ -1,5 +1,7 @@
 package com.penbase.dma.Dalyo.Function.Namespace;
 
+import android.util.Log;
+
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Function.Function;
@@ -15,7 +17,11 @@ public class NS_Component {
 	
 	public static Object GetValue(Element element) {
 		String componentId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT).toString();
-		return ApplicationView.getComponents().get(componentId).getValue();
+		if (ApplicationView.getComponents().containsKey(componentId)) {
+			return ApplicationView.getComponents().get(componentId).getValue();
+		} else {
+			return null;
+		}
 	}
 	
 	public static boolean IsEnabled(Element element) {

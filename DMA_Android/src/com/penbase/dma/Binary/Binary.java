@@ -86,6 +86,7 @@ public class Binary {
 		result.append((calendar.get(Calendar.MONTH)+1));
 		result.append("/");
 		result.append(calendar.get(Calendar.YEAR));
+		result.append(" ");
 		result.append((calendar.get(Calendar.HOUR)+1));
 		result.append(":");
 		result.append(calendar.get(Calendar.MINUTE));

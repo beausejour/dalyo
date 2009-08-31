@@ -242,6 +242,9 @@ public class Function {
 				if ((left != null) && (right != null)) {
 					if ((left instanceof String) || (right instanceof String)) {
 						result = !(left.toString().equals(right.toString()));
+					} else if ((left instanceof HashMap<?, ?>) || (right instanceof HashMap<?, ?>)) {
+						result = !(((HashMap<?, ?>)left).values().equals(((HashMap<?, ?>)right).values()) &&
+						((HashMap<?, ?>)left).keySet().equals(((HashMap<?, ?>)right).keySet()));
 					} else {
 						result = (Integer.valueOf(left.toString()) != Integer.valueOf(right.toString()));	
 					}
@@ -371,9 +374,9 @@ public class Function {
 	 */
 	private static Object distributeCall(Element element) {
 		Object result = null;
-		/*if (!sIsFirstTime) {
-			Log.i("info", "namespace "+element.getAttribute(ScriptTag.NAMESPACE)+" function name "+element.getAttribute(ScriptTag.FUNCTION));	
-		}*/
+		if (!sIsFirstTime) {
+			//Log.i("info", "namespace "+element.getAttribute(ScriptTag.NAMESPACE)+" function name "+element.getAttribute(ScriptTag.FUNCTION));	
+		}
 		String namespace = element.getAttribute(ScriptTag.NAMESPACE);
 		String function = element.getAttribute(ScriptTag.FUNCTION);
 		if (namespace.equals(ScriptAttribute.COMPONENT)) {
