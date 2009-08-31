@@ -60,7 +60,7 @@ public class Constant {
 	public static final String RESOURCEXML = "resources.xml";
 	
 	//Resource directory
-	public static final String RESOURCE = "resource";
+	public static final String RESOURCE = "resource/";
 	
 	public static final String IMPORTACTION = "import";
 	public static final String EXPORTACTION = "export";

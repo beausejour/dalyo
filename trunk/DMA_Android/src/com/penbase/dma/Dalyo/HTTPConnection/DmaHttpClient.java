@@ -102,7 +102,7 @@ public class DmaHttpClient{
 			}
 			
 			sResourceFilePath = new StringBuffer(sDirectory);
-			sResourceFilePath.append(Constant.RESOURCE).append("/");
+			sResourceFilePath.append(Constant.RESOURCE);
 			File resourceFileDirectory = new File(sResourceFilePath.toString());
 			if (!resourceFileDirectory.exists()) {
 				resourceFileDirectory.mkdir();
@@ -277,8 +277,8 @@ public class DmaHttpClient{
 				saxParser = spFactory.newSAXParser();
 				XMLReader xmlReader = saxParser.getXMLReader();
 				EventsHandler eventsHandler = new EventsHandler(urlRequest);
-		    	xmlReader.setContentHandler(eventsHandler);
-		    	xmlReader.parse(new InputSource(new ByteArrayInputStream(bytes)));
+		    		xmlReader.setContentHandler(eventsHandler);
+		    		xmlReader.parse(new InputSource(new ByteArrayInputStream(bytes)));
 			}
 	    	 catch (ParserConfigurationException e) {
 	 			e.printStackTrace();

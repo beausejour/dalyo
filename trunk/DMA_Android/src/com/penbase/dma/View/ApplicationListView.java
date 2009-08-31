@@ -342,13 +342,18 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		boolean willDownload = true;
 		StringBuffer iconFilePath = new StringBuffer(Constant.APPPACKAGE);
 		iconFilePath.append(Constant.USERDIRECTORY);
-		iconFilePath.append(mUsername).append("/");
 		File directory = new File(iconFilePath.toString());
 		if (!directory.exists()) {
 			directory.mkdir();
 		}
 		
-		iconFilePath.append(application.getAppId()).append("/");
+		iconFilePath.append(mUsername).append("/");
+		directory = new File(iconFilePath.toString());
+		if (!directory.exists()) {
+			directory.mkdir();
+		}
+		
+		iconFilePath.append(Constant.RESOURCE);
 		directory = new File(iconFilePath.toString());
 		if (!directory.exists()) {
 			directory.mkdir();

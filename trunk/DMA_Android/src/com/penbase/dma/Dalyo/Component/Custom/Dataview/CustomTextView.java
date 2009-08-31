@@ -14,6 +14,7 @@ import android.widget.TextView;
  */
 public class CustomTextView extends TextView{
 	private Paint mBorderPaint;
+	private RectF mDrawRect;
 	
 	public CustomTextView(Context context) {
 		super(context);
@@ -23,13 +24,13 @@ public class CustomTextView extends TextView{
 		mBorderPaint.setARGB(255, 223, 217, 217);
 		mBorderPaint.setAntiAlias(true);
 		mBorderPaint.setStyle(Style.STROKE);
+		mDrawRect = new RectF();
 	}
 
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
-		RectF drawRect = new RectF();
-		drawRect.set(0,0, getMeasuredWidth(), getMeasuredHeight());
-		canvas.drawRoundRect(drawRect, 0, 0, mBorderPaint);
+		mDrawRect.set(0,0, getMeasuredWidth(), getMeasuredHeight());
+		canvas.drawRoundRect(mDrawRect, 0, 0, mBorderPaint);
 	}
 }

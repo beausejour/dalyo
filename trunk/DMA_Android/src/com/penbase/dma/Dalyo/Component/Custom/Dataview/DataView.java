@@ -33,8 +33,8 @@ import java.util.HashMap;
  */
 public class DataView extends LinearLayout implements OnGestureListener {	
 	private Paint mBorderPaint;
-	private static float sFontSize;
-	private static Typeface sFontType;
+	private float mFontSize;
+	private Typeface mFontType;
 	private DataViewAdapter mAdapter;
 	private Context mContext;
 	private ArrayList<String> mPwidthList;
@@ -61,8 +61,8 @@ public class DataView extends LinearLayout implements OnGestureListener {
 		this.mTableId = tid;
 		this.mListView = new ListView(c);
 		this.mGestureDetector = new GestureDetector(this);
-    	this.mGestureDetector.setIsLongpressEnabled(false);
-    	mAdapter = new DataViewAdapter();
+    		this.mGestureDetector.setIsLongpressEnabled(false);
+    		mAdapter = new DataViewAdapter();
 		mPwidthList = new ArrayList<String>();
 		mLwidthList = new ArrayList<String>();
 		mListView.setItemsCanFocus(true);
@@ -102,23 +102,23 @@ public class DataView extends LinearLayout implements OnGestureListener {
 	 */
 	@Override
 	protected void onDraw(Canvas canvas) {
-		super.onDraw(canvas);
+		/*super.onDraw(canvas);
 		RectF drawRect = new RectF();
 	    drawRect.set(0,0, getMeasuredWidth(), getMeasuredHeight());
-	    canvas.drawRoundRect(drawRect, 0, 0, mBorderPaint);
+	    canvas.drawRoundRect(drawRect, 0, 0, mBorderPaint);*/
 	}
 	
 	public void setText(float fs, Typeface ft) {
-		sFontSize = fs;
-		sFontType = ft;
+		mFontSize = fs;
+		mFontType = ft;
 	}
 	
-	public static float getTextSize() {
-		return sFontSize;
+	public float getTextSize() {
+		return mFontSize;
 	}
 	
-	public static Typeface getTextType() {
-		return sFontType;
+	public Typeface getTextType() {
+		return mFontType;
 	}
 	
 	public boolean hasHeader() {
@@ -161,7 +161,7 @@ public class DataView extends LinearLayout implements OnGestureListener {
 			}
 			if (ApplicationView.getOrientation() == Configuration.ORIENTATION_PORTRAIT) {
 				if (mHasHeader){
-					CustomLinearLayout header = new CustomLinearLayout(mContext, headerList, mPwidthList, true);
+					CustomLinearLayout header = new CustomLinearLayout(mContext, this, headerList, mPwidthList, true);
 					mListView.addHeaderView(header, null, false);
 				}
 				for (String s : mPwidthList) {
@@ -169,7 +169,7 @@ public class DataView extends LinearLayout implements OnGestureListener {
 				}
 			} else {
 				if (mHasHeader){
-					CustomLinearLayout header = new CustomLinearLayout(mContext, headerList, mLwidthList, true);
+					CustomLinearLayout header = new CustomLinearLayout(mContext, this, headerList, mLwidthList, true);
 					mListView.addHeaderView(header, null, false);
 				}
 				for (String s : mLwidthList) {
@@ -263,9 +263,9 @@ public class DataView extends LinearLayout implements OnGestureListener {
 				CustomLinearLayout layout = null;
 				int orientation = mContext.getResources().getConfiguration().orientation;
 				if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-					layout = new CustomLinearLayout(mContext, data, getmLwidthList(), false);
+					layout = new CustomLinearLayout(mContext, this, data, getmLwidthList(), false);
 				} else if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-					layout = new CustomLinearLayout(mContext, data, getmPwidthList(), false);
+					layout = new CustomLinearLayout(mContext, this, data, getmPwidthList(), false);
 				}
 
 				mAdapter.addItem(layout);
@@ -419,8 +419,8 @@ public class DataView extends LinearLayout implements OnGestureListener {
 	
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent ev) {
-		mGestureDetector.onTouchEvent(ev);
 		super.dispatchTouchEvent(ev);
+		mGestureDetector.onTouchEvent(ev);
 		return true;
 	}
 }

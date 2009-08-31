@@ -13,17 +13,19 @@ import java.util.ArrayList;
  */
 public class CustomLinearLayout extends LinearLayout {
 	private Context mContext;
-	private ArrayList<String> mDataList = new ArrayList<String>();
-	private ArrayList<String> mWidthList = new ArrayList<String>();
+	private ArrayList<String> mDataList;
+	private ArrayList<String> mWidthList;
 	private boolean mIsHeader;
+	private DataView mDataview;
 	
-	public CustomLinearLayout(Context c, ArrayList<String> dl, ArrayList<String> wl, boolean ish) {
+	public CustomLinearLayout(Context c, DataView dv, ArrayList<String> dl, ArrayList<String> wl, boolean ish) {
 		super(c);
 		this.mContext = c;
+		this.mDataview = dv;
 		this.setOrientation(LinearLayout.HORIZONTAL);
-		this.mDataList = dl;
+		this.mDataList = new ArrayList<String>(dl);
 		this.mIsHeader = ish;
-		this.mWidthList = wl;
+		this.mWidthList = new ArrayList<String>(wl);
 		
 		if (mIsHeader) {
 			int size = mDataList.size();
@@ -43,8 +45,8 @@ public class CustomLinearLayout extends LinearLayout {
 			for (int i=0; i<size; i++) {
 				CustomTextView ctv = new CustomTextView(mContext);
 				ctv.setText(mDataList.get(i));
-				ctv.setTextSize(DataView.getTextSize());
-				ctv.setTypeface(DataView.getTextType());
+				ctv.setTextSize(mDataview.getTextSize());
+				ctv.setTypeface(mDataview.getTextType());
 				ctv.setGravity(Gravity.CENTER_VERTICAL);
 				int width = Integer.valueOf(mWidthList.get(i));
 				this.addView(ctv, new LinearLayout.LayoutParams(width, 50));
