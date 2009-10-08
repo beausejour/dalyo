@@ -25,7 +25,7 @@ public class Barcode extends ImageButton {
 			public void onClick(View v) {
 				Intent myIntent = new Intent(mContext, CaptureActivity.class);
 				myIntent.putExtra("ID", mId);
-				mContext.startActivity(myIntent);	
+				mContext.startActivity(myIntent);
 			}
 		});
 	}
@@ -34,19 +34,19 @@ public class Barcode extends ImageButton {
 		setImageResource(R.drawable.barcode);
 		this.setScaleType(ScaleType.CENTER);
 	}
-	
+
 	public void setContent(String content) {
 		mContent = content;
 	}
-	
+
 	public String getContent() {
 		return mContent;
 	}
-	
+
 	public String getImageName() {
 		return mName;
 	}
-	
+
 	public void setImageName(String n) {
 		mName = n;
 	}

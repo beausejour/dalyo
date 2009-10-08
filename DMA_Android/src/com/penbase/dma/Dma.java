@@ -15,7 +15,6 @@
 package com.penbase.dma;
 
 import java.io.File;
-import java.util.Locale;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -26,6 +25,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -65,9 +65,9 @@ public class Dma extends Activity implements OnClickListener {
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
-				case 0:
-					callApplicationListView();
-					break;
+			case 0:
+				callApplicationListView();
+				break;
 			}
 		}
 	};
@@ -80,18 +80,17 @@ public class Dma extends Activity implements OnClickListener {
 	private boolean mRememberme;
 	private String mApplicationlist;
 	private boolean mStorageCardRemoved;
-	public static String sLocale;
-	
+	private Resources mResources;
+
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
-		sDeviceId = ((TelephonyManager)this.getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
+		mResources = getResources();
+		sDeviceId = ((TelephonyManager) this
+				.getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
 		checkSystemTable();
-		
-		sLocale = Locale.getDefault().toString();
-		
 		mAlertDialog = new AlertDialog.Builder(this).create();
-		
+
 		PackageInfo pi = null;
 		try {
 			pi = getPackageManager().getPackageInfo(getPackageName(), 0);
@@ -99,7 +98,7 @@ public class Dma extends Activity implements OnClickListener {
 			e.printStackTrace();
 		}
 		sVersion = pi.versionName;
-		
+
 		if (!mRememberme) {
 			if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
 				setContentView(R.layout.login_layout);
@@ -113,12 +112,14 @@ public class Dma extends Activity implements OnClickListener {
 			mTx_login = (TextView) findViewById(R.id.textLogin);
 			mTx_password = (TextView) findViewById(R.id.textePasswd);
 			mCb_remember_me = (CheckBox) findViewById(R.id.remember_me_cb);
-			mInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			View aboutView = mInflater.inflate(R.layout.about, null, false);
-			TextView nameVersionView = (TextView) aboutView.findViewById(R.id.nameversion);
-			nameVersionView.setText("Dalyo Mobile Agent "+Dma.getVersion());
-			mAboutDialog = new AlertDialog.Builder(this).setIcon(android.R.drawable.ic_dialog_info)
-	        .setTitle(R.string.menu_about).setView(aboutView).create();
+			TextView nameVersionView = (TextView) aboutView
+					.findViewById(R.id.nameversion);
+			nameVersionView.setText("Dalyo Mobile Agent " + Dma.getVersion());
+			mAboutDialog = new AlertDialog.Builder(this).setIcon(
+					android.R.drawable.ic_dialog_info).setTitle(
+					R.string.menu_about).setView(aboutView).create();
 		} else {
 			this.finish();
 			Intent intent = new Intent(this, ApplicationListView.class);
@@ -131,7 +132,7 @@ public class Dma extends Activity implements OnClickListener {
 			Toast.makeText(this, R.string.nosdcard, Toast.LENGTH_LONG).show();
 		}
 	}
-	
+
 	@Override
 	public void onClick(View arg0) {
 		Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
@@ -139,8 +140,8 @@ public class Dma extends Activity implements OnClickListener {
 		final String pwd = mTx_password.getText().toString();
 		if (login.equals("") && pwd.equals("")) {
 			findViewById(R.id.textLogin).startAnimation(shake);
-	        findViewById(R.id.textePasswd).startAnimation(shake);
-	        return;
+			findViewById(R.id.textePasswd).startAnimation(shake);
+			return;
 		} else if (login.equals("")) {
 			findViewById(R.id.textLogin).startAnimation(shake);
 			return;
@@ -148,70 +149,61 @@ public class Dma extends Activity implements OnClickListener {
 			findViewById(R.id.textePasswd).startAnimation(shake);
 			return;
 		}
-		
-		if (sLocale.contains(Constant.FRENCH)) {
-			mLoadApps = ProgressDialog.show(this, "Veuillez patienter...", "Connexion en cours...", true, false);
-		} else {
-			mLoadApps = ProgressDialog.show(this, "Please wait...", "Connecting to server...", true, false);	
-		}
+		mLoadApps = ProgressDialog.show(this, mResources
+				.getText(R.string.waiting), mResources
+				.getText(R.string.connecting), true, false);
 
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
 				if (mHandler != null) {
-					mServerResponse = new DmaHttpClient(login.trim(), null).Authentication(login.trim(),
-							Common.md5(pwd.trim()));
+					mServerResponse = new DmaHttpClient(login.trim(), null)
+							.Authentication(login.trim(), Common
+									.md5(pwd.trim()));
 					mHandler.sendEmptyMessage(0);
 				}
 			}
 		}).start();
 	}
-	
+
 	/**
-	 * Checks the result of authentication, display the ApplicationListView if authentication success
+	 * Checks the result of authentication, display the ApplicationListView if
+	 * authentication success
 	 */
 	private void callApplicationListView() {
 		if (mServerResponse == null) {
 			mLoadApps.dismiss();
-			if (sLocale.contains(Constant.FRENCH)) {
-				mAlertDialog.setTitle("Erreur");
-				showMessage("Erreur de connexion !");
-			} else {
-				mAlertDialog.setTitle("Error");
-				showMessage("Connection failed!");	
-			}
-		} else if (mServerResponse.equals(String.valueOf(ErrorCode.UNAUTHORIZED))) {
+			showMessage(mResources.getText(R.string.error), mResources
+					.getString(R.string.connectionerror));
+		} else if (mServerResponse.equals(String
+				.valueOf(ErrorCode.UNAUTHORIZED))) {
 			mLoadApps.dismiss();
-			if (sLocale.contains(Constant.FRENCH)) {
-				mAlertDialog.setTitle("Erreur");
-				showMessage("Vérifier votre identifiant ou mot de passe !");
-			} else {
-				mAlertDialog.setTitle("Error");
-				showMessage("Check your username or password!");	
-			}
+			showMessage(mResources.getText(R.string.error), mResources
+					.getString(R.string.connectionerror));
 		} else {
-			if (sLocale.contains(Constant.FRENCH)) {
-				mLoadApps.setMessage("Chargement en cours...");
-			} else {
-				mLoadApps.setMessage("Loading application list...");
-			}
+			mLoadApps.setMessage(mResources
+					.getString(R.string.loadingapplicationlist));
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
 					try {
 						mUsername = mTx_login.getText().toString();
-						mUserpassword = Common.md5(mTx_password.getText().toString().trim());
+						mUserpassword = Common.md5(mTx_password.getText()
+								.toString().trim());
 						// save user info
 						ContentValues values = new ContentValues();
 						values.put("Username", mUsername);
 						values.put("Userpassword", mUserpassword);
-						values.put("Rememberme", String.valueOf(mCb_remember_me.isChecked()));
+						values.put("Rememberme", String.valueOf(mCb_remember_me
+								.isChecked()));
 						values.put("Applicationlist", mServerResponse);
-						mSqlite.update(Constant.SYSTEMTABLE, values, "ID = \"0\"", null);
-					} catch(Exception e) {
+						mSqlite.update(Constant.SYSTEMTABLE, values,
+								"ID = \"0\"", null);
+					} catch (Exception e) {
 						e.printStackTrace();
 					}
-					Intent intent = new Intent(Dma.this, ApplicationListView.class);
+					Intent intent = new Intent(Dma.this,
+							ApplicationListView.class);
 					intent.putExtra("USERNAME", mUsername);
 					intent.putExtra("USERPWD", mUserpassword);
 					intent.putExtra("APPLICATIONLIST", mServerResponse);
@@ -221,11 +213,11 @@ public class Dma extends Activity implements OnClickListener {
 			}).start();
 		}
 	}
-	
+
 	private void checkSystemTable() {
 		String storageState = Environment.getExternalStorageState();
-		if (storageState.equals(Environment.MEDIA_REMOVED) || 
-				storageState.equals(Environment.MEDIA_BAD_REMOVAL)) {
+		if (storageState.equals(Environment.MEDIA_REMOVED)
+				|| storageState.equals(Environment.MEDIA_BAD_REMOVAL)) {
 			mStorageCardRemoved = true;
 			mRememberme = false;
 		} else {
@@ -242,11 +234,13 @@ public class Dma extends Activity implements OnClickListener {
 			systemTable.append(Constant.SYSTEMTABLE);
 			File systemTableFile = new File(systemTable.toString());
 			if (systemTableFile.exists()) {
-				//Get saved values
-				mSqlite = SQLiteDatabase.openOrCreateDatabase(systemTable.toString(), null); 
-				Cursor cursor = mSqlite.query(Constant.SYSTEMTABLE, 
-						new String[]{"Username", "Userpassword", "Rememberme", "Applicationlist"}, 
-						null, null, null, null, null);
+				// Get saved values
+				mSqlite = SQLiteDatabase.openOrCreateDatabase(systemTable
+						.toString(), null);
+				Cursor cursor = mSqlite.query(Constant.SYSTEMTABLE,
+						new String[] { "Username", "Userpassword",
+								"Rememberme", "Applicationlist" }, null, null,
+						null, null, null);
 				cursor.moveToFirst();
 				mUsername = cursor.getString(0);
 				mUserpassword = cursor.getString(1);
@@ -254,11 +248,12 @@ public class Dma extends Activity implements OnClickListener {
 				mApplicationlist = cursor.getString(3);
 				cursor.close();
 			} else {
-				mSqlite = SQLiteDatabase.openOrCreateDatabase(systemTable.toString(), null);
-				//Create system table
+				mSqlite = SQLiteDatabase.openOrCreateDatabase(systemTable
+						.toString(), null);
+				// Create system table
 				mSqlite.execSQL(Constant.CREATE_SYSTEMTABLE);
-				
-				//Insert default values
+
+				// Insert default values
 				ContentValues values = new ContentValues();
 				values.put("Id", "0");
 				values.put("Username", Constant.EMPTY_STRING);
@@ -266,45 +261,44 @@ public class Dma extends Activity implements OnClickListener {
 				values.put("Rememberme", Constant.EMPTY_STRING);
 				values.put("Applicationlist", Constant.EMPTY_STRING);
 				mSqlite.insert(Constant.SYSTEMTABLE, null, values);
-			}	
+			}
 		}
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(Menu.NONE, 0, Menu.NONE, R.string.menu_about).setIcon(android.R.drawable.ic_menu_info_details);
-		menu.add(Menu.NONE, 1, Menu.NONE, R.string.menu_quit).setIcon(android.R.drawable.ic_menu_close_clear_cancel);
+		menu.add(Menu.NONE, 0, Menu.NONE, R.string.menu_about).setIcon(
+				android.R.drawable.ic_menu_info_details);
+		menu.add(Menu.NONE, 1, Menu.NONE, R.string.menu_quit).setIcon(
+				android.R.drawable.ic_menu_close_clear_cancel);
 		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-			case 0:
-				mAboutDialog.show();
-				break;
-			case 1:
-				finish();
-				break;
+		case 0:
+			mAboutDialog.show();
+			break;
+		case 1:
+			finish();
+			break;
 		}
 		return true;
 	}
-	
-	public void showMessage(String message) {
-		if (sLocale.contains(Constant.FRENCH)) {
-			mAlertDialog.setMessage("Vérifier votre identifiant ou mot de passe !");
-		} else {
-			mAlertDialog.setMessage("Check your username or password !");	
-		}
+
+	public void showMessage(CharSequence title, String message) {
+		mAlertDialog.setTitle(title);
+		mAlertDialog.setMessage(message);
 		mAlertDialog.show();
 	}
-	
+
 	public static String getDeviceID() {
 		return sDeviceId;
 	}
-	
+
 	public static String getVersion() {
-		return sVersion; 
+		return sVersion;
 	}
 
 	@Override
@@ -314,7 +308,9 @@ public class Dma extends Activity implements OnClickListener {
 			mLoadApps.dismiss();
 		}
 		if (mSqlite != null) {
-			mSqlite.close();	
+			mSqlite.close();
 		}
+		sDeviceId = null;
+		sVersion = null;
 	}
 }

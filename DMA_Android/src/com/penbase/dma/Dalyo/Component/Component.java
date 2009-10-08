@@ -41,114 +41,114 @@ public class Component {
 	private View mView = null;
 	private String mTableID = null;
 	private String mFieldID = null;
-	
-	//Variables for checkbox	
-	private String mChecked = null;	
 
-	//Variables for combobox
+	// Variables for checkbox
+	private String mChecked = null;
+
+	// Variables for combobox
 	private ArrayList<String> mLabelList = null;
 	private ArrayList<String> mValueList = null;
-	
-	//Variable for image
+
+	// Variable for image
 	private String mBackground = null;
-	
-	//Variable for Label
+
+	// Variable for Label
 	private String mAlign = null;
-	
-	//Variable for textfield
+
+	// Variable for textfield
 	private boolean mEditable;
 	private String mMultiLine;
 	private String mTextFilter;
-	
-	//Variable for TimeField/DateField
+
+	// Variable for TimeField/DateField
 	private String mDateTimeValue = null;
-	
-	//Variable for Gauge
+
+	// Variable for Gauge
 	private int mMinValue;
 	private int mMaxValue;
 	private int mInitialValue;
 
 	public Component(Context c, String t) {
 		this.mContext = c;
-		this.mType = t;		
+		this.mType = t;
 	}
-	
+
 	public void setFontSize(String fs) {
 		this.mFontSize = fs;
 	}
-	
+
 	public void setFontType(String ft) {
 		this.mFontType = ft;
 	}
-	
+
 	public void setId(String i) {
 		this.mId = i;
 	}
-	
+
 	public void setBackGround(String bg) {
 		this.mBackground = bg;
 	}
-	
+
 	public void setAlign(String align) {
 		this.mAlign = align;
 	}
-	
+
 	public void setLabel(String l) {
 		this.mLabel = l;
 	}
-		
+
 	public void setTableId(String tid) {
 		this.mTableID = tid;
 	}
-	
+
 	public void setFieldId(String fid) {
-		this.mFieldID = fid;	
+		this.mFieldID = fid;
 	}
-	
+
 	public void setChecked(String check) {
 		this.mChecked = check;
 	}
-	
+
 	public void setItemList(ArrayList<String> l) {
-		((ComboBox)getView()).setItemList(l);
+		((ComboBox) getView()).setItemList(l);
 	}
-	
+
 	public void setLabelList(ArrayList<String> l) {
 		this.mLabelList = l;
 	}
-	
+
 	public void setValueList(ArrayList<String> v) {
 		this.mValueList = v;
 	}
-	
+
 	public void setDataviewColumns(ArrayList<ArrayList<String>> l) {
-		((DataView)getView()).setColumnInfo(l);
+		((DataView) getView()).setColumnInfo(l);
 	}
-	
+
 	public void setDataviewOncalculate(HashMap<Integer, String> onc) {
-		((DataView)getView()).setOncalculate(onc);
+		((DataView) getView()).setOncalculate(onc);
 	}
-	
+
 	public void setMultiLine(String ml) {
 		this.mMultiLine = ml;
 	}
-	
+
 	public void setEditable(boolean editable) {
 		this.mEditable = editable;
 	}
-	
+
 	public void setTextFilter(String tf) {
 		this.mTextFilter = tf;
 	}
-	
+
 	public void setDateTimeValue(String value) {
 		this.mDateTimeValue = value;
 	}
-	
+
 	public void setInitValue(int i) {
 		this.mInitialValue = i;
 	}
-	
+
 	public void setMinValue(int min) {
 		this.mMinValue = min;
 	}
@@ -156,15 +156,15 @@ public class Component {
 	public void setMaxValue(int max) {
 		this.mMaxValue = max;
 	}
-	
+
 	public View getView() {
 		return mView;
 	}
-	
+
 	public String getId() {
 		return mId;
 	}
-	
+
 	/**
 	 * Instantiates a View object by its type
 	 */
@@ -172,8 +172,7 @@ public class Component {
 		if (mType.equals(DesignTag.COMPONENT_BARCODECOMPONENT)) {
 			Barcode barcode = new Barcode(mContext, mId);
 			mView = barcode;
-		}
-		else if (mType.equals(DesignTag.COMPONENT_BUTTON)) {
+		} else if (mType.equals(DesignTag.COMPONENT_BUTTON)) {
 			Button button = new Button(mContext);
 			button.setText(mLabel);
 			button.setTypeface(getFontType(mFontType));
@@ -182,7 +181,7 @@ public class Component {
 				String path = findResourceFile(mBackground);
 				if (path.length() > 0) {
 					Drawable d = Drawable.createFromPath(path);
-					button.setBackgroundDrawable(d);	
+					button.setBackgroundDrawable(d);
 				}
 			}
 			mView = button;
@@ -204,28 +203,35 @@ public class Component {
 			}
 			mView = combobox;
 		} else if (mType.equals(DesignTag.COMPONENT_LABEL)) {
-			Label labelObject = new Label(mContext, getFontType(mFontType), getFontSize(mFontSize));
+			Label labelObject = new Label(mContext, getFontType(mFontType),
+					getFontSize(mFontSize));
 			labelObject.setText(mLabel);
 			if (mAlign != null) {
 				labelObject.setGravity(getGravity(mAlign));
 			}
 			mView = labelObject;
 		} else if (mType.equals(DesignTag.COMPONENT_DATEFIELD)) {
-			DateField datefield = new DateField(mContext, getFontType(mFontType), getFontSize(mFontSize), mDateTimeValue);
+			DateField datefield = new DateField(mContext,
+					getFontType(mFontType), getFontSize(mFontSize),
+					mDateTimeValue);
 			mView = datefield;
 		} else if (mType.equals(DesignTag.COMPONENT_TIMEFIELD)) {
-			TimeField timefield = new TimeField(mContext, getFontType(mFontType), getFontSize(mFontSize), mDateTimeValue);
+			TimeField timefield = new TimeField(mContext,
+					getFontType(mFontType), getFontSize(mFontSize),
+					mDateTimeValue);
 			mView = timefield;
 		} else if (mType.equals(DesignTag.COMPONENT_TEXTFIELD)) {
 			if (mMultiLine.equals("true")) {
-				TextZone textzone = new TextZone(mContext, getFontType(mFontType), getFontSize(mFontSize));
+				TextZone textzone = new TextZone(mContext,
+						getFontType(mFontType), getFontSize(mFontSize));
 				if ((mTableID != null) && (mFieldID != null)) {
 					textzone.setTableId(mTableID);
 					textzone.setFieldId(mFieldID);
 				}
 				mView = textzone;
 			} else {
-				TextField textfield = new TextField(mContext, getFontType(mFontType), getFontSize(mFontSize));
+				TextField textfield = new TextField(mContext,
+						getFontType(mFontType), getFontSize(mFontSize));
 				if ((mTableID != null) && (mFieldID != null)) {
 					textfield.setTableId(mTableID);
 					textfield.setFieldId(mFieldID);
@@ -233,19 +239,21 @@ public class Component {
 				mView = textfield;
 			}
 			if (mAlign != null) {
-				((TextView)mView).setGravity(getGravity(mAlign));
+				((TextView) mView).setGravity(getGravity(mAlign));
 			}
 			if (mEditable) {
-				((TextView)mView).setEnabled(!mEditable);
+				((TextView) mView).setEnabled(!mEditable);
 			}
 			if (!mTextFilter.equals(Constant.NONE)) {
 				if (mTextFilter.equals(Constant.POSITIVENUMERIC)) {
-					DigitsKeyListener numericOnlyListener = new DigitsKeyListener(false, true);
-					((TextView)mView).setKeyListener(numericOnlyListener);
+					DigitsKeyListener numericOnlyListener = new DigitsKeyListener(
+							false, true);
+					((TextView) mView).setKeyListener(numericOnlyListener);
 				}
 			}
 		} else if (mType.equals(DesignTag.COMPONENT_TEXTZONE)) {
-			TextZone textzone = new TextZone(mContext, getFontType(mFontType), getFontSize(mFontSize));
+			TextZone textzone = new TextZone(mContext, getFontType(mFontType),
+					getFontSize(mFontSize));
 			mView = textzone;
 		} else if (mType.equals(DesignTag.COMPONENT_RADIOBUTTON)) {
 			Radiobutton radiobutton = new Radiobutton(mContext);
@@ -268,7 +276,7 @@ public class Component {
 				String path = findResourceFile(mBackground);
 				if (path.length() > 0) {
 					Drawable d = Drawable.createFromPath(path);
-					imageview.setBackgroundDrawable(d);	
+					imageview.setBackgroundDrawable(d);
 				}
 			}
 			mView = imageview;
@@ -277,7 +285,7 @@ public class Component {
 			dataview.setText(getFontSize(mFontSize), getFontType(mFontType));
 			mView = dataview;
 		} else if (mType.equals(DesignTag.COMPONENT_DOODLE)) {
-			DoodleView doodleView= new DoodleView(mContext, mId);
+			DoodleView doodleView = new DoodleView(mContext, mId);
 			mView = doodleView;
 		} else if (mType.equals(DesignTag.COMPONENT_GAUGE)) {
 			Gauge gauge = new Gauge(mContext);
@@ -291,10 +299,12 @@ public class Component {
 			mView = button;
 		}
 	}
-	
+
 	/**
 	 * Parse resource directory to find name
-	 * @param name resource file name
+	 * 
+	 * @param name
+	 *            resource file name
 	 * @return resource file path
 	 */
 	private String findResourceFile(String name) {
@@ -321,30 +331,40 @@ public class Component {
 			return path.toString();
 		}
 	}
-	
+
 	/**
 	 * Sets view's on click event
-	 * @param funcName The function which called in on click event
-	 * @param view The view need to be captured
+	 * 
+	 * @param funcName
+	 *            The function which called in on click event
+	 * @param view
+	 *            The view need to be captured
 	 */
 	public void setOnclickFunction(final String funcName, final View view) {
 		if (view instanceof DataView) {
-			((DataView)view).getListView().setOnItemClickListener(new OnItemClickListener() {
-				@Override
-				public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-					if (((DataView)view).hasHeader() && (((DataView)view).getSelectedRow() != -1)) {
-						((DataView)view).setRowBackground(((DataView)view).getSelectedRow() + 1, false);
-					} else {
-						if (((DataView)view).getSelectedRow() != -1) {
-							((DataView)view).setRowBackground(((DataView)view).getSelectedRow(), false);
+			((DataView) view).getListView().setOnItemClickListener(
+					new OnItemClickListener() {
+						@Override
+						public void onItemClick(AdapterView<?> arg0, View arg1,
+								int position, long arg3) {
+							if (((DataView) view).hasHeader()
+									&& (((DataView) view).getSelectedRow() != -1)) {
+								((DataView) view).setRowBackground(
+										((DataView) view).getSelectedRow() + 1,
+										false);
+							} else {
+								if (((DataView) view).getSelectedRow() != -1) {
+									((DataView) view).setRowBackground(
+											((DataView) view).getSelectedRow(),
+											false);
+								}
+							}
+							((DataView) view).setCurrentPosition(position);
+							((DataView) view).setRowBackground(position, true);
+
+							Function.createFunction(funcName);
 						}
-					}
-					((DataView)view).setCurrentPosition(position);
-					((DataView)view).setRowBackground(position, true);
-					
-					Function.createFunction(funcName);
-				}
-			});
+					});
 		} else {
 			view.setOnClickListener(new OnClickListener() {
 				@Override
@@ -355,23 +375,28 @@ public class Component {
 			});
 		}
 	}
-	
+
 	/**
 	 * Sets view's on change event
-	 * @param funcName The function which called in on change event
-	 * @param view The view need to be captured
+	 * 
+	 * @param funcName
+	 *            The function which called in on change event
+	 * @param view
+	 *            The view need to be captured
 	 */
 	public void setOnchangeFunction(String funcName, View view) {
 		if (view instanceof Gauge) {
-			((Gauge)view).setOnChangeFunction(funcName);
+			((Gauge) view).setOnChangeFunction(funcName);
 		} else if (view instanceof ComboBox) {
-			((ComboBox)view).setOnChangeFunction(funcName);
+			((ComboBox) view).setOnChangeFunction(funcName);
 		}
 	}
-	
+
 	/**
 	 * Converts align string to a Gravity constant
-	 * @param align A string represents view's alignment
+	 * 
+	 * @param align
+	 *            A string represents view's alignment
 	 * @return Gravity constant
 	 */
 	private int getGravity(String align) {
@@ -385,7 +410,7 @@ public class Component {
 		}
 		return gravity;
 	}
-	
+
 	private float getFontSize(String fs) {
 		float fontSize = 14;
 		if (fs.equals(Constant.SMALL)) {
@@ -397,7 +422,7 @@ public class Component {
 		}
 		return fontSize;
 	}
-	
+
 	private Typeface getFontType(String ft) {
 		Typeface fontType = Typeface.DEFAULT;
 		if (ft.equals(Constant.ITALIC)) {
@@ -405,77 +430,78 @@ public class Component {
 		} else if (ft.equals(Constant.BOLD)) {
 			fontType = Typeface.DEFAULT_BOLD;
 		} else if (ft.equals(Constant.UNDERLINE)) {
-			//Underline text, not implemented yet in android
+			// Underline text, not implemented yet in android
 		} else if (ft.equals(Constant.ITALICBOLD)) {
 			fontType = Typeface.create(Typeface.SERIF, Typeface.BOLD_ITALIC);
 		}
 		return fontType;
 	}
-	
+
 	public void setValue(Object value) {
 		View view = mView;
 		if (view instanceof NumberBox) {
-			((NumberBox)view).setValue(value);
+			((NumberBox) view).setValue(value);
 		} else if (view instanceof TextField) {
-			((TextField)view).setText(value.toString());
+			((TextField) view).setText(value.toString());
 		} else if (view instanceof Label) {
-			((Label)view).setText(value.toString());
+			((Label) view).setText(value.toString());
 		} else if (view instanceof TextZone) {
-			((TextZone)view).setText(value.toString());
+			((TextZone) view).setText(value.toString());
 		} else if (view instanceof TimeField) {
-			((TimeField)view).setTime(value.toString());
+			((TimeField) view).setTime(value.toString());
 		} else if (view instanceof DateField) {
-			((DateField)view).setDate(value.toString());
+			((DateField) view).setDate(value.toString());
 		} else if (view instanceof Gauge) {
-			((Gauge)view).setValue(Integer.valueOf(value.toString()));
+			((Gauge) view).setValue(Integer.valueOf(value.toString()));
 		} else if (view instanceof ImageView) {
-			Drawable d = Drawable.createFromPath(DmaHttpClient.getFilesPath()+value.toString());
-			((ImageView)view).setBackgroundDrawable(d);
+			Drawable d = Drawable.createFromPath(DmaHttpClient.getFilesPath()
+					+ value.toString());
+			((ImageView) view).setBackgroundDrawable(d);
 		}
 	}
-	
+
 	public Object getValue() {
 		Object result = null;
 		View view = mView;
 		if (view instanceof Barcode) {
-			result = ((Barcode)view).getContent();
+			result = ((Barcode) view).getContent();
 		} else if (view instanceof ComboBox) {
-			result = ((ComboBox)view).getValue();
+			result = ((ComboBox) view).getValue();
 		} else if (view instanceof DateField) {
-			result = ((DateField)view).getDate();
+			result = ((DateField) view).getDate();
 		} else if (view instanceof DoodleView) {
-			result = ((DoodleView)view).getImageName();
+			result = ((DoodleView) view).getImageName();
 		} else if (view instanceof Gauge) {
-			result = ((Gauge)view).getValue();
+			result = ((Gauge) view).getValue();
 		} else if (view instanceof Label) {
-			result = ((Label)view).getText();
+			result = ((Label) view).getText();
 		} else if (view instanceof NumberBox) {
-			result = ((NumberBox)view).getValue();
+			result = ((NumberBox) view).getValue();
 		} else if (view instanceof PictureBoxView) {
-			result = ((PictureBoxView)view).getPhotoName();
+			result = ((PictureBoxView) view).getPhotoName();
 		} else if (view instanceof TextZone) {
-			result = ((TextZone)view).getValue();
+			result = ((TextZone) view).getValue();
 		} else if (view instanceof TimeField) {
-			result = ((TimeField)view).getTime();
+			result = ((TimeField) view).getTime();
 		}
 		return result;
 	}
-	
+
 	public String getLabel() {
 		String result = "";
 		View view = mView;
 		if (view instanceof Label) {
-			result = ((Label)view).getText().toString();
+			result = ((Label) view).getText().toString();
 		} else if (view instanceof TextZone) {
-			result = ((TextZone)view).getValue();
+			result = ((TextZone) view).getValue();
 		} else if (view instanceof TextField) {
-			result = ((TextField)view).getValue();
+			result = ((TextField) view).getValue();
 		} else if (view instanceof ComboBox) {
-			result = ((ComboBox)view).getLabel();
+			result = ((ComboBox) view).getLabel();
 		}
 		return result;
 	}
-	
+
 	public void setText(String text) {
 		String newText = "";
 		if (!text.equals("null")) {
@@ -483,34 +509,34 @@ public class Component {
 		}
 		View view = mView;
 		if (view instanceof TextZone) {
-			((TextZone)view).setText(newText);
+			((TextZone) view).setText(newText);
 		} else if (view instanceof Label) {
-			((Label)view).setText(newText);
+			((Label) view).setText(newText);
 		} else if (view instanceof TextField) {
-			((TextField)view).setText(newText);
+			((TextField) view).setText(newText);
 		} else if (view instanceof Button) {
-			((Button)view).setText(newText);
+			((Button) view).setText(newText);
 		}
 	}
-	
+
 	public void setEnabled(boolean state) {
 		View view = mView;
 		if (view instanceof Button) {
-			((Button)view).setEnabled(state);
+			((Button) view).setEnabled(state);
 		}
 	}
-	
+
 	public boolean isEnabled() {
 		return mView.isEnabled();
 	}
-	
+
 	public void setFocus() {
 		View view = mView;
 		if (view.isFocusableInTouchMode()) {
 			view.requestFocus();
 		}
 	}
-	
+
 	public void setVisible(boolean state) {
 		View view = mView;
 		if (state) {
@@ -519,7 +545,7 @@ public class Component {
 			view.setVisibility(View.INVISIBLE);
 		}
 	}
-	
+
 	public boolean isVisible() {
 		View view = mView;
 		if (view.getVisibility() == View.VISIBLE) {
@@ -528,7 +554,7 @@ public class Component {
 			return false;
 		}
 	}
-	
+
 	public void reSet() {
 		setValue(mLabel);
 	}

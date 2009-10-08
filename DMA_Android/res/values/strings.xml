@@ -15,4 +15,14 @@
     <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>
     <string name="nosdcard">Please insert an SD card before using Dalyo Mobile Agent</string>
+    <string name="waiting">Please wait...</string>
+    <string name="connecting">Connecting to server...</string>
+    <string name="error">Error</string>
+    <string name="connectionerror">Connection failed!</string>
+    <string name="checkusernamepwd">Check your username or password!</string>
+    <string name="loadingapplicationlist">Loading application list...</string>
+    <string name="connectionunavailable">Connection unavailable!</string>
+    <string name="updatingapplicationlist">Updaing application list...</string>
+    <string name="preparingapplication">Preparing application...</string>
+    <string name="buildingapplication">Building application ...</string>
 </resources>
