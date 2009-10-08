@@ -21,6 +21,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -68,14 +69,15 @@ import org.xmlpull.v1.XmlPullParserFactory;
 /**
  * Displays a GridView which contains all applications' icons
  */
-public class ApplicationListView extends Activity implements OnItemSelectedListener, OnItemClickListener {
-	private static ApplicationListView sApplicationListView;
+public class ApplicationListView extends Activity implements
+		OnItemSelectedListener, OnItemClickListener {
+	private static ApplicationListView sApplicationListView = null;
 	private ApplicationAdapter mAdapter;
 	private TextView mApplicationName;
 	private static ProgressDialog sLoadProgressDialog = null;
 	private static ProgressDialog sUpdateProgressDialog = null;
 	private Intent mIntent = null;
-	private static HashMap<String, String> sApplicationInfos = new HashMap<String, String>();
+	private static HashMap<String, String> sApplicationInfos = null;
 	private DmaHttpClient mDmahttpclient;
 	private GridView mGridView;
 	private AlertDialog mAboutDialog;
@@ -86,74 +88,73 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
-				case 0:
-					if (Dma.sLocale.contains(Constant.FRENCH)) {
-						mAlertDialog.setMessage("Connexion indisponible !");	
-					} else {
-						mAlertDialog.setMessage("Connection unavailable !");	
-					}
-					mAlertDialog.show();
-					break;
-				case 1:
-					if (Dma.sLocale.contains(Constant.FRENCH)) {
-						mAlertDialog.setMessage("Erreur de connexion !");
-					} else {
-						mAlertDialog.setMessage("Connection error !");
-					}
-					mAlertDialog.show();
-					break;
+			case 0:
+				mAlertDialog.setMessage(mResources
+						.getString(R.string.connectionunavailable));
+				mAlertDialog.show();
+				break;
+			case 1:
+				mAlertDialog.setMessage(mResources
+						.getString(R.string.connectionerror));
+				mAlertDialog.show();
+				break;
 			}
 		}
 	};
 	private String mUsername;
 	private String mUserpassword;
 	private SQLiteDatabase mSqlite;
+	private Resources mResources;
 
 	@Override
 	protected void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
+		mResources = getResources();
 		sApplicationListView = this;
-		Animation animation = AnimationUtils.loadAnimation(this, R.anim.wave_scale);
+		sApplicationInfos = new HashMap<String, String>();
+		Animation animation = AnimationUtils.loadAnimation(this,
+				R.anim.wave_scale);
 		setContentView(R.layout.applicationlist);
-		
+
 		StringBuffer title = new StringBuffer("Dalyo ");
-		
+
 		mUsername = getIntent().getStringExtra("USERNAME");
 		mUserpassword = getIntent().getStringExtra("USERPWD");
-		
+
 		if (mUsername.length() > 0) {
 			title.append("(");
 			title.append(mUsername);
 			title.append(")");
 		}
-		
+
 		setTitle(title.toString());
-		
-		mAlertDialog = new AlertDialog.Builder(ApplicationListView.this).create();
+
+		mAlertDialog = new AlertDialog.Builder(ApplicationListView.this)
+				.create();
 		mAlertDialog.setTitle("Dalyo");
-		
-		ImageView imageView = (ImageView)findViewById(R.id.banner);
+
+		ImageView imageView = (ImageView) findViewById(R.id.banner);
 		if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
 			imageView.setBackgroundResource(R.drawable.banniere_dalyo);
 		} else if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
 			imageView.setBackgroundResource(R.drawable.banniere_dalyo1);
 		}
-		
-		mApplicationName = (TextView)findViewById(R.id.appnametv);
+
+		mApplicationName = (TextView) findViewById(R.id.appnametv);
 		mAdapter = new ApplicationAdapter(this);
-		
+
 		String xml = getIntent().getStringExtra("APPLICATIONLIST");
 		createApplicationListFromXml(xml, false);
 		int size = mApplicationList.size();
-		for (int i =0; i < size; i++) {
-			Application application = mApplicationList.get(i); 
+		for (int i = 0; i < size; i++) {
+			Application application = mApplicationList.get(i);
 			mAdapter.addApplication(application);
 			if (i == 0) {
 				mApplicationName.setText(application.getName());
 			}
 		}
-		
-		mGridView = (GridView)findViewById(R.id.appsgv);
+
+		mGridView = (GridView) findViewById(R.id.appsgv);
 		mGridView.setVerticalScrollBarEnabled(false);
 		mGridView.setScrollingCacheEnabled(false);
 		mGridView.setLayoutAnimation(new LayoutAnimationController(animation));
@@ -161,12 +162,12 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 			@Override
 			public boolean onTouch(View arg0, MotionEvent arg1) {
 				switch (arg1.getAction()) {
-					case MotionEvent.ACTION_UP:
-						mGridView.setVerticalScrollBarEnabled(false);
-						break;
-					default:
-						mGridView.setVerticalScrollBarEnabled(true);
-						break;
+				case MotionEvent.ACTION_UP:
+					mGridView.setVerticalScrollBarEnabled(false);
+					break;
+				default:
+					mGridView.setVerticalScrollBarEnabled(true);
+					break;
 				}
 				return false;
 			}
@@ -174,52 +175,62 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		mGridView.setAdapter(mAdapter);
 		mGridView.setOnItemClickListener(this);
 		mGridView.setOnItemSelectedListener(this);
-		mInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View aboutView = mInflater.inflate(R.layout.about, null, false);
-		TextView nameVersionView = (TextView) aboutView.findViewById(R.id.nameversion);
-		nameVersionView.setText("Dalyo Mobile Agent "+Dma.getVersion());
-		mAboutDialog = new AlertDialog.Builder(this).setIcon(android.R.drawable.ic_dialog_info)
-        .setTitle(R.string.menu_about).setView(aboutView).create();
+		TextView nameVersionView = (TextView) aboutView
+				.findViewById(R.id.nameversion);
+		nameVersionView.setText("Dalyo Mobile Agent " + Dma.getVersion());
+		mAboutDialog = new AlertDialog.Builder(this).setIcon(
+				android.R.drawable.ic_dialog_info)
+				.setTitle(R.string.menu_about).setView(aboutView).create();
 		checkSystemTable();
 	}
-	
+
 	private void checkSystemTable() {
 		StringBuffer systemTable = new StringBuffer(Constant.APPPACKAGE);
-		systemTable.append(Constant.DATABASEDIRECTORY).append(Constant.SYSTEMTABLE);
-		mSqlite = SQLiteDatabase.openOrCreateDatabase(systemTable.toString(), null);
+		systemTable.append(Constant.DATABASEDIRECTORY).append(
+				Constant.SYSTEMTABLE);
+		mSqlite = SQLiteDatabase.openOrCreateDatabase(systemTable.toString(),
+				null);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(Menu.NONE, 0, Menu.NONE, R.string.menu_update).setIcon(R.drawable.ic_menu_refresh);
-		menu.add(Menu.NONE, 1, Menu.NONE, R.string.menu_about).setIcon(android.R.drawable.ic_menu_info_details);
-		menu.add(Menu.NONE, 2, Menu.NONE, R.string.menu_logout).setIcon(R.drawable.ic_menu_logout);
-		menu.add(Menu.NONE, 3, Menu.NONE, R.string.menu_quit).setIcon(android.R.drawable.ic_menu_close_clear_cancel);
+		menu.add(Menu.NONE, 0, Menu.NONE, R.string.menu_update).setIcon(
+				R.drawable.ic_menu_refresh);
+		menu.add(Menu.NONE, 1, Menu.NONE, R.string.menu_about).setIcon(
+				android.R.drawable.ic_menu_info_details);
+		menu.add(Menu.NONE, 2, Menu.NONE, R.string.menu_logout).setIcon(
+				R.drawable.ic_menu_logout);
+		menu.add(Menu.NONE, 3, Menu.NONE, R.string.menu_quit).setIcon(
+				android.R.drawable.ic_menu_close_clear_cancel);
 		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-			case 0:
-				update();
-				break;
-			case 1:
-				mAboutDialog.show();
-				break;
-			case 2:
-				logout();
-				break;
-			case 3:
-				finish();
-				break;
+		case 0:
+			update();
+			break;
+		case 1:
+			mAboutDialog.show();
+			break;
+		case 2:
+			logout();
+			break;
+		case 3:
+			finish();
+			break;
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Parses the given xml to get the necessary values and creates applications
-	 * @param xml which contains application's information
+	 * 
+	 * @param xml
+	 *            which contains application's information
 	 */
 	private void createApplicationListFromXml(String xml, boolean update) {
 		HashMap<String, Application> applicationMap = new HashMap<String, Application>();
@@ -233,72 +244,75 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		XmlPullParserFactory factory;
 		try {
 			factory = XmlPullParserFactory.newInstance();
-	        factory.setNamespaceAware(true);
-	        XmlPullParser xpp = factory.newPullParser();
-	        xpp.setInput(new StringReader(xml));
-	        int eventType = xpp.getEventType();
-	        while (eventType != XmlPullParser.END_DOCUMENT) {
-	        	String tagName = xpp.getName();
-	        	if(eventType == XmlPullParser.START_DOCUMENT) {
+			factory.setNamespaceAware(true);
+			XmlPullParser xpp = factory.newPullParser();
+			xpp.setInput(new StringReader(xml));
+			int eventType = xpp.getEventType();
+			while (eventType != XmlPullParser.END_DOCUMENT) {
+				String tagName = xpp.getName();
+				if (eventType == XmlPullParser.START_DOCUMENT) {
 
-	        	} else if(eventType == XmlPullParser.END_DOCUMENT) {
+				} else if (eventType == XmlPullParser.END_DOCUMENT) {
 
-	        	} else if(eventType == XmlPullParser.START_TAG) {
-	        		if (tagName.equals(DesignTag.APP)) {
-	        			app = new Application();
-	        		} else if (tagName.equals(DesignTag.LOGIN_ID)) {
-	        			isInAppId = true;
-	        		} else if (tagName.equals(DesignTag.LOGIN_TIT)) {
-	        			isInAppTitle = true;
-	        		} else if (tagName.equals(DesignTag.LOGIN_BLD)) {
-	        			isInAppBuild = true;
-	        		} else if (tagName.equals(DesignTag.LOGIN_SUB)) {
-	        			isInAppSub = true;
-	        		} else if (tagName.equals(DesignTag.LOGIN_DBID)) {
-	        			isInAppDBID = true;
-	        		} else if (tagName.equals(DesignTag.LOGIN_VER)) {
-	        			isInAppVer = true;
-	        		} else if (tagName.equals(DesignTag.APPICON)) {
-	        			String iconId = xpp.getAttributeValue(null, ResourceTag.RESOURCES_R_ID);
-	        			String iconHashcode = xpp.getAttributeValue(null, ResourceTag.RESOURCES_R_HASHCODE);
-	        			String iconExt = xpp.getAttributeValue(null, ResourceTag.RESOURCES_R_EXT);
-	        			checkApplicationIcon(app, iconId, iconHashcode, iconExt);
-	        		}
-	        	} else if(eventType == XmlPullParser.END_TAG) {
-	        		if (tagName.equals(DesignTag.APP)) {
-	        			app.setIconRes(R.drawable.splash);
-	        			applicationMap.put(app.getName(), app);
-	        		} else if (tagName.equals(DesignTag.LOGIN_ID)) {
-	        			isInAppId = false;
-	        		} else if (tagName.equals(DesignTag.LOGIN_TIT)) {
-	        			isInAppTitle = false;
-	        		} else if (tagName.equals(DesignTag.LOGIN_BLD)) {
-	        			isInAppBuild = false;
-	        		} else if (tagName.equals(DesignTag.LOGIN_SUB)) {
-	        			isInAppSub = false;
-	        		} else if (tagName.equals(DesignTag.LOGIN_DBID)) {
-	        			isInAppDBID = false;
-	        		} else if (tagName.equals(DesignTag.LOGIN_VER)) {
-	        			isInAppVer = false;
-	        		}
-	        	} else if(eventType == XmlPullParser.TEXT) {
-	        		String value = xpp.getText();
-	        		if (isInAppId) {
-	        			app.setAppId(value);
-	        		} else if (isInAppTitle) {
-	        			app.setName(value);
-	        		} else if (isInAppBuild) {
-	        			app.setAppBuild(value);
-	        		} else if (isInAppSub) {
-	        			app.setSubId(value);
-	        		} else if (isInAppDBID) {
-	        			app.setDbId(value);
-	        		} else if (isInAppVer) {
-	        			app.setAppVer(value);
-	        		}
-	        	}
-	        	eventType = xpp.next();
-	        }
+				} else if (eventType == XmlPullParser.START_TAG) {
+					if (tagName.equals(DesignTag.APP)) {
+						app = new Application();
+					} else if (tagName.equals(DesignTag.LOGIN_ID)) {
+						isInAppId = true;
+					} else if (tagName.equals(DesignTag.LOGIN_TIT)) {
+						isInAppTitle = true;
+					} else if (tagName.equals(DesignTag.LOGIN_BLD)) {
+						isInAppBuild = true;
+					} else if (tagName.equals(DesignTag.LOGIN_SUB)) {
+						isInAppSub = true;
+					} else if (tagName.equals(DesignTag.LOGIN_DBID)) {
+						isInAppDBID = true;
+					} else if (tagName.equals(DesignTag.LOGIN_VER)) {
+						isInAppVer = true;
+					} else if (tagName.equals(DesignTag.APPICON)) {
+						String iconId = xpp.getAttributeValue(null,
+								ResourceTag.RESOURCES_R_ID);
+						String iconHashcode = xpp.getAttributeValue(null,
+								ResourceTag.RESOURCES_R_HASHCODE);
+						String iconExt = xpp.getAttributeValue(null,
+								ResourceTag.RESOURCES_R_EXT);
+						checkApplicationIcon(app, iconId, iconHashcode, iconExt);
+					}
+				} else if (eventType == XmlPullParser.END_TAG) {
+					if (tagName.equals(DesignTag.APP)) {
+						app.setIconRes(R.drawable.splash);
+						applicationMap.put(app.getName(), app);
+					} else if (tagName.equals(DesignTag.LOGIN_ID)) {
+						isInAppId = false;
+					} else if (tagName.equals(DesignTag.LOGIN_TIT)) {
+						isInAppTitle = false;
+					} else if (tagName.equals(DesignTag.LOGIN_BLD)) {
+						isInAppBuild = false;
+					} else if (tagName.equals(DesignTag.LOGIN_SUB)) {
+						isInAppSub = false;
+					} else if (tagName.equals(DesignTag.LOGIN_DBID)) {
+						isInAppDBID = false;
+					} else if (tagName.equals(DesignTag.LOGIN_VER)) {
+						isInAppVer = false;
+					}
+				} else if (eventType == XmlPullParser.TEXT) {
+					String value = xpp.getText();
+					if (isInAppId) {
+						app.setAppId(value);
+					} else if (isInAppTitle) {
+						app.setName(value);
+					} else if (isInAppBuild) {
+						app.setAppBuild(value);
+					} else if (isInAppSub) {
+						app.setSubId(value);
+					} else if (isInAppDBID) {
+						app.setDbId(value);
+					} else if (isInAppVer) {
+						app.setAppVer(value);
+					}
+				}
+				eventType = xpp.next();
+			}
 		} catch (XmlPullParserException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -315,16 +329,20 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 					deleteApplication = false;
 					Application newApplication = applicationMap.get(appName);
 					String oldDbid = application.getDbId();
-					//If db id changed, rename database file and delete db.xml
+					// If db id changed, rename database file and delete db.xml
 					if (!oldDbid.equals(newApplication.getDbId())) {
 						backupDatabase(appId, oldDbid);
 						deleteXmlFile(appId, Constant.DBXML);
 					}
-					
-					//If other id changed, delete design.xml, behavior.xml, resource.xml
-					if ((!application.getAppBuild().equals(newApplication.getAppBuild())) ||
-							(!application.getAppVer().equals(newApplication.getAppVer())) ||
-							(!application.getSubId().equals(newApplication.getSubId()))) {
+
+					// If other id changed, delete design.xml, behavior.xml,
+					// resource.xml
+					if ((!application.getAppBuild().equals(
+							newApplication.getAppBuild()))
+							|| (!application.getAppVer().equals(
+									newApplication.getAppVer()))
+							|| (!application.getSubId().equals(
+									newApplication.getSubId()))) {
 						deleteXmlFile(appId, Constant.DESIGNXML);
 						deleteXmlFile(appId, Constant.BEHAVIORXML);
 						deleteXmlFile(appId, Constant.RESOURCEXML);
@@ -337,8 +355,9 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		}
 		sortApplicationsList(applicationMap);
 	}
-	
-	private void checkApplicationIcon(Application application, String iconId, String hashcode, String ext) {
+
+	private void checkApplicationIcon(Application application, String iconId,
+			String hashcode, String ext) {
 		boolean willDownload = true;
 		StringBuffer iconFilePath = new StringBuffer(Constant.APPPACKAGE);
 		iconFilePath.append(Constant.USERDIRECTORY);
@@ -346,23 +365,23 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		if (!directory.exists()) {
 			directory.mkdir();
 		}
-		
+
 		iconFilePath.append(mUsername).append("/");
 		directory = new File(iconFilePath.toString());
 		if (!directory.exists()) {
 			directory.mkdir();
 		}
-		
+
 		iconFilePath.append(Constant.RESOURCE);
 		directory = new File(iconFilePath.toString());
 		if (!directory.exists()) {
 			directory.mkdir();
 		}
-		
+
 		iconFilePath.append(iconId).append(".").append(ext);
 		File iconFile = new File(iconFilePath.toString());
 		if (iconFile.exists()) {
-			//check icon's hashcode
+			// check icon's hashcode
 			byte[] bytes = null;
 			try {
 				bytes = Common.getBytesFromFile(iconFile);
@@ -375,48 +394,57 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 			}
 		}
 		if (willDownload) {
-			//download application's icon
+			// download application's icon
 			mDmahttpclient = new DmaHttpClient(mUsername, null);
-			String urlRequest = mDmahttpclient.generateRegularUrlRequest(application.getAppId(), application.getAppVer(), 
-					application.getAppBuild(), application.getSubId(), mUsername, mUserpassword);
+			String urlRequest = mDmahttpclient.generateRegularUrlRequest(
+					application.getAppId(), application.getAppVer(),
+					application.getAppBuild(), application.getSubId(),
+					mUsername, mUserpassword);
 			StringBuffer action = new StringBuffer("act=getresource");
 			action.append(urlRequest).append("&resourceid=").append(iconId);
 			byte[] resourceStream = mDmahttpclient.sendPost(action.toString());
 			String hexString = Common.md5HexStringFromBytes(resourceStream);
 			if (hexString.equals(hashcode)) {
-				Common.streamToFile(resourceStream, iconFilePath.toString(), true);
+				Common.streamToFile(resourceStream, iconFilePath.toString(),
+						true);
 			}
 		}
 		application.setIconPath(iconFilePath.toString());
 	}
-	
+
 	/**
 	 * Get user name
+	 * 
 	 * @return
 	 */
 	private String getUserName() {
 		return mUsername;
 	}
-	
+
 	private void backupDatabase(String appId, String dbId) {
-		String userName = getUserName();		
+		String userName = getUserName();
 		StringBuffer databaseFilePath = new StringBuffer(Constant.APPPACKAGE);
-		databaseFilePath.append(Constant.USERDIRECTORY).append(userName).append("/");
+		databaseFilePath.append(Constant.USERDIRECTORY).append(userName)
+				.append("/");
 		databaseFilePath.append(appId).append("/");
 		databaseFilePath.append(Constant.APPDB);
-		
-		StringBuffer backupdatabaseFilePath = new StringBuffer(databaseFilePath.toString());
+
+		StringBuffer backupdatabaseFilePath = new StringBuffer(databaseFilePath
+				.toString());
 		backupdatabaseFilePath.append("_").append(dbId);
 
 		File backupDatabaseFile = new File(backupdatabaseFilePath.toString());
 		File databaseFile = new File(databaseFilePath.toString());
 		databaseFile.renameTo(backupDatabaseFile);
 	}
-	
+
 	/**
 	 * Delete xml file
-	 * @param appName application name
-	 * @param xmlName xml name
+	 * 
+	 * @param appName
+	 *            application name
+	 * @param xmlName
+	 *            xml name
 	 */
 	private void deleteXmlFile(String appId, String xmlName) {
 		String userName = getUserName();
@@ -428,60 +456,70 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 			xmlFile.delete();
 		}
 	}
-	
+
 	/**
-	 * Delete application directory and rename database file(backup user old data)
-	 * @param appName application name
+	 * Delete application directory and rename database file(backup user old
+	 * data)
+	 * 
+	 * @param appName
+	 *            application name
 	 */
 	private void deleteApplication(String appId) {
 		String userName = getUserName();
 		StringBuffer directoryPath = new StringBuffer(Constant.APPPACKAGE);
-		directoryPath.append(Constant.USERDIRECTORY).append(userName).append("/");
+		directoryPath.append(Constant.USERDIRECTORY).append(userName).append(
+				"/");
 		directoryPath.append(appId).append("/");
 		File appDirectory = new File(directoryPath.toString());
 		if (deleteDirectory(appDirectory)) {
-			//Delete all xml files
+			// Delete all xml files
 		}
 	}
-	
+
 	/**
 	 * Delete directory's content
+	 * 
 	 * @param directory
 	 * @return
 	 */
 	private boolean deleteDirectory(File directory) {
-        if (directory.isDirectory()) {
-            String[] children = directory.list();
-            int length = children.length;
-            for (int i=0; i<length; i++) {
-            		if (!children[i].equals(Constant.DBXML)) {
-            			boolean success = deleteDirectory(new File(directory, children[i]));
-                    if (!success) {
-                        return false;
-                    }	
-            		}
-            }
-        }
-        return directory.delete();
-    }
-	
+		if (directory.isDirectory()) {
+			String[] children = directory.list();
+			int length = children.length;
+			for (int i = 0; i < length; i++) {
+				if (!children[i].equals(Constant.DBXML)) {
+					boolean success = deleteDirectory(new File(directory,
+							children[i]));
+					if (!success) {
+						return false;
+					}
+				}
+			}
+		}
+		return directory.delete();
+	}
+
 	/**
 	 * Sorts the applications list in alphabetical order
-	 * @param applicationMap The application hashmap, key is application's name and value is application
+	 * 
+	 * @param applicationMap
+	 *            The application hashmap, key is application's name and value
+	 *            is application
 	 */
-	private void sortApplicationsList(HashMap<String, Application> applicationMap) {
+	private void sortApplicationsList(
+			HashMap<String, Application> applicationMap) {
 		mApplicationList = new ArrayList<Application>();
 		ArrayList<String> tempList = new ArrayList<String>();
 		tempList.addAll(applicationMap.keySet());
 		Collections.sort(tempList);
 		int appsLen = applicationMap.size();
-		for (int i=0; i<appsLen; i++) {
+		for (int i = 0; i < appsLen; i++) {
 			mApplicationList.add(applicationMap.get(tempList.get(i)));
 		}
 	}
 
 	/**
-	 * Deletes preference data and finishes this activity 
+	 * Deletes preference data and finishes this activity
 	 */
 	public void logout() {
 		ContentValues values = new ContentValues();
@@ -498,17 +536,16 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 	 * Updates the application list
 	 */
 	public void update() {
-		if (Dma.sLocale.contains(Constant.FRENCH)) {
-			sUpdateProgressDialog = ProgressDialog.show(this, "Veuillez patienter...", "Mettre à jour en cours...", true, false);	
-		} else {
-			sUpdateProgressDialog = ProgressDialog.show(this, "Please wait...", "Updaing application list...", true, false);
-		}
+		sUpdateProgressDialog = ProgressDialog.show(this, mResources
+				.getText(R.string.waiting), mResources
+				.getText(R.string.updatingapplicationlist), true, false);
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
 				mDmahttpclient = new DmaHttpClient(mUsername, null);
-				String appsList = mDmahttpclient.Authentication(mUsername, mUserpassword);
-				
+				String appsList = mDmahttpclient.Authentication(mUsername,
+						mUserpassword);
+
 				if (getNetworkInfo() == null) {
 					sUpdateProgressDialog.dismiss();
 					mHandler.sendEmptyMessage(0);
@@ -517,12 +554,14 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 						createApplicationListFromXml(appsList, true);
 						ContentValues values = new ContentValues();
 						values.put("Applicationlist", appsList);
-						mSqlite.update(Constant.SYSTEMTABLE, values, "ID = \"0\"", null);
-						
+						mSqlite.update(Constant.SYSTEMTABLE, values,
+								"ID = \"0\"", null);
+
 						sUpdateProgressDialog.dismiss();
 						ApplicationListView.this.finish();
-						
-						Intent intent = new Intent(ApplicationListView.this, ApplicationListView.class);
+
+						Intent intent = new Intent(ApplicationListView.this,
+								ApplicationListView.class);
 						intent.putExtra("USERNAME", mUsername);
 						intent.putExtra("USERPWD", mUserpassword);
 						intent.putExtra("APPLICATIONLIST", appsList);
@@ -530,25 +569,28 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 					} else {
 						sUpdateProgressDialog.dismiss();
 						mHandler.sendEmptyMessage(1);
-					}	
+					}
 				}
 			}
 		}).start();
 	}
 
 	@Override
-	public void onItemSelected(AdapterView<?> parent, View v, int position, long id) {
+	public void onItemSelected(AdapterView<?> parent, View v, int position,
+			long id) {
 		mApplicationName.setText(mApplicationList.get(position).getName());
 	}
 
 	@Override
-	public void onNothingSelected(AdapterView<?> arg0) {}
+	public void onNothingSelected(AdapterView<?> arg0) {
+	}
 
 	/**
 	 * Launches the selected application
 	 */
 	@Override
-	public void onItemClick(AdapterView<?> parent, View v, final int position, long id) {
+	public void onItemClick(AdapterView<?> parent, View v, final int position,
+			long id) {
 		final Application application = mApplicationList.get(position);
 		final String applicationId = application.getAppId();
 		sApplicationInfos.put("Username", mUsername);
@@ -558,17 +600,16 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		sApplicationInfos.put("AppBuild", application.getAppBuild());
 		sApplicationInfos.put("SubId", application.getSubId());
 		sApplicationInfos.put("DbId", application.getDbId());
-		if (Dma.sLocale.contains(Constant.FRENCH)) {
-			sLoadProgressDialog = ProgressDialog.show(this, "Veuillez patienter...", "Préparer l'application...", true, false);	
-		} else {
-			sLoadProgressDialog = ProgressDialog.show(this, "Please wait...", "Preparing application...", true, false);	
-		}
+		sLoadProgressDialog = ProgressDialog.show(this, mResources
+				.getText(R.string.waiting), mResources
+				.getText(R.string.preparingapplication), true, false);
 		mIntent = new Intent(this, ApplicationView.class);
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
 				try {
-					ApplicationView.prepareData(applicationId, mUsername, mUserpassword);
+					ApplicationView.prepareData(applicationId, mUsername,
+							mUserpassword);
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
 				}
@@ -579,7 +620,7 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 			}
 		}).start();
 	}
-	
+
 	public static HashMap<String, String> getApplicationsInfo() {
 		return sApplicationInfos;
 	}
@@ -592,19 +633,24 @@ public class ApplicationListView extends Activity implements OnItemSelectedListe
 		}
 		super.onStop();
 	}
-	
+
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 		mSqlite.close();
+		sApplicationListView = null;
+		sLoadProgressDialog = null;
+		sUpdateProgressDialog = null;
+		sApplicationInfos = null;
 	}
-	
+
 	public static void quit() {
 		sApplicationListView.finish();
 	}
-	
+
 	public static NetworkInfo getNetworkInfo() {
-		ConnectivityManager manager = (ConnectivityManager) sApplicationListView.getSystemService(Context.CONNECTIVITY_SERVICE);
+		ConnectivityManager manager = (ConnectivityManager) sApplicationListView
+				.getSystemService(Context.CONNECTIVITY_SERVICE);
 		return manager.getActiveNetworkInfo();
 	}
 }

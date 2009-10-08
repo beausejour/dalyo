@@ -15,4 +15,14 @@
     <string name="ok">Ok</string>
     <string name="cancel">Annuler</string>
     <string name="nosdcard">Veuillez insérer une carte mémoire pour utiliser le Dalyo Mobile Agent</string>
+    <string name="waiting">Veuillez patienter...</string>
+    <string name="connecting">Connexion en cours...</string>
+    <string name="error">Erreur</string>
+    <string name="connectionerror">Erreur de connexion !</string>
+    <string name="checkusernamepwd">Vérifier votre identifiant ou mot de passe !</string>
+    <string name="loadingapplicationlist">Chargement en cours...</string>
+    <string name="connectionunavailable">Connexion indisponible !</string>
+    <string name="updatingapplicationlist">Mettre à jour en cours...</string>
+    <string name="preparingapplication">Préparer l\'application...</string>
+    <string name="buildingapplication">Créer l\'application ...</string>
 </resources>

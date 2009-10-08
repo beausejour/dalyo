@@ -77,7 +77,7 @@ public class Application {
 			return null;
 		}
 	}
-	
+
 	public void setIconPath(String path) {
 		mIconPath = path;
 	}

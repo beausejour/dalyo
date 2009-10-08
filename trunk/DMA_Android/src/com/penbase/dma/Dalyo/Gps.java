@@ -10,51 +10,53 @@ import android.os.Bundle;
 /**
  * Object gets GPS informations
  */
-public class Gps{
+public class Gps {
 	private static final String sProviderName = "gps";
 	private LocationManager mLocationManager;
-    private Location mLocation = null;
-    private LocationListener mLocationListener;
-    private int mStatus = LocationProvider.OUT_OF_SERVICE;
-	
+	private Location mLocation = null;
+	private LocationListener mLocationListener;
+	private int mStatus = LocationProvider.OUT_OF_SERVICE;
+
 	public Gps(Context context) {
-		mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+		mLocationManager = (LocationManager) context
+				.getSystemService(Context.LOCATION_SERVICE);
 		mLocationListener = new MyLocationListener();
-        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
-        mLocation = mLocationManager.getLastKnownLocation(sProviderName);
+		mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+				0, 0, mLocationListener);
+		mLocation = mLocationManager.getLastKnownLocation(sProviderName);
 	}
-	
+
 	public int getStatus() {
 		return mStatus;
 	}
-	
+
 	public Location getLocation() {
 		return mLocation;
 	}
-	
+
 	public void stop() {
 		mLocationManager.removeUpdates(mLocationListener);
 	}
-	
-    private class MyLocationListener implements LocationListener {
-        public void onLocationChanged(Location loc) {
-        	// Called when the location has changed.
-        	if (loc != null) {
-        		mLocation = loc;
-        	}
-        }
 
-        public void onProviderDisabled(String provider) {
-        	// Called when the provider is disabled by the user.
-        }
+	private class MyLocationListener implements LocationListener {
+		public void onLocationChanged(Location loc) {
+			// Called when the location has changed.
+			if (loc != null) {
+				mLocation = loc;
+			}
+		}
 
-        public void onProviderEnabled(String provider) {
-        	// Called when the provider is enabled by the user.
-        }
+		public void onProviderDisabled(String provider) {
+			// Called when the provider is disabled by the user.
+		}
 
-        public void onStatusChanged(String provider, int s, Bundle extras) {
-        	// Called when the provider status changes.
-        	mStatus = s;
-        }
-    }
+		public void onProviderEnabled(String provider) {
+			// Called when the provider is enabled by the user.
+		}
+
+		public void onStatusChanged(String provider, int s, Bundle extras) {
+			// Called when the provider status changes.
+			mStatus = s;
+		}
+	}
 }

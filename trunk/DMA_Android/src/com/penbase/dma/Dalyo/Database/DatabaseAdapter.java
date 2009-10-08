@@ -27,17 +27,17 @@ import java.util.Set;
 public class DatabaseAdapter {
 	private Document mDbDocument;
 	private static SQLiteDatabase sSqlite = null;
-	private static HashMap<String, ArrayList<String>> sTablesMap;
-	private static HashMap<String, String> sTablesNameMap;
-	private static HashMap<String, String> sFieldsTypeMap;
-	private static HashMap<String, String> sFieldsNameMap;
-	private static HashMap<String, String> sFieldsPKMap;
-	private static ArrayList<ArrayList<String>> sForeignKeyList;
+	private static HashMap<String, ArrayList<String>> sTablesMap = null;
+	private static HashMap<String, String> sTablesNameMap = null;
+	private static HashMap<String, String> sFieldsTypeMap = null;
+	private static HashMap<String, String> sFieldsNameMap = null;
+	private static HashMap<String, String> sFieldsPKMap = null;
+	private static ArrayList<ArrayList<String>> sForeignKeyList = null;
 	private String mDbPath = null;
 	private static boolean STARTTRANSACTION = false;
-	private static ArrayList<ArrayList<Object>> sBlobRecords;
-	private static HashMap<String, String> sTablesSyncMap;
-	private static HashMap<String, Boolean> sFieldsSyncMap;
+	private static ArrayList<ArrayList<Object>> sBlobRecords = null;
+	private static HashMap<String, String> sTablesSyncMap = null;
+	private static HashMap<String, Boolean> sFieldsSyncMap = null;
 	private boolean mWillCreateBlobtable = false;
 	
 	public DatabaseAdapter(Document d, String databasePath) {
@@ -61,7 +61,7 @@ public class DatabaseAdapter {
 	}
 	
 	private void createDatabase(String databasePath) throws SQLException{
-		closeDatabase();
+		//closeDatabase();
 		try{
 			if (!isDatabaseExists(databasePath)) {
 				sSqlite = SQLiteDatabase.openOrCreateDatabase(databasePath, null);
@@ -72,12 +72,6 @@ public class DatabaseAdapter {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
-	}
-	
-	public void closeDatabase() {
-		if ((sSqlite != null) && (sSqlite.isOpen())) {
-			sSqlite.close();
 		}
 	}
 	
@@ -1120,5 +1114,21 @@ public class DatabaseAdapter {
 	private int getServerVersion() {
 		//Modify this method when the server has immigrate to spv2
 		return 1;
+	}
+	
+	public void closeDatabase() {
+		if ((sSqlite != null) && (sSqlite.isOpen())) {
+			sSqlite.close();
+		}
+		sSqlite = null;
+		sTablesMap = null;
+		sTablesNameMap = null;
+		sFieldsTypeMap = null;
+		sFieldsNameMap = null;
+		sFieldsPKMap = null;
+		sForeignKeyList = null;
+		sBlobRecords = null;
+		sTablesSyncMap = null;
+		sFieldsSyncMap = null;
 	}
 }
