@@ -3,14 +3,15 @@ package com.penbase.dma.Dalyo.Component.Custom;
 import android.content.Context;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 
 import com.penbase.dma.Dalyo.Component.DalyoComponent;
+import com.penbase.dma.Dalyo.Function.Function;
 
 public class DalyoCheckBox extends CheckBox implements DalyoComponent {
 
 	public DalyoCheckBox(Context context) {
 		super(context);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -83,14 +84,22 @@ public class DalyoCheckBox extends CheckBox implements DalyoComponent {
 	}
 
 	@Override
-	public void setOnChangeEvent(String functionName) {
-		// TODO Auto-generated method stub
-		
+	public void setOnChangeEvent(final String functionName) {
+		setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				Function.createFunction(functionName);
+			}
+		});
 	}
 
 	@Override
-	public void setOnClickEvent(String functionName) {
-		// TODO Auto-generated method stub
-		
+	public void setOnClickEvent(final String functionName) {
+		setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Function.createFunction(functionName);
+			}
+		});
 	}
 }

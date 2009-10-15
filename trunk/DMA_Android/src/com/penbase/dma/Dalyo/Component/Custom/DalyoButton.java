@@ -12,7 +12,6 @@ public class DalyoButton extends Button implements DalyoComponent {
 
 	public DalyoButton(Context context) {
 		super(context);
-		// TODO Auto-generated constructor stub
 	}
 
 	public void setBackgroundImageByPath(String path) {
@@ -25,8 +24,7 @@ public class DalyoButton extends Button implements DalyoComponent {
 	
 	@Override
 	public String getComponentLabel() {
-		// TODO Auto-generated method stub
-		return null;
+		return getText().toString();
 	}
 
 	@Override

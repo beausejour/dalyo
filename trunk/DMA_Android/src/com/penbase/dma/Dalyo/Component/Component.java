@@ -181,6 +181,9 @@ public class Component {
 			button.setText(mLabel);
 			button.setTypeface(getFontType(mFontType));
 			button.setTextSize(getFontSize(mFontSize));
+			if (mAlign != null) {
+				button.setGravity(getGravity(mAlign));
+			}
 			if (mFontColor != null) {
 				button.setTextColor(getColor(mFontColor));
 			}
@@ -197,7 +200,15 @@ public class Component {
 			checkbox.setText(mLabel);
 			checkbox.setTypeface(getFontType(mFontType));
 			checkbox.setTextSize(getFontSize(mFontSize));
-			if (mChecked.equals(true)) {
+			if (mFontColor != null) {
+				checkbox.setTextColor(getColor(mFontColor));
+			} else {
+				checkbox.setTextColor(Color.BLACK);
+			}
+			if (mAlign != null) {
+				checkbox.setGravity(getGravity(mAlign));
+			}
+			if (mChecked.equals(Constant.TRUE)) {
 				checkbox.setChecked(true);
 			}
 			mComponent = checkbox;
@@ -228,7 +239,7 @@ public class Component {
 					mDateTimeValue);
 			mComponent = timefield;
 		} else if (mType.equals(DesignTag.COMPONENT_TEXTFIELD)) {
-			if (mMultiLine.equals("true")) {
+			if (mMultiLine.equals(Constant.TRUE)) {
 				DalyoTextZone textzone = new DalyoTextZone(mContext,
 						getFontType(mFontType), getFontSize(mFontSize));
 				if ((mTableID != null) && (mFieldID != null)) {

@@ -778,13 +778,13 @@ public class DatabaseAdapter {
 		if (order != null) {
 			String filedId = ((ArrayList<Object>)order).get(0).toString();
 			orderBy = DatabaseAttribute.FIELD + filedId;
-			if (!((ArrayList<Object>)order).get(1).toString().equals("true")) {
+			if (!((ArrayList<Object>)order).get(1).toString().equals(Constant.TRUE)) {
 				orderBy += " DESC";
 			}
 		}
 		boolean isDisctinct = false;
 		if (distinct != null) {
-			if (distinct.toString().equals("true")) {
+			if (distinct.toString().equals(Constant.TRUE)) {
 				isDisctinct = true;
 			}
 		}
