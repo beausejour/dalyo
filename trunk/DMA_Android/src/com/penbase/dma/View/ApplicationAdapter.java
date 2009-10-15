@@ -69,6 +69,10 @@ public class ApplicationAdapter extends BaseAdapter {
 		mApps.add(app);
 	}
 	
+	public void removeAll() {
+		mApps.clear();
+	}
+	
 	private static class ViewHolder {
 		ImageView icon;
 		TextView text;

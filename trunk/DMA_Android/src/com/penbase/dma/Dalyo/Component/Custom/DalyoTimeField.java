@@ -10,12 +10,14 @@ import android.widget.TimePicker;
 
 import java.util.Calendar;
 
-public class TimeField extends Button implements OnClickListener {
+import com.penbase.dma.Dalyo.Component.DalyoComponent;
+
+public class DalyoTimeField extends Button implements DalyoComponent, OnClickListener {
 	private int mHour;
 	private int mMinute;
 	private Context mContext;
 	
-	public TimeField(Context context, Typeface tf, float fs, String defaultValue) {
+	public DalyoTimeField(Context context, Typeface tf, float fs, String defaultValue) {
 		super(context);
 		this.mContext = context;
 		if ((defaultValue != null) && (!defaultValue.equals(""))) {
@@ -42,7 +44,7 @@ public class TimeField extends Button implements OnClickListener {
                 StringBuffer newTime = new StringBuffer(String.valueOf(mHour));
                 newTime.append(":");
                 newTime.append(mMinute);
-				TimeField.this.setText(newTime.toString());
+				DalyoTimeField.this.setText(newTime.toString());
             }
         }, mHour, mMinute, false).show();
 	}
@@ -56,5 +58,83 @@ public class TimeField extends Button implements OnClickListener {
 	
 	public void setTime(String time) {
 		this.setText(time);
+	}
+
+	@Override
+	public String getComponentLabel() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object getComponentValue() {
+		return getTime();
+	}
+
+	@Override
+	public boolean isComponentEnabled() {
+		return isEnabled();
+	}
+
+	@Override
+	public boolean isComponentVisible() {
+		if (getVisibility() == View.VISIBLE) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public void resetComponent() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setComponentEnabled(boolean enable) {
+		setEnabled(enable);
+	}
+
+	@Override
+	public void setComponentFocus() {
+		requestFocus();
+	}
+
+	@Override
+	public void setComponentLabel(String label) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setComponentText(String text) {
+		setTime(text);
+	}
+
+	@Override
+	public void setComponentValue(Object value) {
+		setTime(value.toString());
+	}
+
+	@Override
+	public void setComponentVisible(boolean visible) {
+		if (visible) {
+			setVisibility(View.VISIBLE);
+		} else {
+			setVisibility(View.INVISIBLE);
+		}
+	}
+
+	@Override
+	public void setOnChangeEvent(String functionName) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setOnClickEvent(String functionName) {
+		// TODO Auto-generated method stub
+		
 	}
 }

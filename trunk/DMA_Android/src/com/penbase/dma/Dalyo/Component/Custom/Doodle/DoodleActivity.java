@@ -19,7 +19,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
-public class Doodle extends Activity implements ColorPickerDialog.OnColorChangedListener {
+public class DoodleActivity extends Activity implements ColorPickerDialog.OnColorChangedListener {
     private Paint mPaint;
     private DoodlePanelView	mDoodleView;
     private String mId;
@@ -166,7 +166,7 @@ public class Doodle extends Activity implements ColorPickerDialog.OnColorChanged
        try{
     	   fos = new FileOutputStream(file);
     	   if (mDoodleView.mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)) {
-    		   ((DoodleView)ApplicationView.getComponents().get(mId).getView()).setImageName(imageName);
+    		   ((DalyoDoodle)ApplicationView.getComponents().get(mId).getDalyoComponent()).setImageName(imageName);
     		   ApplicationView.getDataBase().saveBlobData(imageName, file);
     		   finish();
     	   } else {

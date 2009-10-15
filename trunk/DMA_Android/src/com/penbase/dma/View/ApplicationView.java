@@ -21,6 +21,7 @@ import com.penbase.dma.R;
 import com.penbase.dma.Constant.Constant;
 import com.penbase.dma.Constant.DesignTag;
 import com.penbase.dma.Dalyo.Component.Component;
+import com.penbase.dma.Dalyo.Component.DalyoComponent;
 import com.penbase.dma.Dalyo.Component.Form;
 import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
 import com.penbase.dma.Dalyo.Function.Function;
@@ -385,26 +386,28 @@ public class ApplicationView extends Activity {
 				}
 
 				// Check background of a form
-				if (atts.getValue(DesignTag.DESIGN_F_BC) != null) {
-					String backgourndColor = "#"
-							+ atts.getValue(DesignTag.DESIGN_F_BC);
-					form.setBackgroundColor(Color.parseColor(backgourndColor));
+				String formBackgroundColor = atts
+						.getValue(DesignTag.DESIGN_F_BC);
+				if (formBackgroundColor != null) {
+					form.setBackgroundColor(Color.parseColor("#"
+							+ formBackgroundColor));
 				} else {
 					// Default background color is white
 					form.setBackgroundColor(Color.WHITE);
 				}
 
 				// Check form's title
-				if (atts.getValue(DesignTag.DESIGN_F_TITLE) != null) {
-					String title = atts.getValue(DesignTag.DESIGN_F_TITLE);
-					form.setTitle(title);
+				String formTitle = atts.getValue(DesignTag.DESIGN_F_TITLE);
+				if (formTitle != null) {
+					form.setTitle(formTitle);
 				}
 				sLayoutsMap.put(formId, form);
 			} else if (isInSystemNode) {
 				if (tagName.equals(DesignTag.DESIGN_S_G)) {
-					if (atts.getValue(DesignTag.DESIGN_S_G_OS) != null) {
-						mOnLoadFunctionName = atts
-								.getValue(DesignTag.DESIGN_S_G_OS);
+					String onStartFunction = atts
+							.getValue(DesignTag.DESIGN_S_G_OS);
+					if (onStartFunction != null) {
+						mOnLoadFunctionName = onStartFunction;
 					}
 					mStartFormId = atts.getValue(DesignTag.DESIGN_S_G_FID);
 					sApplicationVersion = atts
@@ -416,9 +419,10 @@ public class ApplicationView extends Activity {
 						if (tagName.equals(DesignTag.COMPONENT_MENUITEM)) {
 							menuItemNameList.add(atts
 									.getValue(DesignTag.COMPONENT_COMMON_NAME));
-							if (atts.getValue(DesignTag.EVENT_ONCLICK) != null) {
-								menuItemOnClickList.add(atts
-										.getValue(DesignTag.EVENT_ONCLICK));
+							String onClick = atts
+									.getValue(DesignTag.EVENT_ONCLICK);
+							if (onClick != null) {
+								menuItemOnClickList.add(onClick);
 							} else {
 								menuItemOnClickList.add("");
 							}
@@ -428,9 +432,10 @@ public class ApplicationView extends Activity {
 						if (atts.getValue(DesignTag.EVENT_ONCLICK) != null) {
 							menuItemNameList.add(atts
 									.getValue(DesignTag.COMPONENT_COMMON_NAME));
-							if (atts.getValue(DesignTag.EVENT_ONCLICK) != null) {
-								menuItemOnClickList.add(atts
-										.getValue(DesignTag.EVENT_ONCLICK));
+							String onClick = atts
+									.getValue(DesignTag.EVENT_ONCLICK);
+							if (onClick != null) {
+								menuItemOnClickList.add(onClick);
 							} else {
 								menuItemOnClickList.add("");
 							}
@@ -439,11 +444,12 @@ public class ApplicationView extends Activity {
 						}
 					}
 				} else if (isInComboBox) {
+					String itemValue = atts
+							.getValue(DesignTag.COMPONENT_COMMON_VALUE);
 					if (tagName.equals(DesignTag.COMPONENT_COMBOBOX_ITEM)
-							&& atts.getValue(DesignTag.COMPONENT_COMMON_VALUE) != null) {
+							&& itemValue != null) {
 						isInComboBoxItem = true;
-						comboboxItemList.add(atts
-								.getValue(DesignTag.COMPONENT_COMMON_VALUE));
+						comboboxItemList.add(itemValue);
 					}
 				} else if (isInDataview) {
 					if (tagName.equals(DesignTag.COMPONENT_DATAVIEW_COLUMN)) {
@@ -465,9 +471,10 @@ public class ApplicationView extends Activity {
 						if (atts.getValue(
 								DesignTag.COMPONENT_DATAVIEW_COLUMN_CALC)
 								.equals("true")) {
-							if (atts.getValue(DesignTag.EVENT_ONCALCULATE) != null) {
-								onCalculateMap.put(column, atts
-										.getValue(DesignTag.EVENT_ONCALCULATE));
+							String onCalculate = atts
+									.getValue(DesignTag.EVENT_ONCALCULATE);
+							if (onCalculate != null) {
+								onCalculateMap.put(column, onCalculate);
 							} else {
 								onCalculateMap.put(column, "");
 							}
@@ -490,70 +497,80 @@ public class ApplicationView extends Activity {
 						&& !isInDataviewColumn && !isInComboBoxItem) {
 					// Graphic component
 					component = new Component(ApplicationView.this, tagName);
-					if (atts.getValue(DesignTag.COMPONENT_COMMON_ID) != null) {
-						component.setId(atts
-								.getValue(DesignTag.COMPONENT_COMMON_ID));
+					String id = atts.getValue(DesignTag.COMPONENT_COMMON_ID);
+					if (id != null) {
+						component.setId(id);
 					}
-					if (atts.getValue(DesignTag.COMPONENT_COMMON_FONTSIZE) != null) {
-						component.setFontSize(atts
-								.getValue(DesignTag.COMPONENT_COMMON_FONTSIZE));
+					String fontColor = atts
+					.getValue(DesignTag.COMPONENT_COMMON_FONTCOLOR);
+					if (fontColor != null) {
+						component.setFontColor(fontColor);
 					}
-					if (atts.getValue(DesignTag.COMPONENT_COMMON_FONTTYPE) != null) {
-						component.setFontType(atts
-								.getValue(DesignTag.COMPONENT_COMMON_FONTTYPE));
+					String backgroundColor = atts
+					.getValue(DesignTag.COMPONENT_COMMON_BACKGROUNDCOLOR);
+					if (backgroundColor != null) {
+						component.setBackgroundColor(backgroundColor);
 					}
-					if (atts.getValue(DesignTag.COMPONENT_COMMON_ALIGN) != null) {
-						component.setAlign(atts
-								.getValue(DesignTag.COMPONENT_COMMON_ALIGN));
+					String fontSize = atts
+							.getValue(DesignTag.COMPONENT_COMMON_FONTSIZE);
+					if (fontSize != null) {
+						component.setFontSize(fontSize);
 					}
-					if (atts.getValue(DesignTag.COMPONENT_COMMON_LABEL) != null) {
-						component.setLabel(atts
-								.getValue(DesignTag.COMPONENT_COMMON_LABEL));
+					String fontType = atts
+							.getValue(DesignTag.COMPONENT_COMMON_FONTTYPE);
+					if (fontType != null) {
+						component.setFontType(fontType);
 					}
-					if (atts.getValue(DesignTag.COMPONENT_COMMON_TABLEID) != null) {
-						component.setTableId(atts
-								.getValue(DesignTag.COMPONENT_COMMON_TABLEID));
+					String align = atts
+							.getValue(DesignTag.COMPONENT_COMMON_ALIGN);
+					if (align != null) {
+						component.setAlign(align);
 					}
-					if (atts.getValue(DesignTag.COMPONENT_COMMON_FIELDID) != null) {
-						component.setFieldId(atts
-								.getValue(DesignTag.COMPONENT_COMMON_FIELDID));
+					String label = atts
+							.getValue(DesignTag.COMPONENT_COMMON_LABEL);
+					if (label != null) {
+						component.setLabel(label);
 					}
-					if (atts.getValue(DesignTag.COMPONENT_COMMON_BACKGROUND) != null) {
-						component
-								.setBackGround(atts
-										.getValue(DesignTag.COMPONENT_COMMON_BACKGROUND));
+					String tableId = atts
+							.getValue(DesignTag.COMPONENT_COMMON_TABLEID);
+					if (tableId != null) {
+						component.setTableId(tableId);
+					}
+					String fieldId = atts
+							.getValue(DesignTag.COMPONENT_COMMON_FIELDID);
+					if (fieldId != null) {
+						component.setFieldId(fieldId);
+					}
+					String background = atts
+							.getValue(DesignTag.COMPONENT_COMMON_BACKGROUND);
+					if (background != null) {
+						component.setBackGround(background);
 					}
 
 					if (tagName.equals(DesignTag.COMPONENT_CHECKBOX)) {
-						if (atts.getValue(DesignTag.COMPONENT_CHECKBOX_CHECKED) != null) {
-							component
-									.setChecked(atts
-											.getValue(DesignTag.COMPONENT_CHECKBOX_CHECKED));
+						String checked = atts
+								.getValue(DesignTag.COMPONENT_CHECKBOX_CHECKED);
+						if (checked != null) {
+							component.setChecked(checked);
 						}
 					} else if (tagName.equals(DesignTag.COMPONENT_COMBOBOX)) {
-						if ((atts
-								.getValue(DesignTag.COMPONENT_COMBOBOX_LABELTABLE) != null)
-								&& (atts
-										.getValue(DesignTag.COMPONENT_COMBOBOX_LABELFIELD) != null)
-								&& (atts
-										.getValue(DesignTag.COMPONENT_COMBOBOX_VALUETABLE) != null)
-								&& (atts
-										.getValue(DesignTag.COMPONENT_COMBOBOX_VALUEFIELD) != null)) {
+						String labelTable = atts
+								.getValue(DesignTag.COMPONENT_COMBOBOX_LABELTABLE);
+						String labelField = atts
+								.getValue(DesignTag.COMPONENT_COMBOBOX_LABELFIELD);
+						String valueTable = atts
+								.getValue(DesignTag.COMPONENT_COMBOBOX_VALUETABLE);
+						String valueField = atts
+								.getValue(DesignTag.COMPONENT_COMBOBOX_VALUEFIELD);
+						if ((labelTable != null) && (labelField != null)
+								&& (valueTable != null) && (valueField != null)) {
 							ArrayList<String> labelList = new ArrayList<String>();
-							labelList
-									.add(atts
-											.getValue(DesignTag.COMPONENT_COMBOBOX_LABELTABLE));
-							labelList
-									.add(atts
-											.getValue(DesignTag.COMPONENT_COMBOBOX_LABELFIELD));
+							labelList.add(labelTable);
+							labelList.add(labelField);
 
 							ArrayList<String> valueList = new ArrayList<String>();
-							valueList
-									.add(atts
-											.getValue(DesignTag.COMPONENT_COMBOBOX_VALUETABLE));
-							valueList
-									.add(atts
-											.getValue(DesignTag.COMPONENT_COMBOBOX_VALUEFIELD));
+							valueList.add(valueTable);
+							valueList.add(valueField);
 
 							component.setLabelList(labelList);
 							component.setValueList(valueList);
@@ -567,30 +584,34 @@ public class ApplicationView extends Activity {
 						onCalculateMap = new HashMap<Integer, String>();
 					} else if (tagName.equals(DesignTag.COMPONENT_DATEFIELD)
 							|| tagName.equals(DesignTag.COMPONENT_TIMEFIELD)) {
-						if (atts.getValue(DesignTag.COMPONENT_COMMON_VALUE) != null) {
-							component
-									.setDateTimeValue(atts
-											.getValue(DesignTag.COMPONENT_COMMON_VALUE));
+						String value = atts
+								.getValue(DesignTag.COMPONENT_COMMON_VALUE);
+						if (value != null) {
+							component.setDateTimeValue(value);
 						}
 					} else if ((tagName.equals(DesignTag.COMPONENT_GAUGE))
 							|| (tagName.equals(DesignTag.COMPONENT_NUMBERBOX))) {
-						if (atts.getValue(DesignTag.COMPONENT_INIT) != null) {
-							component.setInitValue(Integer.valueOf(atts
-									.getValue(DesignTag.COMPONENT_INIT)));
+						String initialValue = atts
+								.getValue(DesignTag.COMPONENT_INIT);
+						if (initialValue != null) {
+							component.setInitValue(Integer
+									.valueOf(initialValue));
 						}
-						if (atts.getValue(DesignTag.COMPONENT_MIN) != null) {
-							component.setMinValue(Integer.valueOf(atts
-									.getValue(DesignTag.COMPONENT_MIN)));
+						String minValue = atts
+								.getValue(DesignTag.COMPONENT_MIN);
+						if (minValue != null) {
+							component.setMinValue(Integer.valueOf(minValue));
 						}
-						if (atts.getValue(DesignTag.COMPONENT_MAX) != null) {
-							component.setMaxValue(Integer.valueOf(atts
-									.getValue(DesignTag.COMPONENT_MAX)));
+						String maxValue = atts
+								.getValue(DesignTag.COMPONENT_MAX);
+						if (maxValue != null) {
+							component.setMaxValue(Integer.valueOf(maxValue));
 						}
 					} else if (tagName.equals(DesignTag.COMPONENT_TEXTFIELD)) {
-						if (atts.getValue(DesignTag.COMPONENT_TEXTFIELD_MULTI) != null) {
-							component
-									.setMultiLine(atts
-											.getValue(DesignTag.COMPONENT_TEXTFIELD_MULTI));
+						String multiple = atts
+								.getValue(DesignTag.COMPONENT_TEXTFIELD_MULTI);
+						if (multiple != null) {
+							component.setMultiLine(multiple);
 						}
 						if (atts.getValue(DesignTag.COMPONENT_TEXTFIELD_EDIT) != null) {
 							component.setEditable(true);
@@ -601,10 +622,11 @@ public class ApplicationView extends Activity {
 								.setTextFilter(atts
 										.getValue(DesignTag.COMPONENT_TEXTFIELD_TEXTFILTER));
 					}
-					if (ApplicationView.this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+					int orientation = ApplicationView.this.getResources()
+							.getConfiguration().orientation;
+					if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
 						sCurrentOrientation = Configuration.ORIENTATION_LANDSCAPE;
-					} else if (ApplicationView.this.getResources()
-							.getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+					} else if (orientation == Configuration.ORIENTATION_PORTRAIT) {
 						sCurrentOrientation = Configuration.ORIENTATION_PORTRAIT;
 					}
 
@@ -613,12 +635,13 @@ public class ApplicationView extends Activity {
 							.put(atts.getValue(DesignTag.COMPONENT_COMMON_ID),
 									component);
 
-					View componentView = component.getView();
+					DalyoComponent dalyoComponent = component
+							.getDalyoComponent();
 					if (atts.getValue(DesignTag.COMPONENT_COMMON_ENABLE) != null) {
-						componentView.setEnabled(false);
+						dalyoComponent.setComponentEnabled(false);
 					}
 					if (atts.getValue(DesignTag.COMPONENT_COMMON_VISIBLE) != null) {
-						componentView.setVisibility(View.INVISIBLE);
+						dalyoComponent.setComponentVisible(false);
 					}
 					if (sCurrentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
 						RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
@@ -632,7 +655,7 @@ public class ApplicationView extends Activity {
 								.getValue(DesignTag.COMPONENT_COMMON_LCOORDX));
 						layoutParams.topMargin = Integer.valueOf(atts
 								.getValue(DesignTag.COMPONENT_COMMON_LCOORDY));
-						componentView.setLayoutParams(layoutParams);
+						((View) dalyoComponent).setLayoutParams(layoutParams);
 					} else {
 						RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
 								Integer
@@ -645,22 +668,20 @@ public class ApplicationView extends Activity {
 								.getValue(DesignTag.COMPONENT_COMMON_PCOORDX));
 						layoutParams.topMargin = Integer.valueOf(atts
 								.getValue(DesignTag.COMPONENT_COMMON_PCOORDY));
-						componentView.setLayoutParams(layoutParams);
+						((View) dalyoComponent).setLayoutParams(layoutParams);
 					}
-					form.addSubView(componentView);
+					form.addSubView((View) dalyoComponent);
 
 					// Add on-click event
-					if (atts.getValue(DesignTag.EVENT_ONCLICK) != null) {
-						component.setOnclickFunction(atts
-								.getValue(DesignTag.EVENT_ONCLICK),
-								componentView);
+					String onClick = atts.getValue(DesignTag.EVENT_ONCLICK);
+					if (onClick != null) {
+						dalyoComponent.setOnClickEvent(onClick);
 					}
 
 					// Add on-change event
-					if (atts.getValue(DesignTag.EVENT_ONCHANGE) != null) {
-						component.setOnchangeFunction(atts
-								.getValue(DesignTag.EVENT_ONCHANGE),
-								componentView);
+					String onChange = atts.getValue(DesignTag.EVENT_ONCHANGE);
+					if (onChange != null) {
+						dalyoComponent.setOnChangeEvent(onChange);
 					}
 				}
 			}

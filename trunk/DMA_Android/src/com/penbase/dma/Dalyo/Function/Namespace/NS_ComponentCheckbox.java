@@ -13,11 +13,11 @@ public class NS_ComponentCheckbox {
 	public static void Check(Element element) {
 		String componentId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT).toString();
 		Object state =  Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_STATE, ScriptAttribute.PARAMETER_TYPE_BOOLEAN);
-		((CheckBox)ApplicationView.getComponents().get(componentId).getView()).setChecked(((Boolean)state).booleanValue());
+		((CheckBox)ApplicationView.getComponents().get(componentId).getDalyoComponent()).setChecked(((Boolean)state).booleanValue());
 	}
 	
 	public static boolean IsChecked(Element element) {
 		String componentId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT).toString();
-		return ((CheckBox)ApplicationView.getComponents().get(componentId).getView()).isChecked();
+		return ((CheckBox)ApplicationView.getComponents().get(componentId).getDalyoComponent()).isChecked();
 	}
 }
