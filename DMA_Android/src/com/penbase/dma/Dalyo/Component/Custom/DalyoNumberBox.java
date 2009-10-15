@@ -11,8 +11,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.penbase.dma.R;
+import com.penbase.dma.Dalyo.Component.DalyoComponent;
 
-public class NumberBox extends LinearLayout{
+public class DalyoNumberBox extends LinearLayout implements DalyoComponent {
 	private AutoCompleteTextView mAct;
 	private ImageView mView_up;
 	private ImageView mView_down;
@@ -21,7 +22,7 @@ public class NumberBox extends LinearLayout{
 	private int mMinValue;
 	private static final char[] NUMBERCHARS = {'1','2','3','4','5','6','7','8','9','0'};
 	
-	public NumberBox(Context context) {
+	public DalyoNumberBox(Context context) {
 		super(context);
 		
 		LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -95,14 +96,6 @@ public class NumberBox extends LinearLayout{
     	return result;
     }
 	
-	public String getValue() {
-		return mAct.getText().toString();
-	}
-	
-	public void setValue(Object v) {
-		mAct.setText(v.toString());
-	}
-	
 	public void setInitialValue(int value) {
 		this.mInitialValue = value;
 		mAct.setText(String.valueOf(mInitialValue));
@@ -114,5 +107,84 @@ public class NumberBox extends LinearLayout{
 	
 	public void setMinValue(int value) {
 		this.mMinValue = value;
+	}
+
+	@Override
+	public String getComponentLabel() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object getComponentValue() {
+		return mAct.getText().toString();
+	}
+
+	@Override
+	public boolean isComponentEnabled() {
+		return isEnabled();
+	}
+
+	@Override
+	public boolean isComponentVisible() {
+		if (getVisibility() == View.VISIBLE) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public void resetComponent() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setComponentEnabled(boolean enable) {
+		setEnabled(enable);
+	}
+
+	@Override
+	public void setComponentFocus() {
+		requestFocus();
+	}
+
+	@Override
+	public void setComponentLabel(String label) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setComponentText(String text) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setComponentValue(Object value) {
+		mAct.setText(value.toString());
+	}
+
+	@Override
+	public void setComponentVisible(boolean visible) {
+		if (visible) {
+			setVisibility(View.VISIBLE);
+		} else {
+			setVisibility(View.INVISIBLE);
+		}
+	}
+
+	@Override
+	public void setOnChangeEvent(String functionName) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setOnClickEvent(String functionName) {
+		// TODO Auto-generated method stub
+		
 	}
 }

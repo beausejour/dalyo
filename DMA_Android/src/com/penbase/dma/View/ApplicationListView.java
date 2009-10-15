@@ -98,6 +98,12 @@ public class ApplicationListView extends Activity implements
 						.getString(R.string.connectionerror));
 				mAlertDialog.show();
 				break;
+			case 2:
+				mAdapter.removeAll();
+				addApplicationInAdapter();
+				mAdapter.notifyDataSetChanged();
+				sUpdateProgressDialog.dismiss();
+				break;
 			}
 		}
 	};
@@ -145,14 +151,7 @@ public class ApplicationListView extends Activity implements
 
 		String xml = getIntent().getStringExtra("APPLICATIONLIST");
 		createApplicationListFromXml(xml, false);
-		int size = mApplicationList.size();
-		for (int i = 0; i < size; i++) {
-			Application application = mApplicationList.get(i);
-			mAdapter.addApplication(application);
-			if (i == 0) {
-				mApplicationName.setText(application.getName());
-			}
-		}
+		addApplicationInAdapter();
 
 		mGridView = (GridView) findViewById(R.id.appsgv);
 		mGridView.setVerticalScrollBarEnabled(false);
@@ -186,6 +185,17 @@ public class ApplicationListView extends Activity implements
 		checkSystemTable();
 	}
 
+	private void addApplicationInAdapter() {
+		int size = mApplicationList.size();
+		for (int i = 0; i < size; i++) {
+			Application application = mApplicationList.get(i);
+			mAdapter.addApplication(application);
+			if (i == 0) {
+				mApplicationName.setText(application.getName());
+			}
+		}
+	}
+	
 	private void checkSystemTable() {
 		StringBuffer systemTable = new StringBuffer(Constant.APPPACKAGE);
 		systemTable.append(Constant.DATABASEDIRECTORY).append(
@@ -529,7 +539,7 @@ public class ApplicationListView extends Activity implements
 		values.put("Applicationlist", "");
 		mSqlite.update(Constant.SYSTEMTABLE, values, "ID = \"0\"", null);
 		this.finish();
-		startActivityForResult(new Intent(this, Dma.class), 0);
+		startActivity(new Intent(this, Dma.class));
 	}
 
 	/**
@@ -556,16 +566,7 @@ public class ApplicationListView extends Activity implements
 						values.put("Applicationlist", appsList);
 						mSqlite.update(Constant.SYSTEMTABLE, values,
 								"ID = \"0\"", null);
-
-						sUpdateProgressDialog.dismiss();
-						ApplicationListView.this.finish();
-
-						Intent intent = new Intent(ApplicationListView.this,
-								ApplicationListView.class);
-						intent.putExtra("USERNAME", mUsername);
-						intent.putExtra("USERPWD", mUserpassword);
-						intent.putExtra("APPLICATIONLIST", appsList);
-						startActivityForResult(intent, 0);
+						mHandler.sendEmptyMessage(2);
 					} else {
 						sUpdateProgressDialog.dismiss();
 						mHandler.sendEmptyMessage(1);
@@ -617,21 +618,13 @@ public class ApplicationListView extends Activity implements
 				mIntent.putExtra("USERNAME", mUsername);
 				mIntent.putExtra("TITLE", application.getName());
 				startActivity(mIntent);
+				sLoadProgressDialog.dismiss();
 			}
 		}).start();
 	}
 
 	public static HashMap<String, String> getApplicationsInfo() {
 		return sApplicationInfos;
-	}
-
-	@Override
-	protected void onStop() {
-		if (sLoadProgressDialog != null) {
-			sLoadProgressDialog.dismiss();
-			sLoadProgressDialog = null;
-		}
-		super.onStop();
 	}
 
 	@Override

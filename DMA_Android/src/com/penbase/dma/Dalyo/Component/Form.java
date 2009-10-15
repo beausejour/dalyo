@@ -9,12 +9,12 @@ import android.widget.ImageView.ScaleType;
 
 import com.penbase.dma.R;
 import com.penbase.dma.Constant.Constant;
-import com.penbase.dma.Dalyo.BarcodeReader.Barcode;
-import com.penbase.dma.Dalyo.Component.Custom.ComboBox;
-import com.penbase.dma.Dalyo.Component.Custom.TextField;
-import com.penbase.dma.Dalyo.Component.Custom.TextZone;
-import com.penbase.dma.Dalyo.Component.Custom.Doodle.DoodleView;
-import com.penbase.dma.Dalyo.Component.Custom.PictureBox.PictureBoxView;
+import com.penbase.dma.Dalyo.BarcodeReader.BarcodeComponent;
+import com.penbase.dma.Dalyo.Component.Custom.DalyoComboBox;
+import com.penbase.dma.Dalyo.Component.Custom.DalyoTextField;
+import com.penbase.dma.Dalyo.Component.Custom.DalyoTextZone;
+import com.penbase.dma.Dalyo.Component.Custom.Doodle.DalyoDoodle;
+import com.penbase.dma.Dalyo.Component.Custom.PictureBox.DalyoPictureBox;
 import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
 
@@ -91,12 +91,12 @@ public class Form extends ScrollView {
 		int viewLen = mLayout.getChildCount();
 		for (int i=0; i<viewLen; i++) {
 			View view = mLayout.getChildAt(i);
-			if (view instanceof TextField) {
-				((TextField)view).clear();
-			} else if (view instanceof TextZone) {
-				((TextZone)view).clear();
-			} else if (view instanceof PictureBoxView) {
-				((PictureBoxView)view).clear();
+			if (view instanceof DalyoTextField) {
+				((DalyoTextField)view).clear();
+			} else if (view instanceof DalyoTextZone) {
+				((DalyoTextZone)view).clear();
+			} else if (view instanceof DalyoPictureBox) {
+				((DalyoPictureBox)view).clear();
 			}
 		}
 	}
@@ -110,12 +110,12 @@ public class Form extends ScrollView {
 		int viewLen = mLayout.getChildCount();
 		for (int i=0; i<viewLen; i++) {
 			View view = mLayout.getChildAt(i);
-			if (view instanceof ComboBox) {
-				((ComboBox)view).setCurrentValue(formId, record);
-			} else if (view instanceof TextField) {
-				((TextField)view).refresh(record);
-			} else if (view instanceof TextZone) {
-				((TextZone)view).refresh(record);
+			if (view instanceof DalyoComboBox) {
+				((DalyoComboBox)view).setCurrentValue(formId, record);
+			} else if (view instanceof DalyoTextField) {
+				((DalyoTextField)view).refresh(record);
+			} else if (view instanceof DalyoTextZone) {
+				((DalyoTextZone)view).refresh(record);
 			}
 		}
 	}
@@ -129,10 +129,10 @@ public class Form extends ScrollView {
 			int viewLen = mLayout.getChildCount();
 			for (int i=0; i<viewLen; i++) {
 				View view = mLayout.getChildAt(i);
-				if (view instanceof TextField) {
-					((TextField)view).refresh(record);
-				} else if (view instanceof TextZone) {
-					((TextZone)view).refresh(record);
+				if (view instanceof DalyoTextField) {
+					((DalyoTextField)view).refresh(record);
+				} else if (view instanceof DalyoTextZone) {
+					((DalyoTextZone)view).refresh(record);
 				}
 			}
 		}
@@ -148,40 +148,40 @@ public class Form extends ScrollView {
 		int start = path.length();
 		for (int i=0; i<viewLen; i++) {
 			View view = mLayout.getChildAt(i);
-			if (view instanceof DoodleView) {
-				String fileName = ((DoodleView)view).getImageName();
+			if (view instanceof DalyoDoodle) {
+				String fileName = ((DalyoDoodle)view).getImageName();
 				if (!fileName.equals("")) {
 					path.delete(start, path.length());
 					path.append(fileName);
 					if (new File(path.toString()).exists()) {
-						((DoodleView)view).setText("");
-						((DoodleView)view).setBackgroundDrawable(Drawable.createFromPath(path.toString()));
+						((DalyoDoodle)view).setText("");
+						((DalyoDoodle)view).setBackgroundDrawable(Drawable.createFromPath(path.toString()));
 					} else {
-						((DoodleView)view).setText("Doodle");
+						((DalyoDoodle)view).setText("Doodle");
 					}	
 				}
-			} else if (view instanceof PictureBoxView) {
-				String fileName = ((PictureBoxView)view).getPhotoName();
+			} else if (view instanceof DalyoPictureBox) {
+				String fileName = ((DalyoPictureBox)view).getPhotoName();
 				if (!fileName.equals("")) {
 					path.delete(start, path.length());
 					path.append(fileName);
 					if (new File(path.toString()).exists()) {
-						((PictureBoxView)view).setImageDrawable(Drawable.createFromPath(path.toString()));
-						((PictureBoxView)view).setScaleType(ScaleType.FIT_XY);
+						((DalyoPictureBox)view).setImageDrawable(Drawable.createFromPath(path.toString()));
+						((DalyoPictureBox)view).setScaleType(ScaleType.FIT_XY);
 					} else {
-						((PictureBoxView)view).setImageResource(R.drawable.camera);	
+						((DalyoPictureBox)view).setImageResource(R.drawable.camera);	
 					}
 				}
-			} else if (view instanceof Barcode) {
-				String fileName = ((Barcode)view).getImageName();
+			} else if (view instanceof BarcodeComponent) {
+				String fileName = ((BarcodeComponent)view).getImageName();
 				if (!fileName.equals("")) {
 					path.delete(start, path.length());
 					path.append(fileName);
 					if (new File(path.toString()).exists()) {
-						((Barcode)view).setImageDrawable(Drawable.createFromPath(path.toString()));
-						((Barcode)view).setScaleType(ScaleType.FIT_XY);
+						((BarcodeComponent)view).setImageDrawable(Drawable.createFromPath(path.toString()));
+						((BarcodeComponent)view).setScaleType(ScaleType.FIT_XY);
 					} else {
-						((Barcode)view).setImageResource(R.drawable.barcode);	
+						((BarcodeComponent)view).setImageResource(R.drawable.barcode);	
 					}
 				}
 			}

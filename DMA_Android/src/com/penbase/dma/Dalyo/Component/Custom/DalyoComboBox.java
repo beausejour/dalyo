@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
 import com.penbase.dma.Constant.DatabaseAttribute;
+import com.penbase.dma.Dalyo.Component.DalyoComponent;
 import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
 import com.penbase.dma.Dalyo.Function.Function;
 import com.penbase.dma.View.ApplicationView;
@@ -18,7 +19,7 @@ import java.util.HashMap;
 /**
  * Displays configured items or retrieved data from databases
  */
-public class ComboBox extends Spinner {
+public class DalyoComboBox extends Spinner implements DalyoComponent {
 	private ArrayAdapter<String> mSpinnerArrayAdapter;
 	private int mCurrentPosition = -1;
 	private ArrayList<String> mLabelList;
@@ -29,14 +30,14 @@ public class ComboBox extends Spinner {
 	private HashMap<Integer, HashMap<Object, Object>> mRecords = new HashMap<Integer, HashMap<Object, Object>>();
 	private String mFuncName;
 	
-	public ComboBox(Context context, ArrayList<String> labelList, ArrayList<String> valueList) {
+	public DalyoComboBox(Context context, ArrayList<String> labelList, ArrayList<String> valueList) {
 		super(context);
 		this.mContext = context;
 		this.mLabelList = labelList;
 		this.mValueList = valueList;
 	}
 	
-	public ComboBox(Context context) {
+	public DalyoComboBox(Context context) {
 		super(context);
 		this.mContext = context;
 	}
@@ -99,29 +100,6 @@ public class ComboBox extends Spinner {
 		return mValueList.get(mCurrentPosition);
 	}
 	
-	/**
-	 * Calls a given function when user change the current item
-	 * @param name function name which will be called
-	 */
-	public void setOnChangeFunction(String name) {
-		this.mFuncName = name;
-		this.setOnItemSelectedListener(new OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long arg3) {
-				mCurrentPosition = position;
-				if (mFormId != null) {
-					setCurrentValue(mFormId, getCurrentRecord());
-				}
-				Function.createFunction(mFuncName);
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {
-			}
-			
-		});
-	}
-	
 	public HashMap<Object, Object> getCurrentRecord() {
 		if (mCurrentPosition == -1) {
 			return null;
@@ -170,5 +148,97 @@ public class ComboBox extends Spinner {
 	
 	public void setSelectedIndex(int index) {
 		this.setSelection(index - 1);
+	}
+
+	@Override
+	public String getComponentLabel() {
+		return getLabel();
+	}
+
+	@Override
+	public Object getComponentValue() {
+		return getValue();
+	}
+
+	@Override
+	public boolean isComponentEnabled() {
+		return isEnabled();
+	}
+
+	@Override
+	public boolean isComponentVisible() {
+		if (getVisibility() == View.VISIBLE) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public void resetComponent() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setComponentEnabled(boolean enable) {
+		setEnabled(enable);
+	}
+
+	@Override
+	public void setComponentFocus() {
+		requestFocus();
+	}
+
+	@Override
+	public void setComponentLabel(String label) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setComponentText(String text) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setComponentValue(Object value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setComponentVisible(boolean visible) {
+		if (visible) {
+			setVisibility(View.VISIBLE);
+		} else {
+			setVisibility(View.INVISIBLE);
+		}
+	}
+
+	@Override
+	public void setOnChangeEvent(String functionName) {
+		this.mFuncName = functionName;
+		this.setOnItemSelectedListener(new OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long arg3) {
+				mCurrentPosition = position;
+				if (mFormId != null) {
+					setCurrentValue(mFormId, getCurrentRecord());
+				}
+				Function.createFunction(mFuncName);
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+			}
+		});
+	}
+
+	@Override
+	public void setOnClickEvent(String functionName) {
+		// TODO Auto-generated method stub
+		
 	}
 }

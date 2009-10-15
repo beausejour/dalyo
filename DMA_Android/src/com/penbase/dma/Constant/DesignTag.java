@@ -75,8 +75,10 @@ public class DesignTag {
 	//Common component attributes
 	public static final String COMPONENT_COMMON_ALIGN = "a";
 	public static final String COMPONENT_COMMON_BACKGROUND = "bg";
+	public static final String COMPONENT_COMMON_BACKGROUNDCOLOR = "bc";
 	public static final String COMPONENT_COMMON_ENABLE = "en";
 	public static final String COMPONENT_COMMON_FIELDID = "fid";
+	public static final String COMPONENT_COMMON_FONTCOLOR = "fc";
 	public static final String COMPONENT_COMMON_FONTSIZE = "fs";
 	public static final String COMPONENT_COMMON_FONTTYPE = "ft";
 	public static final String COMPONENT_COMMON_ID = "id";

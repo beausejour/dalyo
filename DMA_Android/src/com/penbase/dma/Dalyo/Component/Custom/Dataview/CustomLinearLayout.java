@@ -16,9 +16,9 @@ public class CustomLinearLayout extends LinearLayout {
 	private ArrayList<String> mDataList;
 	private ArrayList<String> mWidthList;
 	private boolean mIsHeader;
-	private DataView mDataview;
+	private DalyoDataView mDataview;
 	
-	public CustomLinearLayout(Context c, DataView dv, ArrayList<String> dl, ArrayList<String> wl, boolean ish) {
+	public CustomLinearLayout(Context c, DalyoDataView dv, ArrayList<String> dl, ArrayList<String> wl, boolean ish) {
 		super(c);
 		this.mContext = c;
 		this.mDataview = dv;

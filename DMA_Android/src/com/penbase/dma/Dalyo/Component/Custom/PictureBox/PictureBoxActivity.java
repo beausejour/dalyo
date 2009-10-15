@@ -25,7 +25,7 @@ import java.io.IOException;
 /**
  * Launches camera to take a picture
  */
-public class PictureBox extends Activity implements SurfaceHolder.Callback {
+public class PictureBoxActivity extends Activity implements SurfaceHolder.Callback {
 	private Camera mCamera;
 	private SurfaceView mSurfaceView;
 	private SurfaceHolder mHolder;
@@ -65,7 +65,7 @@ public class PictureBox extends Activity implements SurfaceHolder.Callback {
 			case KeyEvent.KEYCODE_CAMERA:
 				//take picture
 				//play sound
-				MediaPlayer mp = MediaPlayer.create(PictureBox.this, R.raw.camera_click);
+				MediaPlayer mp = MediaPlayer.create(PictureBoxActivity.this, R.raw.camera_click);
 				mp.start();
 				mCamera.takePicture(null, null, pictureCallback);
 				break;
@@ -76,7 +76,7 @@ public class PictureBox extends Activity implements SurfaceHolder.Callback {
 				}
 				break;
 			case KeyEvent.KEYCODE_BACK:
-				PictureBox.this.finish();
+				PictureBoxActivity.this.finish();
 				break;
 		}
 		return super.onKeyDown(keyCode, event);
@@ -156,8 +156,8 @@ public class PictureBox extends Activity implements SurfaceHolder.Callback {
 							}  catch (IOException e) {
 								e.printStackTrace();
 							}
-							((PictureBoxView)ApplicationView.getComponents().get(mId).getView()).setPhotoName(photoName);
-							PictureBox.this.finish();
+							((DalyoPictureBox)ApplicationView.getComponents().get(mId).getDalyoComponent()).setPhotoName(photoName);
+							PictureBoxActivity.this.finish();
 						}
 					}).start();
 				}

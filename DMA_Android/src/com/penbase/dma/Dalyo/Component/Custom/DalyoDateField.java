@@ -1,4 +1,4 @@
-package com.penbase.dma.Dalyo.Component.Custom;
+ package com.penbase.dma.Dalyo.Component.Custom;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -10,16 +10,18 @@ import android.widget.DatePicker;
 
 import java.util.Calendar;
 
+import com.penbase.dma.Dalyo.Component.DalyoComponent;
+
 /**
  * Displays a DatePickerDialog when it was clicked
  */
-public class DateField extends Button implements OnClickListener{
+public class DalyoDateField extends Button implements OnClickListener, DalyoComponent {
 	private int mYear;
 	private int mMonth;
 	private int mDay;
 	private Context mContext;
 	
-	public DateField(Context c, Typeface tf, float fs, String defaultValue) {
+	public DalyoDateField(Context c, Typeface tf, float fs, String defaultValue) {
 		super(c);
 		this.mContext = c;
 		if ((defaultValue != null) && (!defaultValue.equals(""))) {
@@ -51,7 +53,7 @@ public class DateField extends Button implements OnClickListener{
                 newDate.append(mMonth);
                 newDate.append("/");
                 newDate.append(mYear);
-				DateField.this.setText(newDate.toString());
+				DalyoDateField.this.setText(newDate.toString());
             }
         }, mYear, mMonth - 1, mDay).show();
 	}
@@ -67,5 +69,83 @@ public class DateField extends Button implements OnClickListener{
 	
 	public void setDate(String date) {
 		this.setText(date);
+	}
+
+	@Override
+	public String getComponentLabel() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object getComponentValue() {
+		return getDate();
+	}
+
+	@Override
+	public boolean isComponentEnabled() {
+		return isEnabled();
+	}
+
+	@Override
+	public boolean isComponentVisible() {
+		if (getVisibility() == View.VISIBLE) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public void resetComponent() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setComponentEnabled(boolean enable) {
+		setEnabled(enable);
+	}
+
+	@Override
+	public void setComponentFocus() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setComponentLabel(String label) {
+		requestFocus();
+	}
+
+	@Override
+	public void setComponentText(String text) {
+		setDate(text);
+	}
+
+	@Override
+	public void setComponentValue(Object value) {
+		setDate(value.toString());
+	}
+
+	@Override
+	public void setComponentVisible(boolean visible) {
+		if (visible) {
+			setVisibility(View.VISIBLE);
+		} else {
+			setVisibility(View.INVISIBLE);
+		}
+	}
+
+	@Override
+	public void setOnChangeEvent(String functionName) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setOnClickEvent(String functionName) {
+		// TODO Auto-generated method stub
+		
 	}
 }
