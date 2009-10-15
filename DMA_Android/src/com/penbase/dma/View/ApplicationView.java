@@ -470,7 +470,7 @@ public class ApplicationView extends Activity {
 
 						if (atts.getValue(
 								DesignTag.COMPONENT_DATAVIEW_COLUMN_CALC)
-								.equals("true")) {
+								.equals(Constant.TRUE)) {
 							String onCalculate = atts
 									.getValue(DesignTag.EVENT_ONCALCULATE);
 							if (onCalculate != null) {

@@ -73,7 +73,7 @@ public class DesignTag {
 	public static final String COMPONENT_VIDEOBOX = "vd";
 	
 	//Common component attributes
-	public static final String COMPONENT_COMMON_ALIGN = "a";
+	public static final String COMPONENT_COMMON_ALIGN = "al";
 	public static final String COMPONENT_COMMON_BACKGROUND = "bg";
 	public static final String COMPONENT_COMMON_BACKGROUNDCOLOR = "bc";
 	public static final String COMPONENT_COMMON_ENABLE = "en";
