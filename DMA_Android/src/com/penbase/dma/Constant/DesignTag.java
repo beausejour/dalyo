@@ -68,6 +68,7 @@ public class DesignTag {
 	public static final String COMPONENT_TEXTFIELD_MULTI = "ml";
 	public static final String COMPONENT_TEXTFIELD_EDIT = "ed";
 	public static final String COMPONENT_TEXTFIELD_TEXTFILTER = "tf";
+	public static final String COMPONENT_TEXTFIELD_TRIGGER = "trg";
 	public static final String COMPONENT_TEXTZONE = "tz";
 	public static final String COMPONENT_TIMEFIELD = "tf";
 	public static final String COMPONENT_VIDEOBOX = "vd";
@@ -93,6 +94,7 @@ public class DesignTag {
 	public static final String COMPONENT_COMMON_PHEIGHT = "h";
 	public static final String COMPONENT_COMMON_PWIDTH = "w";
 	public static final String COMPONENT_COMMON_TABLEID = "tid";
+	public static final String COMPONENT_COMMON_TEXTALIGN = "a";
 	public static final String COMPONENT_COMMON_VALUE = "v";
 	public static final String COMPONENT_COMMON_VISIBLE = "vi";
 	

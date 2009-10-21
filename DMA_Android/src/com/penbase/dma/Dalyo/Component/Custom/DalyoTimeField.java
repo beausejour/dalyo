@@ -137,4 +137,14 @@ public class DalyoTimeField extends Button implements DalyoComponent, OnClickLis
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public int getMinimumHeight() {
+		return getSuggestedMinimumHeight();
+	}
+
+	@Override
+	public int getMinimumWidth() {
+		return getSuggestedMinimumWidth();
+	}
 }

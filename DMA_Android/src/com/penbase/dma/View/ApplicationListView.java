@@ -596,7 +596,7 @@ public class ApplicationListView extends Activity implements
 		final String applicationId = application.getAppId();
 		sApplicationInfos.put("Username", mUsername);
 		sApplicationInfos.put("Userpassword", mUserpassword);
-		sApplicationInfos.put("AppId", application.getAppId());
+		sApplicationInfos.put("AppId", applicationId);
 		sApplicationInfos.put("AppVer", application.getAppVer());
 		sApplicationInfos.put("AppBuild", application.getAppBuild());
 		sApplicationInfos.put("SubId", application.getSubId());
@@ -609,8 +609,7 @@ public class ApplicationListView extends Activity implements
 			@Override
 			public void run() {
 				try {
-					ApplicationView.prepareData(applicationId, mUsername,
-							mUserpassword);
+					ApplicationView.prepareData();
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
 				}

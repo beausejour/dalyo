@@ -19,4 +19,7 @@ public interface DalyoComponent {
 	 * @param functionName which will be called
 	 */
 	void setOnChangeEvent(String functionName);
+	
+	int getMinimumHeight();
+	int getMinimumWidth();
 }

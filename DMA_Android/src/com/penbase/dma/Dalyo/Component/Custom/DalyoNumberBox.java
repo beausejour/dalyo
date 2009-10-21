@@ -187,4 +187,14 @@ public class DalyoNumberBox extends LinearLayout implements DalyoComponent {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public int getMinimumHeight() {
+		return getSuggestedMinimumHeight();
+	}
+
+	@Override
+	public int getMinimumWidth() {
+		return getSuggestedMinimumWidth();
+	}
 }

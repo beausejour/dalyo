@@ -148,4 +148,14 @@ public class DalyoDateField extends Button implements OnClickListener, DalyoComp
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public int getMinimumHeight() {
+		return getSuggestedMinimumHeight();
+	}
+
+	@Override
+	public int getMinimumWidth() {
+		return getSuggestedMinimumWidth();
+	}
 }
