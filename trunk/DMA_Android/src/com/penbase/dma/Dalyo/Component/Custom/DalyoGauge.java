@@ -118,4 +118,14 @@ public class DalyoGauge extends SeekBar implements DalyoComponent {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public int getMinimumHeight() {
+		return getSuggestedMinimumHeight();
+	}
+
+	@Override
+	public int getMinimumWidth() {
+		return getSuggestedMinimumWidth();
+	}
 }

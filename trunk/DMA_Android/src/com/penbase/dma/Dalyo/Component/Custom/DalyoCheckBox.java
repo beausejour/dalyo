@@ -9,21 +9,25 @@ import com.penbase.dma.Dalyo.Component.DalyoComponent;
 import com.penbase.dma.Dalyo.Function.Function;
 
 public class DalyoCheckBox extends CheckBox implements DalyoComponent {
+	private String mInitialText;
+	private boolean mInitialState;
 
-	public DalyoCheckBox(Context context) {
+	public DalyoCheckBox(Context context, String text, boolean state) {
 		super(context);
+		mInitialText = text;
+		mInitialState = state;
+		setText(text);
+		setChecked(state);
 	}
 
 	@Override
 	public String getComponentLabel() {
-		// TODO Auto-generated method stub
-		return null;
+		return getText().toString();
 	}
 
 	@Override
 	public Object getComponentValue() {
-		// TODO Auto-generated method stub
-		return null;
+		return isChecked();
 	}
 
 	@Override
@@ -42,8 +46,8 @@ public class DalyoCheckBox extends CheckBox implements DalyoComponent {
 
 	@Override
 	public void resetComponent() {
-		// TODO Auto-generated method stub
-		
+		setText(mInitialText);
+		setChecked(mInitialState);
 	}
 
 	@Override
@@ -58,14 +62,12 @@ public class DalyoCheckBox extends CheckBox implements DalyoComponent {
 
 	@Override
 	public void setComponentLabel(String label) {
-		// TODO Auto-generated method stub
-		
+		setText(label);
 	}
 
 	@Override
 	public void setComponentText(String text) {
-		// TODO Auto-generated method stub
-		
+		setText(text);
 	}
 
 	@Override
@@ -101,5 +103,15 @@ public class DalyoCheckBox extends CheckBox implements DalyoComponent {
 				Function.createFunction(functionName);
 			}
 		});
+	}
+
+	@Override
+	public int getMinimumHeight() {
+		return getSuggestedMinimumHeight();
+	}
+
+	@Override
+	public int getMinimumWidth() {
+		return getSuggestedMinimumWidth();
 	}
 }

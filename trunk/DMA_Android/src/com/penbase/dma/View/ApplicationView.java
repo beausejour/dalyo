@@ -10,6 +10,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -83,6 +84,7 @@ public class ApplicationView extends Activity {
 
 	@Override
 	public void onCreate(Bundle icicle) {
+		Log.i("info", "onCreate");
 		super.onCreate(icicle);
 		sResources = getResources();
 		ApplicationView.sApplicationView = this;
@@ -92,6 +94,7 @@ public class ApplicationView extends Activity {
 				.getText(R.string.buildingapplication), true, false);
 		Intent intent = getIntent();
 		sApplicationId = intent.getStringExtra("ID");
+		Log.i("info", "sApplicationId "+sApplicationId);
 		sUsername = intent.getStringExtra("USERNAME");
 		setTitle(intent.getStringExtra("TITLE"));
 		new Thread(new Runnable() {
@@ -111,6 +114,9 @@ public class ApplicationView extends Activity {
 		deleteTempDirectory();
 	}
 
+	/**
+	 * Delete temporary image folder (barcode, doodle etc.)
+	 */
 	private void deleteTempDirectory() {
 		StringBuffer tempFilePath = new StringBuffer(Constant.APPPACKAGE);
 		tempFilePath.append(Constant.USERDIRECTORY);
@@ -147,15 +153,19 @@ public class ApplicationView extends Activity {
 	 *            Password
 	 * @throws FileNotFoundException
 	 */
-	public static void prepareData(String id, String login, String pwd)
-			throws FileNotFoundException {
-		sClient = new DmaHttpClient(login, id);
-		sClient.checkXmlFiles();
+	public static void prepareData() throws FileNotFoundException {
 		HashMap<String, String> applciationsInfo = ApplicationListView
 				.getApplicationsInfo();
-		String urlRequest = sClient.generateRegularUrlRequest(applciationsInfo
-				.get("AppId"), applciationsInfo.get("AppVer"), applciationsInfo
-				.get("AppBuild"), applciationsInfo.get("SubId"), login, pwd);
+		String id = applciationsInfo.get("AppId");
+		String login = applciationsInfo.get("Username");
+		String pwd = applciationsInfo.get("Userpassword");
+		sClient = new DmaHttpClient(login, id);
+		sClient.checkXmlFiles();
+
+		String urlRequest = sClient.generateRegularUrlRequest(id,
+				applciationsInfo.get("AppVer"), applciationsInfo
+						.get("AppBuild"), applciationsInfo.get("SubId"), login,
+				pwd);
 		sClient.getResource(urlRequest);
 		sDesignReader = sClient.getDesignReader(urlRequest);
 		sBehaviorDocument = sClient.getBehavior(urlRequest);
@@ -308,6 +318,7 @@ public class ApplicationView extends Activity {
 
 	@Override
 	protected void onDestroy() {
+		Log.i("info", "onDestroy");
 		super.onDestroy();
 		sDatabase.closeDatabase();
 		sCurrentMenu = null;
@@ -502,12 +513,12 @@ public class ApplicationView extends Activity {
 						component.setId(id);
 					}
 					String fontColor = atts
-					.getValue(DesignTag.COMPONENT_COMMON_FONTCOLOR);
+							.getValue(DesignTag.COMPONENT_COMMON_FONTCOLOR);
 					if (fontColor != null) {
 						component.setFontColor(fontColor);
 					}
 					String backgroundColor = atts
-					.getValue(DesignTag.COMPONENT_COMMON_BACKGROUNDCOLOR);
+							.getValue(DesignTag.COMPONENT_COMMON_BACKGROUNDCOLOR);
 					if (backgroundColor != null) {
 						component.setBackgroundColor(backgroundColor);
 					}
@@ -525,6 +536,11 @@ public class ApplicationView extends Activity {
 							.getValue(DesignTag.COMPONENT_COMMON_ALIGN);
 					if (align != null) {
 						component.setAlign(align);
+					}
+					String textAlign = atts
+							.getValue(DesignTag.COMPONENT_COMMON_TEXTALIGN);
+					if (textAlign != null) {
+						component.setAlign(textAlign);
 					}
 					String label = atts
 							.getValue(DesignTag.COMPONENT_COMMON_LABEL);
@@ -613,6 +629,11 @@ public class ApplicationView extends Activity {
 						if (multiple != null) {
 							component.setMultiLine(multiple);
 						}
+						String trigger = atts
+								.getValue(DesignTag.COMPONENT_TEXTFIELD_TRIGGER);
+						if (trigger != null) {
+							component.setTrigger(trigger);
+						}
 						if (atts.getValue(DesignTag.COMPONENT_TEXTFIELD_EDIT) != null) {
 							component.setEditable(true);
 						} else {
@@ -631,9 +652,7 @@ public class ApplicationView extends Activity {
 					}
 
 					component.setView();
-					sComponentsMap
-							.put(atts.getValue(DesignTag.COMPONENT_COMMON_ID),
-									component);
+					sComponentsMap.put(id, component);
 
 					DalyoComponent dalyoComponent = component
 							.getDalyoComponent();
@@ -643,27 +662,41 @@ public class ApplicationView extends Activity {
 					if (atts.getValue(DesignTag.COMPONENT_COMMON_VISIBLE) != null) {
 						dalyoComponent.setComponentVisible(false);
 					}
+					int componentDefaultHeight = dalyoComponent
+							.getMinimumHeight();
+					int componentDefaultWidth = dalyoComponent
+							.getMinimumWidth();
 					if (sCurrentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+						int width = Integer.valueOf(atts
+								.getValue(DesignTag.COMPONENT_COMMON_LWIDTH));
+						int height = Integer.valueOf(atts
+								.getValue(DesignTag.COMPONENT_COMMON_LHEIGHT));
+						if (width < componentDefaultWidth) {
+							width = componentDefaultWidth;
+						}
+						if (height < componentDefaultHeight) {
+							height = componentDefaultHeight;
+						}
 						RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
-								Integer
-										.valueOf(atts
-												.getValue(DesignTag.COMPONENT_COMMON_LWIDTH)),
-								Integer
-										.valueOf(atts
-												.getValue(DesignTag.COMPONENT_COMMON_LHEIGHT)));
+								width, height);
 						layoutParams.leftMargin = Integer.valueOf(atts
 								.getValue(DesignTag.COMPONENT_COMMON_LCOORDX));
 						layoutParams.topMargin = Integer.valueOf(atts
 								.getValue(DesignTag.COMPONENT_COMMON_LCOORDY));
 						((View) dalyoComponent).setLayoutParams(layoutParams);
 					} else {
+						int width = Integer.valueOf(atts
+								.getValue(DesignTag.COMPONENT_COMMON_PWIDTH));
+						int height = Integer.valueOf(atts
+								.getValue(DesignTag.COMPONENT_COMMON_PHEIGHT));
+						if (width < componentDefaultWidth) {
+							width = componentDefaultWidth;
+						}
+						if (height < componentDefaultHeight) {
+							height = componentDefaultHeight;
+						}
 						RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
-								Integer
-										.valueOf(atts
-												.getValue(DesignTag.COMPONENT_COMMON_PWIDTH)),
-								Integer
-										.valueOf(atts
-												.getValue(DesignTag.COMPONENT_COMMON_PHEIGHT)));
+								width, height);
 						layoutParams.leftMargin = Integer.valueOf(atts
 								.getValue(DesignTag.COMPONENT_COMMON_PCOORDX));
 						layoutParams.topMargin = Integer.valueOf(atts

@@ -9,17 +9,19 @@ import android.view.View;
 import android.widget.Button;
 
 public class DalyoButton extends Button implements DalyoComponent {
+	private String mInitalText = null;
+	private boolean mHasBackground = false;
 
-	public DalyoButton(Context context) {
+	public DalyoButton(Context context, String label, boolean hasBackground) {
 		super(context);
-	}
-
-	public void setBackgroundImageByPath(String path) {
-		if (path.length() > 0) {
-			Drawable drawable = Drawable.createFromPath(path);
-			setBackgroundDrawable(drawable);
+		if (hasBackground) {
+			setBackgroundDrawable(Drawable.createFromPath(label));
 			setText(null);
+		} else {
+			setText(label);
 		}
+		mHasBackground = hasBackground;
+		mInitalText = label;
 	}
 	
 	@Override
@@ -29,8 +31,7 @@ public class DalyoButton extends Button implements DalyoComponent {
 
 	@Override
 	public Object getComponentValue() {
-		// TODO Auto-generated method stub
-		return null;
+		return mInitalText;
 	}
 
 	@Override
@@ -49,8 +50,12 @@ public class DalyoButton extends Button implements DalyoComponent {
 
 	@Override
 	public void resetComponent() {
-		// TODO Auto-generated method stub
-		
+		if (mHasBackground) {
+			setBackgroundDrawable(Drawable.createFromPath(mInitalText));
+			setText(null);	
+		} else {
+			setText(mInitalText);
+		}
 	}
 
 	@Override
@@ -65,8 +70,7 @@ public class DalyoButton extends Button implements DalyoComponent {
 
 	@Override
 	public void setComponentLabel(String label) {
-		// TODO Auto-generated method stub
-		
+		setText(label);
 	}
 
 	@Override
@@ -103,5 +107,15 @@ public class DalyoButton extends Button implements DalyoComponent {
 	public void setOnChangeEvent(String functionName) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public int getMinimumHeight() {
+		return getSuggestedMinimumHeight();
+	}
+
+	@Override
+	public int getMinimumWidth() {
+		return getSuggestedMinimumWidth();
 	}
 }

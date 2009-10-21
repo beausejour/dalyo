@@ -50,9 +50,6 @@ public class Constant {
 	public static int INTBYTE = 4;	
 	public static int TYPEBYTE = 1;
 	
-	public static String POSITIVENUMERIC = "positivenumeric";
-	public static String NONE = "none";
-	
 	//Xml files
 	public static final String DBXML = "db.xml";
 	public static final String DESIGNXML = "design.xml";
@@ -76,4 +73,11 @@ public class Constant {
 	
 	//Temporary directory for images (doodle or pictureBox)
 	public static final String TEMPDIRECTORY = "temp/";
+	
+	//Attribute value
+	public static final String TRIGGERMAIL = "mail";
+	public static final String TRIGGERPHONE = "phone";
+	public static final String TRIGGERURL = "url";
+	public static final String POSITIVENUMERIC = "positivenumeric";
+	public static final String NONE = "none";
 }

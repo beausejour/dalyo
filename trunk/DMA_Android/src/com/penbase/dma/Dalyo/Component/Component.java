@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.text.method.DigitsKeyListener;
+import android.util.Log;
 import android.view.Gravity;
 import android.widget.TextView;
 
@@ -54,6 +55,7 @@ public class Component {
 	private boolean mEditable;
 	private String mMultiLine = null;
 	private String mTextFilter = null;
+	private String mTrigger = null;
 
 	// Variable for TimeField/DateField
 	private String mDateTimeValue = null;
@@ -143,6 +145,10 @@ public class Component {
 	public void setTextFilter(String tf) {
 		this.mTextFilter = tf;
 	}
+	
+	public void setTrigger(String trigger) {
+		this.mTrigger = trigger;
+	}
 
 	public void setDateTimeValue(String value) {
 		this.mDateTimeValue = value;
@@ -177,10 +183,20 @@ public class Component {
 					mId);
 			mComponent = barcodeComponent;
 		} else if (mType.equals(DesignTag.COMPONENT_BUTTON)) {
-			DalyoButton button = new DalyoButton(mContext);
-			button.setText(mLabel);
-			button.setTypeface(getFontType(mFontType));
-			button.setTextSize(getFontSize(mFontSize));
+			DalyoButton button = null;
+			if (mLabel != null) {
+				button = new DalyoButton(mContext, mLabel, false);
+				button.setTypeface(getFontType(mFontType));
+				button.setTextSize(getFontSize(mFontSize));
+			}
+			if (mBackground != null) {
+				String path = findResourceFile(mBackground);
+				if (path.length() > 0) {
+					button = new DalyoButton(mContext, path, true);
+				} else {
+					button = new DalyoButton(mContext, mLabel, false);
+				}
+			}
 			if (mAlign != null) {
 				button.setGravity(getGravity(mAlign));
 			}
@@ -190,14 +206,14 @@ public class Component {
 			if (mBackgroundColor != null) {
 				button.setBackgroundColor(getColor(mBackgroundColor));
 			}
-			if (mBackground != null) {
-				String path = findResourceFile(mBackground);
-				button.setBackgroundImageByPath(path);
-			}
 			mComponent = button;
 		} else if (mType.equals(DesignTag.COMPONENT_CHECKBOX)) {
-			DalyoCheckBox checkbox = new DalyoCheckBox(mContext);
-			checkbox.setText(mLabel);
+			DalyoCheckBox checkbox = null;
+			if (mChecked.equals(Constant.TRUE)) {
+				checkbox = new DalyoCheckBox(mContext, mLabel, true);
+			} else {
+				checkbox = new DalyoCheckBox(mContext, mLabel, false);
+			}
 			checkbox.setTypeface(getFontType(mFontType));
 			checkbox.setTextSize(getFontSize(mFontSize));
 			if (mFontColor != null) {
@@ -208,9 +224,6 @@ public class Component {
 			if (mAlign != null) {
 				checkbox.setGravity(getGravity(mAlign));
 			}
-			if (mChecked.equals(Constant.TRUE)) {
-				checkbox.setChecked(true);
-			}
 			mComponent = checkbox;
 		} else if (mType.equals(DesignTag.COMPONENT_COMBOBOX)) {
 			DalyoComboBox combobox;
@@ -220,84 +233,11 @@ public class Component {
 				combobox = new DalyoComboBox(mContext);
 			}
 			mComponent = combobox;
-		} else if (mType.equals(DesignTag.COMPONENT_LABEL)) {
-			DalyoLabel labelObject = new DalyoLabel(mContext,
-					getFontType(mFontType), getFontSize(mFontSize));
-			labelObject.setText(mLabel);
-			if (mAlign != null) {
-				labelObject.setGravity(getGravity(mAlign));
-			}
-			mComponent = labelObject;
 		} else if (mType.equals(DesignTag.COMPONENT_DATEFIELD)) {
 			DalyoDateField datefield = new DalyoDateField(mContext,
 					getFontType(mFontType), getFontSize(mFontSize),
 					mDateTimeValue);
 			mComponent = datefield;
-		} else if (mType.equals(DesignTag.COMPONENT_TIMEFIELD)) {
-			DalyoTimeField timefield = new DalyoTimeField(mContext,
-					getFontType(mFontType), getFontSize(mFontSize),
-					mDateTimeValue);
-			mComponent = timefield;
-		} else if (mType.equals(DesignTag.COMPONENT_TEXTFIELD)) {
-			if (mMultiLine.equals(Constant.TRUE)) {
-				DalyoTextZone textzone = new DalyoTextZone(mContext,
-						getFontType(mFontType), getFontSize(mFontSize));
-				if ((mTableID != null) && (mFieldID != null)) {
-					textzone.setTableId(mTableID);
-					textzone.setFieldId(mFieldID);
-				}
-				mComponent = textzone;
-			} else {
-				DalyoTextField textfield = new DalyoTextField(mContext,
-						getFontType(mFontType), getFontSize(mFontSize));
-				if ((mTableID != null) && (mFieldID != null)) {
-					textfield.setTableId(mTableID);
-					textfield.setFieldId(mFieldID);
-				}
-				mComponent = textfield;
-			}
-			if (mAlign != null) {
-				((TextView) mComponent).setGravity(getGravity(mAlign));
-			}
-			if (mEditable) {
-				((TextView) mComponent).setEnabled(!mEditable);
-			}
-			if (!mTextFilter.equals(Constant.NONE)) {
-				if (mTextFilter.equals(Constant.POSITIVENUMERIC)) {
-					DigitsKeyListener numericOnlyListener = new DigitsKeyListener(
-							false, true);
-					((TextView) mComponent).setKeyListener(numericOnlyListener);
-				}
-			}
-		} else if (mType.equals(DesignTag.COMPONENT_TEXTZONE)) {
-			DalyoTextZone textzone = new DalyoTextZone(mContext,
-					getFontType(mFontType), getFontSize(mFontSize));
-			mComponent = textzone;
-		} else if (mType.equals(DesignTag.COMPONENT_RADIOBUTTON)) {
-			DalyoRadiobutton dalyoRadiobutton = new DalyoRadiobutton(mContext);
-			dalyoRadiobutton.getTextView().setText(mLabel);
-			dalyoRadiobutton.getTextView().setTypeface(getFontType(mFontType));
-			dalyoRadiobutton.getTextView().setTextSize(getFontSize(mFontSize));
-			mComponent = dalyoRadiobutton;
-		} else if (mType.equals(DesignTag.COMPONENT_NUMBERBOX)) {
-			DalyoNumberBox numberbox = new DalyoNumberBox(mContext);
-			numberbox.setInitialValue(mInitialValue);
-			numberbox.setMaxValue(mMaxValue);
-			numberbox.setMinValue(mMinValue);
-			mComponent = numberbox;
-		} else if (mType.equals(DesignTag.COMPONENT_PICTUREBOX)) {
-			DalyoPictureBox pictureBox = new DalyoPictureBox(mContext, mId);
-			mComponent = pictureBox;
-		} else if (mType.equals(DesignTag.COMPONENT_IMAGE)) {
-			DalyoImage imageview = new DalyoImage(mContext);
-			if (mBackground != null) {
-				String path = findResourceFile(mBackground);
-				if (path.length() > 0) {
-					Drawable d = Drawable.createFromPath(path);
-					imageview.setBackgroundDrawable(d);
-				}
-			}
-			mComponent = imageview;
 		} else if (mType.equals(DesignTag.COMPONENT_DATAVIEW)) {
 			DalyoDataView dataview = new DalyoDataView(mContext, mTableID);
 			dataview.setText(getFontSize(mFontSize), getFontType(mFontType));
@@ -311,9 +251,75 @@ public class Component {
 			dalyoGauge.setMax(mMaxValue);
 			dalyoGauge.setMinValue(mMinValue);
 			mComponent = dalyoGauge;
+		} else if (mType.equals(DesignTag.COMPONENT_IMAGE)) {
+			DalyoImage imageview = new DalyoImage(mContext);
+			if (mBackground != null) {
+				String path = findResourceFile(mBackground);
+				if (path.length() > 0) {
+					Drawable d = Drawable.createFromPath(path);
+					imageview.setBackgroundDrawable(d);
+				}
+			}
+			mComponent = imageview;
+		} else if (mType.equals(DesignTag.COMPONENT_LABEL)) {
+			DalyoLabel labelObject = new DalyoLabel(mContext,
+					getFontType(mFontType), getFontSize(mFontSize));
+			labelObject.setText(mLabel);
+			if (mFontColor != null) {
+				labelObject.setTextColor(getColor(mFontColor));
+			}
+			if (mAlign != null) {
+				labelObject.setGravity(getGravity(mAlign));
+			}
+			mComponent = labelObject;
+		} else if (mType.equals(DesignTag.COMPONENT_NUMBERBOX)) {
+			DalyoNumberBox numberbox = new DalyoNumberBox(mContext);
+			numberbox.setInitialValue(mInitialValue);
+			numberbox.setMaxValue(mMaxValue);
+			numberbox.setMinValue(mMinValue);
+			mComponent = numberbox;
+		} else if (mType.equals(DesignTag.COMPONENT_PICTUREBOX)) {
+			DalyoPictureBox pictureBox = new DalyoPictureBox(mContext, mId);
+			mComponent = pictureBox;
+		} else if (mType.equals(DesignTag.COMPONENT_RADIOBUTTON)) {
+			DalyoRadiobutton dalyoRadiobutton = new DalyoRadiobutton(mContext);
+			dalyoRadiobutton.getTextView().setText(mLabel);
+			dalyoRadiobutton.getTextView().setTypeface(getFontType(mFontType));
+			dalyoRadiobutton.getTextView().setTextSize(getFontSize(mFontSize));
+			mComponent = dalyoRadiobutton;
+		} else if (mType.equals(DesignTag.COMPONENT_TEXTFIELD)) {
+			DalyoTextField textfield = new DalyoTextField(mContext,
+					getFontType(mFontType), getFontSize(mFontSize));
+			if (!mMultiLine.equals(Constant.TRUE)) {
+				textfield.setSingleLine();
+			}
+			if (mFontColor != null) {
+				textfield.setTextColor(getColor(mFontColor));
+			}
+			if (mAlign != null) {
+				textfield.setGravity(getGravity(mAlign));
+			}
+			if (mEditable) {
+				textfield.setEnabled(!mEditable);
+			}
+			if (mTrigger != null) {
+				textfield.setTrigger(mTrigger);
+			}
+			if (!mTextFilter.equals(Constant.NONE)) {
+				textfield.setTextFilter(mTextFilter);
+			}
+			mComponent = textfield;
+		} else if (mType.equals(DesignTag.COMPONENT_TEXTZONE)) {
+			DalyoTextZone textzone = new DalyoTextZone(mContext,
+					getFontType(mFontType), getFontSize(mFontSize));
+			mComponent = textzone;
+		} else if (mType.equals(DesignTag.COMPONENT_TIMEFIELD)) {
+			DalyoTimeField timefield = new DalyoTimeField(mContext,
+					getFontType(mFontType), getFontSize(mFontSize),
+					mDateTimeValue);
+			mComponent = timefield;
 		} else {
-			DalyoButton button = new DalyoButton(mContext);
-			button.setText(mLabel + " not implemented yet");
+			DalyoButton button = new DalyoButton(mContext, mLabel + " not implemented yet", false);
 			mComponent = button;
 		}
 	}
@@ -436,6 +442,7 @@ public class Component {
 	}
 
 	public void reSet() {
-		setValue(mLabel);
+		//setValue(mLabel);
+		mComponent.resetComponent();
 	}
 }
