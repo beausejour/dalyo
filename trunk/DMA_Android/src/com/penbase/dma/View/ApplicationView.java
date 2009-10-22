@@ -610,6 +610,10 @@ public class ApplicationView extends Activity {
 							isInComboBox = true;
 							comboboxItemList = new ArrayList<String>();
 						}
+						String bullet = atts.getValue(DesignTag.COMPONENT_COMBOBOX_BULLET);
+						if (bullet != null) {
+							component.setBullet(bullet);
+						}
 					} else if (tagName.equals(DesignTag.COMPONENT_DATAVIEW)) {
 						isInDataview = true;
 						columnInfos = new ArrayList<ArrayList<String>>();

@@ -39,6 +39,7 @@ public class DesignTag {
 	public static final String COMPONENT_CHECKBOX = "ch";
 	public static final String COMPONENT_CHECKBOX_CHECKED = "v";
 	public static final String COMPONENT_COMBOBOX = "cb";
+	public static final String COMPONENT_COMBOBOX_BULLET = "bul";
 	public static final String COMPONENT_COMBOBOX_ITEM = "icb";
 	public static final String COMPONENT_COMBOBOX_LABELTABLE = "lst";
 	public static final String COMPONENT_COMBOBOX_LABELFIELD = "lsf";
