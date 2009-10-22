@@ -41,6 +41,7 @@ public class Component {
 	// Variables for combobox
 	private ArrayList<String> mLabelList = null;
 	private ArrayList<String> mValueList = null;
+	private String mBullet = null;
 
 	// Variable for image
 	private String mBackground = null;
@@ -121,6 +122,10 @@ public class Component {
 
 	public void setValueList(ArrayList<String> v) {
 		this.mValueList = v;
+	}
+	
+	public void setBullet(String bullet) {
+		this.mBullet = bullet;
 	}
 
 	public void setDataviewColumns(ArrayList<ArrayList<String>> l) {
@@ -223,11 +228,18 @@ public class Component {
 			}
 			mComponent = checkbox;
 		} else if (mType.equals(DesignTag.COMPONENT_COMBOBOX)) {
-			DalyoComboBox combobox;
+			DalyoComboBox combobox = null;
 			if ((mValueList != null) && (mLabelList != null)) {
 				combobox = new DalyoComboBox(mContext, mLabelList, mValueList);
 			} else {
 				combobox = new DalyoComboBox(mContext);
+			}
+			combobox.setFont(getFontSize(mFontSize), getFontType(mFontType), mFontColor);
+			if (mBullet != null) {
+				String path = findResourceFile(mBullet);
+				if (path.length() > 0) {
+					combobox.setBulletPath(path);
+				}
 			}
 			mComponent = combobox;
 		} else if (mType.equals(DesignTag.COMPONENT_DATEFIELD)) {
