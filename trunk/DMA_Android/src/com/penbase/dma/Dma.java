@@ -22,6 +22,7 @@ import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
@@ -60,7 +61,6 @@ public class Dma extends Activity implements OnClickListener {
 	private AlertDialog mAlertDialog;
 	private ProgressDialog mLoadApps = null;
 	private String mServerResponse = null;
-	private static String sDeviceId = null;
 	private Handler mHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
@@ -73,7 +73,6 @@ public class Dma extends Activity implements OnClickListener {
 	};
 	private AlertDialog mAboutDialog;
 	private LayoutInflater mInflater;
-	private static String sVersion;
 	private SQLiteDatabase mSqlite = null;
 	private String mUsername;
 	private String mUserpassword;
@@ -86,7 +85,7 @@ public class Dma extends Activity implements OnClickListener {
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		mResources = getResources();
-		sDeviceId = ((TelephonyManager) this
+		String deviceId = ((TelephonyManager) this
 				.getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
 		checkSystemTable();
 		mAlertDialog = new AlertDialog.Builder(this).create();
@@ -97,12 +96,20 @@ public class Dma extends Activity implements OnClickListener {
 		} catch (NameNotFoundException e) {
 			e.printStackTrace();
 		}
-		sVersion = pi.versionName;
+		String version = pi.versionName;
+		
+		SharedPreferences.Editor editorPrefs = getSharedPreferences(
+				Constant.PREFERENCE, MODE_PRIVATE).edit();
+		editorPrefs.putString(Constant.DEVICEID, deviceId);
+		editorPrefs.putString(Constant.VERSION, version);
+		
+		editorPrefs.commit();
 
 		if (!mRememberme) {
-			if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+			int orientation = getResources().getConfiguration().orientation;
+			if (orientation == Configuration.ORIENTATION_PORTRAIT) {
 				setContentView(R.layout.login_layout);
-			} else if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+			} else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
 				setContentView(R.layout.login_layout_landscape);
 			}
 			Button bt = (Button) findViewById(R.id.ok);
@@ -116,7 +123,7 @@ public class Dma extends Activity implements OnClickListener {
 			View aboutView = mInflater.inflate(R.layout.about, null, false);
 			TextView nameVersionView = (TextView) aboutView
 					.findViewById(R.id.nameversion);
-			nameVersionView.setText("Dalyo Mobile Agent " + Dma.getVersion());
+			nameVersionView.setText("Dalyo Mobile Agent " + version);
 			mAboutDialog = new AlertDialog.Builder(this).setIcon(
 					android.R.drawable.ic_dialog_info).setTitle(
 					R.string.menu_about).setView(aboutView).create();
@@ -126,7 +133,7 @@ public class Dma extends Activity implements OnClickListener {
 			intent.putExtra("USERNAME", mUsername);
 			intent.putExtra("USERPWD", mUserpassword);
 			intent.putExtra("APPLICATIONLIST", mApplicationlist);
-			startActivityForResult(intent, 0);
+			startActivity(intent);
 		}
 		if (mStorageCardRemoved) {
 			Toast.makeText(this, R.string.nosdcard, Toast.LENGTH_LONG).show();
@@ -157,7 +164,7 @@ public class Dma extends Activity implements OnClickListener {
 			@Override
 			public void run() {
 				if (mHandler != null) {
-					mServerResponse = new DmaHttpClient(login.trim(), null)
+					mServerResponse = new DmaHttpClient(Dma.this, login.trim(), null)
 							.Authentication(login.trim(), Common
 									.md5(pwd.trim()));
 					mHandler.sendEmptyMessage(0);
@@ -293,14 +300,6 @@ public class Dma extends Activity implements OnClickListener {
 		mAlertDialog.show();
 	}
 
-	public static String getDeviceID() {
-		return sDeviceId;
-	}
-
-	public static String getVersion() {
-		return sVersion;
-	}
-
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
@@ -310,7 +309,5 @@ public class Dma extends Activity implements OnClickListener {
 		if (mSqlite != null) {
 			mSqlite.close();
 		}
-		sDeviceId = null;
-		sVersion = null;
 	}
 }

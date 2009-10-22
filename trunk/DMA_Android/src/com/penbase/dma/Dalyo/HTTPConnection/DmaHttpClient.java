@@ -14,8 +14,10 @@
  */
 package com.penbase.dma.Dalyo.HTTPConnection;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import com.penbase.dma.Common;
-import com.penbase.dma.Dma;
 import com.penbase.dma.Binary.Binary;
 import com.penbase.dma.Constant.Constant;
 import com.penbase.dma.Constant.DatabaseTag;
@@ -62,28 +64,34 @@ import javax.xml.parsers.SAXParserFactory;
 /**
  * Manages HTTP connection
  */
-public class DmaHttpClient{
+public class DmaHttpClient {
 	private int mLastError = 0;
 	private int mErrorCode = 0;
-	
-	//Booleans of sending requests
+
+	// Booleans of sending requests
 	private boolean mSendBehavior = true;
 	private boolean mSendDb = true;
 	private boolean mSendDesign = true;
 	private boolean mSendResource = true;
-	
-	//XML files
+
+	// XML files
 	private static StringBuffer sDirectory;
 	private static String sDb_XML;
 	private String mDesign_XML;
 	private String mBehavior_XML;
 	private String mResources_XML;
-	
-	//Resource file's path
+
+	// Resource file's path
 	private static StringBuffer sResourceFilePath;
-	
-	public DmaHttpClient(String login, String id) {
+
+	private SharedPreferences mPreference;
+	private Context mContext;
+
+	public DmaHttpClient(Context context, String login, String id) {
 		createFilesPath(login, id);
+		mPreference = context.getSharedPreferences(Constant.PREFERENCE,
+				Context.MODE_PRIVATE);
+		mContext = context;
 	}
 
 	private void createFilesPath(String login, String id) {
@@ -94,44 +102,45 @@ public class DmaHttpClient{
 			if (!directory.exists()) {
 				directory.mkdir();
 			}
-			
+
 			sDirectory.append(login).append("/");
 			directory = new File(sDirectory.toString());
 			if (!directory.exists()) {
 				directory.mkdir();
 			}
-			
+
 			sResourceFilePath = new StringBuffer(sDirectory);
 			sResourceFilePath.append(Constant.RESOURCE);
 			File resourceFileDirectory = new File(sResourceFilePath.toString());
 			if (!resourceFileDirectory.exists()) {
 				resourceFileDirectory.mkdir();
 			}
-			
+
 			sDirectory.append(id).append("/");
 			directory = new File(sDirectory.toString());
 			if (!directory.exists()) {
 				directory.mkdir();
 			}
-			
+
 			sDb_XML = sDirectory + Constant.DBXML;
 			mDesign_XML = sDirectory + Constant.DESIGNXML;
 			mBehavior_XML = sDirectory + Constant.BEHAVIORXML;
 			mResources_XML = sDirectory + Constant.RESOURCEXML;
 		}
 	}
-	
+
 	public int GetLastError() {
 		return mLastError;
 	}
 
 	public String Authentication(String login, String password) {
-		StringBuffer loginAction = new StringBuffer("act=login&from=runtime&login=");
+		StringBuffer loginAction = new StringBuffer(
+				"act=login&from=runtime&login=");
 		loginAction.append(login);
 		loginAction.append("&passwd_md5=");
 		loginAction.append(password);
 		loginAction.append("&probe=");
-		loginAction.append(Dma.getVersion());
+		loginAction.append(mPreference.getString(Constant.VERSION, null));
 		loginAction.append("&useragent=ANDROID");
 		String result = null;
 		try {
@@ -144,24 +153,25 @@ public class DmaHttpClient{
 		}
 		return result;
 	}
-	
+
 	public static String getFilesPath() {
 		return sDirectory.toString();
 	}
-	
+
 	public static String getResourcePath() {
 		return sResourceFilePath.toString();
 	}
-	
+
 	public byte[] sendPost(String parameters) {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		HttpClient httpClient = new DefaultHttpClient();
-		//HttpPost httpPost = new HttpPost(Constant.SECUREDSERVER + parameters);
+		// HttpPost httpPost = new HttpPost(Constant.SECUREDSERVER +
+		// parameters);
 		HttpPost httpPost = new HttpPost(Constant.SERVER + parameters);
 		try {
 			HttpResponse response = httpClient.execute(httpPost);
 			HttpEntity entity = response.getEntity();
-			InputStream in =  entity.getContent();
+			InputStream in = entity.getContent();
 			int c;
 			byte[] readByte = new byte[32 * 1024];
 			while ((c = in.read(readByte)) > 0) {
@@ -169,7 +179,7 @@ public class DmaHttpClient{
 			}
 			in.close();
 			httpPost.abort();
-			httpClient.getConnectionManager().shutdown();   
+			httpClient.getConnectionManager().shutdown();
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -180,8 +190,8 @@ public class DmaHttpClient{
 			String codeStr = "";
 			int i = 0;
 			int length = data.length;
-			while(i < length && data[i] != (int)'\n') {
-				codeStr += (char)data[i];
+			while (i < length && data[i] != (int) '\n') {
+				codeStr += (char) data[i];
 				i++;
 			}
 			mErrorCode = Integer.valueOf(codeStr);
@@ -190,16 +200,18 @@ public class DmaHttpClient{
 			} else {
 				int newLength = data.length - codeStr.length() - 1;
 				byte[] result = new byte[newLength];
-				System.arraycopy(data, codeStr.length()+1, result, 0, result.length);
-				return result;	
-			}	
+				System.arraycopy(data, codeStr.length() + 1, result, 0,
+						result.length);
+				return result;
+			}
 		} else {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Creates a parsing object from a string stream or a xml file
+	 * 
 	 * @param xmlStream
 	 * @param xmlFile
 	 * @return
@@ -208,8 +220,9 @@ public class DmaHttpClient{
 		DocumentBuilder docBuild;
 		Document document = null;
 		ByteArrayInputStream stream = null;
-		try{
-			docBuild = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+		try {
+			docBuild = DocumentBuilderFactory.newInstance()
+					.newDocumentBuilder();
 			if (xmlStream != null) {
 				stream = new ByteArrayInputStream(xmlStream);
 				document = docBuild.parse(stream);
@@ -225,7 +238,7 @@ public class DmaHttpClient{
 		}
 		return document;
 	}
-	
+
 	public void checkXmlFiles() {
 		if (new File(mDesign_XML).exists()) {
 			this.mSendDesign = false;
@@ -240,18 +253,21 @@ public class DmaHttpClient{
 			this.mSendResource = false;
 		}
 	}
-	
+
 	public int getIdDb(File dbXml) {
 		Document dbDoc = createParseDocument(null, dbXml);
-		Element tagID = (Element)dbDoc.getElementsByTagName(DatabaseTag.DB).item(0);
+		Element tagID = (Element) dbDoc.getElementsByTagName(DatabaseTag.DB)
+				.item(0);
 		return Integer.valueOf(tagID.getAttribute(DatabaseTag.DB_ID));
 	}
-	
+
 	/**
 	 * Gets the design of an application
+	 * 
 	 * @return
 	 */
-	public Reader getDesignReader(String urlRequest) throws FileNotFoundException {
+	public Reader getDesignReader(String urlRequest)
+			throws FileNotFoundException {
 		if (mSendDesign) {
 			StringBuffer getDesign = new StringBuffer("act=getdesign");
 			getDesign.append(urlRequest);
@@ -262,7 +278,7 @@ public class DmaHttpClient{
 			return new FileReader(new File(mDesign_XML));
 		}
 	}
-	
+
 	/**
 	 * Gets the resources of an application
 	 */
@@ -272,19 +288,19 @@ public class DmaHttpClient{
 			getResources.append(urlRequest);
 			byte[] bytes = sendPost(getResources.toString());
 			SAXParserFactory spFactory = SAXParserFactory.newInstance();
-	    		SAXParser saxParser;
+			SAXParser saxParser;
 			try {
 				saxParser = spFactory.newSAXParser();
 				XMLReader xmlReader = saxParser.getXMLReader();
 				EventsHandler eventsHandler = new EventsHandler(urlRequest);
-		    		xmlReader.setContentHandler(eventsHandler);
-		    		xmlReader.parse(new InputSource(new ByteArrayInputStream(bytes)));
-			}
-	    	 catch (ParserConfigurationException e) {
-	 			e.printStackTrace();
-	 		} catch (SAXException e) {
-	 			e.printStackTrace();
-	 		} catch (FileNotFoundException e) {
+				xmlReader.setContentHandler(eventsHandler);
+				xmlReader
+						.parse(new InputSource(new ByteArrayInputStream(bytes)));
+			} catch (ParserConfigurationException e) {
+				e.printStackTrace();
+			} catch (SAXException e) {
+				e.printStackTrace();
+			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -292,52 +308,54 @@ public class DmaHttpClient{
 			Common.streamToFile(bytes, mResources_XML, false);
 		} else {
 			SAXParserFactory spFactory = SAXParserFactory.newInstance();
-	    		SAXParser saxParser;
+			SAXParser saxParser;
 			try {
 				saxParser = spFactory.newSAXParser();
 				XMLReader xmlReader = saxParser.getXMLReader();
 				EventsHandler eventsHandler = new EventsHandler(urlRequest);
-		    		xmlReader.setContentHandler(eventsHandler);
-		    		xmlReader.parse(new InputSource(new FileInputStream(new File(mResources_XML))));
-			}
-	    	 catch (ParserConfigurationException e) {
-	 			e.printStackTrace();
-	 		} catch (SAXException e) {
-	 			e.printStackTrace();
-	 		} catch (FileNotFoundException e) {
+				xmlReader.setContentHandler(eventsHandler);
+				xmlReader.parse(new InputSource(new FileInputStream(new File(
+						mResources_XML))));
+			} catch (ParserConfigurationException e) {
+				e.printStackTrace();
+			} catch (SAXException e) {
+				e.printStackTrace();
+			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 	}
-	
+
 	private class EventsHandler extends DefaultHandler {
 		private String mUrlRequest;
 		private boolean mWillDownload;
-		
+
 		public EventsHandler(String url) {
 			mUrlRequest = url;
 			mWillDownload = true;
 		}
-		
+
 		@Override
 		public void startDocument() throws SAXException {
 
-        }
-        
-        @Override
-        public void endDocument() throws SAXException {
+		}
 
-        }
-        
-        public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
-        	if (localName.equals(ResourceTag.RESOURCES_R)) {
-        		String id = atts.getValue(ResourceTag.RESOURCES_R_ID);
-        		String hashcode = atts.getValue(ResourceTag.RESOURCES_R_HASHCODE);
-        		String ext = atts.getValue(ResourceTag.RESOURCES_R_EXT);
-        		StringBuffer fileName = new StringBuffer(sResourceFilePath);
-        		fileName.append("/");
+		@Override
+		public void endDocument() throws SAXException {
+
+		}
+
+		public void startElement(String namespaceURI, String localName,
+				String qName, Attributes atts) throws SAXException {
+			if (localName.equals(ResourceTag.RESOURCES_R)) {
+				String id = atts.getValue(ResourceTag.RESOURCES_R_ID);
+				String hashcode = atts
+						.getValue(ResourceTag.RESOURCES_R_HASHCODE);
+				String ext = atts.getValue(ResourceTag.RESOURCES_R_EXT);
+				StringBuffer fileName = new StringBuffer(sResourceFilePath);
+				fileName.append("/");
 				fileName.append(id);
 				fileName.append(".");
 				fileName.append(ext);
@@ -355,33 +373,39 @@ public class DmaHttpClient{
 					}
 				}
 				if (mWillDownload) {
-					StringBuffer getResource = new StringBuffer("act=getresource");
+					StringBuffer getResource = new StringBuffer(
+							"act=getresource");
 					getResource.append(mUrlRequest);
 					getResource.append("&resourceid=");
 					getResource.append(id);
 					byte[] resourceStream = sendPost(getResource.toString());
-					String hexString = Common.md5HexStringFromBytes(resourceStream);
+					String hexString = Common
+							.md5HexStringFromBytes(resourceStream);
 
 					if (hexString.equals(hashcode)) {
-						Common.streamToFile(resourceStream, fileName.toString(), true);
+						Common.streamToFile(resourceStream,
+								fileName.toString(), true);
 					}
 				}
-        	}
-        }
-        
-        @Override
-		public void characters(char[] ch, int start, int length) throws SAXException {
-        	
+			}
 		}
-        
-        @Override
-        public void endElement(String namespaceURI, String localName, String qName) throws SAXException{
-        	
-        }      
+
+		@Override
+		public void characters(char[] ch, int start, int length)
+				throws SAXException {
+
+		}
+
+		@Override
+		public void endElement(String namespaceURI, String localName,
+				String qName) throws SAXException {
+
+		}
 	}
-	
+
 	/**
 	 * Gets the DB of an application
+	 * 
 	 * @return
 	 */
 	public Document getDB(String urlRequest) {
@@ -395,9 +419,10 @@ public class DmaHttpClient{
 			return createParseDocument(null, new File(sDb_XML));
 		}
 	}
-	
+
 	/**
 	 * Gets the behavior of an application
+	 * 
 	 * @return
 	 */
 	public Document getBehavior(String urlRequest) {
@@ -411,9 +436,10 @@ public class DmaHttpClient{
 			return createParseDocument(null, new File(mBehavior_XML));
 		}
 	}
-	
+
 	/**
 	 * Imports data
+	 * 
 	 * @param AppId
 	 * @param DbId
 	 * @param login
@@ -423,31 +449,35 @@ public class DmaHttpClient{
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public boolean importData(String AppId, String DbId, String login, String pwd, ArrayList<String> tables, Object filters) {
+	public boolean importData(String AppId, String DbId, String login,
+			String pwd, ArrayList<String> tables, Object filters) {
 		if (ApplicationListView.getNetworkInfo() == null) {
 			return false;
 		} else {
 			boolean result = false;
-			String syncUrlRequest = generateSyncUrlRequest(AppId, DbId, login, pwd);
+			String syncUrlRequest = generateSyncUrlRequest(AppId, DbId, login,
+					pwd);
 			StringBuffer ask = new StringBuffer("act=ask");
 			ask.append(syncUrlRequest);
 			StringBuffer getBlob = new StringBuffer("act=getblob");
 			getBlob.append(syncUrlRequest);
 			StringBuffer report = new StringBuffer("act=rep");
 			report.append(syncUrlRequest);
-			
+
 			if (filters != null) {
-				int filtersSize = ((ArrayList<?>)filters).size();
+				int filtersSize = ((ArrayList<?>) filters).size();
 				if (filtersSize > 0) {
 					ask.append("&fcount=");
 					ask.append(filtersSize);
-					for (int i=0; i<filtersSize; i++) {
-						ArrayList<Object> filter = (ArrayList<Object>)((ArrayList<Object>)filters).get(i);
+					for (int i = 0; i < filtersSize; i++) {
+						ArrayList<Object> filter = (ArrayList<Object>) ((ArrayList<Object>) filters)
+								.get(i);
 						ask.append("&ff");
 						ask.append(i);
 						ask.append("=");
 						ask.append(filter.get(0).toString());
-						Object operator = Function.getOperator(((ArrayList<?>)filters).get(1));
+						Object operator = Function
+								.getOperator(((ArrayList<?>) filters).get(1));
 						ask.append("&fo");
 						ask.append(i);
 						ask.append("=");
@@ -465,18 +495,22 @@ public class DmaHttpClient{
 				if (tables != null) {
 					int tablesNb = tables.size();
 					baos.write(Binary.intToByteArray(tablesNb));
-					for (int i=0; i<tablesNb; i++) {
-						baos.write(Binary.intToByteArray(Integer.valueOf(tables.get(i))));
+					for (int i = 0; i < tablesNb; i++) {
+						baos.write(Binary.intToByteArray(Integer.valueOf(tables
+								.get(i))));
 					}
 				} else {
-					ArrayList<Integer> importTableList = DatabaseAdapter.getImportTableId();
+					ArrayList<Integer> importTableList = DatabaseAdapter
+							.getImportTableId();
 					baos.write(Binary.intToByteArray(importTableList.size()));
 					for (int id : importTableList) {
 						baos.write(Binary.intToByteArray(id));
 					}
 				}
 				byte[] inputbytes = baos.toByteArray();
-				importSync = new DmaHttpBinarySync(ask.toString(), getBlob.toString(), report.toString(), inputbytes, Constant.IMPORTACTION);
+				importSync = new DmaHttpBinarySync(mContext, ask.toString(), getBlob
+						.toString(), report.toString(), inputbytes,
+						Constant.IMPORTACTION);
 				result = importSync.run();
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -484,9 +518,10 @@ public class DmaHttpClient{
 			return result;
 		}
 	}
-	
+
 	/**
 	 * Exports local data to server
+	 * 
 	 * @param AppId
 	 * @param DbId
 	 * @param login
@@ -495,24 +530,29 @@ public class DmaHttpClient{
 	 * @param filters
 	 * @return
 	 */
-	public boolean exportData(String AppId, String DbId, String login, String pwd, ArrayList<String> tables, Object filters) {
+	public boolean exportData(String AppId, String DbId, String login,
+			String pwd, ArrayList<String> tables, Object filters) {
 		if (ApplicationListView.getNetworkInfo() == null) {
 			return false;
 		} else {
-			String syncUrlRequest = generateSyncUrlRequest(AppId, DbId, login, pwd);
+			String syncUrlRequest = generateSyncUrlRequest(AppId, DbId, login,
+					pwd);
 			StringBuffer sync = new StringBuffer("act=sync");
 			sync.append(syncUrlRequest);
 			StringBuffer send = new StringBuffer("act=send");
 			send.append(syncUrlRequest);
 			StringBuffer commit = new StringBuffer("act=commit");
 			commit.append(syncUrlRequest);
-			
-			byte[] exportData = ApplicationView.getDataBase().syncExportTable(tables, filters);
-			DmaHttpBinarySync exportSync = new DmaHttpBinarySync(sync.toString(), send.toString(), commit.toString(), exportData, Constant.EXPORTACTION);
-			return exportSync.run();	
+
+			byte[] exportData = ApplicationView.getDataBase().syncExportTable(
+					tables, filters);
+			DmaHttpBinarySync exportSync = new DmaHttpBinarySync(mContext, sync
+					.toString(), send.toString(), commit.toString(),
+					exportData, Constant.EXPORTACTION);
+			return exportSync.run();
 		}
 	}
-	
+
 	private String urlEncode(String s) {
 		String result = "";
 		try {
@@ -522,8 +562,9 @@ public class DmaHttpClient{
 		}
 		return result;
 	}
-	
-	private String generateSyncUrlRequest(String AppId, String DbId, String login, String pwd) {
+
+	private String generateSyncUrlRequest(String AppId, String DbId,
+			String login, String pwd) {
 		StringBuffer result = new StringBuffer("&from=runtime&appid=");
 		result.append(AppId);
 		result.append("&dataid=");
@@ -533,13 +574,14 @@ public class DmaHttpClient{
 		result.append("&passwd_md5=");
 		result.append(pwd);
 		result.append("&probe=");
-		result.append(Dma.getVersion());
+		result.append(mPreference.getString(Constant.VERSION, null));
 		result.append("&stream=1&useragent=ANDROID&did=");
-		result.append(Dma.getDeviceID());
+		result.append(mPreference.getString(Constant.DEVICEID, null));
 		return result.toString();
 	}
-	
-	public String generateRegularUrlRequest(String AppId, String AppVer, String AppBuild, String SubId, String login, String pwd) {
+
+	public String generateRegularUrlRequest(String AppId, String AppVer,
+			String AppBuild, String SubId, String login, String pwd) {
 		StringBuffer result = new StringBuffer("&from=runtime&appid=");
 		result.append(AppId);
 		result.append("&appversion=");
@@ -549,13 +591,13 @@ public class DmaHttpClient{
 		result.append("&subid=");
 		result.append(SubId);
 		result.append("&did=");
-		result.append(Dma.getDeviceID());
+		result.append(mPreference.getString(Constant.DEVICEID, null));
 		result.append("&login=");
 		result.append(login);
 		result.append("&passwd_md5=");
 		result.append(pwd);
 		result.append("&probe=");
-		result.append(Dma.getVersion());
+		result.append(mPreference.getString(Constant.VERSION, null));
 		result.append("&useragent=ANDROID");
 		return result.toString();
 	}

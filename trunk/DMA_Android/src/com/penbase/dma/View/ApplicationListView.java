@@ -20,6 +20,7 @@ import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
@@ -54,7 +55,6 @@ import com.penbase.dma.Dalyo.Application;
 import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -74,10 +74,8 @@ public class ApplicationListView extends Activity implements
 	private static ApplicationListView sApplicationListView = null;
 	private ApplicationAdapter mAdapter;
 	private TextView mApplicationName;
-	private static ProgressDialog sLoadProgressDialog = null;
 	private static ProgressDialog sUpdateProgressDialog = null;
 	private Intent mIntent = null;
-	private static HashMap<String, String> sApplicationInfos = null;
 	private DmaHttpClient mDmahttpclient;
 	private GridView mGridView;
 	private AlertDialog mAboutDialog;
@@ -117,7 +115,6 @@ public class ApplicationListView extends Activity implements
 		super.onCreate(icicle);
 		mResources = getResources();
 		sApplicationListView = this;
-		sApplicationInfos = new HashMap<String, String>();
 		Animation animation = AnimationUtils.loadAnimation(this,
 				R.anim.wave_scale);
 		setContentView(R.layout.applicationlist);
@@ -140,9 +137,10 @@ public class ApplicationListView extends Activity implements
 		mAlertDialog.setTitle("Dalyo");
 
 		ImageView imageView = (ImageView) findViewById(R.id.banner);
-		if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+		int orientation = getResources().getConfiguration().orientation;
+		if (orientation == Configuration.ORIENTATION_PORTRAIT) {
 			imageView.setBackgroundResource(R.drawable.banniere_dalyo);
-		} else if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+		} else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
 			imageView.setBackgroundResource(R.drawable.banniere_dalyo1);
 		}
 
@@ -178,7 +176,8 @@ public class ApplicationListView extends Activity implements
 		View aboutView = mInflater.inflate(R.layout.about, null, false);
 		TextView nameVersionView = (TextView) aboutView
 				.findViewById(R.id.nameversion);
-		nameVersionView.setText("Dalyo Mobile Agent " + Dma.getVersion());
+		SharedPreferences preferences = getSharedPreferences(Constant.PREFERENCE, Context.MODE_PRIVATE);
+		nameVersionView.setText("Dalyo Mobile Agent " + preferences.getString(Constant.VERSION, null));
 		mAboutDialog = new AlertDialog.Builder(this).setIcon(
 				android.R.drawable.ic_dialog_info)
 				.setTitle(R.string.menu_about).setView(aboutView).create();
@@ -405,7 +404,7 @@ public class ApplicationListView extends Activity implements
 		}
 		if (willDownload) {
 			// download application's icon
-			mDmahttpclient = new DmaHttpClient(mUsername, null);
+			mDmahttpclient = new DmaHttpClient(ApplicationListView.this, mUsername, null);
 			String urlRequest = mDmahttpclient.generateRegularUrlRequest(
 					application.getAppId(), application.getAppVer(),
 					application.getAppBuild(), application.getSubId(),
@@ -552,7 +551,7 @@ public class ApplicationListView extends Activity implements
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				mDmahttpclient = new DmaHttpClient(mUsername, null);
+				mDmahttpclient = new DmaHttpClient(ApplicationListView.this, mUsername, null);
 				String appsList = mDmahttpclient.Authentication(mUsername,
 						mUserpassword);
 
@@ -592,38 +591,20 @@ public class ApplicationListView extends Activity implements
 	@Override
 	public void onItemClick(AdapterView<?> parent, View v, final int position,
 			long id) {
-		final Application application = mApplicationList.get(position);
-		final String applicationId = application.getAppId();
-		sApplicationInfos.put("Username", mUsername);
-		sApplicationInfos.put("Userpassword", mUserpassword);
-		sApplicationInfos.put("AppId", applicationId);
-		sApplicationInfos.put("AppVer", application.getAppVer());
-		sApplicationInfos.put("AppBuild", application.getAppBuild());
-		sApplicationInfos.put("SubId", application.getSubId());
-		sApplicationInfos.put("DbId", application.getDbId());
-		sLoadProgressDialog = ProgressDialog.show(this, mResources
-				.getText(R.string.waiting), mResources
-				.getText(R.string.preparingapplication), true, false);
+		Application application = mApplicationList.get(position);
+		String applicationId = application.getAppId();
+		HashMap<String, String> applicationInfos = new HashMap<String, String>();
+		applicationInfos.put("Username", mUsername);
+		applicationInfos.put("Userpassword", mUserpassword);
+		applicationInfos.put("AppId", applicationId);
+		applicationInfos.put("AppVer", application.getAppVer());
+		applicationInfos.put("AppBuild", application.getAppBuild());
+		applicationInfos.put("SubId", application.getSubId());
+		applicationInfos.put("DbId", application.getDbId());
+		applicationInfos.put("Title", application.getName());
 		mIntent = new Intent(this, ApplicationView.class);
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					ApplicationView.prepareData();
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				}
-				mIntent.putExtra("ID", applicationId);
-				mIntent.putExtra("USERNAME", mUsername);
-				mIntent.putExtra("TITLE", application.getName());
-				startActivity(mIntent);
-				sLoadProgressDialog.dismiss();
-			}
-		}).start();
-	}
-
-	public static HashMap<String, String> getApplicationsInfo() {
-		return sApplicationInfos;
+		mIntent.putExtra("APPLICATION", applicationInfos);
+		startActivity(mIntent);
 	}
 
 	@Override
@@ -631,9 +612,7 @@ public class ApplicationListView extends Activity implements
 		super.onDestroy();
 		mSqlite.close();
 		sApplicationListView = null;
-		sLoadProgressDialog = null;
 		sUpdateProgressDialog = null;
-		sApplicationInfos = null;
 	}
 
 	public static void quit() {
