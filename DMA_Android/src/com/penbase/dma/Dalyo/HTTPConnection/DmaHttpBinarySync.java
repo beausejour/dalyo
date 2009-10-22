@@ -1,6 +1,8 @@
 package com.penbase.dma.Dalyo.HTTPConnection;
 
-import com.penbase.dma.Dma;
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
 import com.penbase.dma.Constant.Constant;
 import com.penbase.dma.Constant.ErrorCode;
@@ -24,13 +26,19 @@ public class DmaHttpBinarySync {
 	private byte[] mInputbytes;
 	private String mCookie = null;
 	private String mSyncType;
+	private Context mContext;
+	private String mVersion;
 	
-	public DmaHttpBinarySync(String request, String blob, String response, byte[] inputbytes, String syncType) {
+	public DmaHttpBinarySync(Context context, String request, String blob, String response, byte[] inputbytes, String syncType) {
 		this.mRequestAction = request;
 		this.mBlobAction = blob;
 		this.mResponseAction = response;
 		this.mInputbytes = inputbytes;
 		this.mSyncType = syncType;
+		mContext = context;
+		SharedPreferences preferences = context.getSharedPreferences(Constant.PREFERENCE,
+				Context.MODE_PRIVATE);
+		mVersion = preferences.getString(Constant.PREFERENCE, null);
 	}
 	
 	/**
@@ -66,7 +74,7 @@ public class DmaHttpBinarySync {
 			byte[] sbbytes = bos.toByteArray();
 			connection.setDoOutput(true);
 			connection.setDoInput(true);
-			connection.setRequestProperty("User-Agent", "Penbase x35 ANDROID " + Dma.getVersion()); //runtime's version
+			connection.setRequestProperty("User-Agent", "Penbase x35 ANDROID " + mVersion); //runtime's version
 			connection.setRequestProperty("Content-Type", "multipart/form-data" + "; boundary=" + boundary);
 			connection.setRequestProperty("Content-Length", "" + sbbytes.length);
 			connection.setRequestProperty("Connection", "close");
@@ -142,7 +150,7 @@ public class DmaHttpBinarySync {
 				
 				if (Integer.valueOf(codeStr) == ErrorCode.CONTINUE) {
 					//continue to receive
-					wellDone = new DmaHttpBinarySync(mRequestAction, mBlobAction, mResponseAction, mInputbytes, "Import").run();
+					wellDone = new DmaHttpBinarySync(mContext, mRequestAction, mBlobAction, mResponseAction, mInputbytes, "Import").run();
 				}
 			} else if (mSyncType.equals(Constant.EXPORTACTION)) {
 				//check if there is blob data to send
@@ -177,7 +185,7 @@ public class DmaHttpBinarySync {
 				
 				if (Integer.valueOf(codeStr) == ErrorCode.CONTINUE) {
 					//continue to receive
-					wellDone = new DmaHttpBinarySync(mRequestAction, mBlobAction, mResponseAction, result, "Export").run();
+					wellDone = new DmaHttpBinarySync(mContext, mRequestAction, mBlobAction, mResponseAction, result, "Export").run();
 				}
 			}
 		}

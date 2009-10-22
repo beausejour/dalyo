@@ -4,10 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.text.method.DigitsKeyListener;
-import android.util.Log;
 import android.view.Gravity;
-import android.widget.TextView;
 
 import com.penbase.dma.Constant.Constant;
 import com.penbase.dma.Constant.DesignTag;

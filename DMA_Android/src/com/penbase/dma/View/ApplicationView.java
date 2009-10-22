@@ -10,7 +10,6 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -68,6 +67,11 @@ public class ApplicationView extends Activity {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case 0:
+				mLoadingDialog.setMessage(sResources
+						.getText(R.string.buildingapplication));
+				parseXml();
+				break;
+			case 1:
 				createView();
 				display();
 				break;
@@ -81,22 +85,59 @@ public class ApplicationView extends Activity {
 	private static String sApplicationId = null;
 	private static String sUsername = null;
 	private static Resources sResources = null;
+	private static HashMap<String, String> sApplicationInfos = null;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void onCreate(Bundle icicle) {
-		Log.i("info", "onCreate");
 		super.onCreate(icicle);
 		sResources = getResources();
 		ApplicationView.sApplicationView = this;
 		sComponentsMap = new HashMap<String, Component>();
 		mLoadingDialog = ProgressDialog.show(this, sResources
 				.getText(R.string.waiting), sResources
-				.getText(R.string.buildingapplication), true, false);
+				.getText(R.string.preparingapplication), true, true);
 		Intent intent = getIntent();
-		sApplicationId = intent.getStringExtra("ID");
-		Log.i("info", "sApplicationId "+sApplicationId);
-		sUsername = intent.getStringExtra("USERNAME");
-		setTitle(intent.getStringExtra("TITLE"));
+		sApplicationInfos = (HashMap<String, String>) intent
+				.getSerializableExtra("APPLICATION");
+		sApplicationId = sApplicationInfos.get("AppId");
+		sUsername = sApplicationInfos.get("Username");
+		setTitle(sApplicationInfos.get("Title"));
+		deleteTempDirectory();
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					prepareData();
+					mHandler.sendEmptyMessage(0);
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				}
+			}
+		}).start();
+	}
+	
+	/**
+	 * Prepares necessary xml document data
+	 * 
+	 * @throws FileNotFoundException
+	 */
+	private void prepareData() throws FileNotFoundException {
+		String pwd = sApplicationInfos.get("Userpassword");
+		sClient = new DmaHttpClient(this, sUsername, sApplicationId);
+		sClient.checkXmlFiles();
+
+		String urlRequest = sClient.generateRegularUrlRequest(sApplicationId,
+				sApplicationInfos.get("AppVer"), sApplicationInfos
+						.get("AppBuild"), sApplicationInfos.get("SubId"),
+				sUsername, pwd);
+		sClient.getResource(urlRequest);
+		sDesignReader = sClient.getDesignReader(urlRequest);
+		sBehaviorDocument = sClient.getBehavior(urlRequest);
+		sDbDoc = sClient.getDB(urlRequest);
+	}
+
+	private void parseXml() {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -108,10 +149,9 @@ public class ApplicationView extends Activity {
 				databasePath.append(Constant.APPDB);
 				sDatabase = new DatabaseAdapter(sDbDoc, databasePath.toString());
 				new Function(ApplicationView.this, sBehaviorDocument);
-				mHandler.sendEmptyMessage(0);
+				mHandler.sendEmptyMessage(1);
 			}
 		}).start();
-		deleteTempDirectory();
 	}
 
 	/**
@@ -142,34 +182,6 @@ public class ApplicationView extends Activity {
 			}
 		}
 		return directory.delete();
-	}
-
-	/**
-	 * Prepares necessary xml data
-	 * 
-	 * @param login
-	 *            Login name
-	 * @param pwd
-	 *            Password
-	 * @throws FileNotFoundException
-	 */
-	public static void prepareData() throws FileNotFoundException {
-		HashMap<String, String> applciationsInfo = ApplicationListView
-				.getApplicationsInfo();
-		String id = applciationsInfo.get("AppId");
-		String login = applciationsInfo.get("Username");
-		String pwd = applciationsInfo.get("Userpassword");
-		sClient = new DmaHttpClient(login, id);
-		sClient.checkXmlFiles();
-
-		String urlRequest = sClient.generateRegularUrlRequest(id,
-				applciationsInfo.get("AppVer"), applciationsInfo
-						.get("AppBuild"), applciationsInfo.get("SubId"), login,
-				pwd);
-		sClient.getResource(urlRequest);
-		sDesignReader = sClient.getDesignReader(urlRequest);
-		sBehaviorDocument = sClient.getBehavior(urlRequest);
-		sDbDoc = sClient.getDB(urlRequest);
 	}
 
 	/**
@@ -224,6 +236,10 @@ public class ApplicationView extends Activity {
 
 	public void quit() {
 		this.finish();
+	}
+
+	public static HashMap<String, String> getApplicationsInfo() {
+		return sApplicationInfos;
 	}
 
 	public static int getOrientation() {
@@ -318,7 +334,6 @@ public class ApplicationView extends Activity {
 
 	@Override
 	protected void onDestroy() {
-		Log.i("info", "onDestroy");
 		super.onDestroy();
 		sDatabase.closeDatabase();
 		sCurrentMenu = null;
@@ -335,6 +350,7 @@ public class ApplicationView extends Activity {
 		sDesignReader = null;
 		sApplicationId = null;
 		sUsername = null;
+		sApplicationInfos = null;
 	}
 
 	public Handler getHandler() {

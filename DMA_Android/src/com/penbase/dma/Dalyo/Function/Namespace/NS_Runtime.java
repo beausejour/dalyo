@@ -1,5 +1,7 @@
 package com.penbase.dma.Dalyo.Function.Namespace;
 
+import java.util.HashMap;
+
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -18,15 +20,20 @@ public class NS_Runtime {
 	private static ProgressDialog syncProgressDialog;
 	private static boolean syncResult = false;
 	private static boolean sSyncEnd = false;
-	
+
 	public static void Browse(Element element) {
-		String url = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_URL, ScriptAttribute.STRING).toString();
-		ApplicationView.getCurrentView().startActivityForResult(new Intent(Intent.ACTION_VIEW, Uri.parse(url)), 0);
+		String url = Function.getValue(element, ScriptTag.PARAMETER,
+				ScriptAttribute.PARAMETER_NAME_URL, ScriptAttribute.STRING)
+				.toString();
+		ApplicationView.getCurrentView().startActivityForResult(
+				new Intent(Intent.ACTION_VIEW, Uri.parse(url)), 0);
 	}
-	
+
 	public static void Error(Context context, Element element) {
-		Object message = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_TEXT, ScriptAttribute.STRING);
-		Object title = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_CAPTION, ScriptAttribute.STRING);
+		Object message = Function.getValue(element, ScriptTag.PARAMETER,
+				ScriptAttribute.PARAMETER_NAME_TEXT, ScriptAttribute.STRING);
+		Object title = Function.getValue(element, ScriptTag.PARAMETER,
+				ScriptAttribute.PARAMETER_NAME_CAPTION, ScriptAttribute.STRING);
 		AlertDialog alertDialog = new AlertDialog.Builder(context).create();
 		alertDialog.setIcon(android.R.drawable.ic_dialog_alert);
 		if (message == null) {
@@ -41,77 +48,96 @@ public class NS_Runtime {
 		}
 		alertDialog.show();
 	}
-	
+
 	public static void Exit(Element element) {
 		ApplicationView.getCurrentView().quit();
 		NS_Timer.cancelAll();
 		NS_Gps.Stop();
 		ApplicationListView.quit();
 	}
-	
+
 	public static String getApplicationVersion(Element element) {
 		return ApplicationView.getApplicationVersion();
 	}
-	
+
 	public static String GetCurrentUser(Element element) {
-		return ApplicationListView.getApplicationsInfo().get("Username");
+		return ApplicationView.getUsername();
 	}
-	
+
 	public static void SetWaitCursor(Element element) {
-		Object willShow = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_SHOW, ScriptAttribute.PARAMETER_TYPE_BOOLEAN);
-		String text = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_TEXT, ScriptAttribute.STRING).toString();
-		if ((Boolean)willShow) {
-			syncProgressDialog = ProgressDialog.show(Function.getContext(), "Veuillez patienter...", text, true, false);
+		Object willShow = Function.getValue(element, ScriptTag.PARAMETER,
+				ScriptAttribute.PARAMETER_NAME_SHOW,
+				ScriptAttribute.PARAMETER_TYPE_BOOLEAN);
+		String text = Function.getValue(element, ScriptTag.PARAMETER,
+				ScriptAttribute.PARAMETER_NAME_TEXT, ScriptAttribute.STRING)
+				.toString();
+		if ((Boolean) willShow) {
+			syncProgressDialog = ProgressDialog.show(Function.getContext(),
+					"Veuillez patienter...", text, true, false);
 		} else {
 			if (syncProgressDialog.isShowing()) {
 				syncProgressDialog.dismiss();
 			}
 		}
 	}
-	
+
 	public static void StartApp(Element element) {
-		String path = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_PATH, ScriptAttribute.STRING).toString();
+		String path = Function.getValue(element, ScriptTag.PARAMETER,
+				ScriptAttribute.PARAMETER_NAME_PATH, ScriptAttribute.STRING)
+				.toString();
 		if (path.contains("http://")) {
-			ApplicationView.getCurrentView().startActivityForResult(new Intent(Intent.ACTION_VIEW, Uri.parse(path)), 0);
+			ApplicationView.getCurrentView().startActivityForResult(
+					new Intent(Intent.ACTION_VIEW, Uri.parse(path)), 0);
 		} else if (path.contains("tel:")) {
-			ApplicationView.getCurrentView().startActivityForResult(new Intent(Intent.ACTION_DIAL, Uri.parse(path)), 0);
+			ApplicationView.getCurrentView().startActivityForResult(
+					new Intent(Intent.ACTION_DIAL, Uri.parse(path)), 0);
 		} else {
-			//Different types of file
+			// Different types of file
 		}
 	}
-	
+
 	public static boolean Synchronize(Element element) {
-		Object type = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_FACELESS, ScriptAttribute.PARAMETER_TYPE_BOOLEAN);
-		//boolean showProgress = false;
-		
-		if ((type == null) || (((Boolean)type).booleanValue())) {
-			//showProgress = true;    ProgressDialog has not done yet.
+		final HashMap<String, String> applicationInfos = ApplicationView
+				.getApplicationsInfo();
+		Object type = Function.getValue(element, ScriptTag.PARAMETER,
+				ScriptAttribute.PARAMETER_NAME_FACELESS,
+				ScriptAttribute.PARAMETER_TYPE_BOOLEAN);
+		// boolean showProgress = false;
+
+		if ((type == null) || (((Boolean) type).booleanValue())) {
+			// showProgress = true; ProgressDialog has not done yet.
 		}
-		
+
 		ApplicationView.getCurrentView().runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				/*if (!sSyncEnd) {
-					syncProgressDialog = ProgressDialog.show(Function.getContext(), "Veuillez patienter...", "Synchronisation en cours...", true, false);	
-				}*/
-				syncProgressDialog = ProgressDialog.show(Function.getContext(), "Veuillez patienter...", "Synchronisation en cours...", true, false);
+				/*
+				 * if (!sSyncEnd) { syncProgressDialog =
+				 * ProgressDialog.show(Function.getContext(),
+				 * "Veuillez patienter...", "Synchronisation en cours...", true,
+				 * false); }
+				 */
+				syncProgressDialog = ProgressDialog.show(Function.getContext(),
+						"Veuillez patienter...", "Synchronisation en cours...",
+						true, false);
 			}
 		});
-		
+
 		Thread syncThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				boolean importResult = ApplicationView.getCurrentClient().importData(
-						ApplicationListView.getApplicationsInfo().get("AppId"),
-						ApplicationListView.getApplicationsInfo().get("DbId"), 
-						ApplicationListView.getApplicationsInfo().get("Username"),
-						ApplicationListView.getApplicationsInfo().get("Userpassword"), null, null);
+				boolean importResult = ApplicationView.getCurrentClient()
+						.importData(applicationInfos.get("AppId"),
+								applicationInfos.get("DbId"),
+								applicationInfos.get("Username"),
+								applicationInfos.get("Userpassword"), null,
+								null);
 				if (importResult) {
 					syncResult = ApplicationView.getCurrentClient().exportData(
-							ApplicationListView.getApplicationsInfo().get("AppId"),
-							ApplicationListView.getApplicationsInfo().get("DbId"), 
-							ApplicationListView.getApplicationsInfo().get("Username"),
-							ApplicationListView.getApplicationsInfo().get("Userpassword"), null, null);
+							applicationInfos.get("AppId"),
+							applicationInfos.get("DbId"),
+							applicationInfos.get("Username"),
+							applicationInfos.get("Userpassword"), null, null);
 				}
 				sSyncEnd = true;
 			}
@@ -126,7 +152,7 @@ public class NS_Runtime {
 			@Override
 			public void run() {
 				if (syncProgressDialog.isShowing()) {
-					syncProgressDialog.dismiss();	
+					syncProgressDialog.dismiss();
 				}
 			}
 		});

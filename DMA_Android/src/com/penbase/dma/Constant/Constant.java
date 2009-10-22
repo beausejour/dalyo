@@ -80,4 +80,9 @@ public class Constant {
 	public static final String TRIGGERURL = "url";
 	public static final String POSITIVENUMERIC = "positivenumeric";
 	public static final String NONE = "none";
+	
+	//Preference
+	public static final String PREFERENCE = "preference";
+	public static final String DEVICEID = "deviceid";
+	public static final String VERSION = "version";
 }
