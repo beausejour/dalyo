@@ -1,45 +1,27 @@
 package com.penbase.dma.Dalyo.Component.Custom;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.widget.CompoundButton;
 import android.widget.RadioButton;
-import android.widget.TextView;
 
-import com.penbase.dma.R;
 import com.penbase.dma.Dalyo.Component.DalyoComponent;
+import com.penbase.dma.Dalyo.Function.Function;
 
-public class DalyoRadiobutton extends LinearLayout implements DalyoComponent {
-	private RadioButton mRb;
-	private TextView mTv;
+public class DalyoRadiobutton extends RadioButton implements DalyoComponent {
 
 	public DalyoRadiobutton(Context context) {
 		super(context);
-		LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		inflater.inflate(R.layout.radiobutton, this, true);
-		mRb = (RadioButton)findViewById(R.id.mRb);
-		mTv = (TextView)findViewById(R.id.mTv);
-	}
-	
-	public TextView getTextView() {
-		return mTv;
-	}
-	
-	public boolean isSelected() {
-		return mRb.isChecked();
 	}
 
 	@Override
 	public String getComponentLabel() {
-		// TODO Auto-generated method stub
-		return null;
+		return getText().toString();
 	}
 
 	@Override
 	public Object getComponentValue() {
-		// TODO Auto-generated method stub
-		return null;
+		return isChecked();
 	}
 
 	@Override
@@ -74,20 +56,17 @@ public class DalyoRadiobutton extends LinearLayout implements DalyoComponent {
 
 	@Override
 	public void setComponentLabel(String label) {
-		// TODO Auto-generated method stub
-		
+		setText(label);
 	}
 
 	@Override
 	public void setComponentText(String text) {
-		// TODO Auto-generated method stub
-		
+		setText(text);
 	}
 
 	@Override
 	public void setComponentValue(Object value) {
-		// TODO Auto-generated method stub
-		
+		setChecked(Boolean.valueOf(value.toString()));
 	}
 
 	@Override
@@ -100,15 +79,23 @@ public class DalyoRadiobutton extends LinearLayout implements DalyoComponent {
 	}
 
 	@Override
-	public void setOnChangeEvent(String functionName) {
-		// TODO Auto-generated method stub
-		
+	public void setOnChangeEvent(final String functionName) {
+		setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
+				Function.createFunction(functionName);
+			}
+		});
 	}
 
 	@Override
-	public void setOnClickEvent(String functionName) {
-		// TODO Auto-generated method stub
-		
+	public void setOnClickEvent(final String functionName) {
+		setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Function.createFunction(functionName);
+			}
+		});
 	}
 
 	@Override

@@ -1,10 +1,13 @@
 package com.penbase.dma.Dalyo.Component.Custom;
 
 import com.penbase.dma.Dalyo.Component.DalyoComponent;
+import com.penbase.dma.Dalyo.Function.Function;
 
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.TextView;
 
@@ -82,15 +85,34 @@ public class DalyoLabel extends TextView implements DalyoComponent {
 	}
 
 	@Override
-	public void setOnChangeEvent(String functionName) {
-		// TODO Auto-generated method stub
-		
+	public void setOnChangeEvent(final String functionName) {
+		addTextChangedListener(new TextWatcher() {
+
+			@Override
+			public void afterTextChanged(Editable s) {
+			}
+
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+			}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {
+				Function.createFunction(functionName);	
+			}
+		});
 	}
 
 	@Override
-	public void setOnClickEvent(String functionName) {
-		// TODO Auto-generated method stub
-		
+	public void setOnClickEvent(final String functionName) {
+		setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Function.createFunction(functionName);
+			}
+		});
 	}
 
 	@Override

@@ -280,9 +280,14 @@ public class Component {
 			mComponent = pictureBox;
 		} else if (mType.equals(DesignTag.COMPONENT_RADIOBUTTON)) {
 			DalyoRadiobutton dalyoRadiobutton = new DalyoRadiobutton(mContext);
-			dalyoRadiobutton.getTextView().setText(mLabel);
-			dalyoRadiobutton.getTextView().setTypeface(getFontType(mFontType));
-			dalyoRadiobutton.getTextView().setTextSize(getFontSize(mFontSize));
+			dalyoRadiobutton.setText(mLabel);
+			dalyoRadiobutton.setTypeface(getFontType(mFontType));
+			dalyoRadiobutton.setTextSize(getFontSize(mFontSize));
+			if (mFontColor != null) {
+				dalyoRadiobutton.setTextColor(getColor(mFontColor));
+			} else {
+				dalyoRadiobutton.setTextColor(Color.BLACK);
+			}
 			mComponent = dalyoRadiobutton;
 		} else if (mType.equals(DesignTag.COMPONENT_TEXTFIELD)) {
 			DalyoTextField textfield = new DalyoTextField(mContext,
