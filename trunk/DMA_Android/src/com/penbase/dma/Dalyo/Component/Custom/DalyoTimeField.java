@@ -1,63 +1,43 @@
 package com.penbase.dma.Dalyo.Component.Custom;
 
-import android.app.TimePickerDialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.TimePicker;
-
-import java.util.Calendar;
 
 import com.penbase.dma.Dalyo.Component.DalyoComponent;
 
 public class DalyoTimeField extends Button implements DalyoComponent, OnClickListener {
-	private int mHour;
-	private int mMinute;
-	private Context mContext;
+	private DalyoDateTimePickerDialog mDateTimeDialog;
 	
-	public DalyoTimeField(Context context, Typeface tf, float fs, String defaultValue) {
+	public DalyoTimeField(Context context, Typeface tf, float fs, String fc, String defaultValue) {
 		super(context);
-		this.mContext = context;
-		if ((defaultValue != null) && (!defaultValue.equals(""))) {
-			String displayTime = defaultValue.split(" ")[0];
-			mHour = Integer.valueOf(displayTime.split(":")[0]);
-			mMinute = Integer.valueOf(displayTime.split(":")[1]);
-			this.setText(displayTime);
-		} else {
-			Calendar calendar = Calendar.getInstance();
-			mHour = calendar.get(Calendar.HOUR);
-			mMinute = calendar.get(Calendar.MINUTE);
-		}
+		mDateTimeDialog = new DalyoDateTimePickerDialog(context, this, false,
+				true);
+		mDateTimeDialog.setInitialValues(defaultValue);
 		this.setOnClickListener(this);
 		this.setTypeface(tf);
 		this.setTextSize(fs);
+		if (fc != null) {
+			this.setTextColor(Color.parseColor("#" + fc));
+		}
+		setText(mDateTimeDialog.getText());
 	}
 
 	@Override
 	public void onClick(View arg0)  {
-		new TimePickerDialog(mContext, new TimePickerDialog.OnTimeSetListener() {
-            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                mHour = hourOfDay;
-                mMinute = minute;
-                StringBuffer newTime = new StringBuffer(String.valueOf(mHour));
-                newTime.append(":");
-                newTime.append(mMinute);
-				DalyoTimeField.this.setText(newTime.toString());
-            }
-        }, mHour, mMinute, false).show();
+		mDateTimeDialog.show();
 	}
 	
 	public String getTime() {
-		StringBuffer time = new StringBuffer(String.valueOf(mHour));
-		time.append(":");
-		time.append(mMinute);
-		return time.toString();
+		return getText().toString();
 	}
 	
 	public void setTime(String time) {
 		this.setText(time);
+		mDateTimeDialog.setInitialValues(time);
 	}
 
 	@Override
@@ -128,8 +108,7 @@ public class DalyoTimeField extends Button implements DalyoComponent, OnClickLis
 
 	@Override
 	public void setOnChangeEvent(String functionName) {
-		// TODO Auto-generated method stub
-		
+		mDateTimeDialog.setOnChangeFunction(functionName);
 	}
 
 	@Override

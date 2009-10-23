@@ -51,6 +51,7 @@ public class DesignTag {
 	public static final String COMPONENT_DATAVIEW_COLUMN_CALC = "calc";
 	public static final String COMPONENT_DATAVIEW_PAGESIZE = "dvps";   
 	public static final String COMPONENT_DATEFIELD = "df";
+	public static final String COMPONENT_DATEFIELD_DATETIME = "dt";
 	public static final String COMPONENT_DOODLE = "dd";
 	public static final String COMPONENT_GAUGE = "g";
 	public static final String COMPONENT_INIT = "v";

@@ -1,74 +1,48 @@
- package com.penbase.dma.Dalyo.Component.Custom;
+package com.penbase.dma.Dalyo.Component.Custom;
 
-import android.app.DatePickerDialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.DatePicker;
-
-import java.util.Calendar;
 
 import com.penbase.dma.Dalyo.Component.DalyoComponent;
 
 /**
  * Displays a DatePickerDialog when it was clicked
  */
-public class DalyoDateField extends Button implements OnClickListener, DalyoComponent {
-	private int mYear;
-	private int mMonth;
-	private int mDay;
-	private Context mContext;
-	
-	public DalyoDateField(Context c, Typeface tf, float fs, String defaultValue) {
+public class DalyoDateField extends Button implements OnClickListener,
+		DalyoComponent {
+	private DalyoDateTimePickerDialog mDateTimeDialog;
+
+	public DalyoDateField(Context c, Typeface tf, float fs, String fc,
+			boolean hasTime, String defaultValue) {
 		super(c);
-		this.mContext = c;
-		if ((defaultValue != null) && (!defaultValue.equals(""))) {
-			String displayDate = defaultValue.split(" ")[0];
-			mYear = Integer.valueOf(displayDate.split("/")[2]);
-			mMonth = Integer.valueOf(displayDate.split("/")[1]);
-			mDay = Integer.valueOf(displayDate.split("/")[0]);
-			this.setText(displayDate);
-		} else {
-			Calendar calendar = Calendar.getInstance();
-			mYear = calendar.get(Calendar.YEAR);
-			mMonth = calendar.get(Calendar.MONTH);
-			mDay = calendar.get(Calendar.DAY_OF_MONTH);
-		}
+		mDateTimeDialog = new DalyoDateTimePickerDialog(c, this, true,
+				hasTime);
+		mDateTimeDialog.setInitialValues(defaultValue);
 		this.setTypeface(tf);
 		this.setTextSize(fs);
+		if (fc != null) {
+			this.setTextColor(Color.parseColor("#" + fc));
+		}
+		setText(mDateTimeDialog.getText());
 		this.setOnClickListener(this);
 	}
 
 	@Override
 	public void onClick(View arg0) {
-		new DatePickerDialog(mContext, new DatePickerDialog.OnDateSetListener() {
-            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                mYear = year;
-                mMonth = monthOfYear + 1;
-                mDay = dayOfMonth;
-                StringBuffer newDate = new StringBuffer(String.valueOf(mDay));
-                newDate.append("/");
-                newDate.append(mMonth);
-                newDate.append("/");
-                newDate.append(mYear);
-				DalyoDateField.this.setText(newDate.toString());
-            }
-        }, mYear, mMonth - 1, mDay).show();
+		mDateTimeDialog.show();
 	}
-	
+
 	public String getDate() {
-		StringBuffer date = new StringBuffer(String.valueOf(mDay));
-		date.append("/");
-		date.append(mMonth);
-		date.append("/");
-		date.append(mYear);
-		return date.toString();
+		return getText().toString();
 	}
-	
+
 	public void setDate(String date) {
 		this.setText(date);
+		mDateTimeDialog.setInitialValues(date);
 	}
 
 	@Override
@@ -99,7 +73,7 @@ public class DalyoDateField extends Button implements OnClickListener, DalyoComp
 	@Override
 	public void resetComponent() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -109,13 +83,12 @@ public class DalyoDateField extends Button implements OnClickListener, DalyoComp
 
 	@Override
 	public void setComponentFocus() {
-		// TODO Auto-generated method stub
-		
+		requestFocus();
 	}
 
 	@Override
 	public void setComponentLabel(String label) {
-		requestFocus();
+		
 	}
 
 	@Override
@@ -139,14 +112,13 @@ public class DalyoDateField extends Button implements OnClickListener, DalyoComp
 
 	@Override
 	public void setOnChangeEvent(String functionName) {
-		// TODO Auto-generated method stub
-		
+		mDateTimeDialog.setOnChangeFunction(functionName);
 	}
 
 	@Override
 	public void setOnClickEvent(String functionName) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override

@@ -57,6 +57,7 @@ public class Component {
 
 	// Variable for TimeField/DateField
 	private String mDateTimeValue = null;
+	private String mDateTime = null;
 
 	// Variable for Gauge
 	private int mMinValue;
@@ -79,7 +80,7 @@ public class Component {
 	public void setFontType(String ft) {
 		this.mFontType = ft;
 	}
-	
+
 	public void setBackgroundColor(String bc) {
 		this.mBackgroundColor = bc;
 	}
@@ -123,7 +124,7 @@ public class Component {
 	public void setValueList(ArrayList<String> v) {
 		this.mValueList = v;
 	}
-	
+
 	public void setBullet(String bullet) {
 		this.mBullet = bullet;
 	}
@@ -147,13 +148,17 @@ public class Component {
 	public void setTextFilter(String tf) {
 		this.mTextFilter = tf;
 	}
-	
+
 	public void setTrigger(String trigger) {
 		this.mTrigger = trigger;
 	}
 
 	public void setDateTimeValue(String value) {
 		this.mDateTimeValue = value;
+	}
+
+	public void setDateTime(String dateTime) {
+		this.mDateTime = dateTime;
 	}
 
 	public void setInitValue(int i) {
@@ -234,7 +239,8 @@ public class Component {
 			} else {
 				combobox = new DalyoComboBox(mContext);
 			}
-			combobox.setFont(getFontSize(mFontSize), getFontType(mFontType), mFontColor);
+			combobox.setFont(getFontSize(mFontSize), getFontType(mFontType),
+					mFontColor);
 			if (mBullet != null) {
 				String path = findResourceFile(mBullet);
 				if (path.length() > 0) {
@@ -243,9 +249,16 @@ public class Component {
 			}
 			mComponent = combobox;
 		} else if (mType.equals(DesignTag.COMPONENT_DATEFIELD)) {
-			DalyoDateField datefield = new DalyoDateField(mContext,
-					getFontType(mFontType), getFontSize(mFontSize),
-					mDateTimeValue);
+			DalyoDateField datefield = null;
+			if (mDateTime != null) {
+				datefield = new DalyoDateField(mContext,
+						getFontType(mFontType), getFontSize(mFontSize),
+						mFontColor, true, mDateTimeValue);
+			} else {
+				datefield = new DalyoDateField(mContext,
+						getFontType(mFontType), getFontSize(mFontSize),
+						mFontColor, false, mDateTimeValue);
+			}
 			mComponent = datefield;
 		} else if (mType.equals(DesignTag.COMPONENT_DATAVIEW)) {
 			DalyoDataView dataview = new DalyoDataView(mContext, mTableID);
@@ -329,11 +342,12 @@ public class Component {
 			mComponent = textzone;
 		} else if (mType.equals(DesignTag.COMPONENT_TIMEFIELD)) {
 			DalyoTimeField timefield = new DalyoTimeField(mContext,
-					getFontType(mFontType), getFontSize(mFontSize),
+					getFontType(mFontType), getFontSize(mFontSize), mFontColor,
 					mDateTimeValue);
 			mComponent = timefield;
 		} else {
-			DalyoButton button = new DalyoButton(mContext, mLabel + " not implemented yet", false);
+			DalyoButton button = new DalyoButton(mContext, mLabel
+					+ " not implemented yet", false);
 			mComponent = button;
 		}
 	}
@@ -456,7 +470,7 @@ public class Component {
 	}
 
 	public void reSet() {
-		//setValue(mLabel);
+		// setValue(mLabel);
 		mComponent.resetComponent();
 	}
 }
