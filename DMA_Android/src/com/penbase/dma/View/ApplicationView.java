@@ -625,6 +625,10 @@ public class ApplicationView extends Activity {
 						if (value != null) {
 							component.setDateTimeValue(value);
 						}
+						String dateTime = atts.getValue(DesignTag.COMPONENT_DATEFIELD_DATETIME);
+						if (dateTime != null) {
+							component.setDateTime(dateTime);
+						}
 					} else if ((tagName.equals(DesignTag.COMPONENT_GAUGE))
 							|| (tagName.equals(DesignTag.COMPONENT_NUMBERBOX))) {
 						String initialValue = atts
