@@ -8,7 +8,6 @@ import android.widget.ScrollView;
 import android.widget.ImageView.ScaleType;
 
 import com.penbase.dma.R;
-import com.penbase.dma.Constant.Constant;
 import com.penbase.dma.Dalyo.BarcodeReader.BarcodeComponent;
 import com.penbase.dma.Dalyo.Component.Custom.DalyoComboBox;
 import com.penbase.dma.Dalyo.Component.Custom.DalyoTextField;
@@ -16,7 +15,6 @@ import com.penbase.dma.Dalyo.Component.Custom.DalyoTextZone;
 import com.penbase.dma.Dalyo.Component.Custom.Doodle.DalyoDoodle;
 import com.penbase.dma.Dalyo.Component.Custom.PictureBox.DalyoPictureBox;
 import com.penbase.dma.Dalyo.Function.Function;
-import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -143,42 +141,33 @@ public class Form extends ScrollView {
 	 */
 	public void setPreview() {
 		int viewLen = mLayout.getChildCount();
-		StringBuffer path = new StringBuffer(DmaHttpClient.getFilesPath());
-		path.append(Constant.TEMPDIRECTORY);
-		int start = path.length();
 		for (int i=0; i<viewLen; i++) {
 			View view = mLayout.getChildAt(i);
 			if (view instanceof DalyoDoodle) {
-				String fileName = ((DalyoDoodle)view).getImageName();
-				if (!fileName.equals("")) {
-					path.delete(start, path.length());
-					path.append(fileName);
-					if (new File(path.toString()).exists()) {
+				String filePath = ((DalyoDoodle)view).getImagePath();
+				if (!filePath.equals("")) {
+					if (new File(filePath).exists()) {
 						((DalyoDoodle)view).setText("");
-						((DalyoDoodle)view).setBackgroundDrawable(Drawable.createFromPath(path.toString()));
+						((DalyoDoodle)view).setBackgroundDrawable(Drawable.createFromPath(filePath));
 					} else {
 						((DalyoDoodle)view).setText("Doodle");
 					}	
 				}
 			} else if (view instanceof DalyoPictureBox) {
-				String fileName = ((DalyoPictureBox)view).getPhotoName();
-				if (!fileName.equals("")) {
-					path.delete(start, path.length());
-					path.append(fileName);
-					if (new File(path.toString()).exists()) {
-						((DalyoPictureBox)view).setImageDrawable(Drawable.createFromPath(path.toString()));
+				String filePath = ((DalyoPictureBox)view).getPhotoPath();
+				if (!filePath.equals("")) {
+					if (new File(filePath).exists()) {
+						((DalyoPictureBox)view).setImageDrawable(Drawable.createFromPath(filePath));
 						((DalyoPictureBox)view).setScaleType(ScaleType.FIT_XY);
 					} else {
 						((DalyoPictureBox)view).setImageResource(R.drawable.camera);	
 					}
 				}
 			} else if (view instanceof BarcodeComponent) {
-				String fileName = ((BarcodeComponent)view).getImageName();
-				if (!fileName.equals("")) {
-					path.delete(start, path.length());
-					path.append(fileName);
-					if (new File(path.toString()).exists()) {
-						((BarcodeComponent)view).setImageDrawable(Drawable.createFromPath(path.toString()));
+				String filePath = ((BarcodeComponent)view).getImagePath();
+				if (!filePath.equals("")) {
+					if (new File(filePath).exists()) {
+						((BarcodeComponent)view).setImageDrawable(Drawable.createFromPath(filePath));
 						((BarcodeComponent)view).setScaleType(ScaleType.FIT_XY);
 					} else {
 						((BarcodeComponent)view).setImageResource(R.drawable.barcode);	

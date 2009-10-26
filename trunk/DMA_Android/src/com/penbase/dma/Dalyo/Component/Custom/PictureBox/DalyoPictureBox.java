@@ -11,13 +11,13 @@ import com.penbase.dma.Dalyo.Component.DalyoComponent;
 public class DalyoPictureBox extends ImageButton implements DalyoComponent {
 	private Context mContext;
 	private String mId;
-	private String mPhotoName;
+	private String mPhotoPath;
 	
 	public DalyoPictureBox(Context c, String i) {
 		super(c);
 		this.mContext = c;
 		this.mId = i;
-		this.mPhotoName = "";
+		this.mPhotoPath = "";
 		this.setImageResource(R.drawable.camera);
 		this.setOnClickListener(new OnClickListener() {
 			@Override
@@ -34,12 +34,12 @@ public class DalyoPictureBox extends ImageButton implements DalyoComponent {
 		this.setScaleType(ScaleType.CENTER);
 	}
 	
-	public void setPhotoName(String name) {
-		mPhotoName = name;
+	public void setPhotoPath(String path) {
+		mPhotoPath = path;
 	}
 	
-	public String getPhotoName() {
-		return mPhotoName;
+	public String getPhotoPath() {
+		return mPhotoPath;
 	}
 
 	@Override
@@ -50,7 +50,7 @@ public class DalyoPictureBox extends ImageButton implements DalyoComponent {
 
 	@Override
 	public Object getComponentValue() {
-		return getPhotoName();
+		return getPhotoPath();
 	}
 
 	@Override

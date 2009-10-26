@@ -8,15 +8,15 @@ import android.view.View;
 import android.widget.Button;
 
 public class DalyoDoodle extends Button implements DalyoComponent {
-	private String mImageName;
+	private String mImagePath;
 	private Context mContext;
 	private String mId;
 
-	public DalyoDoodle(Context c, String i) {
-		super(c);
-		mContext = c;
+	public DalyoDoodle(Context context, String i) {
+		super(context);
+		mContext = context;
 		mId = i;
-		mImageName = "";
+		mImagePath = "";
 		setText("Open Doodle");
 		setOnClickListener(new OnClickListener() {
 			@Override
@@ -28,12 +28,12 @@ public class DalyoDoodle extends Button implements DalyoComponent {
 		});
 	}
 
-	public void setImageName(String s) {
-		mImageName = s;
+	public void setImagePath(String s) {
+		mImagePath = s;
 	}
 
-	public String getImageName() {
-		return mImageName;
+	public String getImagePath() {
+		return mImagePath;
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class DalyoDoodle extends Button implements DalyoComponent {
 
 	@Override
 	public Object getComponentValue() {
-		return getImageName();
+		return getImagePath();
 	}
 
 	@Override
