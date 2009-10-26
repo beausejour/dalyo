@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.text.method.PasswordTransformationMethod;
 import android.view.Gravity;
 
 import com.penbase.dma.Constant.Constant;
@@ -54,6 +55,7 @@ public class Component {
 	private String mMultiLine = null;
 	private String mTextFilter = null;
 	private String mTrigger = null;
+	private boolean mPassword = false;
 
 	// Variable for TimeField/DateField
 	private String mDateTimeValue = null;
@@ -151,6 +153,10 @@ public class Component {
 
 	public void setTrigger(String trigger) {
 		this.mTrigger = trigger;
+	}
+
+	public void setPassword(boolean value) {
+		this.mPassword = value;
 	}
 
 	public void setDateTimeValue(String value) {
@@ -335,10 +341,31 @@ public class Component {
 			if (!mTextFilter.equals(Constant.NONE)) {
 				textfield.setTextFilter(mTextFilter);
 			}
+			if (mPassword) {
+				textfield.setPassword();
+			}
 			mComponent = textfield;
 		} else if (mType.equals(DesignTag.COMPONENT_TEXTZONE)) {
 			DalyoTextZone textzone = new DalyoTextZone(mContext,
 					getFontType(mFontType), getFontSize(mFontSize));
+			if (!mMultiLine.equals(Constant.TRUE)) {
+				textzone.setSingleLine();
+			}
+			if (mFontColor != null) {
+				textzone.setTextColor(getColor(mFontColor));
+			}
+			if (mAlign != null) {
+				textzone.setGravity(getGravity(mAlign));
+			}
+			if (mEditable) {
+				textzone.setEnabled(!mEditable);
+			}
+			if (mTrigger != null) {
+				textzone.setTrigger(mTrigger);
+			}
+			if (!mTextFilter.equals(Constant.NONE)) {
+				textzone.setTextFilter(mTextFilter);
+			}
 			mComponent = textzone;
 		} else if (mType.equals(DesignTag.COMPONENT_TIMEFIELD)) {
 			DalyoTimeField timefield = new DalyoTimeField(mContext,

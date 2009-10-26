@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.DigitsKeyListener;
+import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 
@@ -16,34 +17,43 @@ import com.penbase.dma.Constant.DatabaseAttribute;
 import com.penbase.dma.Dalyo.Component.DalyoComponent;
 import com.penbase.dma.Dalyo.Function.Function;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
-public class DalyoTextField extends AutoCompleteTextView implements DalyoComponent {
+public class DalyoTextField extends AutoCompleteTextView implements
+		DalyoComponent {
 	private String mTableId = "";
 	private String mFieldId = "";
 	private Context mContext;
-	
+	private boolean mFilterNoNumeric;
+	private ArrayList<String> mNumericList;
+	private String mOnChangeFunctionName = null;
+
 	public DalyoTextField(Context context, Typeface tf, float fs) {
 		super(context);
 		mContext = context;
 		this.setTypeface(tf);
 		this.setTextSize(fs);
 	}
-	
+
 	public void setTableId(String tid) {
 		this.mTableId = tid;
 	}
-	
+
 	public void setFieldId(String fid) {
 		this.mFieldId = fid;
 	}
-	
+
 	public String getTableId() {
 		return mTableId;
 	}
-	
+
 	public String getFieldId() {
 		return mFieldId;
+	}
+
+	public void setPassword() {
+		setTransformationMethod(new PasswordTransformationMethod());
 	}
 	
 	public void setTrigger(final String trigger) {
@@ -55,58 +65,110 @@ public class DalyoTextField extends AutoCompleteTextView implements DalyoCompone
 		} else if (trigger.equals(Constant.TRIGGERURL)) {
 			resourceId = R.drawable.ico_url;
 		}
-		setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(resourceId), null, null, null);
-		setOnLongClickListener(new OnLongClickListener() {
-			@Override
-			public boolean onLongClick(View arg0) {
-				String text = getText().toString().trim();
-				if (text.length() > 0) {
-					if (trigger.equals(Constant.TRIGGERMAIL)) {
-						Intent emailIntent = new Intent (Intent.ACTION_SENDTO , Uri.parse("mailto:" + text));
-						mContext.startActivity(emailIntent);
-					} else if (trigger.equals(Constant.TRIGGERPHONE)) {
-						Intent phoneIntent = new Intent (Intent.ACTION_DIAL, Uri.parse("tel:" + text)); 
-						mContext.startActivity(phoneIntent);
-					} else if (trigger.equals(Constant.TRIGGERURL)) {
-						Intent urlIntent = null;
-						if (text.startsWith("http://")) {
-							urlIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(text));
-						} else {
-							urlIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://" + text));
+		if (resourceId != 0) {
+			setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(
+					resourceId), null, null, null);
+			setOnLongClickListener(new OnLongClickListener() {
+				@Override
+				public boolean onLongClick(View arg0) {
+					String text = getText().toString().trim();
+					if (text.length() > 0) {
+						if (trigger.equals(Constant.TRIGGERMAIL)) {
+							Intent emailIntent = new Intent(
+									Intent.ACTION_SENDTO, Uri.parse("mailto:"
+											+ text));
+							mContext.startActivity(emailIntent);
+						} else if (trigger.equals(Constant.TRIGGERPHONE)) {
+							Intent phoneIntent = new Intent(Intent.ACTION_DIAL,
+									Uri.parse("tel:" + text));
+							mContext.startActivity(phoneIntent);
+						} else if (trigger.equals(Constant.TRIGGERURL)) {
+							Intent urlIntent = null;
+							if (text.startsWith("http://")) {
+								urlIntent = new Intent(Intent.ACTION_VIEW, Uri
+										.parse(text));
+							} else {
+								urlIntent = new Intent(Intent.ACTION_VIEW, Uri
+										.parse("http://" + text));
+							}
+							urlIntent.addCategory(Intent.CATEGORY_BROWSABLE);
+							mContext.startActivity(urlIntent);
 						}
-						urlIntent.addCategory(Intent.CATEGORY_BROWSABLE);
-				        mContext.startActivity(urlIntent);
+						return true;
+					} else {
+						return false;
 					}
-					return true;
-				} else {
-					return false;
 				}
-			}
-		});
+			});
+		}
 	}
-	
+
 	public void setTextFilter(String textFilter) {
 		if (textFilter.equals(Constant.POSITIVENUMERIC)) {
-			DigitsKeyListener numericOnlyListener = new DigitsKeyListener(
-					false, true);
-			setKeyListener(numericOnlyListener);
+			setKeyListener(new DigitsKeyListener(false, true));
+		} else if (textFilter.equals(Constant.NUMERIC)) {
+			setKeyListener(new DigitsKeyListener(true, true));
+		} else if (textFilter.equals(Constant.NONUMERIC)) {
+			mFilterNoNumeric = true;
+			mNumericList = new ArrayList<String>(10);
+			mNumericList.add("0");
+			mNumericList.add("1");
+			mNumericList.add("2");
+			mNumericList.add("3");
+			mNumericList.add("4");
+			mNumericList.add("5");
+			mNumericList.add("6");
+			mNumericList.add("7");
+			mNumericList.add("8");
+			mNumericList.add("9");
+			addTextChangedListener(new TextWatcher() {
+				@Override
+				public void afterTextChanged(Editable s) {
+					if (mFilterNoNumeric) {
+						s = s.delete(s.length() - 1, s.length());
+					} else {
+						if (mOnChangeFunctionName != null) {
+							Function.createFunction(mOnChangeFunctionName);
+						}
+					}
+				}
+
+				@Override
+				public void beforeTextChanged(CharSequence s, int start,
+						int count, int after) {
+				}
+
+				@Override
+				public void onTextChanged(CharSequence s, int start,
+						int before, int count) {
+					int length = s.length();
+					if (length > 0
+							&& mNumericList.contains(s.subSequence(length - 1,
+									length).toString())) {
+						mFilterNoNumeric = true;
+					} else {
+						mFilterNoNumeric = false;
+					}
+				}
+			});
 		}
 	}
-	
+
 	public void refresh(HashMap<Object, Object> record) {
 		if (!getFieldId().equals("")) {
-			DalyoTextField.this.setText((String)record.get(DatabaseAttribute.FIELD+getFieldId()));
+			DalyoTextField.this.setText((String) record
+					.get(DatabaseAttribute.FIELD + getFieldId()));
 		}
 	}
-	
+
 	public void clear() {
 		this.setText("");
 	}
-	
+
 	public String getValue() {
 		return this.getText().toString();
 	}
-	
+
 	public boolean isEmpty() {
 		boolean result = false;
 		if (this.getValue().trim().length() == 0) {
@@ -114,7 +176,7 @@ public class DalyoTextField extends AutoCompleteTextView implements DalyoCompone
 		}
 		return result;
 	}
-	
+
 	@Override
 	public String getComponentLabel() {
 		return getValue();
@@ -142,7 +204,7 @@ public class DalyoTextField extends AutoCompleteTextView implements DalyoCompone
 	@Override
 	public void resetComponent() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -158,7 +220,7 @@ public class DalyoTextField extends AutoCompleteTextView implements DalyoCompone
 	@Override
 	public void setComponentLabel(String label) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -181,24 +243,27 @@ public class DalyoTextField extends AutoCompleteTextView implements DalyoCompone
 	}
 
 	@Override
-	public void setOnChangeEvent(final String functionName) {
-		addTextChangedListener(new TextWatcher() {
+	public void setOnChangeEvent(String functionName) {
+		mOnChangeFunctionName = functionName;
+		if (!mFilterNoNumeric) {
+			addTextChangedListener(new TextWatcher() {
 
-			@Override
-			public void afterTextChanged(Editable s) {
-			}
+				@Override
+				public void afterTextChanged(Editable s) {
+					Function.createFunction(mOnChangeFunctionName);
+				}
 
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count,
-					int after) {
-			}
+				@Override
+				public void beforeTextChanged(CharSequence s, int start,
+						int count, int after) {
+				}
 
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before,
-					int count) {
-				Function.createFunction(functionName);	
-			}
-		});
+				@Override
+				public void onTextChanged(CharSequence s, int start,
+						int before, int count) {
+				}
+			});
+		}
 	}
 
 	@Override

@@ -116,7 +116,7 @@ public class ApplicationView extends Activity {
 			}
 		}).start();
 	}
-	
+
 	/**
 	 * Prepares necessary xml document data
 	 * 
@@ -610,7 +610,8 @@ public class ApplicationView extends Activity {
 							isInComboBox = true;
 							comboboxItemList = new ArrayList<String>();
 						}
-						String bullet = atts.getValue(DesignTag.COMPONENT_COMBOBOX_BULLET);
+						String bullet = atts
+								.getValue(DesignTag.COMPONENT_COMBOBOX_BULLET);
 						if (bullet != null) {
 							component.setBullet(bullet);
 						}
@@ -625,7 +626,8 @@ public class ApplicationView extends Activity {
 						if (value != null) {
 							component.setDateTimeValue(value);
 						}
-						String dateTime = atts.getValue(DesignTag.COMPONENT_DATEFIELD_DATETIME);
+						String dateTime = atts
+								.getValue(DesignTag.COMPONENT_DATEFIELD_DATETIME);
 						if (dateTime != null) {
 							component.setDateTime(dateTime);
 						}
@@ -647,7 +649,8 @@ public class ApplicationView extends Activity {
 						if (maxValue != null) {
 							component.setMaxValue(Integer.valueOf(maxValue));
 						}
-					} else if (tagName.equals(DesignTag.COMPONENT_TEXTFIELD)) {
+					} else if (tagName.equals(DesignTag.COMPONENT_TEXTFIELD)
+							|| tagName.equals(DesignTag.COMPONENT_TEXTZONE)) {
 						String multiple = atts
 								.getValue(DesignTag.COMPONENT_TEXTFIELD_MULTI);
 						if (multiple != null) {
@@ -662,6 +665,10 @@ public class ApplicationView extends Activity {
 							component.setEditable(true);
 						} else {
 							component.setEditable(false);
+						}
+						String password = atts.getValue(DesignTag.COMPONENT_TEXTFIELD_PASSWORD);
+						if (password != null) {
+							component.setPassword(true);
 						}
 						component
 								.setTextFilter(atts
