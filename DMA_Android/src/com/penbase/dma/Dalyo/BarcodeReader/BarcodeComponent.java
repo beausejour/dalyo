@@ -12,13 +12,13 @@ public class BarcodeComponent extends ImageButton implements DalyoComponent {
 	private Context mContext;
 	private String mId;
 	private String mContent;
-	private String mName;
+	private String mPath;
 
 	public BarcodeComponent(Context context, String id) {
 		super(context);
 		mContext = context;
 		mId = id;
-		mName = "";
+		mPath = "";
 		setTag(mId);
 		setImageResource(R.drawable.barcode);
 		setOnClickListener(new OnClickListener() {
@@ -44,12 +44,12 @@ public class BarcodeComponent extends ImageButton implements DalyoComponent {
 		return mContent;
 	}
 
-	public String getImageName() {
-		return mName;
+	public String getImagePath() {
+		return mPath;
 	}
 
-	public void setImageName(String n) {
-		mName = n;
+	public void setImagePath(String n) {
+		mPath = n;
 	}
 
 	@Override

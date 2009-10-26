@@ -326,13 +326,6 @@ public class ApplicationView extends Activity {
 	}
 
 	@Override
-	protected void onRestart() {
-		super.onRestart();
-		// Check if there is doodle image or picturebox
-		getLayoutsMap().get(getCurrentFormId()).setPreview();
-	}
-
-	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 		sDatabase.closeDatabase();

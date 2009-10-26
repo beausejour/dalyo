@@ -86,6 +86,7 @@ public final class CaptureActivity extends Activity implements
 				((BarcodeComponent) ApplicationView.getComponents().get(mId)
 						.getDalyoComponent()).setContent(mBarCodeContent);
 				finish();
+				ApplicationView.getLayoutsMap().get(ApplicationView.getCurrentFormId()).setPreview();
 			}
 		});
 		mCancelButton = (Button) findViewById(R.id.cancel);
@@ -120,7 +121,7 @@ public final class CaptureActivity extends Activity implements
 			((BitmapDrawable) mBarcodeImageView.getDrawable()).getBitmap()
 					.compress(Bitmap.CompressFormat.JPEG, 100, fos);
 			((BarcodeComponent) ApplicationView.getComponents().get(mId)
-					.getDalyoComponent()).setImageName(photoName);
+					.getDalyoComponent()).setImagePath(tempFilePath.toString());
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}

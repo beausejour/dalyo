@@ -262,9 +262,13 @@ public class DalyoTextZone extends EditText implements DalyoComponent {
 	}
 
 	@Override
-	public void setOnClickEvent(String functionName) {
-		// TODO Auto-generated method stub
-
+	public void setOnClickEvent(final String functionName) {
+		setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Function.createFunction(functionName);
+			}
+		});
 	}
 
 	@Override
