@@ -69,6 +69,7 @@ public class DesignTag {
 	public static final String COMPONENT_TEXTFIELD = "t";
 	public static final String COMPONENT_TEXTFIELD_MULTI = "ml";
 	public static final String COMPONENT_TEXTFIELD_EDIT = "ed";
+	public static final String COMPONENT_TEXTFIELD_PASSWORD = "pw";
 	public static final String COMPONENT_TEXTFIELD_TEXTFILTER = "tf";
 	public static final String COMPONENT_TEXTFIELD_TRIGGER = "trg";
 	public static final String COMPONENT_TEXTZONE = "tz";

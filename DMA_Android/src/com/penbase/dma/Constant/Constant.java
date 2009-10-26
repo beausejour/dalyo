@@ -78,6 +78,8 @@ public class Constant {
 	public static final String TRIGGERMAIL = "mail";
 	public static final String TRIGGERPHONE = "phone";
 	public static final String TRIGGERURL = "url";
+	public static final String NONUMERIC = "nonumeric";
+	public static final String NUMERIC = "numeric";
 	public static final String POSITIVENUMERIC = "positivenumeric";
 	public static final String NONE = "none";
 	

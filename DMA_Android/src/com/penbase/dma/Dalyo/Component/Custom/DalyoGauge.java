@@ -114,9 +114,8 @@ public class DalyoGauge extends SeekBar implements DalyoComponent {
 	}
 
 	@Override
-	public void setOnClickEvent(String functionName) {
-		// TODO Auto-generated method stub
-		
+	public void setOnClickEvent(final String functionName) {
+		//Seekbar doesn't have on click event
 	}
 
 	@Override
