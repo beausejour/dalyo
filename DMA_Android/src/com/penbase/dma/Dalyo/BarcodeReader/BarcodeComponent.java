@@ -54,8 +54,7 @@ public class BarcodeComponent extends ImageButton implements DalyoComponent {
 
 	@Override
 	public String getComponentLabel() {
-		// TODO Auto-generated method stub
-		return null;
+		return getContent();
 	}
 
 	@Override

@@ -111,8 +111,7 @@ public class DalyoNumberBox extends LinearLayout implements DalyoComponent {
 
 	@Override
 	public String getComponentLabel() {
-		// TODO Auto-generated method stub
-		return null;
+		return mAct.getText().toString();
 	}
 
 	@Override
