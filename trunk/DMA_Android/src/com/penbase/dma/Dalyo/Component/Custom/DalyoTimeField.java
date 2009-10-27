@@ -42,8 +42,7 @@ public class DalyoTimeField extends Button implements DalyoComponent, OnClickLis
 
 	@Override
 	public String getComponentLabel() {
-		// TODO Auto-generated method stub
-		return null;
+		return mDateTimeDialog.getText();
 	}
 
 	@Override

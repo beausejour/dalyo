@@ -17,7 +17,7 @@ public class DalyoDoodle extends Button implements DalyoComponent {
 		mContext = context;
 		mId = i;
 		mImagePath = "";
-		setText("Open Doodle");
+		setText("Doodle");
 		setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -38,8 +38,7 @@ public class DalyoDoodle extends Button implements DalyoComponent {
 
 	@Override
 	public String getComponentLabel() {
-		// TODO Auto-generated method stub
-		return null;
+		return getText().toString();
 	}
 
 	@Override
