@@ -9,7 +9,8 @@ import org.w3c.dom.Element;
 
 public class NS_DatabaseField {
 	public static String GetFieldName(Element element) {
-		String fieldId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FIELD, ScriptAttribute.FIELD).toString();
+		String fieldId = Function.getValue(element, ScriptTag.PARAMETER,
+				ScriptAttribute.FIELD, ScriptAttribute.FIELD).toString();
 		return DatabaseAdapter.getFieldName(fieldId);
 	}
 }

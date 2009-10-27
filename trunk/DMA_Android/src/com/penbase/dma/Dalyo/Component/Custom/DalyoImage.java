@@ -9,17 +9,22 @@ import android.view.View;
 import android.widget.ImageView;
 
 public class DalyoImage extends ImageView implements DalyoComponent {
+	private String mImagePath;
 
 	public DalyoImage(Context context) {
 		super(context);
-		// TODO Auto-generated constructor stub
 	}
 
+	public void setInitialImage(String path) {
+		mImagePath = path;
+		setImageDrawable(Drawable.createFromPath(path));
+	}
+	
 	@Override
 	public void setComponentValue(Object value) {
-		Drawable d = Drawable.createFromPath(DmaHttpClient.getFilesPath()
-				+ value.toString());
-		setBackgroundDrawable(d);
+		mImagePath = DmaHttpClient.getFilesPath() + value.toString();
+		Drawable d = Drawable.createFromPath(mImagePath);
+		setImageDrawable(d);
 	}
 
 	@Override
@@ -30,8 +35,7 @@ public class DalyoImage extends ImageView implements DalyoComponent {
 
 	@Override
 	public Object getComponentValue() {
-		// TODO Auto-generated method stub
-		return null;
+		return mImagePath;
 	}
 
 	@Override
@@ -50,8 +54,7 @@ public class DalyoImage extends ImageView implements DalyoComponent {
 
 	@Override
 	public void resetComponent() {
-		// TODO Auto-generated method stub
-		
+		setImageDrawable(Drawable.createFromPath(mImagePath));
 	}
 
 	@Override
@@ -67,13 +70,13 @@ public class DalyoImage extends ImageView implements DalyoComponent {
 	@Override
 	public void setComponentLabel(String label) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setComponentText(String text) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -88,13 +91,13 @@ public class DalyoImage extends ImageView implements DalyoComponent {
 	@Override
 	public void setOnChangeEvent(String functionName) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setOnClickEvent(String functionName) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override

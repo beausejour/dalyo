@@ -12,14 +12,17 @@ import com.penbase.dma.Dalyo.Function.Function;
  */
 public class DalyoGauge extends SeekBar implements DalyoComponent {
 	private int mMinValue;
+	private int mMaxValue;
+	private int mInitialValue;
 	private String mFuncName;
 	
-	public DalyoGauge(Context context) {
+	public DalyoGauge(Context context, int initial, int min, int max) {
 		super(context);
-	}
-
-	public void setMinValue(int min) {
-		this.mMinValue = min;
+		mInitialValue = initial;
+		mMinValue = min;
+		mMaxValue = max;
+		setProgress(mInitialValue);
+		setMax(mMaxValue);
 	}
 	
 	public void setValue(int value) {
@@ -58,8 +61,7 @@ public class DalyoGauge extends SeekBar implements DalyoComponent {
 
 	@Override
 	public void resetComponent() {
-		// TODO Auto-generated method stub
-		
+		setProgress(mInitialValue);
 	}
 
 	@Override

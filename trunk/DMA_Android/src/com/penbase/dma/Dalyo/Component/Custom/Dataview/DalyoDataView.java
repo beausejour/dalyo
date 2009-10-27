@@ -479,8 +479,7 @@ public class DalyoDataView extends LinearLayout implements DalyoComponent,
 
 	@Override
 	public Object getComponentValue() {
-		// TODO Auto-generated method stub
-		return null;
+		return getCurrentRecord();
 	}
 
 	@Override
@@ -499,8 +498,8 @@ public class DalyoDataView extends LinearLayout implements DalyoComponent,
 
 	@Override
 	public void resetComponent() {
-		// TODO Auto-generated method stub
-
+		mAdapter.removeItems();
+		mAdapter.notifyDataSetChanged();
 	}
 
 	@Override

@@ -12,11 +12,15 @@ import android.view.View;
 import android.widget.TextView;
 
 public class DalyoLabel extends TextView implements DalyoComponent {
-	public DalyoLabel(Context context, Typeface tf, float fs) {
+	private String mLabel;
+	
+	public DalyoLabel(Context context, String label, Typeface tf, float fs) {
 		super(context);
+		this.mLabel = label;
 		this.setTypeface(tf);
 		this.setTextSize(fs);
 		this.setTextColor(Color.BLACK);
+		setText(label);
 	}
 
 	@Override
@@ -45,8 +49,7 @@ public class DalyoLabel extends TextView implements DalyoComponent {
 
 	@Override
 	public void resetComponent() {
-		// TODO Auto-generated method stub
-		
+		setText(mLabel);
 	}
 
 	@Override

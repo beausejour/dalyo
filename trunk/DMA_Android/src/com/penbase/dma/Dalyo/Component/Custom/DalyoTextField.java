@@ -203,8 +203,7 @@ public class DalyoTextField extends AutoCompleteTextView implements
 
 	@Override
 	public void resetComponent() {
-		// TODO Auto-generated method stub
-
+		clear();
 	}
 
 	@Override

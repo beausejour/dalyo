@@ -15,12 +15,14 @@ import com.penbase.dma.Dalyo.Component.DalyoComponent;
 public class DalyoDateField extends Button implements OnClickListener,
 		DalyoComponent {
 	private DalyoDateTimePickerDialog mDateTimeDialog;
+	private String mDefaultValue;
 
 	public DalyoDateField(Context c, Typeface tf, float fs, String fc,
 			boolean hasTime, String defaultValue) {
 		super(c);
 		mDateTimeDialog = new DalyoDateTimePickerDialog(c, this, true,
 				hasTime);
+		mDefaultValue = defaultValue;
 		mDateTimeDialog.setInitialValues(defaultValue);
 		this.setTypeface(tf);
 		this.setTextSize(fs);
@@ -41,8 +43,8 @@ public class DalyoDateField extends Button implements OnClickListener,
 	}
 
 	public void setDate(String date) {
-		this.setText(date);
 		mDateTimeDialog.setInitialValues(date);
+		this.setText(mDateTimeDialog.getText());
 	}
 
 	@Override
@@ -71,8 +73,8 @@ public class DalyoDateField extends Button implements OnClickListener,
 
 	@Override
 	public void resetComponent() {
-		// TODO Auto-generated method stub
-
+		setDate(mDefaultValue);
+		mDateTimeDialog.initialMaxCalendar();
 	}
 
 	@Override

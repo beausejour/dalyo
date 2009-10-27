@@ -20,17 +20,17 @@ import android.widget.TimePicker.OnTimeChangedListener;
 
 public class DalyoDateTimePickerDialog extends AlertDialog implements
 		OnClickListener, OnDateChangedListener, OnTimeChangedListener {
-	private int mYear = Integer.MAX_VALUE;
-	private int mMonth = Integer.MAX_VALUE;
-	private int mDay = Integer.MAX_VALUE;
-	private int mHour = Integer.MAX_VALUE;
-	private int mMinute = Integer.MAX_VALUE;
-	
+	private int mYear;
+	private int mMonth;
+	private int mDay;
+	private int mHour;
+	private int mMinute;
+
 	private int mInitialYear;
 	private int mInitialMonth;
 	private int mInitialDay;
 	private int mInitialHour;
-	private int mInitialMinute; 
+	private int mInitialMinute;
 
 	private DatePicker mDatePicker;
 	private TimePicker mTimePicker;
@@ -55,6 +55,9 @@ public class DalyoDateTimePickerDialog extends AlertDialog implements
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View view = inflater.inflate(R.layout.datetimedialog, null);
 		mDatePicker = (DatePicker) view.findViewById(R.id.datepicker);
+		mDatePicker.init(mCalendar.get(Calendar.YEAR), mCalendar
+				.get(Calendar.MONTH), mCalendar.get(Calendar.DAY_OF_MONTH),
+				this);
 		mTimePicker = (TimePicker) view.findViewById(R.id.timepicker);
 		mTimePicker.setOnTimeChangedListener(this);
 		mTimePicker.setIs24HourView(true);
@@ -69,10 +72,19 @@ public class DalyoDateTimePickerDialog extends AlertDialog implements
 		if (!mHasTime) {
 			mTimePicker.setVisibility(View.GONE);
 		}
-		
+
 		setView(view);
+		initialMaxCalendar();
 	}
 
+	public void initialMaxCalendar() {
+		mYear = Integer.MAX_VALUE;
+		mMonth = Integer.MAX_VALUE;
+		mDay = Integer.MAX_VALUE;
+		mHour = Integer.MAX_VALUE;
+		mMinute = Integer.MAX_VALUE;
+	}
+	
 	public void setInitialValues(String value) {
 		if ((value != null) && !(value.equals(""))) {
 			if (mHasDate && mHasTime) {
@@ -81,7 +93,8 @@ public class DalyoDateTimePickerDialog extends AlertDialog implements
 				mInitialMonth = Integer.valueOf(displayDate.split("/")[1]) - 1;
 				mInitialDay = Integer.valueOf(displayDate.split("/")[0]);
 				setCalendar(mInitialYear, mInitialMonth, mInitialDay);
-				mDatePicker.init(mInitialYear, mInitialMonth, mInitialDay, this);
+				mDatePicker
+						.updateDate(mInitialYear, mInitialMonth, mInitialDay);
 
 				String displayTime = value.split(" ")[1];
 				mInitialHour = Integer.valueOf(displayTime.split(":")[0]);
@@ -95,7 +108,8 @@ public class DalyoDateTimePickerDialog extends AlertDialog implements
 				mInitialMonth = Integer.valueOf(displayDate.split("/")[1]) - 1;
 				mInitialDay = Integer.valueOf(displayDate.split("/")[0]);
 				setCalendar(mInitialYear, mInitialMonth, mInitialDay);
-				mDatePicker.init(mInitialYear, mInitialMonth, mInitialDay, this);
+				mDatePicker
+						.updateDate(mInitialYear, mInitialMonth, mInitialDay);
 			} else if (mHasTime) {
 				String displayTime = value.split(" ")[0];
 				mInitialHour = Integer.valueOf(displayTime.split(":")[0]);
@@ -108,8 +122,8 @@ public class DalyoDateTimePickerDialog extends AlertDialog implements
 			mInitialYear = mCalendar.get(Calendar.YEAR);
 			mInitialMonth = mCalendar.get(Calendar.MONTH);
 			mInitialDay = mCalendar.get(Calendar.DAY_OF_MONTH);
-			mDatePicker.init(mInitialYear, mInitialMonth, mInitialDay, this);
-			
+			mDatePicker.updateDate(mInitialYear, mInitialMonth, mInitialDay);
+
 			mInitialHour = mCalendar.get(Calendar.HOUR_OF_DAY);
 			mInitialMinute = mCalendar.get(Calendar.MINUTE);
 			mTimePicker.setCurrentHour(mInitialHour);
@@ -123,7 +137,8 @@ public class DalyoDateTimePickerDialog extends AlertDialog implements
 		if (mHasDate) {
 			if (mYear == Integer.MAX_VALUE && mMonth == Integer.MAX_VALUE
 					&& mDay == Integer.MAX_VALUE) {
-				mDatePicker.updateDate(mInitialYear, mInitialMonth, mInitialDay);
+				mDatePicker
+						.updateDate(mInitialYear, mInitialMonth, mInitialDay);
 				mCalendar.set(mInitialYear, mInitialMonth, mInitialDay);
 			} else {
 				mDatePicker.updateDate(mYear, mMonth, mDay);

@@ -198,8 +198,7 @@ public class DalyoTextZone extends EditText implements DalyoComponent {
 
 	@Override
 	public void resetComponent() {
-		// TODO Auto-generated method stub
-
+		clear();
 	}
 
 	@Override

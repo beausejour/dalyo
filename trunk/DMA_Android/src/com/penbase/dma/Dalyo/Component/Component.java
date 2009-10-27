@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.text.method.PasswordTransformationMethod;
 import android.view.Gravity;
 
 import com.penbase.dma.Constant.Constant;
@@ -35,9 +34,7 @@ public class Component {
 	private DalyoComponent mComponent = null;
 	private String mTableID = null;
 	private String mFieldID = null;
-
-	// Variables for checkbox
-	private String mChecked = null;
+	private String mDefaultValue = null;
 
 	// Variables for combobox
 	private ArrayList<String> mLabelList = null;
@@ -58,13 +55,13 @@ public class Component {
 	private boolean mPassword = false;
 
 	// Variable for TimeField/DateField
-	private String mDateTimeValue = null;
 	private String mDateTime = null;
 
 	// Variable for Gauge
 	private int mMinValue;
 	private int mMaxValue;
-	private int mInitialValue;
+
+	private int mStepValue;
 
 	public Component(Context c, String t) {
 		this.mContext = c;
@@ -103,16 +100,16 @@ public class Component {
 		this.mLabel = l;
 	}
 
+	public void setDefaultValue(String v) {
+		this.mDefaultValue = v;
+	}
+
 	public void setTableId(String tid) {
 		this.mTableID = tid;
 	}
 
 	public void setFieldId(String fid) {
 		this.mFieldID = fid;
-	}
-
-	public void setChecked(String check) {
-		this.mChecked = check;
 	}
 
 	public void setItemList(ArrayList<String> l) {
@@ -159,16 +156,8 @@ public class Component {
 		this.mPassword = value;
 	}
 
-	public void setDateTimeValue(String value) {
-		this.mDateTimeValue = value;
-	}
-
 	public void setDateTime(String dateTime) {
 		this.mDateTime = dateTime;
-	}
-
-	public void setInitValue(int i) {
-		this.mInitialValue = i;
 	}
 
 	public void setMinValue(int min) {
@@ -177,6 +166,10 @@ public class Component {
 
 	public void setMaxValue(int max) {
 		this.mMaxValue = max;
+	}
+
+	public void setStepValue(int step) {
+		this.mStepValue = step;
 	}
 
 	public DalyoComponent getDalyoComponent() {
@@ -222,7 +215,7 @@ public class Component {
 			mComponent = button;
 		} else if (mType.equals(DesignTag.COMPONENT_CHECKBOX)) {
 			DalyoCheckBox checkbox = null;
-			if (mChecked.equals(Constant.TRUE)) {
+			if (mDefaultValue.equals(Constant.TRUE)) {
 				checkbox = new DalyoCheckBox(mContext, mLabel, true);
 			} else {
 				checkbox = new DalyoCheckBox(mContext, mLabel, false);
@@ -259,11 +252,11 @@ public class Component {
 			if (mDateTime != null) {
 				datefield = new DalyoDateField(mContext,
 						getFontType(mFontType), getFontSize(mFontSize),
-						mFontColor, true, mDateTimeValue);
+						mFontColor, true, mDefaultValue);
 			} else {
 				datefield = new DalyoDateField(mContext,
 						getFontType(mFontType), getFontSize(mFontSize),
-						mFontColor, false, mDateTimeValue);
+						mFontColor, false, mDefaultValue);
 			}
 			mComponent = datefield;
 		} else if (mType.equals(DesignTag.COMPONENT_DATAVIEW)) {
@@ -274,25 +267,21 @@ public class Component {
 			DalyoDoodle dalyoDoodle = new DalyoDoodle(mContext, mId);
 			mComponent = dalyoDoodle;
 		} else if (mType.equals(DesignTag.COMPONENT_GAUGE)) {
-			DalyoGauge dalyoGauge = new DalyoGauge(mContext);
-			dalyoGauge.setProgress(mInitialValue);
-			dalyoGauge.setMax(mMaxValue);
-			dalyoGauge.setMinValue(mMinValue);
+			DalyoGauge dalyoGauge = new DalyoGauge(mContext, Integer
+					.valueOf(mDefaultValue), mMinValue, mMaxValue);
 			mComponent = dalyoGauge;
 		} else if (mType.equals(DesignTag.COMPONENT_IMAGE)) {
 			DalyoImage imageview = new DalyoImage(mContext);
 			if (mBackground != null) {
 				String path = findResourceFile(mBackground);
 				if (path.length() > 0) {
-					Drawable d = Drawable.createFromPath(path);
-					imageview.setBackgroundDrawable(d);
+					imageview.setInitialImage(path);
 				}
 			}
 			mComponent = imageview;
 		} else if (mType.equals(DesignTag.COMPONENT_LABEL)) {
-			DalyoLabel labelObject = new DalyoLabel(mContext,
+			DalyoLabel labelObject = new DalyoLabel(mContext, mLabel,
 					getFontType(mFontType), getFontSize(mFontSize));
-			labelObject.setText(mLabel);
 			if (mFontColor != null) {
 				labelObject.setTextColor(getColor(mFontColor));
 			}
@@ -301,8 +290,8 @@ public class Component {
 			}
 			mComponent = labelObject;
 		} else if (mType.equals(DesignTag.COMPONENT_NUMBERBOX)) {
-			DalyoNumberBox numberbox = new DalyoNumberBox(mContext);
-			numberbox.setInitialValue(mInitialValue);
+			DalyoNumberBox numberbox = new DalyoNumberBox(mContext, Integer
+					.valueOf(mDefaultValue), mStepValue);
 			numberbox.setMaxValue(mMaxValue);
 			numberbox.setMinValue(mMinValue);
 			mComponent = numberbox;
@@ -310,7 +299,8 @@ public class Component {
 			DalyoPictureBox pictureBox = new DalyoPictureBox(mContext, mId);
 			mComponent = pictureBox;
 		} else if (mType.equals(DesignTag.COMPONENT_RADIOBUTTON)) {
-			DalyoRadiobutton dalyoRadiobutton = new DalyoRadiobutton(mContext);
+			DalyoRadiobutton dalyoRadiobutton = new DalyoRadiobutton(mContext,
+					Boolean.valueOf(mDefaultValue));
 			dalyoRadiobutton.setText(mLabel);
 			dalyoRadiobutton.setTypeface(getFontType(mFontType));
 			dalyoRadiobutton.setTextSize(getFontSize(mFontSize));
@@ -370,7 +360,7 @@ public class Component {
 		} else if (mType.equals(DesignTag.COMPONENT_TIMEFIELD)) {
 			DalyoTimeField timefield = new DalyoTimeField(mContext,
 					getFontType(mFontType), getFontSize(mFontSize), mFontColor,
-					mDateTimeValue);
+					mDefaultValue);
 			mComponent = timefield;
 		} else {
 			DalyoButton button = new DalyoButton(mContext, mLabel
