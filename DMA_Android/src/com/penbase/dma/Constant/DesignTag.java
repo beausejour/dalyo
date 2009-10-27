@@ -1,11 +1,11 @@
 package com.penbase.dma.Constant;
 
 public class DesignTag {
-	//Root
+	// Root
 	public static final String ROOT = "x35";
 	public static final String APP = "a";
-	
-	//Login
+
+	// Login
 	public static final String LOGIN_ID = "id";
 	public static final String LOGIN_VER = "ver";
 	public static final String LOGIN_BLD = "bld";
@@ -13,8 +13,8 @@ public class DesignTag {
 	public static final String LOGIN_DBID = "dbid";
 	public static final String LOGIN_TIT = "tit";
 	public static final String APPICON = "ico";
-	
-	//Design
+
+	// Design
 	public static final String DESIGN_S = "s";
 	public static final String DESIGN_S_G = "g";
 	public static final String DESIGN_S_G_FID = "fid";
@@ -32,12 +32,11 @@ public class DesignTag {
 	public static final String DESIGN_F_ID = "id";
 	public static final String DESIGN_F_M = "m";
 	public static final String DESIGN_F_W = "w";
-	
-	//Component elements
+
+	// Component elements
 	public static final String COMPONENT_BARCODECOMPONENT = "bac";
 	public static final String COMPONENT_BUTTON = "b";
 	public static final String COMPONENT_CHECKBOX = "ch";
-	public static final String COMPONENT_CHECKBOX_CHECKED = "v";
 	public static final String COMPONENT_COMBOBOX = "cb";
 	public static final String COMPONENT_COMBOBOX_BULLET = "bul";
 	public static final String COMPONENT_COMBOBOX_ITEM = "icb";
@@ -49,15 +48,14 @@ public class DesignTag {
 	public static final String COMPONENT_DATAVIEW_COLUMN = "dvc";
 	public static final String COMPONENT_DATAVIEW_COLUMN_HEADER = "hdr";
 	public static final String COMPONENT_DATAVIEW_COLUMN_CALC = "calc";
-	public static final String COMPONENT_DATAVIEW_PAGESIZE = "dvps";   
+	public static final String COMPONENT_DATAVIEW_PAGESIZE = "dvps";
 	public static final String COMPONENT_DATEFIELD = "df";
 	public static final String COMPONENT_DATEFIELD_DATETIME = "dt";
 	public static final String COMPONENT_DOODLE = "dd";
 	public static final String COMPONENT_GAUGE = "g";
-	public static final String COMPONENT_INIT = "v";
 	public static final String COMPONENT_MAX = "m";
 	public static final String COMPONENT_MIN = "i";
-	public static final String COMPONENT_IMAGE = "i";   
+	public static final String COMPONENT_IMAGE = "i";
 	public static final String COMPONENT_LABEL = "l";
 	public static final String COMPONENT_MENU = "m";
 	public static final String COMPONENT_MENUBAR = "mb";
@@ -66,6 +64,7 @@ public class DesignTag {
 	public static final String COMPONENT_NUMBERBOX = "nbox";
 	public static final String COMPONENT_PICTUREBOX = "pb";
 	public static final String COMPONENT_RADIOBUTTON = "rb";
+	public static final String COMPONENT_STEP = "s";
 	public static final String COMPONENT_TEXTFIELD = "t";
 	public static final String COMPONENT_TEXTFIELD_MULTI = "ml";
 	public static final String COMPONENT_TEXTFIELD_EDIT = "ed";
@@ -75,8 +74,8 @@ public class DesignTag {
 	public static final String COMPONENT_TEXTZONE = "tz";
 	public static final String COMPONENT_TIMEFIELD = "tf";
 	public static final String COMPONENT_VIDEOBOX = "vd";
-	
-	//Common component attributes
+
+	// Common component attributes
 	public static final String COMPONENT_COMMON_ALIGN = "al";
 	public static final String COMPONENT_COMMON_BACKGROUND = "bg";
 	public static final String COMPONENT_COMMON_BACKGROUNDCOLOR = "bc";
@@ -100,8 +99,8 @@ public class DesignTag {
 	public static final String COMPONENT_COMMON_TEXTALIGN = "a";
 	public static final String COMPONENT_COMMON_VALUE = "v";
 	public static final String COMPONENT_COMMON_VISIBLE = "vi";
-	
-	//Events
+
+	// Events
 	public static final String EVENT_ONCLICK = "onc";
 	public static final String EVENT_ONCALCULATE = "oncalc";
 	public static final String EVENT_ONLOAD = "onl";

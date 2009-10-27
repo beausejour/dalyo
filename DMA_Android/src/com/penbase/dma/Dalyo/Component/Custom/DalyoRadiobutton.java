@@ -9,9 +9,12 @@ import com.penbase.dma.Dalyo.Component.DalyoComponent;
 import com.penbase.dma.Dalyo.Function.Function;
 
 public class DalyoRadiobutton extends RadioButton implements DalyoComponent {
+	private boolean mInitialState;
 
-	public DalyoRadiobutton(Context context) {
+	public DalyoRadiobutton(Context context, boolean state) {
 		super(context);
+		mInitialState = state;
+		setChecked(state);
 	}
 
 	@Override
@@ -40,8 +43,7 @@ public class DalyoRadiobutton extends RadioButton implements DalyoComponent {
 
 	@Override
 	public void resetComponent() {
-		// TODO Auto-generated method stub
-		
+		setChecked(mInitialState);
 	}
 
 	@Override

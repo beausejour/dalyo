@@ -39,6 +39,7 @@ public class DalyoComboBox extends Spinner implements DalyoComponent {
 	private float mFontSize;
 	private Typeface mFontType;
 	private Drawable mBulletDrawable = null;
+	private String mOnChangeFunctionName = null;
 
 	public DalyoComboBox(Context context, ArrayList<String> labelList,
 			ArrayList<String> valueList) {
@@ -47,11 +48,33 @@ public class DalyoComboBox extends Spinner implements DalyoComponent {
 		this.mLabelList = labelList;
 		this.mValueList = valueList;
 		mRecords = new HashMap<Integer, HashMap<Object, Object>>();
+		setOnItemSelectedListener();
 	}
 
 	public DalyoComboBox(Context context) {
 		super(context);
 		this.mContext = context;
+		setOnItemSelectedListener();
+	}
+	
+	private void setOnItemSelectedListener() {
+		this.setOnItemSelectedListener(new OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View arg1,
+					int position, long arg3) {
+				mCurrentPosition = position;
+				if (mFormId != null) {
+					setCurrentValue(mFormId, getCurrentRecord());
+				}
+				if (mOnChangeFunctionName != null) {
+					Function.createFunction(mOnChangeFunctionName);
+				}
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+			}
+		});
 	}
 
 	public void setBulletPath(String path) {
@@ -185,7 +208,7 @@ public class DalyoComboBox extends Spinner implements DalyoComponent {
 
 	@Override
 	public Object getComponentValue() {
-		return getValue();
+		return getLabel();
 	}
 
 	@Override
@@ -204,8 +227,9 @@ public class DalyoComboBox extends Spinner implements DalyoComponent {
 
 	@Override
 	public void resetComponent() {
-		// TODO Auto-generated method stub
-
+		if (mCurrentPosition > 0) {
+			setSelection(0);
+		}
 	}
 
 	@Override
@@ -246,22 +270,8 @@ public class DalyoComboBox extends Spinner implements DalyoComponent {
 	}
 
 	@Override
-	public void setOnChangeEvent(final String functionName) {
-		this.setOnItemSelectedListener(new OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> arg0, View arg1,
-					int position, long arg3) {
-				mCurrentPosition = position;
-				if (mFormId != null) {
-					setCurrentValue(mFormId, getCurrentRecord());
-				}
-				Function.createFunction(functionName);
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {
-			}
-		});
+	public void setOnChangeEvent(String functionName) {
+		mOnChangeFunctionName = functionName;
 	}
 
 	@Override

@@ -78,8 +78,7 @@ public class BarcodeComponent extends ImageButton implements DalyoComponent {
 
 	@Override
 	public void resetComponent() {
-		// TODO Auto-generated method stub
-		
+		setImageResource(R.drawable.barcode);
 	}
 
 	@Override

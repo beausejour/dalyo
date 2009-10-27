@@ -11,11 +11,13 @@ import com.penbase.dma.Dalyo.Component.DalyoComponent;
 
 public class DalyoTimeField extends Button implements DalyoComponent, OnClickListener {
 	private DalyoDateTimePickerDialog mDateTimeDialog;
+	private String mDefaultValue;
 	
 	public DalyoTimeField(Context context, Typeface tf, float fs, String fc, String defaultValue) {
 		super(context);
 		mDateTimeDialog = new DalyoDateTimePickerDialog(context, this, false,
 				true);
+		mDefaultValue = defaultValue;
 		mDateTimeDialog.setInitialValues(defaultValue);
 		this.setOnClickListener(this);
 		this.setTypeface(tf);
@@ -36,8 +38,8 @@ public class DalyoTimeField extends Button implements DalyoComponent, OnClickLis
 	}
 	
 	public void setTime(String time) {
-		this.setText(time);
 		mDateTimeDialog.setInitialValues(time);
+		this.setText(mDateTimeDialog.getText());
 	}
 
 	@Override
@@ -66,8 +68,8 @@ public class DalyoTimeField extends Button implements DalyoComponent, OnClickLis
 
 	@Override
 	public void resetComponent() {
-		// TODO Auto-generated method stub
-		
+		setTime(mDefaultValue);
+		mDateTimeDialog.initialMaxCalendar();
 	}
 
 	@Override

@@ -571,14 +571,12 @@ public class ApplicationView extends Activity {
 					if (background != null) {
 						component.setBackGround(background);
 					}
+					String defaultValue = atts.getValue(DesignTag.COMPONENT_COMMON_VALUE);
+					if (defaultValue != null) {
+						component.setDefaultValue(defaultValue);
+					}
 
-					if (tagName.equals(DesignTag.COMPONENT_CHECKBOX)) {
-						String checked = atts
-								.getValue(DesignTag.COMPONENT_CHECKBOX_CHECKED);
-						if (checked != null) {
-							component.setChecked(checked);
-						}
-					} else if (tagName.equals(DesignTag.COMPONENT_COMBOBOX)) {
+					if (tagName.equals(DesignTag.COMPONENT_COMBOBOX)) {
 						String labelTable = atts
 								.getValue(DesignTag.COMPONENT_COMBOBOX_LABELTABLE);
 						String labelField = atts
@@ -614,11 +612,6 @@ public class ApplicationView extends Activity {
 						onCalculateMap = new HashMap<Integer, String>();
 					} else if (tagName.equals(DesignTag.COMPONENT_DATEFIELD)
 							|| tagName.equals(DesignTag.COMPONENT_TIMEFIELD)) {
-						String value = atts
-								.getValue(DesignTag.COMPONENT_COMMON_VALUE);
-						if (value != null) {
-							component.setDateTimeValue(value);
-						}
 						String dateTime = atts
 								.getValue(DesignTag.COMPONENT_DATEFIELD_DATETIME);
 						if (dateTime != null) {
@@ -626,12 +619,6 @@ public class ApplicationView extends Activity {
 						}
 					} else if ((tagName.equals(DesignTag.COMPONENT_GAUGE))
 							|| (tagName.equals(DesignTag.COMPONENT_NUMBERBOX))) {
-						String initialValue = atts
-								.getValue(DesignTag.COMPONENT_INIT);
-						if (initialValue != null) {
-							component.setInitValue(Integer
-									.valueOf(initialValue));
-						}
 						String minValue = atts
 								.getValue(DesignTag.COMPONENT_MIN);
 						if (minValue != null) {
@@ -641,6 +628,10 @@ public class ApplicationView extends Activity {
 								.getValue(DesignTag.COMPONENT_MAX);
 						if (maxValue != null) {
 							component.setMaxValue(Integer.valueOf(maxValue));
+						}
+						String stepValue = atts.getValue(DesignTag.COMPONENT_STEP);
+						if (stepValue != null) {
+							component.setStepValue(Integer.valueOf(stepValue));
 						}
 					} else if (tagName.equals(DesignTag.COMPONENT_TEXTFIELD)
 							|| tagName.equals(DesignTag.COMPONENT_TEXTZONE)) {

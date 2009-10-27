@@ -69,8 +69,7 @@ public class DalyoPictureBox extends ImageButton implements DalyoComponent {
 
 	@Override
 	public void resetComponent() {
-		// TODO Auto-generated method stub
-		
+		this.setImageResource(R.drawable.camera);
 	}
 
 	@Override

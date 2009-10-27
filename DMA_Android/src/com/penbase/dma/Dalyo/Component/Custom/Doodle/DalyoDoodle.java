@@ -16,7 +16,7 @@ public class DalyoDoodle extends Button implements DalyoComponent {
 		super(context);
 		mContext = context;
 		mId = i;
-		mImagePath = "";
+		mImagePath = null;
 		setText("Doodle");
 		setOnClickListener(new OnClickListener() {
 			@Override
@@ -62,8 +62,8 @@ public class DalyoDoodle extends Button implements DalyoComponent {
 
 	@Override
 	public void resetComponent() {
-		// TODO Auto-generated method stub
-		
+		setBackgroundDrawable(null);
+		setText("Doodle");
 	}
 
 	@Override

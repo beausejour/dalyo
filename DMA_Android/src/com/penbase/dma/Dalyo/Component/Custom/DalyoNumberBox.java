@@ -20,15 +20,19 @@ public class DalyoNumberBox extends LinearLayout implements DalyoComponent {
 	private int mInitialValue;
 	private int mMaxValue;
 	private int mMinValue;
-	private static final char[] NUMBERCHARS = {'1','2','3','4','5','6','7','8','9','0'};
-	
-	public DalyoNumberBox(Context context) {
+	private int mStepValue;
+	private static final char[] NUMBERCHARS = { '1', '2', '3', '4', '5', '6',
+			'7', '8', '9', '0' };
+
+	public DalyoNumberBox(Context context, int initial, int step) {
 		super(context);
-		
-		LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		this.mInitialValue = initial;
+		this.mStepValue = step;
+		LayoutInflater inflater = (LayoutInflater) context
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		inflater.inflate(R.layout.numberbox, this, true);
-		
-		mAct = (AutoCompleteTextView)findViewById(R.id.act);
+
+		mAct = (AutoCompleteTextView) findViewById(R.id.act);
 		mAct.setEnabled(false);
 		mAct.setKeyListener(new NumberKeyListener() {
 			@Override
@@ -43,7 +47,8 @@ public class DalyoNumberBox extends LinearLayout implements DalyoComponent {
 					if (mAct.getText().toString().length() > 0) {
 						oldValue = mAct.getText().toString();
 					}
-					int newValue = Integer.valueOf(oldValue + "" + event.getDisplayLabel());
+					int newValue = Integer.valueOf(oldValue + ""
+							+ event.getDisplayLabel());
 					if (newValue < mMinValue) {
 						mAct.setText(String.valueOf(mMinValue));
 					} else if (newValue > mMaxValue) {
@@ -57,54 +62,57 @@ public class DalyoNumberBox extends LinearLayout implements DalyoComponent {
 			public int getInputType() {
 				return 0;
 			}
-        });
-		
-		mView_up = (ImageView)findViewById(R.id.up);
+		});
+
+		mView_up = (ImageView) findViewById(R.id.up);
 		mView_up.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
 				if (Integer.valueOf(mAct.getText().toString()) < mMaxValue) {
-					int value = Integer.valueOf(mAct.getText().toString()) + 1;
-					mAct.setText(String.valueOf(value));
+					int value = Integer.valueOf(mAct.getText().toString())
+							+ mStepValue;
+					if (value <= mMaxValue) {
+						mAct.setText(String.valueOf(value));
+					}
 				}
 			}
 		});
-		
-		mView_down = (ImageView)findViewById(R.id.down);
+
+		mView_down = (ImageView) findViewById(R.id.down);
 		mView_down.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
 				if (Integer.valueOf(mAct.getText().toString()) > mMinValue) {
-					int value = Integer.valueOf(mAct.getText().toString()) - 1;
-					mAct.setText(String.valueOf(value));
+					int value = Integer.valueOf(mAct.getText().toString())
+							- mStepValue;
+					if (value >= mMinValue) {
+						mAct.setText(String.valueOf(value));	
+					}
 				}
 			}
 		});
-	}
-	
-    private boolean hasChar(char c) {
-    	int numbers = NUMBERCHARS.length;
-    	boolean result = false;
-    	int i = 0;
-    	while (i < numbers) {
-    		if (NUMBERCHARS[i] == c) {
-    			result = true;
-    			i = numbers;
-    		}
-    		i++;
-    	}
-    	return result;
-    }
-	
-	public void setInitialValue(int value) {
-		this.mInitialValue = value;
+		
 		mAct.setText(String.valueOf(mInitialValue));
 	}
-	
+
+	private boolean hasChar(char c) {
+		int numbers = NUMBERCHARS.length;
+		boolean result = false;
+		int i = 0;
+		while (i < numbers) {
+			if (NUMBERCHARS[i] == c) {
+				result = true;
+				i = numbers;
+			}
+			i++;
+		}
+		return result;
+	}
+
 	public void setMaxValue(int value) {
 		this.mMaxValue = value;
 	}
-	
+
 	public void setMinValue(int value) {
 		this.mMinValue = value;
 	}
@@ -135,8 +143,7 @@ public class DalyoNumberBox extends LinearLayout implements DalyoComponent {
 
 	@Override
 	public void resetComponent() {
-		// TODO Auto-generated method stub
-		
+		mAct.setText(String.valueOf(mInitialValue));
 	}
 
 	@Override
@@ -152,13 +159,13 @@ public class DalyoNumberBox extends LinearLayout implements DalyoComponent {
 	@Override
 	public void setComponentLabel(String label) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setComponentText(String text) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -178,13 +185,13 @@ public class DalyoNumberBox extends LinearLayout implements DalyoComponent {
 	@Override
 	public void setOnChangeEvent(String functionName) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setOnClickEvent(String functionName) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
