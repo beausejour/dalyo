@@ -49,6 +49,7 @@ public class DalyoDataView extends LinearLayout implements DalyoComponent,
 	private GestureDetector mGestureDetector;
 	private boolean mHasHeader;
 	private HashMap<String, DecimalFormat> mFormatsMap = new HashMap<String, DecimalFormat>();
+	private boolean mEnabled;
 
 	public DalyoDataView(Context c, String tid) {
 		super(c);
@@ -63,6 +64,7 @@ public class DalyoDataView extends LinearLayout implements DalyoComponent,
 		this.mListView = new ListView(c);
 		this.mGestureDetector = new GestureDetector(this);
 		this.mGestureDetector.setIsLongpressEnabled(false);
+		this.mEnabled = true;
 		mAdapter = new DataViewAdapter();
 		mPwidthList = new ArrayList<String>();
 		mLwidthList = new ArrayList<String>();
@@ -73,13 +75,15 @@ public class DalyoDataView extends LinearLayout implements DalyoComponent,
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View v, int position,
 					long arg3) {
-				if (mHasHeader) {
-					setRowBackground(mCurrentPosition + 1, false);
-				} else {
-					setRowBackground(mCurrentPosition, false);
+				if (mEnabled) {
+					if (mHasHeader) {
+						setRowBackground(mCurrentPosition + 1, false);
+					} else {
+						setRowBackground(mCurrentPosition, false);
+					}
+					setCurrentPosition(position);
+					setRowBackground(position, true);	
 				}
-				setCurrentPosition(position);
-				setRowBackground(position, true);
 			}
 		});
 
@@ -504,7 +508,7 @@ public class DalyoDataView extends LinearLayout implements DalyoComponent,
 
 	@Override
 	public void setComponentEnabled(boolean enable) {
-		setEnabled(enable);
+		mEnabled = enable;
 	}
 
 	@Override

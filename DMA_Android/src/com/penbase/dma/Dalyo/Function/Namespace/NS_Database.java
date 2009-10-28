@@ -34,7 +34,7 @@ public class NS_Database {
 				ScriptAttribute.PARAMETER_NAME_FACELESS,
 				ScriptAttribute.PARAMETER_TYPE_BOOLEAN);
 
-		if ((faceless == null) || (((Boolean) faceless).booleanValue())) {
+		if ((faceless == null) || Boolean.parseBoolean(faceless.toString())) {
 			// display progress dialog
 			final ProgressDialog exportProgressDialog = ProgressDialog.show(
 					Function.getContext(), "Please wait...",
@@ -85,7 +85,7 @@ public class NS_Database {
 		Object faceless = Function.getValue(element, ScriptTag.PARAMETER,
 				ScriptAttribute.PARAMETER_NAME_FACELESS,
 				ScriptAttribute.PARAMETER_TYPE_BOOLEAN);
-		if ((faceless == null) || (((Boolean) faceless).booleanValue())) {
+		if ((faceless == null) || Boolean.parseBoolean(faceless.toString())) {
 			// display progress dialog
 			final ProgressDialog importProgressDialog = ProgressDialog.show(
 					Function.getContext(), "Please wait...",

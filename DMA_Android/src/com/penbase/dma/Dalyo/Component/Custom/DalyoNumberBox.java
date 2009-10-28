@@ -148,7 +148,8 @@ public class DalyoNumberBox extends LinearLayout implements DalyoComponent {
 
 	@Override
 	public void setComponentEnabled(boolean enable) {
-		setEnabled(enable);
+		mView_up.setEnabled(enable);
+		mView_down.setEnabled(enable);
 	}
 
 	@Override

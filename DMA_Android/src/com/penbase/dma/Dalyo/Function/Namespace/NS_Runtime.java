@@ -71,7 +71,11 @@ public class NS_Runtime {
 		String text = Function.getValue(element, ScriptTag.PARAMETER,
 				ScriptAttribute.PARAMETER_NAME_TEXT, ScriptAttribute.STRING)
 				.toString();
-		if ((Boolean) willShow) {
+		boolean value = false;
+		if (willShow != null) {
+			value = Boolean.parseBoolean(willShow.toString());
+		}
+		if (value) {
 			syncProgressDialog = ProgressDialog.show(Function.getContext(),
 					"Veuillez patienter...", text, true, false);
 		} else {
@@ -104,7 +108,7 @@ public class NS_Runtime {
 				ScriptAttribute.PARAMETER_TYPE_BOOLEAN);
 		// boolean showProgress = false;
 
-		if ((type == null) || (((Boolean) type).booleanValue())) {
+		if ((type == null) || Boolean.parseBoolean(type.toString())) {
 			// showProgress = true; ProgressDialog has not done yet.
 		}
 

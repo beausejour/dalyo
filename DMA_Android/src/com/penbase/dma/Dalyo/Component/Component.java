@@ -3,7 +3,6 @@ package com.penbase.dma.Dalyo.Component;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.view.Gravity;
 
 import com.penbase.dma.Constant.Constant;
