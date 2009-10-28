@@ -1,7 +1,5 @@
 package com.penbase.dma.Dalyo.Function.Namespace;
 
-import android.util.Log;
-
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Function.Function;
@@ -42,7 +40,11 @@ public class NS_Component {
 	public static void SetEnabled(Element element) {
 		String componentId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT).toString();
 		Object state =  Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_ENABLE, ScriptAttribute.PARAMETER_TYPE_BOOLEAN);
-		ApplicationView.getComponents().get(componentId).setEnabled(((Boolean)state).booleanValue());
+		boolean value = false;
+		if (state != null) {
+			value = Boolean.parseBoolean(state.toString());
+		}
+		ApplicationView.getComponents().get(componentId).setEnabled(value);
 	}
 	
 	public static void SetFocus(Element element) {
@@ -69,6 +71,10 @@ public class NS_Component {
 	public static void SetVisible(Element element) {
 		String componentId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT).toString();
 		Object state =  Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VISIBLE, ScriptAttribute.PARAMETER_TYPE_BOOLEAN);
-		ApplicationView.getComponents().get(componentId).setVisible(((Boolean)state).booleanValue());
+		boolean value = false;
+		if (state != null) {
+			value = Boolean.parseBoolean(state.toString());
+		}
+		ApplicationView.getComponents().get(componentId).setVisible(value);
 	}
 }
