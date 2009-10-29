@@ -1,6 +1,7 @@
 package com.penbase.dma.Dalyo.Component;
 
 import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -144,33 +145,38 @@ public class Form extends ScrollView {
 		for (int i=0; i<viewLen; i++) {
 			View view = mLayout.getChildAt(i);
 			if (view instanceof DalyoDoodle) {
-				String filePath = ((DalyoDoodle)view).getImagePath();
+				DalyoDoodle doodle = (DalyoDoodle)view;
+				String filePath = doodle.getImagePath();
 				if (!filePath.equals("")) {
 					if (new File(filePath).exists()) {
-						((DalyoDoodle)view).setText("");
-						((DalyoDoodle)view).setBackgroundDrawable(Drawable.createFromPath(filePath));
+						doodle.setText("");
+						doodle.setBackgroundDrawable(Drawable.createFromPath(filePath));
 					} else {
-						((DalyoDoodle)view).setText("Doodle");
+						doodle.setText("Doodle");
 					}	
 				}
 			} else if (view instanceof DalyoPictureBox) {
-				String filePath = ((DalyoPictureBox)view).getPhotoPath();
+				DalyoPictureBox pictureBox = (DalyoPictureBox)view;
+				String filePath = pictureBox.getPhotoPath();
 				if (!filePath.equals("")) {
 					if (new File(filePath).exists()) {
-						((DalyoPictureBox)view).setImageDrawable(Drawable.createFromPath(filePath));
-						((DalyoPictureBox)view).setScaleType(ScaleType.FIT_XY);
+						((BitmapDrawable)pictureBox.getDrawable()).getBitmap().recycle();
+						pictureBox.setImageDrawable(Drawable.createFromPath(filePath));
+						pictureBox.setScaleType(ScaleType.FIT_XY);
 					} else {
-						((DalyoPictureBox)view).setImageResource(R.drawable.camera);	
+						pictureBox.setImageResource(R.drawable.camera);	
 					}
 				}
 			} else if (view instanceof BarcodeComponent) {
-				String filePath = ((BarcodeComponent)view).getImagePath();
+				BarcodeComponent barcode = (BarcodeComponent)view;
+				String filePath = barcode.getImagePath();
 				if (!filePath.equals("")) {
 					if (new File(filePath).exists()) {
-						((BarcodeComponent)view).setImageDrawable(Drawable.createFromPath(filePath));
-						((BarcodeComponent)view).setScaleType(ScaleType.FIT_XY);
+						((BitmapDrawable)barcode.getDrawable()).getBitmap().recycle();
+						barcode.setImageDrawable(Drawable.createFromPath(filePath));
+						barcode.setScaleType(ScaleType.FIT_XY);
 					} else {
-						((BarcodeComponent)view).setImageResource(R.drawable.barcode);	
+						barcode.setImageResource(R.drawable.barcode);	
 					}
 				}
 			}

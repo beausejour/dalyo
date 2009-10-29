@@ -63,9 +63,7 @@ public class NS_Component {
 	public static void SetValue(Element element) {
 		String componentId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.COMPONENT, ScriptAttribute.COMPONENT).toString();
 		Object value = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
-		if (value != null) {
-			ApplicationView.getComponents().get(componentId).setValue(value);
-		}
+		ApplicationView.getComponents().get(componentId).setValue(value);
 	}
 	
 	public static void SetVisible(Element element) {

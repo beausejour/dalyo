@@ -2,6 +2,7 @@ package com.penbase.dma.Dalyo.Component.Custom;
 
 import com.penbase.dma.Dalyo.Component.DalyoComponent;
 import com.penbase.dma.Dalyo.Function.Function;
+import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -80,8 +81,13 @@ public class DalyoButton extends Button implements DalyoComponent {
 
 	@Override
 	public void setComponentValue(Object value) {
-		// TODO Auto-generated method stub
-		
+		String text = value.toString();
+		if (text.contains(DmaHttpClient.getResourcePath())) {
+			setBackgroundDrawable(Drawable.createFromPath(text));
+			setText(null);
+		} else {
+			setText(text);
+		}
 	}
 
 	@Override

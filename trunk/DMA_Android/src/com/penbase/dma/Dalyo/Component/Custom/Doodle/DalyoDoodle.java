@@ -4,6 +4,7 @@ import com.penbase.dma.Dalyo.Component.DalyoComponent;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.Button;
 
@@ -90,8 +91,12 @@ public class DalyoDoodle extends Button implements DalyoComponent {
 
 	@Override
 	public void setComponentValue(Object value) {
-		// TODO Auto-generated method stub
-		
+		if (value != null) {
+			mImagePath = value.toString();
+			Drawable d = Drawable.createFromPath(mImagePath);
+			setBackgroundDrawable(d);
+			setText(null);
+		}
 	}
 
 	@Override

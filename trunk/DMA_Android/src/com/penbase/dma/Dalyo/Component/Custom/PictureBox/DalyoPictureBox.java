@@ -17,7 +17,7 @@ public class DalyoPictureBox extends ImageButton implements DalyoComponent {
 		super(c);
 		this.mContext = c;
 		this.mId = i;
-		this.mPhotoPath = "";
+		this.mPhotoPath = null;
 		this.setImageResource(R.drawable.camera);
 		this.setOnClickListener(new OnClickListener() {
 			@Override

@@ -126,8 +126,8 @@ public class PictureBoxActivity extends Activity implements
 		case 0:
 			// Save picture
 			if (mPhotoBytes != null) {
-				mSaveProgressDialog = ProgressDialog.show(this,
-						getText(R.string.waiting), getText(R.string.savingphoto), true, false);
+				/*mSaveProgressDialog = ProgressDialog.show(this,
+						getText(R.string.waiting), getText(R.string.savingphoto), true, false);*/
 				String photoName = System.currentTimeMillis() + ".jpg";
 				StringBuffer filePath = new StringBuffer(
 						Constant.APPPACKAGE);
@@ -185,6 +185,7 @@ public class PictureBoxActivity extends Activity implements
 			mSaveProgressDialog.dismiss();
 			mSaveProgressDialog = null;
 		}
+
 		super.onDestroy();
 	}
 }

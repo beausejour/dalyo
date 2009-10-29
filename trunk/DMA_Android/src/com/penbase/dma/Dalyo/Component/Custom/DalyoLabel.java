@@ -64,8 +64,7 @@ public class DalyoLabel extends TextView implements DalyoComponent {
 
 	@Override
 	public void setComponentLabel(String label) {
-		// TODO Auto-generated method stub
-		
+		setText(label);
 	}
 
 	@Override
