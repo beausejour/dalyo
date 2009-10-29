@@ -189,12 +189,15 @@ public class Component {
 			mComponent = barcodeComponent;
 		} else if (mType.equals(DesignTag.COMPONENT_BUTTON)) {
 			DalyoButton button = null;
-			if (mLabel != null) {
+			if (mLabel == null && mBackground == null) {
+				button = new DalyoButton(mContext, "", false);
+				button.setTypeface(getFontType(mFontType));
+				button.setTextSize(getFontSize(mFontSize));
+			} else if (mLabel != null) {
 				button = new DalyoButton(mContext, mLabel, false);
 				button.setTypeface(getFontType(mFontType));
 				button.setTextSize(getFontSize(mFontSize));
-			}
-			if (mBackground != null) {
+			} else if (mBackground != null) {
 				String path = findResourceFile(mBackground);
 				if (path.length() > 0) {
 					button = new DalyoButton(mContext, path, true);

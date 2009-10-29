@@ -585,6 +585,7 @@ public class ApplicationView extends Activity {
 								.getValue(DesignTag.COMPONENT_COMBOBOX_VALUETABLE);
 						String valueField = atts
 								.getValue(DesignTag.COMPONENT_COMBOBOX_VALUEFIELD);
+						isInComboBox = true;
 						if ((labelTable != null) && (labelField != null)
 								&& (valueTable != null) && (valueField != null)) {
 							ArrayList<String> labelList = new ArrayList<String>();
@@ -597,8 +598,9 @@ public class ApplicationView extends Activity {
 
 							component.setLabelList(labelList);
 							component.setValueList(valueList);
+							comboboxItemList = new ArrayList<String>();
 						} else {
-							isInComboBox = true;
+							//isInComboBox = true;
 							comboboxItemList = new ArrayList<String>();
 						}
 						String bullet = atts
