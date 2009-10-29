@@ -29,9 +29,9 @@ import java.util.HashMap;
 public class DalyoComboBox extends Spinner implements DalyoComponent {
 	private ComboboxAdapter mAdapter;
 	private int mCurrentPosition = -1;
-	private ArrayList<String> mLabelList;
-	private ArrayList<String> mValueList;
-	private ArrayList<String> mItemsList;
+	private ArrayList<String> mLabelList = null;
+	private ArrayList<String> mValueList = null;
+	private ArrayList<String> mItemsList = null;
 	private Context mContext;
 	private String mFormId;
 	private HashMap<Integer, HashMap<Object, Object>> mRecords;
@@ -88,15 +88,17 @@ public class DalyoComboBox extends Spinner implements DalyoComponent {
 	}
 
 	public void setItemList(ArrayList<String> il) {
-		this.mLabelList = new ArrayList<String>();
-		this.mValueList = new ArrayList<String>();
-		this.mItemsList = il;
-		for (String s : il) {
-			mLabelList.add(s);
-			mValueList.add(s);
+		if (mLabelList == null && mValueList == null) {
+			this.mLabelList = new ArrayList<String>();
+			this.mValueList = new ArrayList<String>();
+			this.mItemsList = il;
+			for (String s : il) {
+				mLabelList.add(s);
+				mValueList.add(s);
+			}
+			mAdapter = new ComboboxAdapter(mContext, il);
+			this.setAdapter(mAdapter);
 		}
-		mAdapter = new ComboboxAdapter(mContext, il);
-		this.setAdapter(mAdapter);
 	}
 
 	public void setCurrentValue(String fid, HashMap<Object, Object> record) {
@@ -117,34 +119,36 @@ public class DalyoComboBox extends Spinner implements DalyoComponent {
 	 *            if distinct same value
 	 */
 	public void refresh(Object filter, Object order, Object distinct) {
-		ArrayList<String> tables = new ArrayList<String>();
-		tables.add(mLabelList.get(0));
-		if (!tables.contains(mValueList.get(0))) {
-			tables.add(mValueList.get(0));
-		}
-		mItemsList = new ArrayList<String>();
-		Cursor cursor = DatabaseAdapter.selectQuery(tables, null, filter,
-				order, distinct);
-		String[] columnNames = cursor.getColumnNames();
-		int i = 0;
-		while (cursor.moveToNext()) {
-			HashMap<Object, Object> record = new HashMap<Object, Object>();
-			int columnsSize = columnNames.length;
-			for (int j = 0; j < columnsSize; j++) {
-				String columnName = columnNames[j];
-				String value = cursor.getString(j);
-				if (columnName.equals(DatabaseAttribute.FIELD
-						+ mLabelList.get(1))) {
-					mItemsList.add(value);
-				}
-				record.put(columnName, value);
+		if (mRecords != null) {
+			ArrayList<String> tables = new ArrayList<String>();
+			tables.add(mLabelList.get(0));
+			if (!tables.contains(mValueList.get(0))) {
+				tables.add(mValueList.get(0));
 			}
-			mRecords.put(i, record);
-			i++;
+			mItemsList = new ArrayList<String>();
+			Cursor cursor = DatabaseAdapter.selectQuery(tables, null, filter,
+					order, distinct);
+			String[] columnNames = cursor.getColumnNames();
+			int i = 0;
+			while (cursor.moveToNext()) {
+				HashMap<Object, Object> record = new HashMap<Object, Object>();
+				int columnsSize = columnNames.length;
+				for (int j = 0; j < columnsSize; j++) {
+					String columnName = columnNames[j];
+					String value = cursor.getString(j);
+					if (columnName.equals(DatabaseAttribute.FIELD
+							+ mLabelList.get(1))) {
+						mItemsList.add(value);
+					}
+					record.put(columnName, value);
+				}
+				mRecords.put(i, record);
+				i++;
+			}
+			DatabaseAdapter.closeCursor(cursor);
+			mAdapter = new ComboboxAdapter(mContext, mItemsList);
+			this.setAdapter(mAdapter);	
 		}
-		DatabaseAdapter.closeCursor(cursor);
-		mAdapter = new ComboboxAdapter(mContext, mItemsList);
-		this.setAdapter(mAdapter);
 	}
 
 	public Object getCurrentValue() {
@@ -161,12 +165,14 @@ public class DalyoComboBox extends Spinner implements DalyoComponent {
 
 	public void removeAllItems() {
 		mAdapter.clear();
+		mAdapter.notifyDataSetChanged();
 	}
 
 	public void addItem(String label, String value) {
 		mItemsList.add(label);
 		mLabelList.add(label);
 		mValueList.add(value);
+		mAdapter.notifyDataSetChanged();
 	}
 
 	public String getValue() {
@@ -198,7 +204,10 @@ public class DalyoComboBox extends Spinner implements DalyoComponent {
 	}
 
 	public void setSelectedIndex(int index) {
-		this.setSelection(index - 1);
+		int selection = index - 1;
+		if (mItemsList.size() > selection) {
+			setSelection(selection);
+		}
 	}
 
 	@Override

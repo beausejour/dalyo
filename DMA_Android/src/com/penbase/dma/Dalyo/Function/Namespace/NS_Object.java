@@ -1,7 +1,5 @@
 package com.penbase.dma.Dalyo.Function.Namespace;
 
-import android.util.Log;
-
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Function.Function;
@@ -39,7 +37,6 @@ public class NS_Object {
 				
 				return new Date(new GregorianCalendar(year, month, day, hour, minute, second).getTimeInMillis());
 			} else if (value.toString().contains("/")) {
-				Log.i("info", "date "+value);
 				//Date
 				int year = Integer.valueOf(value.toString().split("/")[2]);
 				int month = Integer.valueOf(value.toString().split("/")[1]);
