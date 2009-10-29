@@ -213,8 +213,7 @@ public class DalyoTextZone extends EditText implements DalyoComponent {
 
 	@Override
 	public void setComponentLabel(String label) {
-		// TODO Auto-generated method stub
-
+		setText(label);
 	}
 
 	@Override

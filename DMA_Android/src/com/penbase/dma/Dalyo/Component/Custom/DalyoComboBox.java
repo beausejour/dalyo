@@ -244,20 +244,19 @@ public class DalyoComboBox extends Spinner implements DalyoComponent {
 
 	@Override
 	public void setComponentLabel(String label) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void setComponentText(String text) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void setComponentValue(Object value) {
-		// TODO Auto-generated method stub
-
+		if (mItemsList.contains(value)) {
+			setSelection(mItemsList.indexOf(value));
+		}
 	}
 
 	@Override

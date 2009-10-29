@@ -76,13 +76,12 @@ public class DalyoGauge extends SeekBar implements DalyoComponent {
 
 	@Override
 	public void setComponentLabel(String label) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void setComponentText(String text) {
-		setValue(Integer.valueOf(text));
+		
 	}
 
 	@Override

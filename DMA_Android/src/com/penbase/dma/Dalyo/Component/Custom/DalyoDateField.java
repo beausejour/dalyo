@@ -1,5 +1,7 @@
 package com.penbase.dma.Dalyo.Component.Custom;
 
+import java.util.Calendar;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -89,7 +91,7 @@ public class DalyoDateField extends Button implements OnClickListener,
 
 	@Override
 	public void setComponentLabel(String label) {
-		
+		setDate(label);
 	}
 
 	@Override
@@ -99,7 +101,24 @@ public class DalyoDateField extends Button implements OnClickListener,
 
 	@Override
 	public void setComponentValue(Object value) {
-		setDate(value.toString());
+		try {
+			int seconds = Integer.parseInt(value.toString());
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTimeInMillis(seconds * 1000);
+			int day = calendar.get(Calendar.DAY_OF_MONTH);
+			StringBuffer date = new StringBuffer();
+			if (day == 0) {
+				date.append("1");
+			} else {
+				date.append(day);
+			}
+			date.append("/").append(calendar.get(Calendar.MONTH) + 1);
+			date.append("/").append(calendar.get(Calendar.YEAR));
+			setDate(date.toString());
+			mDateTimeDialog.initialMaxCalendar();
+		} catch (NumberFormatException nfe) {
+			
+		}
 	}
 
 	@Override

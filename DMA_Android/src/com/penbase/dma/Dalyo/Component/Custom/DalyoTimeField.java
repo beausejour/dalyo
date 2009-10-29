@@ -1,5 +1,7 @@
 package com.penbase.dma.Dalyo.Component.Custom;
 
+import java.util.Calendar;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -84,8 +86,7 @@ public class DalyoTimeField extends Button implements DalyoComponent, OnClickLis
 
 	@Override
 	public void setComponentLabel(String label) {
-		// TODO Auto-generated method stub
-		
+		setTime(label);
 	}
 
 	@Override
@@ -95,7 +96,19 @@ public class DalyoTimeField extends Button implements DalyoComponent, OnClickLis
 
 	@Override
 	public void setComponentValue(Object value) {
-		setTime(value.toString());
+		try {
+			int seconds = Integer.parseInt(value.toString());
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTimeInMillis(seconds * 1000);
+			int hour = calendar.get(Calendar.HOUR_OF_DAY) - 1;
+			int minute = calendar.get(Calendar.MINUTE);
+			StringBuffer time = new StringBuffer(String.valueOf(hour));
+			time.append(":").append(minute);
+			setTime(time.toString());
+			mDateTimeDialog.initialMaxCalendar();
+		} catch (NumberFormatException nfe) {
+			
+		}
 	}
 
 	@Override

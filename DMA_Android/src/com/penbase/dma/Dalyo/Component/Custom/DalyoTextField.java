@@ -218,8 +218,7 @@ public class DalyoTextField extends AutoCompleteTextView implements
 
 	@Override
 	public void setComponentLabel(String label) {
-		// TODO Auto-generated method stub
-
+		setText(label);
 	}
 
 	@Override

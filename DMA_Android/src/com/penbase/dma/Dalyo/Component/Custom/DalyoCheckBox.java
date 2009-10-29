@@ -72,8 +72,11 @@ public class DalyoCheckBox extends CheckBox implements DalyoComponent {
 
 	@Override
 	public void setComponentValue(Object value) {
-		// TODO Auto-generated method stub
-		
+		boolean checked = false;
+		if (value != null) {
+			checked = Boolean.parseBoolean(value.toString());
+		}
+		setChecked(checked);
 	}
 
 	@Override

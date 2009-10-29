@@ -1,7 +1,6 @@
 package com.penbase.dma.Dalyo.Component.Custom;
 
 import com.penbase.dma.Dalyo.Component.DalyoComponent;
-import com.penbase.dma.Dalyo.HTTPConnection.DmaHttpClient;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -22,9 +21,11 @@ public class DalyoImage extends ImageView implements DalyoComponent {
 	
 	@Override
 	public void setComponentValue(Object value) {
-		mImagePath = DmaHttpClient.getFilesPath() + value.toString();
-		Drawable d = Drawable.createFromPath(mImagePath);
-		setImageDrawable(d);
+		if (value != null) {
+			mImagePath = value.toString();
+			Drawable d = Drawable.createFromPath(mImagePath);
+			setImageDrawable(d);	
+		}
 	}
 
 	@Override
