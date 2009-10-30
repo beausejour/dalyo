@@ -554,7 +554,9 @@ public class Function {
 			if (function.equals(ScriptAttribute.FUNCTION_GETVALUE)) {
 				result = NS_DatabaseDataset.GetValue(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_SELECT)) {
-				result = NS_DatabaseDataset.Select(element);
+				if (!sIsFirstTime) {
+					result = NS_DatabaseDataset.Select(element);	
+				}
 			}
 		} else if (namespace.equals(ScriptAttribute.NAMESPACE_DB_FIELD)) {
 			if (function.equals(ScriptAttribute.FUNCTION_GETFIELDNAME)) {
