@@ -171,7 +171,7 @@ public class DalyoTextField extends AutoCompleteTextView implements
 
 	public boolean isEmpty() {
 		boolean result = false;
-		if (this.getValue().trim().length() == 0) {
+		if (this.getValue().length() == 0) {
 			result = true;
 		}
 		return result;
