@@ -134,12 +134,16 @@ public class DalyoDataView extends LinearLayout implements DalyoComponent,
 
 	public void setRowBackground(int position, boolean isSelected) {
 		if (isSelected) {
-			((CustomLinearLayout) mListView.getItemAtPosition(position))
-					.setBackgroundColor(Color.rgb(255, 142, 0));
+			if (mListView.getCount() > position) {
+				((CustomLinearLayout) mListView.getItemAtPosition(position))
+				.setBackgroundColor(Color.rgb(255, 142, 0));	
+			}
 		} else {
 			if (position > 0) {
-				((CustomLinearLayout) mListView.getItemAtPosition(position))
-						.setBackgroundColor(Color.TRANSPARENT);
+				if (mListView.getCount() > position) {
+					((CustomLinearLayout) mListView.getItemAtPosition(position))
+					.setBackgroundColor(Color.TRANSPARENT);	
+				}
 			}
 		}
 	}
@@ -372,11 +376,7 @@ public class DalyoDataView extends LinearLayout implements DalyoComponent,
 	}
 
 	public int getSelectedRow() {
-		if (mCurrentPosition < 0) {
-			return -1;
-		} else {
-			return mCurrentPosition;
-		}
+		return mCurrentPosition + 1;
 	}
 
 	public int getRowCount() {
