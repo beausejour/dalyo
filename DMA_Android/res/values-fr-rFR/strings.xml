@@ -30,4 +30,7 @@
     <string name="clear">Effacer</string>
     <string name="addwidth">Augmenter la largeur</string>
     <string name="changecolor">Changer la couleur</string>
+    <string name="importdata">Importation des données en cours...</string>
+    <string name="exportdata">Exportation des données en cours...</string>
+    <string name="checkdataview">Vérifie les paramêtre de dataview</string>
 </resources>

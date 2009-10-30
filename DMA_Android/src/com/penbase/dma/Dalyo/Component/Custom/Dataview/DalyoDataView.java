@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
 
+import com.penbase.dma.R;
 import com.penbase.dma.Constant.DatabaseAttribute;
 import com.penbase.dma.Dalyo.Component.DalyoComponent;
 import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
@@ -220,13 +221,14 @@ public class DalyoDataView extends LinearLayout implements DalyoComponent,
 	 */
 	public void refresh(Object filter, Object order) {
 		if (mTableId == null) {
-			ApplicationView.errorDialog("Check your dataview setting");
+			ApplicationView.errorDialog(mContext.getText(R.string.checkdataview).toString());
 		} else {
-			if (mAdapter.getItems().size() > 1) {
+			if (mAdapter.getCount() > 0) {
 				mAdapter.removeItems();
 				mAdapter = new DataViewAdapter();
 				mListView.setAdapter(mAdapter);
 			}
+			mRecords.clear();
 			int columnNb = mColumns.size();
 			ArrayList<String> tables = new ArrayList<String>();
 			tables.add(mTableId);

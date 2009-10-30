@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.penbase.dma.Common;
 import com.penbase.dma.Binary.Binary;
@@ -34,7 +35,6 @@ public class DatabaseAdapter {
 	private static HashMap<String, String> sFieldsPKMap = null;
 	private static ArrayList<ArrayList<String>> sForeignKeyList = null;
 	private String mDbPath = null;
-	private static boolean STARTTRANSACTION = false;
 	private static ArrayList<ArrayList<Object>> sBlobRecords = null;
 	private static HashMap<String, String> sTablesSyncMap = null;
 	private static HashMap<String, Boolean> sFieldsSyncMap = null;
@@ -921,6 +921,7 @@ public class DatabaseAdapter {
 	}
 	
 	public static String getTableIdByName(String name) {
+		Log.i("info", "name "+name+" "+sTablesNameMap.toString());
 		return sTablesNameMap.get(name);
 	}
 	
@@ -933,24 +934,15 @@ public class DatabaseAdapter {
 	}
 	
 	public static void beginTransaction() {
-		if (!STARTTRANSACTION) {
-			STARTTRANSACTION = true;
-			sSqlite.execSQL("BEGIN TRANSACTION;");	
-		}
+		sSqlite.beginTransaction();
 	}
 	
 	public static void rollbackTransaction() {
-		if (STARTTRANSACTION) {
-			sSqlite.execSQL("ROLLBACK TRANSACTION;");
-			STARTTRANSACTION = false;
-		}
+		sSqlite.endTransaction();
 	}
 	
 	public static void commitTransaction() {
-		if (STARTTRANSACTION) {
-			sSqlite.execSQL("COMMIT TRANSACTION;");
-			STARTTRANSACTION = false;
-		}
+		sSqlite.setTransactionSuccessful();
 	}
 	
 	public static void cleanTables() {
