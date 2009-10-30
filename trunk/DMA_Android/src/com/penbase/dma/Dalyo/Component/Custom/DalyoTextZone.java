@@ -66,14 +66,6 @@ public class DalyoTextZone extends EditText implements DalyoComponent {
 		return this.getText().toString();
 	}
 
-	public boolean isEmpty() {
-		boolean result = false;
-		if (this.getValue().trim().length() == 0) {
-			result = true;
-		}
-		return result;
-	}
-
 	public void setTrigger(final String trigger) {
 		int resourceId = 0;
 		if (trigger.equals(Constant.TRIGGERMAIL)) {
