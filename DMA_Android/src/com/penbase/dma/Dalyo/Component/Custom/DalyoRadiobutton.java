@@ -17,6 +17,10 @@ public class DalyoRadiobutton extends RadioButton implements DalyoComponent {
 		setChecked(state);
 	}
 
+	public boolean isSelected() {
+		return isChecked();
+	}
+	
 	@Override
 	public String getComponentLabel() {
 		return getText().toString();
