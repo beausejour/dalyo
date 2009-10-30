@@ -23,7 +23,7 @@ public class Function {
 	private static HashMap<String, Object> sVarsMap;
 	private static HashMap<String, ArrayList<String>> sFuncsMap;
 	private static boolean sIsFirstTime;
-	
+
 	public Function(Context c, Document document) {
 		sContext = c;
 		sVarsMap = new HashMap<String, Object>();
@@ -32,26 +32,29 @@ public class Function {
 		sIsFirstTime = true;
 		createMaps();
 	}
-	
+
 	/**
-	 * This method need to be modified if we don't need global variables anymore in Dalyo studio
-	 * Create 2 maps which contains variables and the positions of function
+	 * This method need to be modified if we don't need global variables anymore
+	 * in Dalyo studio Create 2 maps which contains variables and the positions
+	 * of function
 	 */
 	private void createMaps() {
-		NodeList funcList = sBehaviorDocument.getElementsByTagName(ScriptTag.FUNCTION);
+		NodeList funcList = sBehaviorDocument
+				.getElementsByTagName(ScriptTag.FUNCTION);
 		int functionSize = funcList.getLength();
 		HashMap<String, ArrayList<String>> functionsMap = sFuncsMap;
-		for (int i=0; i<functionSize; i++) {
+		for (int i = 0; i < functionSize; i++) {
 			Element funcElement = (Element) funcList.item(i);
 			ArrayList<String> funcParams = new ArrayList<String>();
 			funcParams.add(String.valueOf(i));
 			funcParams.add(funcElement.getAttribute(ScriptTag.OUTPUT));
-			functionsMap.put(funcElement.getAttribute(ScriptTag.NAME), funcParams);
+			functionsMap.put(funcElement.getAttribute(ScriptTag.NAME),
+					funcParams);
 
 			Node childNode = funcElement.getFirstChild();
 			while (childNode != null) {
 				if (childNode.getNodeName().equals(ScriptTag.SET)) {
-					setVariable((Element)childNode);
+					setVariable((Element) childNode);
 				}
 				try {
 					childNode = childNode.getNextSibling();
@@ -62,17 +65,19 @@ public class Function {
 		}
 		sIsFirstTime = false;
 	}
-	
+
 	public static Object createFunction(String name) {
-		//Log.i("info", "create function name "+name);
+		// Log.i("info", "create function name "+name);
 		Object result = null;
 		HashMap<String, ArrayList<String>> functionsMap = sFuncsMap;
-		NodeList funcList = sBehaviorDocument.getElementsByTagName(ScriptTag.FUNCTION);
+		NodeList funcList = sBehaviorDocument
+				.getElementsByTagName(ScriptTag.FUNCTION);
 		if (functionsMap.containsKey(name)) {
-			final Element funcElement = (Element) funcList.item(Integer.valueOf(functionsMap.get(name).get(0)));
+			final Element funcElement = (Element) funcList.item(Integer
+					.valueOf(functionsMap.get(name).get(0)));
 			Node childNode = funcElement.getFirstChild();
 			while (childNode != null) {
-				result = distributeAction((Element)childNode);
+				result = distributeAction((Element) childNode);
 				try {
 					childNode = childNode.getNextSibling();
 				} catch (IndexOutOfBoundsException ioobe) {
@@ -82,7 +87,7 @@ public class Function {
 		}
 		return result;
 	}
-	
+
 	private static Object distributeAction(Element element) {
 		Object result = null;
 		String elementName = element.getNodeName();
@@ -101,12 +106,12 @@ public class Function {
 		} else if (elementName.equals(ScriptTag.SET)) {
 			setVariable(element);
 		} else if (elementName.equals(ScriptTag.VAR)) {
-			//use only one format to save all types of variale's value
+			// use only one format to save all types of variale's value
 			result = getVariableValue(element);
 		}
 		return result;
 	}
-	
+
 	private static void forEach(Element element) {
 		Object list = null;
 		String cursorName = null;
@@ -115,18 +120,18 @@ public class Function {
 		while (child != null) {
 			NodeList childNodes = child.getChildNodes();
 			if (child.getNodeName().equals(ScriptTag.LIST)) {
-				list = distributeAction((Element)childNodes.item(0));
+				list = distributeAction((Element) childNodes.item(0));
 			} else if (child.getNodeName().equals(ScriptTag.CURSOR)) {
-				cursorName = ((Element)child).getAttribute(ScriptTag.NAME);
-				cursorType = ((Element)child).getAttribute(ScriptTag.TYPE);
-				setVariable((Element)child);
+				cursorName = ((Element) child).getAttribute(ScriptTag.NAME);
+				cursorType = ((Element) child).getAttribute(ScriptTag.TYPE);
+				setVariable((Element) child);
 			} else if (child.getNodeName().equals(ScriptTag.DO)) {
-				for (Object eachValue : (ArrayList<?>)list) {
+				for (Object eachValue : (ArrayList<?>) list) {
 					if (checkValueType(cursorType, eachValue)) {
 						sVarsMap.put(cursorName, eachValue);
 						int actionsNb = childNodes.getLength();
-						for (int j=0; j<actionsNb; j++) {
-							Element grandChild = (Element)childNodes.item(j);
+						for (int j = 0; j < actionsNb; j++) {
+							Element grandChild = (Element) childNodes.item(j);
 							distributeAction(grandChild);
 						}
 					}
@@ -136,10 +141,10 @@ public class Function {
 				child = child.getNextSibling();
 			} catch (IndexOutOfBoundsException ioobe) {
 				child = null;
-			}	
+			}
 		}
 	}
-	
+
 	private static boolean checkValueType(String type, Object value) {
 		boolean result = true;
 		if (type.equals("numeric")) {
@@ -159,7 +164,8 @@ public class Function {
 				}
 			}
 		} else if (type.equals("string")) {
-			if ((value.getClass().toString().contains("HashMap")) || (value.getClass().toString().contains("ArrayList"))) {
+			if ((value.getClass().toString().contains("HashMap"))
+					|| (value.getClass().toString().contains("ArrayList"))) {
 				result = false;
 				ApplicationView.errorDialog("Check your variable's type !");
 			}
@@ -171,9 +177,10 @@ public class Function {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Finds out the result of boolean list
+	 * 
 	 * @param boolList
 	 * @return
 	 */
@@ -201,113 +208,154 @@ public class Function {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Compares the left value and the right value
+	 * 
 	 * @param left
 	 * @param operator
 	 * @param right
 	 * @return
 	 */
-	private static boolean checkCondition(Object left, Object operator, Object right) {
+	private static boolean checkCondition(Object left, Object operator,
+			Object right) {
 		boolean result = false;
-		switch (Integer.valueOf(operator.toString())) {
-			case ScriptAttribute.AND:
-				if (left == right) {
-					if (left.toString().equals(Constant.TRUE)) {
-						result = true;
-					}
-				}
-				break;
-			case ScriptAttribute.EQUALS:
-				if ((left instanceof Integer) || (right instanceof Integer)) {
-					result = (Integer.valueOf(left.toString()) == (Integer.valueOf(right.toString())));
-				} else if ((left == null) || (right == null)) {
-					result = (left == right);
+		int operatorValue = Integer.valueOf(operator.toString());
+		switch (operatorValue) {
+		case ScriptAttribute.AND:
+			result = (Boolean.parseBoolean(left.toString()) && Boolean
+					.parseBoolean(right.toString()));
+			break;
+		case ScriptAttribute.EQUALS:
+			if ((left == null) || (right == null)) {
+				result = left == right;
+			} else if ((left instanceof String) || (right instanceof String)) {
+				result = left.toString().equals(right.toString());
+			} else if ((left instanceof HashMap<?, ?>)
+					|| (right instanceof HashMap<?, ?>)) {
+				result = ((HashMap<?, ?>) left).values().equals(
+						((HashMap<?, ?>) right).values())
+						&& ((HashMap<?, ?>) left).keySet().equals(
+								((HashMap<?, ?>) right).keySet());
+			} else {
+				result = left == right;
+			}
+			break;
+		case ScriptAttribute.GREATERTHAN:
+			if ((left != null) || (right != null)) {
+				String leftValue = left.toString();
+				String rightValue = right.toString();
+				if (leftValue.contains(".") || rightValue.contains(".")) {
+					result = Double.parseDouble(leftValue) > Double
+							.parseDouble(rightValue);
 				} else {
-					result = (left.equals(right));
+					result = Integer.parseInt(leftValue) > Integer
+							.parseInt(rightValue);
 				}
-				break;
-			case ScriptAttribute.GREATERTHAN:
-				if ((left != null) && (right != null)) {
-					result = (Integer.valueOf(left.toString()) > Integer.valueOf(right.toString()));	
-				}
-				break;
-			case ScriptAttribute.GREATERTHANOREQUALS:
-				if ((left != null) && (right != null)) {
-					result = (Integer.valueOf(left.toString()) >= Integer.valueOf(right.toString()));	
-				}
-				break;
-			case ScriptAttribute.NOTEQUALS:
-				if ((left != null) && (right != null)) {
-					if ((left instanceof String) || (right instanceof String)) {
-						result = !(left.toString().equals(right.toString()));
-					} else if ((left instanceof HashMap<?, ?>) || (right instanceof HashMap<?, ?>)) {
-						result = !(((HashMap<?, ?>)left).values().equals(((HashMap<?, ?>)right).values()) &&
-						((HashMap<?, ?>)left).keySet().equals(((HashMap<?, ?>)right).keySet()));
-					} else {
-						result = (Integer.valueOf(left.toString()) != Integer.valueOf(right.toString()));	
-					}
+			}
+			break;
+		case ScriptAttribute.GREATERTHANOREQUALS:
+			if ((left != null) || (right != null)) {
+				String leftValue = left.toString();
+				String rightValue = right.toString();
+				if (leftValue.contains(".") || rightValue.contains(".")) {
+					result = Double.parseDouble(leftValue) >= Double
+							.parseDouble(rightValue);
 				} else {
-					result = (left != right);	
+					result = Integer.parseInt(leftValue) >= Integer
+							.parseInt(rightValue);
 				}
-				break;
-			case ScriptAttribute.OR:
-				if (Boolean.getBoolean(left.toString()) || Boolean.getBoolean(right.toString())) {
-					result = true;
+			}
+			break;
+		case ScriptAttribute.NOTEQUALS:
+			if ((left == null) || (right == null)) {
+				result = (left != right);
+			} else if ((left instanceof String) || (right instanceof String)) {
+				result = !(left.toString().equals(right.toString()));
+			} else if ((left instanceof HashMap<?, ?>)
+					|| (right instanceof HashMap<?, ?>)) {
+				result = !(((HashMap<?, ?>) left).values().equals(
+						((HashMap<?, ?>) right).values()) && ((HashMap<?, ?>) left)
+						.keySet().equals(((HashMap<?, ?>) right).keySet()));
+			} else {
+				result = (left != right);
+			}
+			break;
+		case ScriptAttribute.OR:
+			result = (Boolean.parseBoolean(left.toString()) || Boolean
+					.parseBoolean(right.toString()));
+			break;
+		case ScriptAttribute.LESSTHAN:
+			if ((left != null) || (right != null)) {
+				String leftValue = left.toString();
+				String rightValue = right.toString();
+				if (leftValue.contains(".") || rightValue.contains(".")) {
+					result = Double.parseDouble(leftValue) < Double
+							.parseDouble(rightValue);
+				} else {
+					result = Integer.parseInt(leftValue) < Integer
+							.parseInt(rightValue);
 				}
-				break;
-				
-			case ScriptAttribute.LESSTHAN:
-				if ((left != null) && (right != null)) {
-					result = (Integer.valueOf(left.toString()) < Integer.valueOf(right.toString()));	
+			}
+			break;
+		case ScriptAttribute.LESSTHANOREQUALS:
+			if ((left != null) || (right != null)) {
+				String leftValue = left.toString();
+				String rightValue = right.toString();
+				if (leftValue.contains(".") || rightValue.contains(".")) {
+					result = Double.parseDouble(leftValue) <= Double
+							.parseDouble(rightValue);
+				} else {
+					result = Integer.parseInt(leftValue) <= Integer
+							.parseInt(rightValue);
 				}
-				break;
-			case ScriptAttribute.LESSTHANOREQUALS:
-				if ((left != null) && (right != null)) {
-					result = (Integer.valueOf(left.toString()) <= Integer.valueOf(right.toString()));	
-				}
-				break;
+			}
+			break;
 		}
-		//Log.i("info", "left "+left+" operator "+operator+" right "+right+" result "+result);
+		// Log.i("info",
+		// "left "+left+" operator "+operator+" right "+right+" result "+result);
 		return result;
 	}
-	
+
 	private static Object ifCondition(Element element) {
 		Object result = "";
-		//Log.i("info", "if called");
-		
+		// Log.i("info", "if called");
+
 		Node child = element.getFirstChild();
 		boolean conditionCheck = false;
 		while (child != null) {
 			String childName = child.getNodeName();
 			if (childName.equals(ScriptTag.CONDITIONS)) {
 				Node condition = child.getFirstChild();
-				boolean[] checkList = new boolean[child.getChildNodes().getLength()];
+				boolean[] checkList = new boolean[child.getChildNodes()
+						.getLength()];
 				int k = 0;
 				while (condition != null) {
 					if (condition.getNodeName().equals(ScriptTag.CONDITION)) {
-						Object left = getValue((Element)condition, ScriptTag.LEFT, null, null);
-						Object operator = getValue((Element)condition, ScriptTag.OPERATOR, null, null);
-						Object right = getValue((Element)condition, ScriptTag.RIGHT, null, null);
-						checkList[k] = checkCondition(left, operator, right); 
+						Object left = getValue((Element) condition,
+								ScriptTag.LEFT, null, null);
+						Object operator = getValue((Element) condition,
+								ScriptTag.OPERATOR, null, null);
+						Object right = getValue((Element) condition,
+								ScriptTag.RIGHT, null, null);
+						checkList[k] = checkCondition(left, operator, right);
 					}
 					try {
 						condition = condition.getNextSibling();
-						k ++;
+						k++;
 					} catch (IndexOutOfBoundsException ioobe) {
 						condition = null;
 					}
 				}
-				conditionCheck = checkConditions(checkList); 
+				conditionCheck = checkConditions(checkList);
 			} else if (childName.equals(ScriptTag.THEN)) {
 				if (conditionCheck) {
-					//Log.i("info", "pass to then");
+					// Log.i("info", "pass to then");
 					Node thenChild = child.getFirstChild();
 					while (thenChild != null) {
-						result = distributeAction((Element)thenChild);
+						result = distributeAction((Element) thenChild);
 						try {
-							thenChild = thenChild.getNextSibling();	
+							thenChild = thenChild.getNextSibling();
 						} catch (IndexOutOfBoundsException ioobe) {
 							thenChild = null;
 						}
@@ -315,12 +363,12 @@ public class Function {
 				}
 			} else if (childName.equals(ScriptTag.ELSE)) {
 				if (!conditionCheck) {
-					//Log.i("info", "pass to else");
+					// Log.i("info", "pass to else");
 					Node elseChild = child.getFirstChild();
 					while (elseChild != null) {
-						result = distributeAction((Element)elseChild);
+						result = distributeAction((Element) elseChild);
 						try {
-							elseChild = elseChild.getNextSibling();	
+							elseChild = elseChild.getNextSibling();
 						} catch (IndexOutOfBoundsException ioobe) {
 							elseChild = null;
 						}
@@ -328,31 +376,36 @@ public class Function {
 				}
 			}
 			try {
-				child = child.getNextSibling();	
+				child = child.getNextSibling();
 			} catch (IndexOutOfBoundsException ioobe) {
 				child = null;
 			}
 		}
 		return result;
 	}
-	
-	public static Object createCalculateFunction(String name, HashMap<Object, Object> record) {
+
+	public static Object createCalculateFunction(String name,
+			HashMap<Object, Object> record) {
 		Object result = null;
 		HashMap<String, Object> varsMap = sVarsMap;
-		NodeList funcList = sBehaviorDocument.getElementsByTagName(ScriptTag.FUNCTION);
+		NodeList funcList = sBehaviorDocument
+				.getElementsByTagName(ScriptTag.FUNCTION);
 		if (sFuncsMap.containsKey(name)) {
-			Element funcElement = (Element) funcList.item(Integer.valueOf(sFuncsMap.get(name).get(0)));
+			Element funcElement = (Element) funcList.item(Integer
+					.valueOf(sFuncsMap.get(name).get(0)));
 			if (funcElement.getAttribute(ScriptTag.NAME).equals(name)) {
 				Node element = funcElement.getFirstChild();
 				while (element != null) {
-					if ((element.getNodeName().equals(ScriptTag.PARAMETER)) &&
-							((Element)element).getAttribute(ScriptTag.TYPE).equals(ScriptAttribute.RECORD)) {
-						varsMap.put(((Element)element).getAttribute(ScriptTag.NAME), record);
+					if ((element.getNodeName().equals(ScriptTag.PARAMETER))
+							&& ((Element) element).getAttribute(ScriptTag.TYPE)
+									.equals(ScriptAttribute.RECORD)) {
+						varsMap.put(((Element) element)
+								.getAttribute(ScriptTag.NAME), record);
 					} else {
-						distributeAction((Element)element);
+						distributeAction((Element) element);
 					}
 					try {
-						element = element.getNextSibling();	
+						element = element.getNextSibling();
 					} catch (IndexOutOfBoundsException ioobe) {
 						element = null;
 					}
@@ -366,16 +419,18 @@ public class Function {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Checks element's name and namespace to call the right function
+	 * 
 	 * @param element
 	 * @return
 	 */
 	private static Object distributeCall(Element element) {
 		Object result = null;
 		if (!sIsFirstTime) {
-			//Log.i("info", "namespace "+element.getAttribute(ScriptTag.NAMESPACE)+" function name "+element.getAttribute(ScriptTag.FUNCTION));	
+			// Log.i("info",
+			// "namespace "+element.getAttribute(ScriptTag.NAMESPACE)+" function name "+element.getAttribute(ScriptTag.FUNCTION));
 		}
 		String namespace = element.getAttribute(ScriptTag.NAMESPACE);
 		String function = element.getAttribute(ScriptTag.FUNCTION);
@@ -394,8 +449,8 @@ public class Function {
 				NS_Component.SetEnabled(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_SETFOCUS)) {
 				NS_Component.SetFocus(element);
-			} else if ((function.equals(ScriptAttribute.FUNCTION_SETTEXT)) || 
-					(function.equals(ScriptAttribute.FUNCTION_SETLABEL))) {
+			} else if ((function.equals(ScriptAttribute.FUNCTION_SETTEXT))
+					|| (function.equals(ScriptAttribute.FUNCTION_SETLABEL))) {
 				NS_Component.SetText(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_SETVISIBLE)) {
 				NS_Component.SetVisible(element);
@@ -413,15 +468,18 @@ public class Function {
 				NS_ComponentCombobox.AddItem(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_COUNT)) {
 				result = NS_ComponentCombobox.Count(element);
-			} else if (function.equals(ScriptAttribute.FUNCTION_GETSELECTEDINDEX)) {
+			} else if (function
+					.equals(ScriptAttribute.FUNCTION_GETSELECTEDINDEX)) {
 				result = NS_ComponentCombobox.GetSelectedIndex(element);
-			} else if (function.equals(ScriptAttribute.FUNCTION_GETSELECTEDRECORD)) {
+			} else if (function
+					.equals(ScriptAttribute.FUNCTION_GETSELECTEDRECORD)) {
 				result = NS_ComponentCombobox.GetSelectedRecord(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_REFRESH)) {
 				NS_ComponentCombobox.Refresh(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_REMOVEALLITEMS)) {
 				NS_ComponentCombobox.RemoveAllItems(element);
-			} else if (function.equals(ScriptAttribute.FUNCTION_SETSELECTEDINDEX)) {
+			} else if (function
+					.equals(ScriptAttribute.FUNCTION_SETSELECTEDINDEX)) {
 				NS_ComponentCombobox.SetSelectedIndex(element);
 			}
 		} else if (namespace.equals(ScriptAttribute.NAMESPACE_COMPONENT_DV)) {
@@ -431,7 +489,8 @@ public class Function {
 				result = NS_ComponentDataview.GetColumnIndex(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_GETROWCOUNT)) {
 				result = NS_ComponentDataview.GetRowCount(element);
-			} else if (function.equals(ScriptAttribute.FUNCTION_GETSELECTEDRECORD)) {
+			} else if (function
+					.equals(ScriptAttribute.FUNCTION_GETSELECTEDRECORD)) {
 				if (!sIsFirstTime) {
 					result = NS_ComponentDataview.GetSelectedRecord(element);
 				}
@@ -439,7 +498,8 @@ public class Function {
 				result = NS_ComponentDataview.GetSelectedRow(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_REFRESH)) {
 				NS_ComponentDataview.Refresh(element);
-			} else if (function.equals(ScriptAttribute.FUNCTION_SETNUMERICFORMAT)) {
+			} else if (function
+					.equals(ScriptAttribute.FUNCTION_SETNUMERICFORMAT)) {
 				NS_ComponentDataview.SetNumericFormat(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_SETSELECTEDROW)) {
 				NS_ComponentDataview.SetSelectedRow(element);
@@ -479,13 +539,15 @@ public class Function {
 				}
 			} else if (function.equals(ScriptAttribute.FUNCTION_IMPORT)) {
 				if (!sIsFirstTime) {
-					result =  NS_Database.Import(element);
+					result = NS_Database.Import(element);
 				}
 			} else if (function.equals(ScriptAttribute.FUNCTION_GETTABLEBYNAME)) {
 				result = NS_Database.GetTableByName(element);
-			} else if (function.equals(ScriptAttribute.FUNCTION_STARTTRANSACTION)) {
+			} else if (function
+					.equals(ScriptAttribute.FUNCTION_STARTTRANSACTION)) {
 				NS_Database.StartTransaction();
-			} else if (function.equals(ScriptAttribute.FUNCTION_VALIDATETRANSACTION)) {
+			} else if (function
+					.equals(ScriptAttribute.FUNCTION_VALIDATETRANSACTION)) {
 				NS_Database.ValidateTransaction();
 			}
 		} else if (namespace.equals(ScriptAttribute.NAMESPACE_DB_DATASET)) {
@@ -519,11 +581,14 @@ public class Function {
 				result = NS_DatabaseTable.GetFields(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_GETFIELDVALUE)) {
 				result = NS_DatabaseTable.GetFieldValue(element);
-			} else if (function.equals(ScriptAttribute.FUNCTION_GETFIELDVALUEBYPRIMARYKEY)) {
+			} else if (function
+					.equals(ScriptAttribute.FUNCTION_GETFIELDVALUEBYPRIMARYKEY)) {
 				result = NS_DatabaseTable.GetFieldValueByPrimaryKey(element);
-			} else if (function.equals(ScriptAttribute.FUNCTION_GETFILTEREDRECORD)) {
+			} else if (function
+					.equals(ScriptAttribute.FUNCTION_GETFILTEREDRECORD)) {
 				result = NS_DatabaseTable.GetFilteredRecord(element);
-			} else if (function.equals(ScriptAttribute.FUNCTION_GETFILTEREDRECORDS)) {
+			} else if (function
+					.equals(ScriptAttribute.FUNCTION_GETFILTEREDRECORDS)) {
 				result = NS_DatabaseTable.GetFilteredRecords(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_GETRECORD)) {
 				result = NS_DatabaseTable.GetRecord(element);
@@ -555,7 +620,8 @@ public class Function {
 				result = NS_Form.GetCurrentForm(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_NAVIGATE)) {
 				NS_Form.Navigate(element);
-			} else if (function.equals(ScriptAttribute.FUNCTION_SETCURRENTRECORD)) {
+			} else if (function
+					.equals(ScriptAttribute.FUNCTION_SETCURRENTRECORD)) {
 				NS_Form.SetCurrentRecord(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_SETTITLE)) {
 				NS_Form.SetTitle(element);
@@ -567,7 +633,7 @@ public class Function {
 				result = NS_Gps.GetLatitude(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_GETLOCATION)) {
 				if (!sIsFirstTime) {
-					result = NS_Gps.GetLocation();	
+					result = NS_Gps.GetLocation();
 				}
 			} else if (function.equals(ScriptAttribute.FUNCTION_GETLONGITUDE)) {
 				result = NS_Gps.GetLogitude(element);
@@ -640,28 +706,30 @@ public class Function {
 			if (function.equals(ScriptAttribute.FUNCTION_ADDCRITERIA)) {
 				NS_Order.AddCriteria(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_CLEAR)) {
-				//NS_Order.Clear(element);
+				// NS_Order.Clear(element);
 			}
 		} else if (namespace.equals(ScriptAttribute.NAMESPACE_RUNTIME)) {
-			if ((function.equals(ScriptAttribute.FUNCTION_ALERT)) ||
-					(function.equals(ScriptAttribute.FUNCTION_ERROR))) {
+			if ((function.equals(ScriptAttribute.FUNCTION_ALERT))
+					|| (function.equals(ScriptAttribute.FUNCTION_ERROR))) {
 				NS_Runtime.Error(sContext, element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_EXIT)) {
 				NS_Runtime.Exit(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_BROWSE)) {
 				NS_Runtime.Browse(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_CONFIRM)) {
-				ConfirmDialog confirmDialog = new ConfirmDialog(element.getElementsByTagName(ScriptTag.PARAMETER), sContext);
+				ConfirmDialog confirmDialog = new ConfirmDialog(element
+						.getElementsByTagName(ScriptTag.PARAMETER), sContext);
 				confirmDialog.start();
-				try{
+				try {
 					confirmDialog.join();
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 				result = confirmDialog.getValue();
-				//Cancel the thread, because the stop() method is deprecated
-				//confirmDialog = null;
-			} else if (function.equals(ScriptAttribute.FUNCTION_GETAPPLICATIONVERSION)) {
+				// Cancel the thread, because the stop() method is deprecated
+				// confirmDialog = null;
+			} else if (function
+					.equals(ScriptAttribute.FUNCTION_GETAPPLICATIONVERSION)) {
 				result = NS_Runtime.getApplicationVersion(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_GETCURRENTUSER)) {
 				result = NS_Runtime.GetCurrentUser(element);
@@ -683,7 +751,7 @@ public class Function {
 				result = NS_String.Implode(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_INDEXOF)) {
 				if (!sIsFirstTime) {
-					result = NS_String.Indexof(element);	
+					result = NS_String.Indexof(element);
 				}
 			} else if (function.equals(ScriptAttribute.FUNCTION_LENGTH)) {
 				result = NS_String.Length(element);
@@ -701,7 +769,7 @@ public class Function {
 		} else if (namespace.equals(ScriptAttribute.NAMESPACE_TIMER)) {
 			if (function.equals(ScriptAttribute.FUNCTION_CANCEL)) {
 				if (!sIsFirstTime) {
-					NS_Timer.Cancel(element);	
+					NS_Timer.Cancel(element);
 				}
 			} else if (function.equals(ScriptAttribute.FUNCTION_START)) {
 				if (!sIsFirstTime) {
@@ -712,10 +780,10 @@ public class Function {
 			Node child = element.getFirstChild();
 			while (child != null) {
 				if (child.getNodeName().equals(ScriptTag.PARAMETER)) {
-					setVariable((Element)child);
+					setVariable((Element) child);
 				}
 				try {
-					child = child.getNextSibling();	
+					child = child.getNextSibling();
 				} catch (IndexOutOfBoundsException ioobe) {
 					child = null;
 				}
@@ -724,9 +792,10 @@ public class Function {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Returns variable's value
+	 * 
 	 * @param item
 	 * @return
 	 */
@@ -740,7 +809,8 @@ public class Function {
 			while (!parent.getNodeName().equals(ScriptTag.FUNCTION)) {
 				parent = parent.getParentNode();
 			}
-			StringBuffer varName = new StringBuffer(((Element) parent).getAttribute(ScriptTag.NAME));
+			StringBuffer varName = new StringBuffer(((Element) parent)
+					.getAttribute(ScriptTag.NAME));
 			varName.append("_");
 			varName.append(item.getAttribute(ScriptTag.NAME));
 			if (varsMap.containsKey(varName.toString())) {
@@ -749,30 +819,36 @@ public class Function {
 		}
 		return result;
 	}
-	
+
 	private static void setVariable(Element element) {
 		HashMap<String, Object> varsMap = sVarsMap;
 		NodeList nodes = element.getChildNodes();
 		int nodesLength = nodes.getLength();
 		if (nodesLength == 0) {
-			//Add an empty ArrayList for Filter, List, Order
-			if ((element.getAttribute(ScriptTag.TYPE).equals(ScriptAttribute.FILTER)) ||
-					(element.getAttribute(ScriptTag.TYPE).equals(ScriptAttribute.LIST)) ||
-					(element.getAttribute(ScriptTag.TYPE).equals(ScriptAttribute.ORDER))) {
-				varsMap.put(element.getAttribute(ScriptTag.NAME), new ArrayList<Object>());
+			// Add an empty ArrayList for Filter, List, Order
+			if ((element.getAttribute(ScriptTag.TYPE)
+					.equals(ScriptAttribute.FILTER))
+					|| (element.getAttribute(ScriptTag.TYPE)
+							.equals(ScriptAttribute.LIST))
+					|| (element.getAttribute(ScriptTag.TYPE)
+							.equals(ScriptAttribute.ORDER))) {
+				varsMap.put(element.getAttribute(ScriptTag.NAME),
+						new ArrayList<Object>());
 			} else {
 				varsMap.put(element.getAttribute(ScriptTag.NAME), null);
 			}
-		} else if ((nodesLength == 1) && (nodes.item(0).getNodeType() == Node.TEXT_NODE)) {	
-			varsMap.put(element.getAttribute(ScriptTag.NAME), nodes.item(0).getNodeValue());
+		} else if ((nodesLength == 1)
+				&& (nodes.item(0).getNodeType() == Node.TEXT_NODE)) {
+			varsMap.put(element.getAttribute(ScriptTag.NAME), nodes.item(0)
+					.getNodeValue());
 		} else {
-			Object value = getValue(element, nodes.item(0).getNodeName(), "", "");
+			Object value = getValue(element, nodes.item(0).getNodeName(), "",
+					"");
 			varsMap.put(element.getAttribute(ScriptTag.NAME), value);
 		}
 	}
 
-	public static Object getKeyWord(Element element)
-	{
+	public static Object getKeyWord(Element element) {
 		Object result = null;
 		Node child = element.getFirstChild();
 		if (child.getNodeType() == Node.TEXT_NODE) {
@@ -791,78 +867,84 @@ public class Function {
 		}
 		return result;
 	}
-	
+
 	public static Object getOperator(Object operator) {
 		Object result = null;
-		switch (Integer.valueOf((String)operator)) {
-			case ScriptAttribute.EQUALS:
-				result = "=";
-				break;
-			case ScriptAttribute.NOTEQUALS:
-				result = "!=";
-				break;
-			case ScriptAttribute.AND:
-				result = " AND ";
-				break;
-			case ScriptAttribute.OR:
-				result = " OR ";
-				break;
+		switch (Integer.valueOf((String) operator)) {
+		case ScriptAttribute.EQUALS:
+			result = "=";
+			break;
+		case ScriptAttribute.NOTEQUALS:
+			result = "!=";
+			break;
+		case ScriptAttribute.AND:
+			result = " AND ";
+			break;
+		case ScriptAttribute.OR:
+			result = " OR ";
+			break;
 		}
 		return result;
 	}
-	
+
 	public static Context getContext() {
 		return sContext;
 	}
-	
+
 	private static String getReturnValue(Element element) {
 		String result = "";
 		Node child = element.getFirstChild();
 		if (child.getNodeType() == Node.TEXT_NODE) {
 			result = child.getNodeValue();
 		} else {
-			result = distributeAction((Element)child).toString();
+			result = distributeAction((Element) child).toString();
 		}
 		return result;
 	}
-	
-	public static Object getVariableName(Element element, String tag, String name, String type) {
+
+	public static Object getVariableName(Element element, String tag,
+			String name, String type) {
 		Object value = null;
 		Node child = element.getFirstChild();
 		while (child != null) {
-			if ((child.getNodeName().equals(tag)) &&
-					(((Element)child).getAttribute(ScriptTag.NAME).equals(name)) &&
-					(((Element)child).getAttribute(ScriptTag.TYPE).equals(type))) {
+			if ((child.getNodeName().equals(tag))
+					&& (((Element) child).getAttribute(ScriptTag.NAME)
+							.equals(name))
+					&& (((Element) child).getAttribute(ScriptTag.TYPE)
+							.equals(type))) {
 				if (child.hasChildNodes()) {
 					Node grandChild = child.getFirstChild();
 					if (grandChild.getNodeType() == Node.ELEMENT_NODE) {
 						if (grandChild.getNodeName().equals(ScriptTag.VAR)) {
-							value = ((Element)grandChild).getAttribute(ScriptTag.NAME);
+							value = ((Element) grandChild)
+									.getAttribute(ScriptTag.NAME);
 						}
 					} else if (grandChild.getNodeType() == Node.TEXT_NODE) {
 						value = grandChild.getNodeValue();
 					}
 				}
 			}
-			
+
 			try {
-				child = child.getNextSibling();	
+				child = child.getNextSibling();
 			} catch (IndexOutOfBoundsException ioobe) {
 				child = null;
 			}
 		}
 		return value;
 	}
-	
+
 	/**
 	 * Returns values of function's parameter
+	 * 
 	 * @param element
 	 * @param tag
 	 * @param name
 	 * @param type
 	 * @return
 	 */
-	public static Object getValue(Element element, String tag, String name, String type) {
+	public static Object getValue(Element element, String tag, String name,
+			String type) {
 		Object value = null;
 		Node child = element.getFirstChild();
 		while (child != null) {
@@ -871,23 +953,26 @@ public class Function {
 				Node firstChild = child.getFirstChild();
 				if (firstChild != null) {
 					if (firstChild.getNodeType() == Node.ELEMENT_NODE) {
-						Element item = (Element)firstChild;
+						Element item = (Element) firstChild;
 						value = distributeAction(item);
 					} else if (firstChild.getNodeType() == Node.TEXT_NODE) {
 						value = firstChild.getNodeValue();
 					}
 				}
-			} else if ((childName.equals(tag)) && (name.equals("")) && (type.equals(""))) {
-				//Set variable
-				value = distributeAction((Element)child);
-			} else if ((childName.equals(tag)) &&
-					(((Element)child).getAttribute(ScriptTag.NAME).equals(name)) &&
-					(((Element)child).getAttribute(ScriptTag.TYPE).equals(type))) {
+			} else if ((childName.equals(tag)) && (name.equals(""))
+					&& (type.equals(""))) {
+				// Set variable
+				value = distributeAction((Element) child);
+			} else if ((childName.equals(tag))
+					&& (((Element) child).getAttribute(ScriptTag.NAME)
+							.equals(name))
+					&& (((Element) child).getAttribute(ScriptTag.TYPE)
+							.equals(type))) {
 				Node firstChild = child.getFirstChild();
-				//Function parameters
+				// Function parameters
 				if (firstChild != null) {
 					if (firstChild.getNodeType() == Node.ELEMENT_NODE) {
-						Element item = (Element)firstChild;
+						Element item = (Element) firstChild;
 						value = distributeAction(item);
 					} else if (firstChild.getNodeType() == Node.TEXT_NODE) {
 						value = firstChild.getNodeValue();
@@ -895,14 +980,14 @@ public class Function {
 				}
 			}
 			try {
-				child = child.getNextSibling();	
+				child = child.getNextSibling();
 			} catch (IndexOutOfBoundsException ioobe) {
 				child = null;
 			}
 		}
 		return value;
 	}
-	
+
 	public static HashMap<String, Object> getVariablesMap() {
 		return sVarsMap;
 	}

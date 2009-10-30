@@ -1,7 +1,9 @@
 package com.penbase.dma.Dalyo.Function.Namespace;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 
+import com.penbase.dma.R;
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
@@ -36,9 +38,10 @@ public class NS_Database {
 
 		if ((faceless == null) || Boolean.parseBoolean(faceless.toString())) {
 			// display progress dialog
+			Context context = Function.getContext();
 			final ProgressDialog exportProgressDialog = ProgressDialog.show(
-					Function.getContext(), "Please wait...",
-					"Importing application's data...", true, false);
+					context, context.getText(R.string.waiting), context
+							.getText(R.string.exportdata), true, false);
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
@@ -87,9 +90,10 @@ public class NS_Database {
 				ScriptAttribute.PARAMETER_TYPE_BOOLEAN);
 		if ((faceless == null) || Boolean.parseBoolean(faceless.toString())) {
 			// display progress dialog
+			Context context = Function.getContext();
 			final ProgressDialog importProgressDialog = ProgressDialog.show(
-					Function.getContext(), "Please wait...",
-					"Importing application's data...", true, false);
+					context, context.getText(R.string.waiting), context
+							.getText(R.string.importdata), true, false);
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
