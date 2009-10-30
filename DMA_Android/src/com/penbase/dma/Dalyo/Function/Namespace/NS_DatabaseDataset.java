@@ -18,26 +18,35 @@ public class NS_DatabaseDataset {
 	@SuppressWarnings("unchecked")
 	public static Object GetValue(Element element) {
 		Object value = null;
-		HashMap<Object, Object> dataset = (HashMap<Object, Object>)Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.DATASET, ScriptAttribute.DATASET);
-		String fieldId = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FIELD, ScriptAttribute.FIELD).toString();
+		HashMap<Object, Object> dataset = (HashMap<Object, Object>) Function
+				.getValue(element, ScriptTag.PARAMETER,
+						ScriptAttribute.DATASET, ScriptAttribute.DATASET);
+		String fieldId = Function.getValue(element, ScriptTag.PARAMETER,
+				ScriptAttribute.FIELD, ScriptAttribute.FIELD).toString();
 		if (dataset != null) {
-			value = dataset.get(DatabaseAttribute.FIELD+fieldId);
+			value = dataset.get(DatabaseAttribute.FIELD + fieldId);
 		}
 		return value;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static Object Select(Element element) {
-		ArrayList<Object> fieldsList = (ArrayList<Object>) Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_FIELDS, ScriptAttribute.LIST);
-		Object filter = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.FILTER, ScriptAttribute.FILTER);
-		Object order = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.ORDER, ScriptAttribute.ORDER);
+		ArrayList<Object> fieldsList = (ArrayList<Object>) Function.getValue(
+				element, ScriptTag.PARAMETER,
+				ScriptAttribute.PARAMETER_NAME_FIELDS, ScriptAttribute.LIST);
+		Object filter = Function.getValue(element, ScriptTag.PARAMETER,
+				ScriptAttribute.FILTER, ScriptAttribute.FILTER);
+		Object order = Function.getValue(element, ScriptTag.PARAMETER,
+				ScriptAttribute.ORDER, ScriptAttribute.ORDER);
 		ArrayList<String> tables = new ArrayList<String>();
 		ArrayList<ArrayList<String>> columns = new ArrayList<ArrayList<String>>();
 		Set<String> tableIds = DatabaseAdapter.getTableIds();
-		HashMap<String, ArrayList<String>> tablesMap = DatabaseAdapter.getTablesMap();
+		HashMap<String, ArrayList<String>> tablesMap = DatabaseAdapter
+				.getTablesMap();
 		for (Object field : fieldsList) {
 			for (String tid : tableIds) {
-				if (tablesMap.get(tid).contains(DatabaseAttribute.FIELD + field)) {
+				if (tablesMap.get(tid)
+						.contains(DatabaseAttribute.FIELD + field)) {
 					ArrayList<String> column = new ArrayList<String>();
 					column.add(tid);
 					column.add(field.toString());
@@ -49,14 +58,16 @@ public class NS_DatabaseDataset {
 			}
 		}
 		ArrayList<HashMap<Object, Object>> records = new ArrayList<HashMap<Object, Object>>();
-		Cursor cursor = DatabaseAdapter.selectQuery(tables, columns, filter, order, null);
+		Cursor cursor = DatabaseAdapter.selectQuery(tables, columns, filter,
+				order, null);
 		while (cursor.moveToNext()) {
 			HashMap<Object, Object> record = new HashMap<Object, Object>();
 			String[] columnNames = cursor.getColumnNames();
 			int columnsRecordSize = columnNames.length;
-			for (int j=0; j<columnsRecordSize; j++) {
+			for (int j = 0; j < columnsRecordSize; j++) {
 				String columnName = columnNames[j];
-				record.put(columnName, DatabaseAdapter.getCursorValue(cursor, columnName));
+				record.put(columnName, DatabaseAdapter.getCursorValue(cursor,
+						columnName));
 			}
 			records.add(record);
 		}

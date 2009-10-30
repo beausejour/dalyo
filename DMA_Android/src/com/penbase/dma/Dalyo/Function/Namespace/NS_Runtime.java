@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
+import com.penbase.dma.R;
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Function.Function;
@@ -76,8 +77,9 @@ public class NS_Runtime {
 			value = Boolean.parseBoolean(willShow.toString());
 		}
 		if (value) {
-			syncProgressDialog = ProgressDialog.show(Function.getContext(),
-					"Veuillez patienter...", text, true, false);
+			Context context = Function.getContext();
+			syncProgressDialog = ProgressDialog.show(context, context
+					.getText(R.string.waiting), text, true, false);
 		} else {
 			if (syncProgressDialog.isShowing()) {
 				syncProgressDialog.dismiss();
@@ -112,18 +114,37 @@ public class NS_Runtime {
 			// showProgress = true; ProgressDialog has not done yet.
 		}
 
+		/*Context context = Function.getContext();
+		syncProgressDialog = ProgressDialog.show(context, context
+				.getText(R.string.waiting), context
+				.getText(R.string.synchronisation), true, false);
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				boolean importResult = ApplicationView.getCurrentClient()
+						.importData(applicationInfos.get("AppId"),
+								applicationInfos.get("DbId"),
+								applicationInfos.get("Username"),
+								applicationInfos.get("Userpassword"), null,
+								null);
+				if (importResult) {
+					syncResult = ApplicationView.getCurrentClient().exportData(
+							applicationInfos.get("AppId"),
+							applicationInfos.get("DbId"),
+							applicationInfos.get("Username"),
+							applicationInfos.get("Userpassword"), null, null);
+				}
+				syncProgressDialog.dismiss();
+			}
+		}).start();*/
+		
 		ApplicationView.getCurrentView().runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				/*
-				 * if (!sSyncEnd) { syncProgressDialog =
-				 * ProgressDialog.show(Function.getContext(),
-				 * "Veuillez patienter...", "Synchronisation en cours...", true,
-				 * false); }
-				 */
-				syncProgressDialog = ProgressDialog.show(Function.getContext(),
-						"Veuillez patienter...", "Synchronisation en cours...",
-						true, false);
+				Context context = Function.getContext();
+				syncProgressDialog = ProgressDialog.show(context, context
+						.getText(R.string.waiting), context
+						.getText(R.string.synchronisation), true, false);
 			}
 		});
 

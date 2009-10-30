@@ -33,4 +33,5 @@
     <string name="importdata">Importing application's data...</string>
     <string name="exportdata">Exporting application's data...</string>
     <string name="checkdataview">Check your dataview setting</string>
+    <string name="synchronisation">Synchronizing your data...</string>
 </resources>

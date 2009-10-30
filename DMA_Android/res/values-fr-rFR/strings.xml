@@ -33,4 +33,5 @@
     <string name="importdata">Importation des données en cours...</string>
     <string name="exportdata">Exportation des données en cours...</string>
     <string name="checkdataview">Vérifie les paramêtre de dataview</string>
+    <string name="synchronisation">Synchronisation en cours...</string>
 </resources>
