@@ -698,10 +698,12 @@ public class DatabaseAdapter {
 			if (i == fieldsNb - 1) {
 				newValue.append(DatabaseAttribute.STATE).append("=");
 				newValue.append(DatabaseAttribute.SYNCHRONIZED).append(" ,");
-				newValue.append(DatabaseAttribute.FIELD).append(fieldsList.get(i));
+				newValue.append(DatabaseAttribute.FIELD).append(
+						fieldsList.get(i));
 				newValue.append("=\'").append(record.get(i + 2)).append("\'");
 			} else {
-				newValue.append(DatabaseAttribute.FIELD).append(fieldsList.get(i));
+				newValue.append(DatabaseAttribute.FIELD).append(
+						fieldsList.get(i));
 				newValue.append("=\'").append(record.get(i + 2)).append("\', ");
 			}
 		}
@@ -946,6 +948,10 @@ public class DatabaseAdapter {
 		String whereClause = createWhereClause(tableId, record);
 		sSqlite.update(table, values, whereClause, null);
 	}
+	
+	public static void updateRecord(String tableId, ContentValues values, String whereClause) {
+		sSqlite.update(DatabaseAttribute.TABLE + tableId, values, whereClause, null);
+	}
 
 	public static void deleteQuery(String tableId,
 			HashMap<Object, Object> record) {
@@ -1016,18 +1022,24 @@ public class DatabaseAdapter {
 	public static HashMap<String, String> getFieldsTypeMap() {
 		return sFieldsTypeMap;
 	}
-
+	
 	public static void beginTransaction() {
-		sSqlite.beginTransaction();
+		if (!sSqlite.inTransaction()) {
+			sSqlite.beginTransaction();
+		}
 	}
 
 	public static void rollbackTransaction() {
-		sSqlite.endTransaction();
+		if (sSqlite.inTransaction()) {
+			sSqlite.endTransaction();
+		}
 	}
 
 	public static void commitTransaction() {
-		sSqlite.setTransactionSuccessful();
-		sSqlite.endTransaction();
+		if (sSqlite.inTransaction()) {
+			sSqlite.setTransactionSuccessful();
+			sSqlite.endTransaction();
+		}
 	}
 
 	public static void cleanTables() {
@@ -1054,24 +1066,31 @@ public class DatabaseAdapter {
 	}
 
 	public static Object getCursorValue(Cursor cursor, String field) {
-		if (field.indexOf(DatabaseAttribute.FIELD) != -1) {
-			String fieldId = Integer.valueOf(field.split("_")[1]).toString();
-			if (sFieldsTypeMap.get(fieldId).equals(DatabaseAttribute.INTEGER)) {
-				return cursor.getInt(cursor.getColumnIndexOrThrow(field));
-			} else if (sFieldsTypeMap.get(fieldId).equals(
-					DatabaseAttribute.DOUBLE)) {
-				return cursor.getDouble(cursor.getColumnIndexOrThrow(field));
-			} else {
-				String value = cursor.getString(cursor
-						.getColumnIndexOrThrow(field));
-				if (value == null) {
-					return "";
+		if (cursor.getCount() > 0) {
+			if (field.indexOf(DatabaseAttribute.FIELD) != -1) {
+				String fieldId = Integer.valueOf(field.split("_")[1])
+						.toString();
+				if (sFieldsTypeMap.get(fieldId).equals(
+						DatabaseAttribute.INTEGER)) {
+					return cursor.getInt(cursor.getColumnIndexOrThrow(field));
+				} else if (sFieldsTypeMap.get(fieldId).equals(
+						DatabaseAttribute.DOUBLE)) {
+					return cursor
+							.getDouble(cursor.getColumnIndexOrThrow(field));
 				} else {
-					return value;
+					String value = cursor.getString(cursor
+							.getColumnIndexOrThrow(field));
+					if (value == null) {
+						return "";
+					} else {
+						return value;
+					}
 				}
+			} else {
+				return cursor.getString(cursor.getColumnIndexOrThrow(field));
 			}
 		} else {
-			return cursor.getString(cursor.getColumnIndexOrThrow(field));
+			return null;
 		}
 	}
 
@@ -1088,10 +1107,10 @@ public class DatabaseAdapter {
 	private static String createWhereClause(String tableId,
 			HashMap<Object, Object> record) {
 		StringBuffer result = new StringBuffer("");
-		if (record.containsKey(DatabaseAttribute.ID + tableId)) {
-			result.append(DatabaseAttribute.ID).append(tableId).append(" = \'");
-			result.append(record.get(DatabaseAttribute.ID + tableId)).append(
-					"\'");
+		String tid = DatabaseAttribute.ID + tableId;
+		if (record.containsKey(tid)) {
+			result.append(tid).append(" = \'");
+			result.append(record.get(tid)).append("\'");
 		}
 		return result.toString();
 	}

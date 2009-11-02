@@ -140,4 +140,10 @@ public class DalyoTimeField extends Button implements DalyoComponent, OnClickLis
 	public int getMinimumWidth() {
 		return getSuggestedMinimumWidth();
 	}
+
+	@Override
+	public void setDatabase(String tid, String fid) {
+		// TODO Auto-generated method stub
+		
+	}
 }

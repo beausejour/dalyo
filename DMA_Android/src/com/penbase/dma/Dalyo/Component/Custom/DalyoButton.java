@@ -81,12 +81,16 @@ public class DalyoButton extends Button implements DalyoComponent {
 
 	@Override
 	public void setComponentValue(Object value) {
-		String text = value.toString();
-		if (text.contains(DmaHttpClient.getResourcePath())) {
-			setBackgroundDrawable(Drawable.createFromPath(text));
+		if (value == null) {
 			setText(null);
 		} else {
-			setText(text);
+			String text = value.toString();
+			if (text.contains(DmaHttpClient.getResourcePath())) {
+				setBackgroundDrawable(Drawable.createFromPath(text));
+				setText(null);
+			} else {
+				setText(text);
+			}	
 		}
 	}
 
@@ -123,5 +127,11 @@ public class DalyoButton extends Button implements DalyoComponent {
 	@Override
 	public int getMinimumWidth() {
 		return getSuggestedMinimumWidth();
+	}
+
+	@Override
+	public void setDatabase(String tid, String fid) {
+		// TODO Auto-generated method stub
+		
 	}
 }

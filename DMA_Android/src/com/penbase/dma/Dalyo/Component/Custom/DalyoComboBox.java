@@ -358,4 +358,10 @@ public class DalyoComboBox extends Spinner implements DalyoComponent {
 	private static class ViewHolder {
 		TextView text;
 	}
+
+	@Override
+	public void setDatabase(String tid, String fid) {
+		// TODO Auto-generated method stub
+		
+	}
 }

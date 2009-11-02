@@ -1,5 +1,8 @@
 package com.penbase.dma.Dalyo.Component.Custom;
 
+import java.util.HashMap;
+
+import com.penbase.dma.Constant.DatabaseAttribute;
 import com.penbase.dma.Dalyo.Component.DalyoComponent;
 import com.penbase.dma.Dalyo.Function.Function;
 
@@ -13,6 +16,8 @@ import android.widget.TextView;
 
 public class DalyoLabel extends TextView implements DalyoComponent {
 	private String mLabel;
+	private String mTableId = null;
+	private String mFieldId = null;
 	
 	public DalyoLabel(Context context, String label, Typeface tf, float fs) {
 		super(context);
@@ -125,5 +130,25 @@ public class DalyoLabel extends TextView implements DalyoComponent {
 	@Override
 	public int getMinimumWidth() {
 		return getSuggestedMinimumWidth();
+	}
+
+	@Override
+	public void setDatabase(String tid, String fid) {
+		this.mTableId = tid;
+		this.mFieldId = fid;
+	}
+	
+	public void refresh(HashMap<Object, Object> record) {
+		if (mFieldId != null) {
+			setText(record.get(DatabaseAttribute.FIELD + mFieldId).toString());
+		}
+	}
+	
+	public String getTableId() {
+		return mTableId;
+	}
+	
+	public String getFieldId() {
+		return mFieldId;
 	}
 }

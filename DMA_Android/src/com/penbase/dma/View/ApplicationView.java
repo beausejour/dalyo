@@ -191,11 +191,11 @@ public class ApplicationView extends Activity {
 		if (mOnLoadFunctionName != null) {
 			Function.createFunction(mOnLoadFunctionName);
 		}
+		sCurrentFormId = mStartFormId;
 		if (sOnLoadFuncMap.containsKey(mStartFormId)) {
 			sLayoutsMap.get(mStartFormId).onLoad(
 					sOnLoadFuncMap.get(mStartFormId));
 		}
-		sCurrentFormId = mStartFormId;
 		setTitle(sLayoutsMap.get(mStartFormId).getTitle());
 		mLoadingDialog.dismiss();
 		setContentView(sLayoutsMap.get(mStartFormId));

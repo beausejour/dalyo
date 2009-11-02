@@ -1,21 +1,27 @@
 package com.penbase.dma.Dalyo.Function.Namespace;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 
 import com.penbase.dma.Constant.DatabaseAttribute;
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
+import com.penbase.dma.Dalyo.Component.Form;
 import com.penbase.dma.Dalyo.Database.DatabaseAdapter;
 import com.penbase.dma.Dalyo.Database.Record;
 import com.penbase.dma.Dalyo.Function.Function;
+import com.penbase.dma.View.ApplicationView;
 
 import org.w3c.dom.Element;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Set;
 
 public class NS_DatabaseTable {
+	private static HashMap<String, String> sTableIdValuesMap = null;
+
 	public static String Average(Element element) {
 		String tableId = Function.getValue(element, ScriptTag.PARAMETER,
 				ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
@@ -29,6 +35,15 @@ public class NS_DatabaseTable {
 		String result = cursor.getString(0);
 		DatabaseAdapter.closeCursor(cursor);
 		return result;
+	}
+
+	public static void CancelEditRecord(Element element) {
+		String tableId = Function.getValue(element, ScriptTag.PARAMETER,
+				ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
+		if (sTableIdValuesMap.containsKey(tableId)) {
+			sTableIdValuesMap.remove(tableId);
+		}
+		DatabaseAdapter.rollbackTransaction();
 	}
 
 	public static Integer Count(Element element) {
@@ -258,6 +273,16 @@ public class NS_DatabaseTable {
 		return records;
 	}
 
+	public static boolean IsEditingRecord(Element element) {
+		boolean result = false;
+		String tableId = Function.getValue(element, ScriptTag.PARAMETER,
+				ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
+		if (sTableIdValuesMap != null) {
+			result = sTableIdValuesMap.containsKey(tableId);
+		}
+		return result;
+	}
+
 	public static String Max(Element element) {
 		String tableId = Function.getValue(element, ScriptTag.PARAMETER,
 				ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
@@ -288,6 +313,28 @@ public class NS_DatabaseTable {
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
+	public static void StartEditRecord(Element element) {
+		String tableId = Function.getValue(element, ScriptTag.PARAMETER,
+				ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
+		HashMap<Object, Object> record = (HashMap<Object, Object>) Function
+				.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.RECORD,
+						ScriptAttribute.RECORD);
+		HashMap<String, Form> layoutsMap = ApplicationView.getLayoutsMap();
+		Set<String> keys = layoutsMap.keySet();
+		for (String key : keys) {
+			layoutsMap.get(key).setRecordByTable(tableId, record);
+		}
+		if (sTableIdValuesMap == null) {
+			sTableIdValuesMap = new HashMap<String, String>();
+		}
+		String tid = DatabaseAttribute.ID + tableId;
+		if (record != null && record.containsKey(tid)) {
+			sTableIdValuesMap.put(tableId, record.get(tid).toString());
+			DatabaseAdapter.beginTransaction();
+		}
+	}
+
 	public static String Sum(Element element) {
 		String tableId = Function.getValue(element, ScriptTag.PARAMETER,
 				ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
@@ -301,6 +348,26 @@ public class NS_DatabaseTable {
 		String result = cursor.getString(0);
 		DatabaseAdapter.closeCursor(cursor);
 		return result;
+	}
+
+	public static void ValidateEditRecord(Element element) {
+		String tableId = Function.getValue(element, ScriptTag.PARAMETER,
+				ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
+		if (sTableIdValuesMap.containsKey(tableId)) {
+			ContentValues values = new ContentValues();
+			HashMap<String, Form> layoutsMap = ApplicationView.getLayoutsMap();
+			Set<String> keys = layoutsMap.keySet();
+			for (String key : keys) {
+				values.putAll(layoutsMap.get(key).validateEditRecord(tableId));
+			}
+			StringBuffer whereClause = new StringBuffer(DatabaseAttribute.ID);
+			whereClause.append(tableId).append(" = \'").append(
+					sTableIdValuesMap.get(tableId)).append("\'");
+			DatabaseAdapter.updateRecord(tableId, values, whereClause
+					.toString());
+			DatabaseAdapter.commitTransaction();
+			sTableIdValuesMap.remove(tableId);
+		}
 	}
 
 	private static ArrayList<HashMap<Object, Object>> getRecords(

@@ -1,5 +1,6 @@
 package com.penbase.dma.Dalyo.Component;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -9,8 +10,10 @@ import android.widget.ScrollView;
 import android.widget.ImageView.ScaleType;
 
 import com.penbase.dma.R;
+import com.penbase.dma.Constant.DatabaseAttribute;
 import com.penbase.dma.Dalyo.BarcodeReader.BarcodeComponent;
 import com.penbase.dma.Dalyo.Component.Custom.DalyoComboBox;
+import com.penbase.dma.Dalyo.Component.Custom.DalyoLabel;
 import com.penbase.dma.Dalyo.Component.Custom.DalyoTextField;
 import com.penbase.dma.Dalyo.Component.Custom.DalyoTextZone;
 import com.penbase.dma.Dalyo.Component.Custom.Doodle.DalyoDoodle;
@@ -105,17 +108,47 @@ public class Form extends ScrollView {
 	 * @param formId
 	 * @param record An HashMap {column name = value}
 	 */
-	public void setRecord(String formId, HashMap<Object, Object> record) {
-		int viewLen = mLayout.getChildCount();
-		for (int i=0; i<viewLen; i++) {
-			View view = mLayout.getChildAt(i);
-			if (view instanceof DalyoComboBox) {
-				((DalyoComboBox)view).setCurrentValue(formId, record);
-			} else if (view instanceof DalyoTextField) {
-				((DalyoTextField)view).refresh(record);
-			} else if (view instanceof DalyoTextZone) {
-				((DalyoTextZone)view).refresh(record);
-			}
+	public void setRecordByForm(String formId, HashMap<Object, Object> record) {
+		if (record != null) {
+			int viewLen = mLayout.getChildCount();
+			for (int i=0; i<viewLen; i++) {
+				View view = mLayout.getChildAt(i);
+				if (view instanceof DalyoComboBox) {
+					((DalyoComboBox)view).setCurrentValue(formId, record);
+				} else if (view instanceof DalyoTextField) {
+					((DalyoTextField)view).refresh(record);
+				} else if (view instanceof DalyoTextZone) {
+					((DalyoTextZone)view).refresh(record);
+				}
+			}	
+		}
+	}
+	
+	public void setRecordByTable(String tableId, HashMap<Object, Object> record) {
+		if (record != null) {
+			int viewCount = mLayout.getChildCount();
+			for (int i=0; i<viewCount; i++) {
+				View view = mLayout.getChildAt(i);
+				if (view instanceof DalyoLabel) {
+					DalyoLabel label = (DalyoLabel)view;
+					String labelTableId = label.getTableId();
+					if (labelTableId != null && labelTableId.equals(tableId)) {
+						label.refresh(record);
+					}
+				} else if (view instanceof DalyoTextField) {
+					DalyoTextField textField = (DalyoTextField)view;
+					String textFieldTableId = textField.getTableId();
+					if (textFieldTableId != null && textFieldTableId.equals(tableId)) {
+						textField.refresh(record);
+					}
+				} else if (view instanceof DalyoTextZone) {
+					DalyoTextZone textZone = (DalyoTextZone)view;
+					String textZoneTableId = textZone.getTableId();
+					if (textZoneTableId != null && textZoneTableId.equals(tableId)) {
+						textZone.refresh(record);
+					}
+				}
+			}	
 		}
 	}
 	
@@ -181,5 +214,42 @@ public class Form extends ScrollView {
 				}
 			}
 		}
+	}
+	
+	public ContentValues validateEditRecord(String tableId) {
+		ContentValues values = new ContentValues();
+		int viewCount = mLayout.getChildCount();
+		for (int i=0; i<viewCount; i++) {
+			View view = mLayout.getChildAt(i);
+			if (view instanceof DalyoLabel) {
+				DalyoLabel label = (DalyoLabel)view;
+				String labelTableId = label.getTableId();
+				if (labelTableId != null && labelTableId.equals(tableId)) {
+					String labelFid = label.getFieldId();
+					if (labelFid != null) {
+						values.put(DatabaseAttribute.FIELD + labelFid, label.getComponentLabel());
+					}
+				}
+			} else if (view instanceof DalyoTextField) {
+				DalyoTextField textField = (DalyoTextField)view;
+				String textFieldTableId = textField.getTableId();
+				if (textFieldTableId != null && textFieldTableId.equals(tableId)) {
+					String textFieldFid = textField.getFieldId();
+					if (textFieldFid != null) {
+						values.put(DatabaseAttribute.FIELD + textFieldFid, textField.getComponentLabel());
+					}
+				}
+			} else if (view instanceof DalyoTextZone) {
+				DalyoTextZone textZone = (DalyoTextZone)view;
+				String textZoneTableId = textZone.getTableId();
+				if (textZoneTableId != null && textZoneTableId.equals(tableId)) {
+					String textZoneFid = textZone.getFieldId();
+					if (textZoneFid != null) {
+						values.put(DatabaseAttribute.FIELD + textZoneFid, textZone.getComponentLabel());
+					}
+				}
+			}
+		}
+		return values;
 	}
 }
