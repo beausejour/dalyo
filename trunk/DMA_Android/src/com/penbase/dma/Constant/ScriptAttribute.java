@@ -11,6 +11,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_AVERAGE = "avg";
 	public static final String FUNCTION_BROWSE = "browse";
 	public static final String FUNCTION_CANCEL = "cancel";
+	public static final String FUNCTION_CANCELEDITRECORD = "cancelEditRecord";
 	public static final String FUNCTION_CANCELNRECORD = "cancelNewRecord";
 	public static final String FUNCTION_CANCELTRANSACTION = "cancelTransaction";
 	public static final String FUNCTION_CEIL = "ceil";
@@ -64,6 +65,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_INDEXOF = "indexOf";
 	public static final String FUNCTION_INIT = "init";
 	public static final String FUNCTION_ISCHECKED = "isChecked";
+	public static final String FUNCTION_ISEDITINGRECORD = "isEditingRecord";
 	public static final String FUNCTION_ISEMPTY = "isEmpty";
 	public static final String FUNCTION_ISENABLED = "isEnabled";
 	public static final String FUNCTION_ISSELECTED = "isSelected";
@@ -101,6 +103,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_SIZE = "size";
 	public static final String FUNCTION_START = "start";
 	public static final String FUNCTION_STARTAPP = "startApp";
+	public static final String FUNCTION_STARTEDITRECORD = "startEditRecord";
 	public static final String FUNCTION_STARTNEWRECORD = "startNewRecord";
 	public static final String FUNCTION_STARTTRANSACTION = "startTransaction";
 	public static final String FUNCTION_STOP = "stop";
@@ -117,6 +120,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_TOSTRING = "toString";
 	public static final String FUNCTION_TOUPPER = "toUpper";
 	public static final String FUNCTION_TRIM = "trim";
+	public static final String FUNCTION_VALIDATEEDITRECORD = "validateEditRecord";
 	public static final String FUNCTION_VALIDATETRANSACTION = "validateTransaction";
 	
 	//Namespace

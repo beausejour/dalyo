@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class DalyoTextZone extends EditText implements DalyoComponent {
-	private String mTableId = "";
-	private String mFieldId = "";
+	private String mTableId = null;
+	private String mFieldId = null;
 	private Context mContext;
 	private boolean mFilterNoNumeric;
 	private ArrayList<String> mNumericList;
@@ -35,35 +35,14 @@ public class DalyoTextZone extends EditText implements DalyoComponent {
 		mFilterNoNumeric = false;
 	}
 
-	public void setTableId(String tid) {
-		this.mTableId = tid;
-	}
-
-	public void setFieldId(String fid) {
-		this.mFieldId = fid;
-	}
-
-	public String getTableId() {
-		return mTableId;
-	}
-
-	public String getFieldId() {
-		return mFieldId;
-	}
-
 	public void clear() {
-		this.setText("");
+		this.setText(null);
 	}
 
 	public void refresh(HashMap<Object, Object> record) {
-		if ((!getFieldId().equals("")) && (record != null)) {
-			DalyoTextZone.this.setText((String) record
-					.get(DatabaseAttribute.FIELD + getFieldId()));
+		if ((mFieldId != null) && (record != null)) {
+			setText((String) record.get(DatabaseAttribute.FIELD + mFieldId));
 		}
-	}
-
-	public String getValue() {
-		return this.getText().toString();
 	}
 
 	public void setTrigger(final String trigger) {
@@ -166,12 +145,12 @@ public class DalyoTextZone extends EditText implements DalyoComponent {
 
 	@Override
 	public String getComponentLabel() {
-		return getValue();
+		return getText().toString();
 	}
 
 	@Override
 	public Object getComponentValue() {
-		return getValue();
+		return getText();
 	}
 
 	@Override
@@ -269,5 +248,19 @@ public class DalyoTextZone extends EditText implements DalyoComponent {
 	@Override
 	public int getMinimumWidth() {
 		return getSuggestedMinimumWidth();
+	}
+
+	@Override
+	public void setDatabase(String tid, String fid) {
+		this.mTableId = tid;
+		this.mFieldId = fid;
+	}
+	
+	public String getTableId() {
+		return mTableId;
+	}
+	
+	public String getFieldId() {
+		return mFieldId;
 	}
 }

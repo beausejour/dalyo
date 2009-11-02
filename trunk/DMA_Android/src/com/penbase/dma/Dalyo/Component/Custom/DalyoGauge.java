@@ -128,4 +128,10 @@ public class DalyoGauge extends SeekBar implements DalyoComponent {
 	public int getMinimumWidth() {
 		return getSuggestedMinimumWidth();
 	}
+
+	@Override
+	public void setDatabase(String tid, String fid) {
+		// TODO Auto-generated method stub
+		
+	}
 }

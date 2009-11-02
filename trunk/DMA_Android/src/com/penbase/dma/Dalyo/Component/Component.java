@@ -31,8 +31,8 @@ public class Component {
 	private String mFontType = null;
 	private String mBackgroundColor = null;
 	private DalyoComponent mComponent = null;
-	private String mTableID = null;
-	private String mFieldID = null;
+	private String mTableId = null;
+	private String mFieldId = null;
 	private String mDefaultValue = null;
 
 	// Variables for combobox
@@ -104,11 +104,11 @@ public class Component {
 	}
 
 	public void setTableId(String tid) {
-		this.mTableID = tid;
+		this.mTableId = tid;
 	}
 
 	public void setFieldId(String fid) {
-		this.mFieldID = fid;
+		this.mFieldId = fid;
 	}
 
 	public void setItemList(ArrayList<String> l) {
@@ -186,6 +186,7 @@ public class Component {
 		if (mType.equals(DesignTag.COMPONENT_BARCODECOMPONENT)) {
 			BarcodeComponent barcodeComponent = new BarcodeComponent(mContext,
 					mId);
+			barcodeComponent.setDatabase(mTableId, mFieldId);
 			mComponent = barcodeComponent;
 		} else if (mType.equals(DesignTag.COMPONENT_BUTTON)) {
 			DalyoButton button = null;
@@ -222,6 +223,7 @@ public class Component {
 			} else {
 				checkbox = new DalyoCheckBox(mContext, mLabel, false);
 			}
+			checkbox.setDatabase(mTableId, mFieldId);
 			checkbox.setTypeface(getFontType(mFontType));
 			checkbox.setTextSize(getFontSize(mFontSize));
 			if (mFontColor != null) {
@@ -260,17 +262,20 @@ public class Component {
 						getFontType(mFontType), getFontSize(mFontSize),
 						mFontColor, false, mDefaultValue);
 			}
+			datefield.setDatabase(mTableId, mFieldId);
 			mComponent = datefield;
 		} else if (mType.equals(DesignTag.COMPONENT_DATAVIEW)) {
-			DalyoDataView dataview = new DalyoDataView(mContext, mTableID);
+			DalyoDataView dataview = new DalyoDataView(mContext, mTableId);
 			dataview.setText(getFontSize(mFontSize), getFontType(mFontType));
 			mComponent = dataview;
 		} else if (mType.equals(DesignTag.COMPONENT_DOODLE)) {
 			DalyoDoodle dalyoDoodle = new DalyoDoodle(mContext, mId);
+			dalyoDoodle.setDatabase(mTableId, mFieldId);
 			mComponent = dalyoDoodle;
 		} else if (mType.equals(DesignTag.COMPONENT_GAUGE)) {
 			DalyoGauge dalyoGauge = new DalyoGauge(mContext, Integer
 					.valueOf(mDefaultValue), mMinValue, mMaxValue);
+			dalyoGauge.setDatabase(mTableId, mFieldId);
 			mComponent = dalyoGauge;
 		} else if (mType.equals(DesignTag.COMPONENT_IMAGE)) {
 			DalyoImage imageview = new DalyoImage(mContext);
@@ -280,6 +285,7 @@ public class Component {
 					imageview.setInitialImage(path);
 				}
 			}
+			imageview.setDatabase(mTableId, mFieldId);
 			mComponent = imageview;
 		} else if (mType.equals(DesignTag.COMPONENT_LABEL)) {
 			DalyoLabel labelObject = new DalyoLabel(mContext, mLabel,
@@ -290,15 +296,18 @@ public class Component {
 			if (mAlign != null) {
 				labelObject.setGravity(getGravity(mAlign));
 			}
+			labelObject.setDatabase(mTableId, mFieldId);
 			mComponent = labelObject;
 		} else if (mType.equals(DesignTag.COMPONENT_NUMBERBOX)) {
 			DalyoNumberBox numberbox = new DalyoNumberBox(mContext, Integer
 					.valueOf(mDefaultValue), mStepValue);
 			numberbox.setMaxValue(mMaxValue);
 			numberbox.setMinValue(mMinValue);
+			numberbox.setDatabase(mTableId, mFieldId);
 			mComponent = numberbox;
 		} else if (mType.equals(DesignTag.COMPONENT_PICTUREBOX)) {
 			DalyoPictureBox pictureBox = new DalyoPictureBox(mContext, mId);
+			pictureBox.setDatabase(mTableId, mFieldId);
 			mComponent = pictureBox;
 		} else if (mType.equals(DesignTag.COMPONENT_RADIOBUTTON)) {
 			DalyoRadiobutton dalyoRadiobutton = new DalyoRadiobutton(mContext,
@@ -306,6 +315,7 @@ public class Component {
 			dalyoRadiobutton.setText(mLabel);
 			dalyoRadiobutton.setTypeface(getFontType(mFontType));
 			dalyoRadiobutton.setTextSize(getFontSize(mFontSize));
+			dalyoRadiobutton.setDatabase(mTableId, mFieldId);
 			if (mFontColor != null) {
 				dalyoRadiobutton.setTextColor(getColor(mFontColor));
 			} else {
@@ -336,6 +346,7 @@ public class Component {
 			if (mPassword) {
 				textfield.setPassword();
 			}
+			textfield.setDatabase(mTableId, mFieldId);
 			mComponent = textfield;
 		} else if (mType.equals(DesignTag.COMPONENT_TEXTZONE)) {
 			DalyoTextZone textzone = new DalyoTextZone(mContext,
@@ -358,11 +369,13 @@ public class Component {
 			if (!mTextFilter.equals(Constant.NONE)) {
 				textzone.setTextFilter(mTextFilter);
 			}
+			textzone.setDatabase(mTableId, mFieldId);
 			mComponent = textzone;
 		} else if (mType.equals(DesignTag.COMPONENT_TIMEFIELD)) {
 			DalyoTimeField timefield = new DalyoTimeField(mContext,
 					getFontType(mFontType), getFontSize(mFontSize), mFontColor,
 					mDefaultValue);
+			timefield.setDatabase(mTableId, mFieldId);
 			mComponent = timefield;
 		} else {
 			DalyoButton button = new DalyoButton(mContext, mLabel

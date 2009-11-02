@@ -565,6 +565,8 @@ public class Function {
 		} else if (namespace.equals(ScriptAttribute.NAMESPACE_DB_TABLE)) {
 			if (function.equals(ScriptAttribute.FUNCTION_AVERAGE)) {
 				result = NS_DatabaseTable.Average(element);
+			} else if (function.equals(ScriptAttribute.FUNCTION_CANCELEDITRECORD)) {
+				NS_DatabaseTable.CancelEditRecord(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_CANCELNRECORD)) {
 
 			} else if (function.equals(ScriptAttribute.FUNCTION_CLEAR)) {
@@ -596,6 +598,8 @@ public class Function {
 				result = NS_DatabaseTable.GetRecord(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_GETRECORDS)) {
 				result = NS_DatabaseTable.GetRecords(element);
+			} else if (function.equals(ScriptAttribute.FUNCTION_ISEDITINGRECORD)) {
+				result = NS_DatabaseTable.IsEditingRecord(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_MAX)) {
 				result = NS_DatabaseTable.Max(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_MIN)) {
@@ -604,10 +608,14 @@ public class Function {
 				if (!sIsFirstTime) {
 					result = NS_DatabaseTable.CreateNewRecord(element);
 				}
+			} else if (function.equals(ScriptAttribute.FUNCTION_STARTEDITRECORD)) {
+				NS_DatabaseTable.StartEditRecord(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_STARTNEWRECORD)) {
 
 			} else if (function.equals(ScriptAttribute.FUNCTION_SUM)) {
 				result = NS_DatabaseTable.Sum(element);
+			} else if (function.equals(ScriptAttribute.FUNCTION_VALIDATEEDITRECORD)) {
+				NS_DatabaseTable.ValidateEditRecord(element);
 			}
 		} else if (namespace.equals(ScriptAttribute.FILTER)) {
 			if (function.equals(ScriptAttribute.FUNCTION_ADDCRITERIA)) {

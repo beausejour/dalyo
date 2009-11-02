@@ -110,4 +110,10 @@ public class DalyoImage extends ImageView implements DalyoComponent {
 	public int getMinimumWidth() {
 		return getSuggestedMinimumWidth();
 	}
+
+	@Override
+	public void setDatabase(String tid, String fid) {
+		// TODO Auto-generated method stub
+		
+	}
 }

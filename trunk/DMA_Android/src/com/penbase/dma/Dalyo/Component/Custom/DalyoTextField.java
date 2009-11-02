@@ -22,8 +22,8 @@ import java.util.HashMap;
 
 public class DalyoTextField extends AutoCompleteTextView implements
 		DalyoComponent {
-	private String mTableId = "";
-	private String mFieldId = "";
+	private String mTableId = null;
+	private String mFieldId = null;
 	private Context mContext;
 	private boolean mFilterNoNumeric;
 	private ArrayList<String> mNumericList;
@@ -36,26 +36,10 @@ public class DalyoTextField extends AutoCompleteTextView implements
 		this.setTextSize(fs);
 	}
 
-	public void setTableId(String tid) {
-		this.mTableId = tid;
-	}
-
-	public void setFieldId(String fid) {
-		this.mFieldId = fid;
-	}
-
-	public String getTableId() {
-		return mTableId;
-	}
-
-	public String getFieldId() {
-		return mFieldId;
-	}
-
 	public void setPassword() {
 		setTransformationMethod(new PasswordTransformationMethod());
 	}
-	
+
 	public void setTrigger(final String trigger) {
 		int resourceId = 0;
 		if (trigger.equals(Constant.TRIGGERMAIL)) {
@@ -155,14 +139,13 @@ public class DalyoTextField extends AutoCompleteTextView implements
 	}
 
 	public void refresh(HashMap<Object, Object> record) {
-		if (!getFieldId().equals("")) {
-			DalyoTextField.this.setText((String) record
-					.get(DatabaseAttribute.FIELD + getFieldId()));
+		if (mFieldId != null) {
+			setText(record.get(DatabaseAttribute.FIELD + mFieldId).toString());
 		}
 	}
 
 	public void clear() {
-		this.setText("");
+		this.setText(null);
 	}
 
 	public String getValue() {
@@ -171,7 +154,7 @@ public class DalyoTextField extends AutoCompleteTextView implements
 
 	public boolean isEmpty() {
 		boolean result = false;
-		if (this.getValue().length() == 0) {
+		if (this.getText().length() == 0) {
 			result = true;
 		}
 		return result;
@@ -179,12 +162,12 @@ public class DalyoTextField extends AutoCompleteTextView implements
 
 	@Override
 	public String getComponentLabel() {
-		return getValue();
+		return this.getText().toString();
 	}
 
 	@Override
 	public Object getComponentValue() {
-		return getValue();
+		return this.getText().toString();
 	}
 
 	@Override
@@ -282,5 +265,19 @@ public class DalyoTextField extends AutoCompleteTextView implements
 	@Override
 	public int getMinimumWidth() {
 		return getSuggestedMinimumWidth();
+	}
+
+	@Override
+	public void setDatabase(String tid, String fid) {
+		this.mTableId = tid;
+		this.mFieldId = fid;
+	}
+	
+	public String getTableId() {
+		return mTableId;
+	}
+	
+	public String getFieldId() {
+		return mFieldId;
 	}
 }
