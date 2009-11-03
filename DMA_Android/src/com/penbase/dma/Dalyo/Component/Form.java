@@ -216,6 +216,43 @@ public class Form extends ScrollView {
 		}
 	}
 	
+	public HashMap<String, String> validateNewRecord(String tableId) {
+		HashMap<String, String> values = new HashMap<String, String>();
+		int viewCount = mLayout.getChildCount();
+		for (int i=0; i<viewCount; i++) {
+			View view = mLayout.getChildAt(i);
+			if (view instanceof DalyoLabel) {
+				DalyoLabel label = (DalyoLabel)view;
+				String labelTableId = label.getTableId();
+				if (labelTableId != null && labelTableId.equals(tableId)) {
+					String labelFid = label.getFieldId();
+					if (labelFid != null) {
+						values.put(labelFid, label.getComponentLabel());
+					}
+				}
+			} else if (view instanceof DalyoTextField) {
+				DalyoTextField textField = (DalyoTextField)view;
+				String textFieldTableId = textField.getTableId();
+				if (textFieldTableId != null && textFieldTableId.equals(tableId)) {
+					String textFieldFid = textField.getFieldId();
+					if (textFieldFid != null) {
+						values.put(textFieldFid, textField.getComponentLabel());
+					}
+				}
+			} else if (view instanceof DalyoTextZone) {
+				DalyoTextZone textZone = (DalyoTextZone)view;
+				String textZoneTableId = textZone.getTableId();
+				if (textZoneTableId != null && textZoneTableId.equals(tableId)) {
+					String textZoneFid = textZone.getFieldId();
+					if (textZoneFid != null) {
+						values.put(textZoneFid, textZone.getComponentLabel());
+					}
+				}
+			}
+		}
+		return values;	
+	}
+	
 	public ContentValues validateEditRecord(String tableId) {
 		ContentValues values = new ContentValues();
 		int viewCount = mLayout.getChildCount();

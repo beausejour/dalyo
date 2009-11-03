@@ -1241,6 +1241,9 @@ public class DatabaseAdapter {
 
 	public void closeDatabase() {
 		if ((sSqlite != null) && (sSqlite.isOpen())) {
+			if (sSqlite.inTransaction()) {
+				sSqlite.endTransaction();
+			}
 			sSqlite.close();
 		}
 		sSqlite = null;

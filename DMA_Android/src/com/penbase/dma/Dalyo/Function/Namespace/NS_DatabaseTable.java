@@ -20,7 +20,8 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class NS_DatabaseTable {
-	private static HashMap<String, String> sTableIdValuesMap = null;
+	private static ArrayList<String> sCreateTidValueList = null;
+	private static HashMap<String, String> sEditTidValueMap = null;
 
 	public static String Average(Element element) {
 		String tableId = Function.getValue(element, ScriptTag.PARAMETER,
@@ -40,8 +41,18 @@ public class NS_DatabaseTable {
 	public static void CancelEditRecord(Element element) {
 		String tableId = Function.getValue(element, ScriptTag.PARAMETER,
 				ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
-		if (sTableIdValuesMap.containsKey(tableId)) {
-			sTableIdValuesMap.remove(tableId);
+		if (sEditTidValueMap != null && sEditTidValueMap.containsKey(tableId)) {
+			sEditTidValueMap.remove(tableId);
+		}
+		DatabaseAdapter.rollbackTransaction();
+	}
+
+	public static void CancelNewRecord(Element element) {
+		String tableId = Function.getValue(element, ScriptTag.PARAMETER,
+				ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
+		if (sCreateTidValueList != null
+				&& sCreateTidValueList.contains(tableId)) {
+			sCreateTidValueList.remove(tableId);
 		}
 		DatabaseAdapter.rollbackTransaction();
 	}
@@ -176,7 +187,9 @@ public class NS_DatabaseTable {
 		String fieldId = Function.getValue(element, ScriptTag.PARAMETER,
 				ScriptAttribute.FIELD, ScriptAttribute.FIELD).toString();
 		if (record != null) {
-			value = record.get(DatabaseAttribute.FIELD + fieldId);
+			if (record.containsKey(DatabaseAttribute.ID + tableId)) {
+				value = record.get(DatabaseAttribute.FIELD + fieldId);	
+			}
 		}
 		return value;
 	}
@@ -273,12 +286,39 @@ public class NS_DatabaseTable {
 		return records;
 	}
 
+	public static boolean IsCreatingRecord(Element element) {
+		boolean result = false;
+		String tableId = Function.getValue(element, ScriptTag.PARAMETER,
+				ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
+		if (sCreateTidValueList != null) {
+			result = sCreateTidValueList.contains(tableId);
+		}
+		return result;
+	}
+
 	public static boolean IsEditingRecord(Element element) {
 		boolean result = false;
 		String tableId = Function.getValue(element, ScriptTag.PARAMETER,
 				ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
-		if (sTableIdValuesMap != null) {
-			result = sTableIdValuesMap.containsKey(tableId);
+		if (sEditTidValueMap != null) {
+			result = sEditTidValueMap.containsKey(tableId);
+		}
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static boolean IsRecordSynchronized(Element element) {
+		boolean result = false;
+		String tableId = Function.getValue(element, ScriptTag.PARAMETER,
+				ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
+		HashMap<Object, Object> record = (HashMap<Object, Object>) Function
+				.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.RECORD,
+						ScriptAttribute.RECORD);
+		if (record != null) {
+			if (record.containsKey(DatabaseAttribute.ID + tableId)) {
+				result = (Integer.parseInt(record.get(DatabaseAttribute.STATE)
+						.toString()) == DatabaseAttribute.SYNCHRONIZED);	
+			}
 		}
 		return result;
 	}
@@ -313,6 +353,19 @@ public class NS_DatabaseTable {
 		return result;
 	}
 
+	public static void StartNewRecord(Element element) {
+		String tableId = Function.getValue(element, ScriptTag.PARAMETER,
+				ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
+		if (sCreateTidValueList == null) {
+			sCreateTidValueList = new ArrayList<String>();
+		}
+		if (sCreateTidValueList.contains(tableId)) {
+			sCreateTidValueList.remove(tableId);
+		}
+		sCreateTidValueList.add(tableId);
+		DatabaseAdapter.beginTransaction();
+	}
+
 	@SuppressWarnings("unchecked")
 	public static void StartEditRecord(Element element) {
 		String tableId = Function.getValue(element, ScriptTag.PARAMETER,
@@ -325,12 +378,12 @@ public class NS_DatabaseTable {
 		for (String key : keys) {
 			layoutsMap.get(key).setRecordByTable(tableId, record);
 		}
-		if (sTableIdValuesMap == null) {
-			sTableIdValuesMap = new HashMap<String, String>();
+		if (sEditTidValueMap == null) {
+			sEditTidValueMap = new HashMap<String, String>();
 		}
 		String tid = DatabaseAttribute.ID + tableId;
 		if (record != null && record.containsKey(tid)) {
-			sTableIdValuesMap.put(tableId, record.get(tid).toString());
+			sEditTidValueMap.put(tableId, record.get(tid).toString());
 			DatabaseAdapter.beginTransaction();
 		}
 	}
@@ -353,7 +406,7 @@ public class NS_DatabaseTable {
 	public static void ValidateEditRecord(Element element) {
 		String tableId = Function.getValue(element, ScriptTag.PARAMETER,
 				ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
-		if (sTableIdValuesMap.containsKey(tableId)) {
+		if (sEditTidValueMap != null && sEditTidValueMap.containsKey(tableId)) {
 			ContentValues values = new ContentValues();
 			HashMap<String, Form> layoutsMap = ApplicationView.getLayoutsMap();
 			Set<String> keys = layoutsMap.keySet();
@@ -362,11 +415,39 @@ public class NS_DatabaseTable {
 			}
 			StringBuffer whereClause = new StringBuffer(DatabaseAttribute.ID);
 			whereClause.append(tableId).append(" = \'").append(
-					sTableIdValuesMap.get(tableId)).append("\'");
+					sEditTidValueMap.get(tableId)).append("\'");
 			DatabaseAdapter.updateRecord(tableId, values, whereClause
 					.toString());
 			DatabaseAdapter.commitTransaction();
-			sTableIdValuesMap.remove(tableId);
+			sEditTidValueMap.remove(tableId);
+		}
+	}
+
+	public static void ValidateNewRecord(Element element) {
+		String tableId = Function.getValue(element, ScriptTag.PARAMETER,
+				ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
+		if (sCreateTidValueList != null && sCreateTidValueList.contains(tableId)) {
+			Cursor cursorAllRows = DatabaseAdapter.selectQuery(tableId, null, null);
+			int newId = cursorAllRows.getCount()+1;
+			DatabaseAdapter.closeCursor(cursorAllRows);
+			ArrayList<Integer> fieldsList = new ArrayList<Integer>();
+			ArrayList<Object> record = new ArrayList<Object>();
+			record.add(newId);
+			HashMap<String, Form> layoutsMap = ApplicationView.getLayoutsMap();
+			Set<String> keys = layoutsMap.keySet();
+			for (String key : keys) {
+				HashMap<String, String> fidValueMap = layoutsMap.get(key)
+						.validateNewRecord(tableId);
+				Set<String> fieldIdSet = fidValueMap.keySet();
+				for (String fieldId : fieldIdSet) {
+					fieldsList.add(Integer.parseInt(fieldId));
+					record.add(fidValueMap.get(fieldId));
+				}
+			}
+			DatabaseAdapter.addQuery(Integer.parseInt(tableId), fieldsList,
+					record);
+			DatabaseAdapter.commitTransaction();
+			sCreateTidValueList.remove(tableId);
 		}
 	}
 
