@@ -12,7 +12,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_BROWSE = "browse";
 	public static final String FUNCTION_CANCEL = "cancel";
 	public static final String FUNCTION_CANCELEDITRECORD = "cancelEditRecord";
-	public static final String FUNCTION_CANCELNRECORD = "cancelNewRecord";
+	public static final String FUNCTION_CANCELNEWRECORD = "cancelNewRecord";
 	public static final String FUNCTION_CANCELTRANSACTION = "cancelTransaction";
 	public static final String FUNCTION_CEIL = "ceil";
 	public static final String FUNCTION_CHECK = "check";	
@@ -65,9 +65,11 @@ public class ScriptAttribute {
 	public static final String FUNCTION_INDEXOF = "indexOf";
 	public static final String FUNCTION_INIT = "init";
 	public static final String FUNCTION_ISCHECKED = "isChecked";
+	public static final String FUNCTION_ISCREATINGRECORD = "isCreatingRecord";
 	public static final String FUNCTION_ISEDITINGRECORD = "isEditingRecord";
 	public static final String FUNCTION_ISEMPTY = "isEmpty";
 	public static final String FUNCTION_ISENABLED = "isEnabled";
+	public static final String FUNCTION_ISRECORDSYNCHRONIZED = "isRecordSynchronized";
 	public static final String FUNCTION_ISSELECTED = "isSelected";
 	public static final String FUNCTION_ISVISIBLE = "isVisible";
 	public static final String FUNCTION_LENGTH = "length";
@@ -121,6 +123,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_TOUPPER = "toUpper";
 	public static final String FUNCTION_TRIM = "trim";
 	public static final String FUNCTION_VALIDATEEDITRECORD = "validateEditRecord";
+	public static final String FUNCTION_VALIDATENEWRECORD = "validateNewRecord";
 	public static final String FUNCTION_VALIDATETRANSACTION = "validateTransaction";
 	
 	//Namespace
