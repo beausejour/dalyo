@@ -5,8 +5,12 @@ public class ScriptAttribute {
 	public static final String FUNCTION_ABS = "abs";
 	public static final String FUNCTION_ADD = "add";
 	public static final String FUNCTION_ADDCRITERIA = "addCriteria";
+	public static final String FUNCTION_ADDDAYS = "addDays";
+	public static final String FUNCTION_ADDHOURS = "addHours";
 	public static final String FUNCTION_ADDITEM = "addItem";
 	public static final String FUNCTION_ADDMINUTES = "addMinutes";
+	public static final String FUNCTION_ADDMONTHS = "addMonths";
+	public static final String FUNCTION_ADDYEARS = "addYears";
 	public static final String FUNCTION_ALERT = "alert";
 	public static final String FUNCTION_AVERAGE = "avg";
 	public static final String FUNCTION_BROWSE = "browse";
@@ -20,6 +24,10 @@ public class ScriptAttribute {
 	public static final String FUNCTION_CONCAT = "concat";
 	public static final String FUNCTION_CONFIRM = "confirm";
 	public static final String FUNCTION_COUNT = "count";
+	public static final String FUNCTION_CREATEDATE = "createDate";
+	public static final String FUNCTION_CURRENTDAYINMONTH = "currentDayInMonth";
+	public static final String FUNCTION_CURRENTMONTH = "currentMonth";
+	public static final String FUNCTION_CURRENTYEAR = "currentYear";
 	public static final String FUNCTION_DELETERECORD = "deleteRecord";
 	public static final String FUNCTION_DELETERECORDS = "deleteRecords";
 	public static final String FUNCTION_DIVISION = "div";
@@ -37,6 +45,8 @@ public class ScriptAttribute {
 	public static final String FUNCTION_GETCOLUMNINDEX = "getColumnIndex";
 	public static final String FUNCTION_GETCURRENTFORM = "getCurrentForm";
 	public static final String FUNCTION_GETCURRENTUSER = "getCurrentUser";
+	public static final String FUNCTION_GETDAYNAME = "getDayName";
+	public static final String FUNCTION_GETDAYSINMONTH = "getDaysInMonth";
 	public static final String FUNCTION_GETFIELDBYNAME = "getFieldByName";
 	public static final String FUNCTION_GETFIELDNAME = "getFieldName";
 	public static final String FUNCTION_GETFIELDS = "getFields";
@@ -154,6 +164,8 @@ public class ScriptAttribute {
 	public static final String PARAMETER_NAME_CAPTION = "caption";
 	public static final String PARAMETER_NAME_COLUMN = "col";
 	public static final String PARAMETER_NAME_CONFIRM = "confirm";
+	public static final String PARAMETER_NAME_DAY = "day";
+	public static final String PARAMETER_NAME_DAYS = "days";
 	public static final String PARAMETER_NAME_DECIMALS = "decimals";
 	public static final String PARAMETER_NAME_DELAYED = "delayed";
 	public static final String PARAMETER_NAME_DELIMITER = "delimiter";
@@ -167,6 +179,7 @@ public class ScriptAttribute {
 	public static final String PARAMETER_NAME_FILTERS = "filters";
 	public static final String PARAMETER_NAME_FORMAT = "format";
 	public static final String PARAMETER_NAME_GLUE = "glue";
+	public static final String PARAMETER_NAME_HOURS = "hours";
 	public static final String PARAMETER_NAME_INDEX = "index";
 	public static final String PARAMETER_NAME_INTERVAL = "interval";
 	public static final String PARAMETER_NAME_ITALIC = "italic";
@@ -177,11 +190,14 @@ public class ScriptAttribute {
 	public static final String PARAMETER_NAME_MAX = "max";
 	public static final String PARAMETER_NAME_MIN = "min";
 	public static final String PARAMETER_NAME_MINUTES = "minutes";
+	public static final String PARAMETER_NAME_MONTH = "month";
+	public static final String PARAMETER_NAME_MONTHS = "months";
 	public static final String PARAMETER_NAME_PATH = "path";
 	public static final String PARAMETER_NAME_PERCENT = "percent";
 	public static final String PARAMETER_NAME_REPLACEMENT = "replacement";
 	public static final String PARAMETER_NAME_ROW = "row";
 	public static final String PARAMETER_NAME_SEARCH = "search";
+	public static final String PARAMETER_NAME_SECONDS = "seconds";
 	public static final String PARAMETER_NAME_SHOW = "show";
 	public static final String PARAMETER_NAME_SOURCE = "source";
 	public static final String PARAMETER_NAME_START = "start";
@@ -199,6 +215,8 @@ public class ScriptAttribute {
 	public static final String PARAMETER_NAME_VALUE = "value";
 	public static final String PARAMETER_NAME_VALUES = "values";
 	public static final String PARAMETER_NAME_VISIBLE = "visible";
+	public static final String PARAMETER_NAME_YEAR = "year";
+	public static final String PARAMETER_NAME_YEARS = "years";
 	
 	//Parameters type
 	public static final String PARAMETER_TYPE_BOOLEAN = "boolean";

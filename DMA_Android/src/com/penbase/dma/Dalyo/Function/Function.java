@@ -521,10 +521,30 @@ public class Function {
 				result = NS_ComponentTextField.IsEmpty(element);
 			}
 		} else if (namespace.equals(ScriptAttribute.NAMESPACE_DATE)) {
-			if (function.equals(ScriptAttribute.FUNCTION_ADDMINUTES)) {
+			if (function.equals(ScriptAttribute.FUNCTION_ADDDAYS)) {
+				result = NS_Date.AddDays(element);
+			} else if (function.equals(ScriptAttribute.FUNCTION_ADDHOURS)) {
+				result = NS_Date.AddHours(element);
+			} else if (function.equals(ScriptAttribute.FUNCTION_ADDMINUTES)) {
 				result = NS_Date.AddMinutes(element);
+			} else if (function.equals(ScriptAttribute.FUNCTION_ADDMONTHS)) {
+				result = NS_Date.AddMonths(element);
+			} else if (function.equals(ScriptAttribute.FUNCTION_ADDYEARS)) {
+				result = NS_Date.AddYears(element);
+			} else if (function.equals(ScriptAttribute.FUNCTION_CREATEDATE)) {
+				result = NS_Date.CreateDate(element);
+			} else if (function.equals(ScriptAttribute.FUNCTION_CURRENTDAYINMONTH)) {
+				result = NS_Date.CurrentDayInMonth();
+			} else if (function.equals(ScriptAttribute.FUNCTION_CURRENTMONTH)) {
+				result = NS_Date.CurrentMonth();
+			} else if (function.equals(ScriptAttribute.FUNCTION_CURRENTYEAR)) {
+				result = NS_Date.CurrentYear();
 			} else if (function.equals(ScriptAttribute.FUNCTION_FORMAT)) {
 				result = NS_Date.Format(element);
+			} else if (function.equals(ScriptAttribute.FUNCTION_GETDAYNAME)) {
+				result = NS_Date.GetDayName(element);
+			} else if (function.equals(ScriptAttribute.FUNCTION_GETDAYSINMONTH)) {
+				result = NS_Date.GetDaysInMonth(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_NOW)) {
 				result = NS_Date.CurrentDate();
 			} else if (function.equals(ScriptAttribute.FUNCTION_NOWHOUR)) {
@@ -555,7 +575,7 @@ public class Function {
 				result = NS_DatabaseDataset.GetValue(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_SELECT)) {
 				if (!sIsFirstTime) {
-					result = NS_DatabaseDataset.Select(element);	
+					result = NS_DatabaseDataset.Select(element);
 				}
 			}
 		} else if (namespace.equals(ScriptAttribute.NAMESPACE_DB_FIELD)) {
@@ -565,9 +585,11 @@ public class Function {
 		} else if (namespace.equals(ScriptAttribute.NAMESPACE_DB_TABLE)) {
 			if (function.equals(ScriptAttribute.FUNCTION_AVERAGE)) {
 				result = NS_DatabaseTable.Average(element);
-			} else if (function.equals(ScriptAttribute.FUNCTION_CANCELEDITRECORD)) {
+			} else if (function
+					.equals(ScriptAttribute.FUNCTION_CANCELEDITRECORD)) {
 				NS_DatabaseTable.CancelEditRecord(element);
-			} else if (function.equals(ScriptAttribute.FUNCTION_CANCELNEWRECORD)) {
+			} else if (function
+					.equals(ScriptAttribute.FUNCTION_CANCELNEWRECORD)) {
 				NS_DatabaseTable.CancelNewRecord(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_CLEAR)) {
 				NS_DatabaseTable.Clear(element);
@@ -598,14 +620,16 @@ public class Function {
 				result = NS_DatabaseTable.GetRecord(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_GETRECORDS)) {
 				result = NS_DatabaseTable.GetRecords(element);
-			} else if (function.equals(ScriptAttribute.FUNCTION_ISCREATINGRECORD)) {
+			} else if (function
+					.equals(ScriptAttribute.FUNCTION_ISCREATINGRECORD)) {
 				result = NS_DatabaseTable.IsCreatingRecord(element);
-			} else if (function.equals(ScriptAttribute.FUNCTION_ISEDITINGRECORD)) {
+			} else if (function
+					.equals(ScriptAttribute.FUNCTION_ISEDITINGRECORD)) {
 				result = NS_DatabaseTable.IsEditingRecord(element);
-			} else if (function.equals(ScriptAttribute.FUNCTION_ISRECORDSYNCHRONIZED)) {
+			} else if (function
+					.equals(ScriptAttribute.FUNCTION_ISRECORDSYNCHRONIZED)) {
 				result = NS_DatabaseTable.IsRecordSynchronized(element);
-			}
-			else if (function.equals(ScriptAttribute.FUNCTION_MAX)) {
+			} else if (function.equals(ScriptAttribute.FUNCTION_MAX)) {
 				result = NS_DatabaseTable.Max(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_MIN)) {
 				result = NS_DatabaseTable.Min(element);
@@ -613,15 +637,18 @@ public class Function {
 				if (!sIsFirstTime) {
 					result = NS_DatabaseTable.CreateNewRecord(element);
 				}
-			} else if (function.equals(ScriptAttribute.FUNCTION_STARTEDITRECORD)) {
+			} else if (function
+					.equals(ScriptAttribute.FUNCTION_STARTEDITRECORD)) {
 				NS_DatabaseTable.StartEditRecord(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_STARTNEWRECORD)) {
 				NS_DatabaseTable.StartNewRecord(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_SUM)) {
 				result = NS_DatabaseTable.Sum(element);
-			} else if (function.equals(ScriptAttribute.FUNCTION_VALIDATEEDITRECORD)) {
+			} else if (function
+					.equals(ScriptAttribute.FUNCTION_VALIDATEEDITRECORD)) {
 				NS_DatabaseTable.ValidateEditRecord(element);
-			}else if (function.equals(ScriptAttribute.FUNCTION_VALIDATENEWRECORD)) {
+			} else if (function
+					.equals(ScriptAttribute.FUNCTION_VALIDATENEWRECORD)) {
 				NS_DatabaseTable.ValidateNewRecord(element);
 			}
 		} else if (namespace.equals(ScriptAttribute.FILTER)) {

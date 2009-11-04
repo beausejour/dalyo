@@ -8,60 +8,119 @@ import com.penbase.dma.Dalyo.Function.DateTime.Time;
 
 import org.w3c.dom.Element;
 
-import java.text.Format;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 
 public class NS_Date {
+	public static Object AddDays(Element element) {
+		Object date = Function.getValue(element, ScriptTag.PARAMETER,
+				ScriptAttribute.DATE, ScriptAttribute.DATE);
+		int days = Integer.valueOf(Function.getValue(element,
+				ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_DAYS,
+				ScriptAttribute.PARAMETER_TYPE_INT).toString());
+		return ((DalyoDate) date).addDays(days);
+	}
+	
+	public static Object AddHours(Element element) {
+		Object date = Function.getValue(element, ScriptTag.PARAMETER,
+				ScriptAttribute.DATE, ScriptAttribute.DATE);
+		int hours = Integer.valueOf(Function.getValue(element,
+				ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_HOURS,
+				ScriptAttribute.PARAMETER_TYPE_INT).toString());
+		return ((DalyoDate) date).addHours(hours);
+	}
+
 	public static Object AddMinutes(Element element) {
-		Object date = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.DATE, ScriptAttribute.DATE);
-		int minutes = Integer.valueOf(Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_MINUTES, ScriptAttribute.PARAMETER_TYPE_INT).toString());
-		return ((DalyoDate)date).addMinutes(minutes);
+		Object date = Function.getValue(element, ScriptTag.PARAMETER,
+				ScriptAttribute.DATE, ScriptAttribute.DATE);
+		int minutes = Integer.valueOf(Function.getValue(element,
+				ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_MINUTES,
+				ScriptAttribute.PARAMETER_TYPE_INT).toString());
+		return ((DalyoDate) date).addMinutes(minutes);
+	}
+	
+	public static Object AddMonths(Element element) {
+		Object date = Function.getValue(element, ScriptTag.PARAMETER,
+				ScriptAttribute.DATE, ScriptAttribute.DATE);
+		int months = Integer.valueOf(Function.getValue(element,
+				ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_MONTHS,
+				ScriptAttribute.PARAMETER_TYPE_INT).toString());
+		return ((DalyoDate) date).addMonths(months);
+	}
+
+	public static Object AddYears(Element element) {
+		Object date = Function.getValue(element, ScriptTag.PARAMETER,
+				ScriptAttribute.DATE, ScriptAttribute.DATE);
+		int years = Integer.valueOf(Function.getValue(element,
+				ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_YEARS,
+				ScriptAttribute.PARAMETER_TYPE_INT).toString());
+		return ((DalyoDate) date).addYears(years);
+	}
+	
+	public static Object CreateDate(Element element) {
+		int year = Integer.valueOf(Function.getValue(element,
+				ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_YEAR,
+				ScriptAttribute.PARAMETER_TYPE_INT).toString());
+		int month = Integer.valueOf(Function.getValue(element,
+				ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_MONTH,
+				ScriptAttribute.PARAMETER_TYPE_INT).toString());
+		int day = Integer.valueOf(Function.getValue(element,
+				ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_DAY,
+				ScriptAttribute.PARAMETER_TYPE_INT).toString());
+		int hours = Integer.valueOf(Function.getValue(element,
+				ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_HOURS,
+				ScriptAttribute.PARAMETER_TYPE_INT).toString());
+		int minutes = Integer.valueOf(Function.getValue(element,
+				ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_MINUTES,
+				ScriptAttribute.PARAMETER_TYPE_INT).toString());
+		int seconds = Integer.valueOf(Function.getValue(element,
+				ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_SECONDS,
+				ScriptAttribute.PARAMETER_TYPE_INT).toString());
+		return new DalyoDate(year, month, day, hours, minutes, seconds);
 	}
 	
 	public static Object CurrentDate() {
 		return new DalyoDate();
 	}
 	
+	public static int CurrentDayInMonth() {
+		return new DalyoDate().currentDayInMonth();
+	}
+
 	public static Object CurrentHour() {
 		return new Time();
 	}
 	
-	public static String Format(Element element) {
-		Object date = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.DATE, ScriptAttribute.DATE);
-		String format = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_FORMAT, ScriptAttribute.STRING).toString();
-		
-		String tempPattern = format;
-		ArrayList<Integer> indexArray = new ArrayList<Integer>();
-		int patternLength = format.length();
-		for (int i=0; i<patternLength; i++) {
-			if (tempPattern.charAt(i) == '\\') {
-				indexArray.add(i);
-			}
-		}
+	public static int CurrentMonth() {
+		return new DalyoDate().currentMonth();
+	}
+	
+	public static int CurrentYear() {
+		return new DalyoDate().currentYear();
+	}
 
-		int indexArraySize = indexArray.size();
-		if (indexArraySize > 0) {
-			for (int i=0; i<indexArraySize; i++) {
-				int index = indexArray.get(i);
-				if (index + 1 < format.length()) {
-					tempPattern = tempPattern.replace(tempPattern.charAt(index + 1), ' ');
-				}
-			}
-		}
-		
-		Format formatter = new SimpleDateFormat(tempPattern);
-		StringBuffer formatedDate = new StringBuffer(formatter.format(date));
-		
-		for (int i=0; i<indexArraySize; i++) {
-			int index = indexArray.get(i);
-			if (index + 1 < format.length()) {
-				StringBuffer newString = new StringBuffer("");
-				newString.append(format.charAt(index + 1));
-				formatedDate = formatedDate.replace(index + 1, index + 2, newString.toString());
-			}
-		}
-		
-		return formatedDate.toString().replace("\\", "");
+	public static String Format(Element element) {
+		Object date = Function.getValue(element, ScriptTag.PARAMETER,
+				ScriptAttribute.DATE, ScriptAttribute.DATE);
+		String format = Function.getValue(element, ScriptTag.PARAMETER,
+				ScriptAttribute.PARAMETER_NAME_FORMAT, ScriptAttribute.STRING)
+				.toString();
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
+		return simpleDateFormat.format(((DalyoDate)date).getDate());
+	}
+	
+	public static Object GetDayName(Element element) {
+		Object date = Function.getValue(element, ScriptTag.PARAMETER,
+				ScriptAttribute.DATE, ScriptAttribute.DATE);
+		return ((DalyoDate) date).getDayName();
+	}
+	
+	public static Object GetDaysInMonth(Element element) {
+		int year = Integer.valueOf(Function.getValue(element,
+				ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_YEAR,
+				ScriptAttribute.PARAMETER_TYPE_INT).toString());
+		int month = Integer.valueOf(Function.getValue(element,
+				ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_MONTH,
+				ScriptAttribute.PARAMETER_TYPE_INT).toString());
+		return DalyoDate.getDaysInMonth(year, month);
 	}
 }
