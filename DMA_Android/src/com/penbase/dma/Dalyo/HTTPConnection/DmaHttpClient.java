@@ -476,12 +476,11 @@ public class DmaHttpClient {
 						ask.append(i);
 						ask.append("=");
 						ask.append(filter.get(0).toString());
-						Object operator = Function
-								.getOperator(((ArrayList<?>) filters).get(1));
 						ask.append("&fo");
 						ask.append(i);
 						ask.append("=");
-						ask.append(urlEncode(operator.toString()));
+						ask.append(urlEncode(Function
+								.getOperatorForImport(filter.get(1))));
 						ask.append("&fv");
 						ask.append(i);
 						ask.append("=");
@@ -508,8 +507,8 @@ public class DmaHttpClient {
 					}
 				}
 				byte[] inputbytes = baos.toByteArray();
-				importSync = new DmaHttpBinarySync(mContext, ask.toString(), getBlob
-						.toString(), report.toString(), inputbytes,
+				importSync = new DmaHttpBinarySync(mContext, ask.toString(),
+						getBlob.toString(), report.toString(), inputbytes,
 						Constant.IMPORTACTION);
 				result = importSync.run();
 			} catch (IOException e) {

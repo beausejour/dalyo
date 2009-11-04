@@ -533,7 +533,8 @@ public class Function {
 				result = NS_Date.AddYears(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_CREATEDATE)) {
 				result = NS_Date.CreateDate(element);
-			} else if (function.equals(ScriptAttribute.FUNCTION_CURRENTDAYINMONTH)) {
+			} else if (function
+					.equals(ScriptAttribute.FUNCTION_CURRENTDAYINMONTH)) {
 				result = NS_Date.CurrentDayInMonth();
 			} else if (function.equals(ScriptAttribute.FUNCTION_CURRENTMONTH)) {
 				result = NS_Date.CurrentMonth();
@@ -656,6 +657,8 @@ public class Function {
 				NS_Filter.AddCriteria(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_CLEAR)) {
 				NS_Filter.Clear(element);
+			} else if (function.equals(ScriptAttribute.FUNCTION_SIZE)) {
+				result = NS_Filter.Size(element);
 			}
 		} else if (namespace.equals(ScriptAttribute.FORM)) {
 			if (function.equals(ScriptAttribute.FUNCTION_CLEAR)) {
@@ -912,15 +915,43 @@ public class Function {
 		return result;
 	}
 
-	public static Object getOperator(Object operator) {
-		Object result = null;
-		switch (Integer.valueOf((String) operator)) {
+	public static String getOperatorForImport(Object operator) {
+		String result = null;
+		switch (Integer.valueOf(operator.toString())) {
 		case ScriptAttribute.EQUALS:
 			result = "=";
 			break;
 		case ScriptAttribute.NOTEQUALS:
 			result = "!=";
 			break;
+		case ScriptAttribute.LESSTHAN:
+			result = "<";
+			break;
+		case ScriptAttribute.LESSTHANOREQUALS:
+			result = "<=";
+			break;
+		case ScriptAttribute.GREATERTHAN:
+			result = ">";
+			break;
+		case ScriptAttribute.GREATERTHANOREQUALS:
+			result = ">=";
+			break;
+		case ScriptAttribute.STRINGSTARTWITH:
+			result = "%s";
+			break;
+		case ScriptAttribute.STRINGENDWITH:
+			result = "s%";
+			break;
+		case ScriptAttribute.STRINGCONTAINS:
+			result = "%s%";
+			break;
+		}
+		return result;
+	}
+	
+	public static String getLinkOperator(Object operator) {
+		String result = null;
+		switch (Integer.valueOf(operator.toString())) {
 		case ScriptAttribute.AND:
 			result = " AND ";
 			break;
@@ -929,6 +960,41 @@ public class Function {
 			break;
 		}
 		return result;
+	}
+
+	public static String getCompareClauseWithOperator(String left,
+			String operator, String right) {
+		StringBuffer result = new StringBuffer(left);
+		switch (Integer.valueOf(operator)) {
+		case ScriptAttribute.EQUALS:
+			result.append(" = \'").append(right).append("\'");
+			break;
+		case ScriptAttribute.NOTEQUALS:
+			result.append(" != \'").append(right).append("\'");
+			break;
+		case ScriptAttribute.LESSTHAN:
+			result.append(" < \'").append(right).append("\'");
+			break;
+		case ScriptAttribute.LESSTHANOREQUALS:
+			result.append(" <= \'").append(right).append("\'");
+			break;
+		case ScriptAttribute.GREATERTHAN:
+			result.append(" > \'").append(right).append("\'");
+			break;
+		case ScriptAttribute.GREATERTHANOREQUALS:
+			result.append(" >= \'").append(right).append("\'");
+			break;
+		case ScriptAttribute.STRINGSTARTWITH:
+			result.append(" LIKE \'").append(right).append("%\'");
+			break;
+		case ScriptAttribute.STRINGENDWITH:
+			result.append(" LIKE \'%").append(right).append("\'");
+			break;
+		case ScriptAttribute.STRINGCONTAINS:
+			result.append(" LIKE \'%").append(right).append("%\'");
+			break;
+		}
+		return result.toString();
 	}
 
 	public static Context getContext() {
