@@ -454,16 +454,11 @@ public class DatabaseAdapter {
 				if (count == 0) {
 					selection.append(" AND ");
 				} else {
-					selection.append(Function.getOperator(filter.get(3))
-							.toString());
+					selection.append(Function.getLinkOperator(filter.get(3)));
 				}
-				selection.append(DatabaseAttribute.FIELD);
-				selection.append(filter.get(0).toString());
-				selection.append(" ");
-				selection.append(Function.getOperator(filter.get(1)));
-				selection.append(" \'");
-				selection.append(filter.get(2));
-				selection.append("\'");
+				selection.append(Function.getCompareClauseWithOperator(
+						DatabaseAttribute.FIELD + filter.get(0).toString(),
+						filter.get(1).toString(), filter.get(2).toString()));
 			}
 
 			Cursor cursor = sSqlite.query(table, null, selection.toString(),
@@ -759,11 +754,9 @@ public class DatabaseAdapter {
 				if (i != 0) {
 					// TODO Add link
 				}
-				selectionString.append(DatabaseAttribute.FIELD).append(
-						filter.get(0).toString());
-				selectionString.append(" ").append(
-						Function.getOperator(filter.get(1))).append(" ");
-				selectionString.append("\'").append(filter.get(2)).append("\'");
+				selectionString.append(Function.getCompareClauseWithOperator(
+						DatabaseAttribute.FIELD + filter.get(0).toString(),
+						filter.get(1).toString(), filter.get(2).toString()));
 			}
 		}
 
@@ -948,9 +941,11 @@ public class DatabaseAdapter {
 		String whereClause = createWhereClause(tableId, record);
 		sSqlite.update(table, values, whereClause, null);
 	}
-	
-	public static void updateRecord(String tableId, ContentValues values, String whereClause) {
-		sSqlite.update(DatabaseAttribute.TABLE + tableId, values, whereClause, null);
+
+	public static void updateRecord(String tableId, ContentValues values,
+			String whereClause) {
+		sSqlite.update(DatabaseAttribute.TABLE + tableId, values, whereClause,
+				null);
 	}
 
 	public static void deleteQuery(String tableId,
@@ -1022,7 +1017,7 @@ public class DatabaseAdapter {
 	public static HashMap<String, String> getFieldsTypeMap() {
 		return sFieldsTypeMap;
 	}
-	
+
 	public static void beginTransaction() {
 		if (!sSqlite.inTransaction()) {
 			sSqlite.beginTransaction();
@@ -1163,21 +1158,19 @@ public class DatabaseAdapter {
 			result.append(" AND ").append(createSelectionFKString(tables));
 		}
 		if (filters != null) {
-			int filtersNb = ((ArrayList<Object>) filters).size();
+			ArrayList<Object> filtersList = (ArrayList<Object>) filters;
+			int filtersNb = filtersList.size();
 			for (int i = 0; i < filtersNb; i++) {
-				ArrayList<Object> filter = (ArrayList<Object>) ((ArrayList<Object>) filters)
-						.get(i);
+				ArrayList<Object> filter = (ArrayList<Object>)filtersList.get(i);
 				if (i == 0) {
 					result.append(" AND ");
 				} else {
-					result.append(Function.getOperator(filter.get(3))
-							.toString());
+					result.append(Function.getLinkOperator(filter.get(3)));
 				}
-				result.append(DatabaseAttribute.FIELD).append(
-						filter.get(0).toString());
-				result.append(" ").append(Function.getOperator(filter.get(1)))
-						.append(" ");
-				result.append("\'").append(filter.get(2)).append("\'");
+				String compareClause = Function.getCompareClauseWithOperator(
+						DatabaseAttribute.FIELD + filter.get(0).toString(),
+						filter.get(1).toString(), filter.get(2).toString());
+				result.append(compareClause);
 			}
 		}
 		return result.toString();

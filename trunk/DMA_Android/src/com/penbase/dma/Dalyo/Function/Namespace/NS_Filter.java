@@ -29,4 +29,10 @@ public class NS_Filter {
 		String varName = Function.getVariableName(element, ScriptTag.PARAMETER, ScriptAttribute.FILTER, ScriptAttribute.FILTER).toString();
 		((ArrayList<Object>)Function.getVariablesMap().get(varName)).clear();
 	}
+	
+	@SuppressWarnings("unchecked")
+	public static int Size(Element element) {
+		String varName = Function.getVariableName(element, ScriptTag.PARAMETER, ScriptAttribute.FILTER, ScriptAttribute.FILTER).toString();
+		return ((ArrayList<Object>)Function.getVariablesMap().get(varName)).size();
+	}
 }
