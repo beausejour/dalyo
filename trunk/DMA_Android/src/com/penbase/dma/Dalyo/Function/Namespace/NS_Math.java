@@ -188,8 +188,9 @@ public class NS_Math {
 		} else if (min == null) {
 			return new Random().nextInt(Integer.valueOf(max.toString()));
 		} else {
-			return Double.valueOf(
-					Integer.valueOf(min.toString()) * Math.random()).intValue();
+			int maxInt = Integer.valueOf(max.toString());
+			int minInt = Integer.valueOf(min.toString());
+		    return (int) (Math.random() * maxInt + minInt);
 		}
 	}
 
