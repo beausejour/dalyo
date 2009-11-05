@@ -23,6 +23,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_CLEAR = "clear";
 	public static final String FUNCTION_CONCAT = "concat";
 	public static final String FUNCTION_CONFIRM = "confirm";
+	public static final String FUNCTION_CONTAINS = "contains";
 	public static final String FUNCTION_COUNT = "count";
 	public static final String FUNCTION_CREATEDATE = "createDate";
 	public static final String FUNCTION_CREATELOCATION = "createLocation";
@@ -76,6 +77,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_IMPORT = "import";
 	public static final String FUNCTION_INDEXOF = "indexOf";
 	public static final String FUNCTION_INIT = "init";
+	public static final String FUNCTION_INTERSECT = "intersect";
 	public static final String FUNCTION_ISCHECKED = "isChecked";
 	public static final String FUNCTION_ISCREATINGRECORD = "isCreatingRecord";
 	public static final String FUNCTION_ISEDITINGRECORD = "isEditingRecord";
@@ -95,6 +97,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_PERCANTAGE = "percentage";
 	public static final String FUNCTION_RANDOM = "rand";
 	public static final String FUNCTION_REFRESH = "refresh";
+	public static final String FUNCTION_REMOVE = "remove";
 	public static final String FUNCTION_REMOVEALLITEMS = "removeAllItems";
 	public static final String FUNCTION_REPLACE = "replace";
 	public static final String FUNCTION_RESET = "reset";
@@ -135,6 +138,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_TOSTRING = "toString";
 	public static final String FUNCTION_TOUPPER = "toUpper";
 	public static final String FUNCTION_TRIM = "trim";
+	public static final String FUNCTION_UNION = "union";
 	public static final String FUNCTION_VALIDATEEDITRECORD = "validateEditRecord";
 	public static final String FUNCTION_VALIDATENEWRECORD = "validateNewRecord";
 	public static final String FUNCTION_VALIDATETRANSACTION = "validateTransaction";
@@ -192,6 +196,8 @@ public class ScriptAttribute {
 	public static final String PARAMETER_NAME_LABEL = "label";
 	public static final String PARAMETER_NAME_LATITUDE = "latitude";
 	public static final String PARAMETER_NAME_LINK = "link";		//link the last condition
+	public static final String PARAMETER_NAME_LIST1 = "list1";
+	public static final String PARAMETER_NAME_LIST2 = "list2";
 	public static final String PARAMETER_NAME_LOCATION1 = "location1";
 	public static final String PARAMETER_NAME_LOCATION2 = "location2";
 	public static final String PARAMETER_NAME_LONGITUDE = "longitude";
