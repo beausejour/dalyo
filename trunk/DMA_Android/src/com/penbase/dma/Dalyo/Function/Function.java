@@ -742,6 +742,10 @@ public class Function {
 			} else if (function.equals(ScriptAttribute.FUNCTION_SUB)) {
 				result = NS_Math.Subtract(element);
 			}
+		} else if (namespace.equals(ScriptAttribute.NAMESPACE_MESSAGING)) {
+			if (function.equals(ScriptAttribute.FUNCTION_MAIL)) {
+				result = NS_Messaging.Mail(element);
+			}
 		} else if (namespace.equals(ScriptAttribute.OBJECT)) {
 			if (function.equals(ScriptAttribute.FUNCTION_TOBOOLEAN)) {
 				if (!sIsFirstTime) {

@@ -87,6 +87,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_ISSELECTED = "isSelected";
 	public static final String FUNCTION_ISVISIBLE = "isVisible";
 	public static final String FUNCTION_LENGTH = "length";
+	public static final String FUNCTION_MAIL = "mail";
 	public static final String FUNCTION_MAX = "max";
 	public static final String FUNCTION_MIN = "min";
 	public static final String FUNCTION_MULTIPLE = "mul";
@@ -156,6 +157,7 @@ public class ScriptAttribute {
 	public static final String NAMESPACE_DB_FIELD = "database.field";
 	public static final String NAMESPACE_DB_TABLE = "database.table";
 	public static final String NAMESPACE_MATH = "math";
+	public static final String NAMESPACE_MESSAGING = "messaging";
 	public static final String NAMESPACE_GPS = "gps";
 	public static final String NAMESPACE_RUNTIME = "runtime";
 	public static final String NAMESPACE_STRING = "string";
@@ -202,6 +204,7 @@ public class ScriptAttribute {
 	public static final String PARAMETER_NAME_LOCATION2 = "location2";
 	public static final String PARAMETER_NAME_LONGITUDE = "longitude";
 	public static final String PARAMETER_NAME_MAX = "max";
+	public static final String PARAMETER_NAME_MESSAGE = "message";
 	public static final String PARAMETER_NAME_MIN = "min";
 	public static final String PARAMETER_NAME_MINUTES = "minutes";
 	public static final String PARAMETER_NAME_MONTH = "month";
@@ -217,12 +220,14 @@ public class ScriptAttribute {
 	public static final String PARAMETER_NAME_SPEED = "speed";
 	public static final String PARAMETER_NAME_START = "start";
 	public static final String PARAMETER_NAME_STATE = "state";
+	public static final String PARAMETER_NAME_SUBJECT = "subject";
 	public static final String PARAMETER_NAME_TABLENAME = "tablename";
 	public static final String PARAMETER_NAME_TABLES = "tables";
 	public static final String PARAMETER_NAME_TEXT = "text";
 	public static final String PARAMETER_NAME_THOUSANDSSEP = "thousands_separator";
 	public static final String PARAMETER_NAME_TIMERID = "timer_id";
 	public static final String PARAMETER_NAME_TITLE = "title";
+	public static final String PARAMETER_NAME_TO = "to";
 	public static final String PARAMETER_NAME_TOKEN = "token";
 	public static final String PARAMETER_NAME_TYPE = "type";
 	public static final String PARAMETER_NAME_UNDERLINE = "underline";
