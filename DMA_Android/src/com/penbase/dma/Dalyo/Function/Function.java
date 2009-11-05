@@ -705,10 +705,18 @@ public class Function {
 				NS_List.AddValue(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_CLEAR)) {
 				NS_List.Clear(element);
+			} else if (function.equals(ScriptAttribute.FUNCTION_CONTAINS)) {
+				result = NS_List.Contains(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_GET)) {
 				result = NS_List.Get(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_GETSIZE)) {
 				result = NS_List.Size(element);
+			} else if (function.equals(ScriptAttribute.FUNCTION_INTERSECT)) {
+				NS_List.Intersect(element);
+			} else if (function.equals(ScriptAttribute.FUNCTION_REMOVE)) {
+				NS_List.Remove(element);
+			} else if (function.equals(ScriptAttribute.FUNCTION_UNION)) {
+				NS_List.Union(element);
 			}
 		} else if (namespace.equals(ScriptAttribute.NAMESPACE_MATH)) {
 			if (function.equals(ScriptAttribute.FUNCTION_ABS)) {
