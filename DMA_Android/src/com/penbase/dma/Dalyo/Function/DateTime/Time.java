@@ -10,14 +10,24 @@ public class Time {
 	private int mHour;
 	private int mMinute;
 	private int mSecond;
-	
+
 	public Time() {
 		Calendar calendar = Calendar.getInstance();
 		this.mHour = calendar.get(Calendar.HOUR_OF_DAY);
 		this.mMinute = calendar.get(Calendar.MINUTE);
 		this.mSecond = calendar.get(Calendar.SECOND);
 		this.mDay = calendar.get(Calendar.DATE);
-		this.mMonth = calendar.get(Calendar.MONTH)+1;
+		this.mMonth = calendar.get(Calendar.MONTH) + 1;
+		this.mYear = calendar.get(Calendar.YEAR);
+	}
+
+	public Time(int hour, int minute, int second) {
+		Calendar calendar = Calendar.getInstance();
+		this.mHour = hour;
+		this.mMinute = minute;
+		this.mSecond = second;
+		this.mDay = calendar.get(Calendar.DATE);
+		this.mMonth = calendar.get(Calendar.MONTH) + 1;
 		this.mYear = calendar.get(Calendar.YEAR);
 	}
 	
@@ -27,8 +37,9 @@ public class Time {
 		result.append(":").append(mSecond);
 		return result.toString();
 	}
-	
+
 	public int toInt() {
-		return new Long(new GregorianCalendar(mYear, mMonth, mDay, mHour, mMinute, mSecond).getTimeInMillis()).intValue();
+		return new Long(new GregorianCalendar(mYear, mMonth, mDay, mHour,
+				mMinute, mSecond).getTimeInMillis()).intValue();
 	}
 }

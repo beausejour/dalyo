@@ -57,11 +57,13 @@ public class NS_List {
 		Object indexObject = Function.getValue(element, ScriptTag.PARAMETER,
 				ScriptAttribute.PARAMETER_NAME_INDEX,
 				ScriptAttribute.PARAMETER_TYPE_INT);
-		if (indexObject != null) {
-			index = Integer.valueOf(indexObject.toString());
-		}
-		if ((index != -1) && (((ArrayList<?>) list).size() > 0)) {
-			value = ((ArrayList<?>) list).get(index - 1);
+		if (list != null) {
+			if (indexObject != null) {
+				index = Integer.valueOf(indexObject.toString());
+			}
+			if ((index != -1) && (((ArrayList<?>) list).size() > 0)) {
+				value = ((ArrayList<?>) list).get(index - 1);
+			}	
 		}
 		return value;
 	}
