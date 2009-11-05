@@ -672,6 +672,8 @@ public class Function {
 				NS_Form.SetCurrentRecord(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_SETTITLE)) {
 				NS_Form.SetTitle(element);
+			} else if (function.equals(ScriptAttribute.FUNCTION_SHOWDIALOG)) {
+				NS_Form.ShowDialog(element);
 			}
 		} else if (namespace.equals(ScriptAttribute.NAMESPACE_GPS)) {
 			if (function.equals(ScriptAttribute.FUNCTION_GETALTITUDE)) {

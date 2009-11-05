@@ -1,5 +1,8 @@
 package com.penbase.dma.Dalyo.Function.Namespace;
 
+import android.app.Dialog;
+import android.view.ViewGroup;
+
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Component.Form;
@@ -55,5 +58,24 @@ public class NS_Form {
 				ScriptAttribute.PARAMETER_NAME_TITLE, ScriptAttribute.STRING)
 				.toString();
 		ApplicationView.getLayoutsMap().get(formId).setTitle(title);
+		if (formId.equals(ApplicationView.getCurrentFormId())) {
+			ApplicationView.getCurrentView().setTitle(title);
+		}
+	}
+	
+	public static void ShowDialog(Element element) {
+		String formId = Function.getValue(element, ScriptTag.PARAMETER,
+				ScriptAttribute.FORM, ScriptAttribute.FORM).toString();
+		Form form = ApplicationView.getLayoutsMap().get(formId);
+		if (form.isModal()) {
+			Dialog dialog = new Dialog(ApplicationView.getCurrentView());
+			ViewGroup parent = (ViewGroup) form.getParent();
+			if (parent != null) {
+				parent.removeView(form);
+			}
+			dialog.setContentView(form);
+			dialog.setTitle(form.getTitle());
+			dialog.show();
+		}
 	}
 }

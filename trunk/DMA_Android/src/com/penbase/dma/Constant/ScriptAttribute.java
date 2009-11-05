@@ -112,6 +112,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_SETVALUE = "setValue";
 	public static final String FUNCTION_SETVISIBLE = "setVisible";
 	public static final String FUNCTION_SETWAITCURSOR = "setWaitCursor";
+	public static final String FUNCTION_SHOWDIALOG = "showDialog";
 	public static final String FUNCTION_SIZE = "size";
 	public static final String FUNCTION_START = "start";
 	public static final String FUNCTION_STARTAPP = "startApp";
