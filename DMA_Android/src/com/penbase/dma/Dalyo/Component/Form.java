@@ -30,9 +30,12 @@ import java.util.HashMap;
 public class Form extends ScrollView {
 	private String mTableId;
 	private String mTitle;
+	private boolean mIsModal;
 	private ArrayList<String> mMenuItemNameList;
 	private ArrayList<String> mMenuItemOnClickList;
 	private RelativeLayout mLayout;
+	private int mWidth;
+	private int mHeight;
 	
 	public Form(Context context) {		
 		super(context);
@@ -42,8 +45,27 @@ public class Form extends ScrollView {
 		addView(mLayout);
 	}
 	
+	public void setDimension(int width, int height) {
+		mWidth = width;
+		mHeight = height;
+	}
+	
+	@Override
+	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+		setMeasuredDimension(mWidth, mHeight);
+	}
+
 	public void addSubView(View view) {
 		mLayout.addView(view);
+	}
+	
+	public void setModal(String modal) {
+		mIsModal = Boolean.parseBoolean(modal);
+	}
+	
+	public boolean isModal() {
+		return mIsModal;
 	}
 	
 	/**

@@ -401,9 +401,12 @@ public class ApplicationView extends Activity {
 				formOnload = atts.getValue(DesignTag.EVENT_ONLOAD);
 				String tableId = atts
 						.getValue(DesignTag.COMPONENT_COMMON_TABLEID);
-				if (!tableId.equals("")) {
+				if (tableId != null) {
 					form.setTableId(tableId);
 				}
+				
+				String isModal = atts.getValue(DesignTag.DESIGN_F_M);
+				form.setModal(isModal);
 
 				// Check background of a form
 				String formBackgroundColor = atts
@@ -416,6 +419,9 @@ public class ApplicationView extends Activity {
 					form.setBackgroundColor(Color.WHITE);
 				}
 
+				form.setDimension(Integer.valueOf(atts.getValue(DesignTag.DESIGN_F_W)),
+						Integer.valueOf(atts.getValue(DesignTag.DESIGN_F_H)));
+				
 				// Check form's title
 				String formTitle = atts.getValue(DesignTag.DESIGN_F_TITLE);
 				if (formTitle != null) {
