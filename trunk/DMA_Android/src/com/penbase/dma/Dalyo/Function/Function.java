@@ -676,8 +676,13 @@ public class Function {
 				NS_Form.ShowDialog(element);
 			}
 		} else if (namespace.equals(ScriptAttribute.NAMESPACE_GPS)) {
-			if (function.equals(ScriptAttribute.FUNCTION_GETALTITUDE)) {
+			if (function.equals(ScriptAttribute.FUNCTION_CREATELOCATION)) {
+				result = NS_Gps.CreateLocation(element);
+			}
+			else if (function.equals(ScriptAttribute.FUNCTION_GETALTITUDE)) {
 				result = NS_Gps.GetAltitude(element);
+			} else if (function.equals(ScriptAttribute.FUNCTION_GETDISTANCE)) {
+				result = NS_Gps.GetDistance(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_GETLATITUDE)) {
 				result = NS_Gps.GetLatitude(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_GETLOCATION)) {

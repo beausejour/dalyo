@@ -25,6 +25,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_CONFIRM = "confirm";
 	public static final String FUNCTION_COUNT = "count";
 	public static final String FUNCTION_CREATEDATE = "createDate";
+	public static final String FUNCTION_CREATELOCATION = "createLocation";
 	public static final String FUNCTION_CURRENTDAYINMONTH = "currentDayInMonth";
 	public static final String FUNCTION_CURRENTMONTH = "currentMonth";
 	public static final String FUNCTION_CURRENTYEAR = "currentYear";
@@ -41,6 +42,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_GET = "get";
 	public static final String FUNCTION_GETALTITUDE = "getAltitude";
 	public static final String FUNCTION_GETAPPLICATIONVERSION = "getApplicationVersion";
+	public static final String FUNCTION_GETDISTANCE = "getDistance";
 	public static final String FUNCTION_GETCELLVALUE = "getCellValue";
 	public static final String FUNCTION_GETCOLUMNINDEX = "getColumnIndex";
 	public static final String FUNCTION_GETCURRENTFORM = "getCurrentForm";
@@ -158,6 +160,7 @@ public class ScriptAttribute {
 	
 	//Parameters name
 	public static final String PARAMETER_NAME_A = "a";
+	public static final String PARAMETER_NAME_ALTITUDE = "altitude";
 	public static final String PARAMETER_NAME_ASCENDING = "ascending";
 	public static final String PARAMETER_NAME_B = "b";
 	public static final String PARAMETER_NAME_BOLD = "bold";
@@ -187,7 +190,11 @@ public class ScriptAttribute {
 	public static final String PARAMETER_NAME_KEYFIELD = "key_field";
 	public static final String PARAMETER_NAME_KEYVALUE = "key_value";
 	public static final String PARAMETER_NAME_LABEL = "label";
+	public static final String PARAMETER_NAME_LATITUDE = "latitude";
 	public static final String PARAMETER_NAME_LINK = "link";		//link the last condition
+	public static final String PARAMETER_NAME_LOCATION1 = "location1";
+	public static final String PARAMETER_NAME_LOCATION2 = "location2";
+	public static final String PARAMETER_NAME_LONGITUDE = "longitude";
 	public static final String PARAMETER_NAME_MAX = "max";
 	public static final String PARAMETER_NAME_MIN = "min";
 	public static final String PARAMETER_NAME_MINUTES = "minutes";
@@ -201,6 +208,7 @@ public class ScriptAttribute {
 	public static final String PARAMETER_NAME_SECONDS = "seconds";
 	public static final String PARAMETER_NAME_SHOW = "show";
 	public static final String PARAMETER_NAME_SOURCE = "source";
+	public static final String PARAMETER_NAME_SPEED = "speed";
 	public static final String PARAMETER_NAME_START = "start";
 	public static final String PARAMETER_NAME_STATE = "state";
 	public static final String PARAMETER_NAME_TABLENAME = "tablename";
