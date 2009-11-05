@@ -22,8 +22,18 @@ public class Gps {
 				.getSystemService(Context.LOCATION_SERVICE);
 		mLocationListener = new MyLocationListener();
 		mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-				0, 0, mLocationListener);
+				10000, 10, mLocationListener);
 		mLocation = mLocationManager.getLastKnownLocation(sProviderName);
+	}
+
+	public static Location createLocation(double latitude, double longitude,
+			double altitude, double speed) {
+		Location result = new Location(sProviderName);
+		result.setLatitude(latitude);
+		result.setLongitude(longitude);
+		result.setAltitude(altitude);
+		result.setSpeed((float) speed);
+		return result;
 	}
 
 	public int getStatus() {
@@ -36,6 +46,7 @@ public class Gps {
 
 	public void stop() {
 		mLocationManager.removeUpdates(mLocationListener);
+		mStatus = LocationProvider.OUT_OF_SERVICE;
 	}
 
 	private class MyLocationListener implements LocationListener {
