@@ -747,26 +747,55 @@ public class Function {
 				result = NS_Messaging.Mail(element);
 			}
 		} else if (namespace.equals(ScriptAttribute.OBJECT)) {
-			if (function.equals(ScriptAttribute.FUNCTION_TOBOOLEAN)) {
+			if (function.equals(ScriptAttribute.FUNCTION_NOT)) {
+				result = NS_Object.Not(element);
+			} else if (function.equals(ScriptAttribute.FUNCTION_NOTNULL)) {
+				result = NS_Object.NotNull(element);
+			}
+			else if (function.equals(ScriptAttribute.FUNCTION_TOBOOLEAN)) {
 				if (!sIsFirstTime) {
 					result = NS_Object.ToBoolean(element);
+				}
+			} else if (function.equals(ScriptAttribute.FUNCTION_TOCOMPONENT)) {
+				if (!sIsFirstTime) {
+					result = NS_Object.ToComponent(element);
 				}
 			} else if (function.equals(ScriptAttribute.FUNCTION_TODATE)) {
 				if (!sIsFirstTime) {
 					result = NS_Object.ToDate(element);
 				}
+			} else if (function.equals(ScriptAttribute.FUNCTION_TODATASET)) {
+				if (!sIsFirstTime) {
+					result = NS_Object.ToDataset(element);
+				}
+			} else if (function.equals(ScriptAttribute.FUNCTION_TOFIELD)) {
+				if (!sIsFirstTime) {
+					result = NS_Object.ToField(element);
+				}
+			} else if (function.equals(ScriptAttribute.FUNCTION_TOFORM)) {
+				if (!sIsFirstTime) {
+					result = NS_Object.ToForm(element);
+				}
 			} else if (function.equals(ScriptAttribute.FUNCTION_TOINT)) {
 				if (!sIsFirstTime) {
 					result = NS_Object.ToInt(element);
+				}
+			} else if (function.equals(ScriptAttribute.FUNCTION_TOLIST)) {
+				if (!sIsFirstTime) {
+					result = NS_Object.ToList(element);
 				}
 			} else if (function.equals(ScriptAttribute.FUNCTION_TONUMERIC)) {
 				if (!sIsFirstTime) {
 					result = NS_Object.ToNumeric(element);
 				}
-			} else if (function.equals(ScriptAttribute.FUNCTION_TOSTRING)) {
-				result = NS_Object.ToString(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_TORECORD)) {
 				result = NS_Object.ToRecord(element);
+			} else if (function.equals(ScriptAttribute.FUNCTION_TOSTRING)) {
+				result = NS_Object.ToString(element);
+			} else if (function.equals(ScriptAttribute.FUNCTION_TOTABLE)) {
+				result = NS_Object.ToTable(element);
+			} else if (function.equals(ScriptAttribute.FUNCTION_TOTIME)) {
+				result = NS_Object.ToTime(element);
 			}
 		} else if (namespace.equals(ScriptAttribute.ORDER)) {
 			if (function.equals(ScriptAttribute.FUNCTION_ADDCRITERIA)) {

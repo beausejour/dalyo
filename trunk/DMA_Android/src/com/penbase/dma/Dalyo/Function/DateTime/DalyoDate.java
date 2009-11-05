@@ -49,8 +49,8 @@ public class DalyoDate {
 		refreshCalendar();
 	}
 
-	public Date toDate() {
-		return new Date(this.toLong());
+	public DalyoDate toDate() {
+		return this;
 	}
 
 	public String toString() {

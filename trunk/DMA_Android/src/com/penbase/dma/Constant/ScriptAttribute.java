@@ -93,6 +93,8 @@ public class ScriptAttribute {
 	public static final String FUNCTION_MULTIPLE = "mul";
 	public static final String FUNCTION_NAVIGATE = "navigate";
 	public static final String FUNCTION_NEWRECORD = "newRecord";
+	public static final String FUNCTION_NOT = "not";
+	public static final String FUNCTION_NOTNULL = "notNull";
 	public static final String FUNCTION_NOW = "now";
 	public static final String FUNCTION_NOWHOUR = "nowH";
 	public static final String FUNCTION_PERCANTAGE = "percentage";
@@ -131,12 +133,19 @@ public class ScriptAttribute {
 	public static final String FUNCTION_SUM = "sum";
 	public static final String FUNCTION_SYNC = "sync";
 	public static final String FUNCTION_TOBOOLEAN = "toBoolean";
+	public static final String FUNCTION_TOCOMPONENT = "toComponent";
 	public static final String FUNCTION_TODATE = "toDate";
+	public static final String FUNCTION_TODATASET = "toDataset";
+	public static final String FUNCTION_TOFIELD = "toField";
+	public static final String FUNCTION_TOFORM = "toForm";
 	public static final String FUNCTION_TOINT = "toInt";
+	public static final String FUNCTION_TOLIST = "toList";
 	public static final String FUNCTION_TOLOWER = "toLower";
 	public static final String FUNCTION_TONUMERIC = "toNumeric";
 	public static final String FUNCTION_TORECORD = "toRecord";
 	public static final String FUNCTION_TOSTRING = "toString";
+	public static final String FUNCTION_TOTABLE = "toTable";
+	public static final String FUNCTION_TOTIME = "toTime";
 	public static final String FUNCTION_TOUPPER = "toUpper";
 	public static final String FUNCTION_TRIM = "trim";
 	public static final String FUNCTION_UNION = "union";
@@ -177,6 +186,7 @@ public class ScriptAttribute {
 	public static final String PARAMETER_NAME_DAY = "day";
 	public static final String PARAMETER_NAME_DAYS = "days";
 	public static final String PARAMETER_NAME_DECIMALS = "decimals";
+	public static final String PARAMETER_NAME_DEFAULT = "default";
 	public static final String PARAMETER_NAME_DELAYED = "delayed";
 	public static final String PARAMETER_NAME_DELIMITER = "delimiter";
 	public static final String PARAMETER_NAME_DISTINCT = "distinct";
