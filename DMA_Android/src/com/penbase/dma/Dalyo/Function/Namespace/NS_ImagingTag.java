@@ -7,10 +7,6 @@ import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Function.Function;
 
 public class NS_ImagingTag {
-	
-	/*
-	 * <c f="startCapture" ns="imaging.tag"><p n="type" t="string">DATAMATRIX</p><p n="confirm" t="boolean"><kw>NULL</kw></p></c>
-	 * */
 	public static String StartCapture(Element element) {
 		String type = Function.getValue(element, ScriptTag.PARAMETER, ScriptAttribute.PARAMETER_NAME_TYPE, ScriptAttribute.STRING).toString();
 		//DATAMATRIX QRCODE
