@@ -112,6 +112,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_SETCURRENTRECORD = "setCurrentRecord";
 	public static final String FUNCTION_SETENABLED = "setEnabled";
 	public static final String FUNCTION_SETFOCUS = "setFocus";
+	public static final String FUNCTION_SETINPUTPANELVISIBLE = "setInputPanelVisible";
 	public static final String FUNCTION_SETLABEL = "setLabel";
 	public static final String FUNCTION_SETMAX = "setMax";
 	public static final String FUNCTION_SETMIN = "setMin";
@@ -155,6 +156,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_VALIDATEEDITRECORD = "validateEditRecord";
 	public static final String FUNCTION_VALIDATENEWRECORD = "validateNewRecord";
 	public static final String FUNCTION_VALIDATETRANSACTION = "validateTransaction";
+	public static final String FUNCTION_VIBRATE = "vibrate";
 	
 	//Namespace
 	public static final String NAMESPACE_COMPONENT_CHECK = "component.checkbox";
@@ -193,6 +195,7 @@ public class ScriptAttribute {
 	public static final String PARAMETER_NAME_DELAYED = "delayed";
 	public static final String PARAMETER_NAME_DELIMITER = "delimiter";
 	public static final String PARAMETER_NAME_DISTINCT = "distinct";
+	public static final String PARAMETER_NAME_DURATION = "duration";
 	public static final String PARAMETER_NAME_ELEMENT = "element";
 	public static final String PARAMETER_NAME_ENABLE = "enable";
 	public static final String PARAMETER_NAME_END = "end";

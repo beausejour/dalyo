@@ -837,6 +837,8 @@ public class Function {
 				result = NS_Runtime.GetCurrentUser();
 			} else if (function.equals(ScriptAttribute.FUNCTION_HIDE)) {
 				NS_Runtime.Hide(element);
+			} else if (function.equals(ScriptAttribute.FUNCTION_SETINPUTPANELVISIBLE)) {
+				NS_Runtime.SetInputPanelVisible(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_SETWAITCURSOR)) {
 				NS_Runtime.SetWaitCursor(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_STARTAPP)) {
@@ -845,6 +847,8 @@ public class Function {
 				if (!sIsFirstTime) {
 					result = NS_Runtime.Synchronize(element);
 				}
+			} else if (function.equals(ScriptAttribute.FUNCTION_VIBRATE)) {
+				NS_Runtime.Vibrate(element);
 			}
 		} else if (namespace.equals(ScriptAttribute.NAMESPACE_STRING)) {
 			if (function.equals(ScriptAttribute.FUNCTION_CONCAT)) {
