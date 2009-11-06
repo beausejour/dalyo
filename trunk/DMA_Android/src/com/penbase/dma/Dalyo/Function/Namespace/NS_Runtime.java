@@ -7,6 +7,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Vibrator;
+import android.view.inputmethod.InputMethodManager;
 
 import com.penbase.dma.R;
 import com.penbase.dma.Constant.ScriptAttribute;
@@ -33,7 +35,7 @@ public class NS_Runtime {
 	public static void Close(Element element) {
 		ApplicationView.getCurrentView().quit();
 	}
-	
+
 	public static void Error(Context context, Element element, boolean isError) {
 		Object message = Function.getValue(element, ScriptTag.PARAMETER,
 				ScriptAttribute.PARAMETER_NAME_TEXT, ScriptAttribute.STRING);
@@ -43,7 +45,7 @@ public class NS_Runtime {
 		if (isError) {
 			alertDialog.setIcon(android.R.drawable.ic_dialog_alert);
 		} else {
-			alertDialog.setIcon(android.R.drawable.ic_dialog_info);	
+			alertDialog.setIcon(android.R.drawable.ic_dialog_info);
 		}
 		if (message == null) {
 			alertDialog.setMessage("");
@@ -68,20 +70,35 @@ public class NS_Runtime {
 	public static String getApplicationVersion(Element element) {
 		return ApplicationView.getApplicationVersion();
 	}
-	
+
 	public static String getCurrentCulture() {
-		return ApplicationView.getCurrentView().getResources().getConfiguration().locale.toString();
+		return ApplicationView.getCurrentView().getResources()
+				.getConfiguration().locale.toString();
 	}
 
 	public static String GetCurrentUser() {
 		return ApplicationView.getUsername();
 	}
 
-	
 	public static void Hide(Element element) {
 		ApplicationView.getCurrentView().moveTaskToBack(true);
 	}
-	
+
+	public static void SetInputPanelVisible(Element element) {
+		Object visible = Function.getValue(element, ScriptTag.PARAMETER,
+				ScriptAttribute.PARAMETER_NAME_VISIBLE,
+				ScriptAttribute.PARAMETER_TYPE_BOOLEAN);
+		InputMethodManager imm = (InputMethodManager) ApplicationView
+				.getCurrentView()
+				.getSystemService(Context.INPUT_METHOD_SERVICE);
+		if (Boolean.parseBoolean(visible.toString())) {
+			imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,
+					InputMethodManager.HIDE_IMPLICIT_ONLY);
+		} else {
+			//TODO
+		}
+	}
+
 	public static void SetWaitCursor(Element element) {
 		Object willShow = Function.getValue(element, ScriptTag.PARAMETER,
 				ScriptAttribute.PARAMETER_NAME_SHOW,
@@ -131,30 +148,24 @@ public class NS_Runtime {
 			// showProgress = true; ProgressDialog has not done yet.
 		}
 
-		/*Context context = Function.getContext();
-		syncProgressDialog = ProgressDialog.show(context, context
-				.getText(R.string.waiting), context
-				.getText(R.string.synchronisation), true, false);
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				boolean importResult = ApplicationView.getCurrentClient()
-						.importData(applicationInfos.get("AppId"),
-								applicationInfos.get("DbId"),
-								applicationInfos.get("Username"),
-								applicationInfos.get("Userpassword"), null,
-								null);
-				if (importResult) {
-					syncResult = ApplicationView.getCurrentClient().exportData(
-							applicationInfos.get("AppId"),
-							applicationInfos.get("DbId"),
-							applicationInfos.get("Username"),
-							applicationInfos.get("Userpassword"), null, null);
-				}
-				syncProgressDialog.dismiss();
-			}
-		}).start();*/
-		
+		/*
+		 * Context context = Function.getContext(); syncProgressDialog =
+		 * ProgressDialog.show(context, context .getText(R.string.waiting),
+		 * context .getText(R.string.synchronisation), true, false); new
+		 * Thread(new Runnable() {
+		 * 
+		 * @Override public void run() { boolean importResult =
+		 * ApplicationView.getCurrentClient()
+		 * .importData(applicationInfos.get("AppId"),
+		 * applicationInfos.get("DbId"), applicationInfos.get("Username"),
+		 * applicationInfos.get("Userpassword"), null, null); if (importResult)
+		 * { syncResult = ApplicationView.getCurrentClient().exportData(
+		 * applicationInfos.get("AppId"), applicationInfos.get("DbId"),
+		 * applicationInfos.get("Username"),
+		 * applicationInfos.get("Userpassword"), null, null); }
+		 * syncProgressDialog.dismiss(); } }).start();
+		 */
+
 		ApplicationView.getCurrentView().runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -199,5 +210,19 @@ public class NS_Runtime {
 			}
 		});
 		return syncResult;
+	}
+
+	public static void Vibrate(Element element) {
+		Object duration = Function
+				.getValue(element, ScriptTag.PARAMETER,
+						ScriptAttribute.PARAMETER_NAME_DURATION,
+						ScriptAttribute.STRING);
+		Vibrator vibrator = (Vibrator) ApplicationView.getCurrentView()
+				.getSystemService(Context.VIBRATOR_SERVICE);
+		if (duration == null) {
+			vibrator.vibrate(1000);
+		} else {
+			vibrator.vibrate(1000 * Integer.parseInt(duration.toString()));
+		}
 	}
 }
