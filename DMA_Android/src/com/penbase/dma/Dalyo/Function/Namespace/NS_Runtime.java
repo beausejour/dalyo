@@ -30,13 +30,21 @@ public class NS_Runtime {
 				new Intent(Intent.ACTION_VIEW, Uri.parse(url)), 0);
 	}
 
-	public static void Error(Context context, Element element) {
+	public static void Close(Element element) {
+		ApplicationView.getCurrentView().quit();
+	}
+	
+	public static void Error(Context context, Element element, boolean isError) {
 		Object message = Function.getValue(element, ScriptTag.PARAMETER,
 				ScriptAttribute.PARAMETER_NAME_TEXT, ScriptAttribute.STRING);
 		Object title = Function.getValue(element, ScriptTag.PARAMETER,
 				ScriptAttribute.PARAMETER_NAME_CAPTION, ScriptAttribute.STRING);
 		AlertDialog alertDialog = new AlertDialog.Builder(context).create();
-		alertDialog.setIcon(android.R.drawable.ic_dialog_alert);
+		if (isError) {
+			alertDialog.setIcon(android.R.drawable.ic_dialog_alert);
+		} else {
+			alertDialog.setIcon(android.R.drawable.ic_dialog_info);	
+		}
 		if (message == null) {
 			alertDialog.setMessage("");
 		} else {
@@ -60,11 +68,20 @@ public class NS_Runtime {
 	public static String getApplicationVersion(Element element) {
 		return ApplicationView.getApplicationVersion();
 	}
+	
+	public static String getCurrentCulture() {
+		return ApplicationView.getCurrentView().getResources().getConfiguration().locale.toString();
+	}
 
-	public static String GetCurrentUser(Element element) {
+	public static String GetCurrentUser() {
 		return ApplicationView.getUsername();
 	}
 
+	
+	public static void Hide(Element element) {
+		ApplicationView.getCurrentView().moveTaskToBack(true);
+	}
+	
 	public static void SetWaitCursor(Element element) {
 		Object willShow = Function.getValue(element, ScriptTag.PARAMETER,
 				ScriptAttribute.PARAMETER_NAME_SHOW,
@@ -79,7 +96,7 @@ public class NS_Runtime {
 		if (value) {
 			Context context = Function.getContext();
 			syncProgressDialog = ProgressDialog.show(context, context
-					.getText(R.string.waiting), text, true, false);
+					.getText(R.string.waiting), text, true, true);
 		} else {
 			if (syncProgressDialog.isShowing()) {
 				syncProgressDialog.dismiss();

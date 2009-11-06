@@ -806,9 +806,12 @@ public class Function {
 				result = NS_Order.Size(element);
 			}
 		} else if (namespace.equals(ScriptAttribute.NAMESPACE_RUNTIME)) {
-			if ((function.equals(ScriptAttribute.FUNCTION_ALERT))
-					|| (function.equals(ScriptAttribute.FUNCTION_ERROR))) {
-				NS_Runtime.Error(sContext, element);
+			if (function.equals(ScriptAttribute.FUNCTION_ALERT)) {
+				NS_Runtime.Error(sContext, element, false);
+			} else if (function.equals(ScriptAttribute.FUNCTION_CLOSE)) {
+				NS_Runtime.Close(element);
+			} else if (function.equals(ScriptAttribute.FUNCTION_ERROR)) {
+				NS_Runtime.Error(sContext, element, true);
 			} else if (function.equals(ScriptAttribute.FUNCTION_EXIT)) {
 				NS_Runtime.Exit(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_BROWSE)) {
@@ -828,8 +831,12 @@ public class Function {
 			} else if (function
 					.equals(ScriptAttribute.FUNCTION_GETAPPLICATIONVERSION)) {
 				result = NS_Runtime.getApplicationVersion(element);
+			} else if (function.equals(ScriptAttribute.FUNCTION_GETCURRENTCULTURE)) {
+				result = NS_Runtime.getCurrentCulture();
 			} else if (function.equals(ScriptAttribute.FUNCTION_GETCURRENTUSER)) {
-				result = NS_Runtime.GetCurrentUser(element);
+				result = NS_Runtime.GetCurrentUser();
+			} else if (function.equals(ScriptAttribute.FUNCTION_HIDE)) {
+				NS_Runtime.Hide(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_SETWAITCURSOR)) {
 				NS_Runtime.SetWaitCursor(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_STARTAPP)) {

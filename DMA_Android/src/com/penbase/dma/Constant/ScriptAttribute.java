@@ -21,6 +21,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_CEIL = "ceil";
 	public static final String FUNCTION_CHECK = "check";	
 	public static final String FUNCTION_CLEAR = "clear";
+	public static final String FUNCTION_CLOSE = "close";
 	public static final String FUNCTION_CONCAT = "concat";
 	public static final String FUNCTION_CONFIRM = "confirm";
 	public static final String FUNCTION_CONTAINS = "contains";
@@ -46,6 +47,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_GETDISTANCE = "getDistance";
 	public static final String FUNCTION_GETCELLVALUE = "getCellValue";
 	public static final String FUNCTION_GETCOLUMNINDEX = "getColumnIndex";
+	public static final String FUNCTION_GETCURRENTCULTURE = "getCurrentCulture";
 	public static final String FUNCTION_GETCURRENTFORM = "getCurrentForm";
 	public static final String FUNCTION_GETCURRENTUSER = "getCurrentUser";
 	public static final String FUNCTION_GETDAYNAME = "getDayName";
@@ -73,6 +75,7 @@ public class ScriptAttribute {
 	public static final String FUNCTION_GETTABLEBYNAME = "getTableByName";
 	public static final String FUNCTION_GETTEXT = "getText";
 	public static final String FUNCTION_GETVALUE = "getValue";
+	public static final String FUNCTION_HIDE = "hide";
 	public static final String FUNCTION_IMPLODE = "implode";
 	public static final String FUNCTION_IMPORT = "import";
 	public static final String FUNCTION_INDEXOF = "indexOf";
