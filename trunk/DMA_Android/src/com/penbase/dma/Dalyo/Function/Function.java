@@ -801,7 +801,9 @@ public class Function {
 			if (function.equals(ScriptAttribute.FUNCTION_ADDCRITERIA)) {
 				NS_Order.AddCriteria(element);
 			} else if (function.equals(ScriptAttribute.FUNCTION_CLEAR)) {
-				// NS_Order.Clear(element);
+				NS_Order.Clear(element);
+			} else if (function.equals(ScriptAttribute.FUNCTION_SIZE)) {
+				result = NS_Order.Size(element);
 			}
 		} else if (namespace.equals(ScriptAttribute.NAMESPACE_RUNTIME)) {
 			if ((function.equals(ScriptAttribute.FUNCTION_ALERT))
