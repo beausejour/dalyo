@@ -838,7 +838,7 @@ public class DatabaseAdapter {
 		String[] projectionIn = createProjectionStrings(columns);
 		String selection = createSelectionString(tables, filter);
 		String orderBy = null;
-		if (order != null) {
+		if (order != null && ((ArrayList<Object>) order).size() > 0) {
 			String filedId = ((ArrayList<Object>) order).get(0).toString();
 			orderBy = DatabaseAttribute.FIELD + filedId;
 			if (!((ArrayList<Object>) order).get(1).toString().equals(
