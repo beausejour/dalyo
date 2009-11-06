@@ -1,5 +1,7 @@
 package com.penbase.dma.Dalyo.Function.Namespace;
 
+import android.os.Handler;
+
 import com.penbase.dma.Constant.ScriptAttribute;
 import com.penbase.dma.Constant.ScriptTag;
 import com.penbase.dma.Dalyo.Function.Function;
@@ -53,12 +55,19 @@ public class NS_Timer {
 		} else {
 			delayedValue = interval * 1000;
 		}
+		final Handler handler = new Handler();
+		final Runnable timerRunnable = new Runnable() {
+			@Override
+			public void run() {
+				Function.createFunction(callback);
+			}
+		};
 		Timer timer = new Timer();
 		timerId = timer.hashCode();
 		TimerTask task = new TimerTask() {
 			@Override
 			public void run() {
-				Function.createFunction(callback);
+				handler.post(timerRunnable);
 			}
 		};
 		mTimerMap.put(timerId, timer);
