@@ -221,6 +221,9 @@ public class Dma extends Activity implements OnClickListener {
 		}
 	}
 
+	/**
+	 * Checks system table's content
+	 */
 	private void checkSystemTable() {
 		String storageState = Environment.getExternalStorageState();
 		if (storageState.equals(Environment.MEDIA_REMOVED)
@@ -294,6 +297,11 @@ public class Dma extends Activity implements OnClickListener {
 		return true;
 	}
 
+	/**
+	 * Displays alert message
+	 * @param title message's title
+	 * @param message 
+	 */
 	public void showMessage(CharSequence title, String message) {
 		mAlertDialog.setTitle(title);
 		mAlertDialog.setMessage(message);

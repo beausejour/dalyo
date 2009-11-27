@@ -41,7 +41,16 @@ public class NS_Object {
 	public static boolean ToBoolean(Element element) {
 		Object value = Function.getValue(element, ScriptTag.PARAMETER,
 				ScriptAttribute.PARAMETER_NAME_VALUE, ScriptAttribute.OBJECT);
-		return Boolean.valueOf(value.toString());
+		try {
+			int intValue = Integer.valueOf(value.toString());
+			if (intValue != 0) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (NumberFormatException nfe) {
+			return Boolean.valueOf(value.toString());
+		}
 	}
 
 	public static Object ToComponent(Element element) {

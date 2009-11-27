@@ -12,7 +12,16 @@ import java.io.OutputStreamWriter;
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 
+/**
+ * Commons methods used in project
+ */
 public class Common {
+	/**
+	 * Get bytes data of a file
+	 * @param file
+	 * @return an array of byte
+	 * @throws IOException
+	 */
 	public static byte[] getBytesFromFile(File file) throws IOException {
 		InputStream is = new FileInputStream(file);
 
@@ -42,20 +51,19 @@ public class Common {
 	}
 
 	/**
-	 * Return a hexadecimal string for the given byte array.
+	 * Return a hexadecimal string for a given byte array.
 	 * 
-	 * @param b
-	 *            the byte array to convert
+	 * @param binary a byte array
 	 * @return the hexadecimal string
 	 */
-	public static String md5HexStringFromBytes(byte[] b) {
+	public static String md5HexStringFromBytes(byte[] binary) {
 		java.security.MessageDigest messageDigest = null;
 		try {
 			messageDigest = java.security.MessageDigest.getInstance("MD5");
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
-		messageDigest.update(b, 0, b.length);
+		messageDigest.update(binary, 0, binary.length);
 
 		char[] hexChars = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
 				'a', 'b', 'c', 'd', 'e', 'f' };
@@ -74,6 +82,11 @@ public class Common {
 		return hex.toUpperCase();
 	}
 
+	/**
+	 * Convert a string to MD5 value
+	 * @param string input value
+	 * @return MD5 value
+	 */
 	public static String md5(String string) {
 		java.security.MessageDigest messageDigest = null;
 		try {
@@ -86,10 +99,10 @@ public class Common {
 	}
 
 	/**
-	 * Saves the downloaded xml stream or images to file
-	 * 
-	 * @param stream
-	 * @param filePath
+	 * Save bytes data in file
+	 * @param bytes a byte array
+	 * @param filePath file path
+	 * @param isImage if save in image file
 	 */
 	public static void streamToFile(byte[] bytes, String filePath,
 			boolean isImage) {

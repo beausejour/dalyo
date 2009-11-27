@@ -8,6 +8,9 @@ import android.widget.CompoundButton;
 import com.penbase.dma.Dalyo.Component.DalyoComponent;
 import com.penbase.dma.Dalyo.Function.Function;
 
+/**
+ * Dalyo CheckBox component
+ */
 public class DalyoCheckBox extends CheckBox implements DalyoComponent {
 	private String mInitialText;
 	private boolean mInitialState;
