@@ -386,9 +386,7 @@ public class Component {
 
 	/**
 	 * Parse resource directory to find name
-	 * 
-	 * @param name
-	 *            resource file name
+	 * @param name resource file name
 	 * @return resource file path
 	 */
 	private String findResourceFile(String name) {
@@ -435,6 +433,11 @@ public class Component {
 		return gravity;
 	}
 
+	/**
+	 * Gets text font size
+	 * @param fs a string represents font size
+	 * @return a float value of font size
+	 */
 	private float getFontSize(String fs) {
 		float fontSize = 14;
 		if (fs.equals(Constant.SMALL)) {
@@ -447,6 +450,11 @@ public class Component {
 		return fontSize;
 	}
 
+	/**
+	 * Gets font type from a string
+	 * @param ft a string represents font type
+	 * @return a font type
+	 */
 	private Typeface getFontType(String ft) {
 		Typeface fontType = Typeface.DEFAULT;
 		if (ft.equals(Constant.ITALIC)) {
@@ -461,6 +469,11 @@ public class Component {
 		return fontType;
 	}
 
+	/**
+	 * Gets a Color object from a hex string
+	 * @param color a hex string
+	 * @return a Color object
+	 */
 	private int getColor(String color) {
 		return Color.parseColor("#" + color);
 	}
@@ -502,7 +515,6 @@ public class Component {
 	}
 
 	public void reSet() {
-		// setValue(mLabel);
 		mComponent.resetComponent();
 	}
 }

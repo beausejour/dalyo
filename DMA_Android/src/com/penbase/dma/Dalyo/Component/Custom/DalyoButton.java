@@ -9,6 +9,9 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.Button;
 
+/**
+ * Dalyo button component
+ */
 public class DalyoButton extends Button implements DalyoComponent {
 	private String mInitalText = null;
 	private boolean mHasBackground = false;

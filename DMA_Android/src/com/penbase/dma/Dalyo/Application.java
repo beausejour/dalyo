@@ -2,6 +2,9 @@ package com.penbase.dma.Dalyo;
 
 import android.graphics.drawable.Drawable;
 
+/**
+ * Object contains application identification informations
+ */
 public class Application {
 	private int mIconRes;
 	private String mName;

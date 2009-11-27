@@ -8,6 +8,9 @@ import android.content.Intent;
 import android.view.View;
 import android.widget.ImageButton;
 
+/**
+ * Barcode component
+ */
 public class BarcodeComponent extends ImageButton implements DalyoComponent {
 	private Context mContext;
 	private String mId;
@@ -31,23 +34,42 @@ public class BarcodeComponent extends ImageButton implements DalyoComponent {
 		});
 	}
 
+	/**
+	 * Removes previously barcode image 
+	 */
 	public void clear() {
 		setImageResource(R.drawable.barcode);
 		this.setScaleType(ScaleType.CENTER);
 	}
 
+	/**
+	 * Sets barcode image's text content
+	 * @param content barcode image's text content
+	 */
 	public void setContent(String content) {
 		mContent = content;
 	}
 
+	/**
+	 * Gets barcode image's text content
+	 * @return barcode image's text content
+	 */
 	public String getContent() {
 		return mContent;
 	}
 
+	/**
+	 * Gets barcode image's path
+	 * @return barcode image's path
+	 */
 	public String getImagePath() {
 		return mPath;
 	}
 
+	/**
+	 * Sets barcode image's path
+	 * @param n barcode image's path
+	 */
 	public void setImagePath(String n) {
 		mPath = n;
 	}

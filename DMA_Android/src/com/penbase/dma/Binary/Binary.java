@@ -9,12 +9,22 @@ import java.util.TimeZone;
  * Manages all the conversion from byte array to different objects and inverse
  */
 public class Binary {
+	/**
+	 * Converts a byte array to synchronize type
+	 * @param bytes byte array
+	 * @return integer value which represents synchronization's type
+	 */
 	public static int byteArrayToType(byte[] bytes) {
 		int n = 0;
 		n += ((int) bytes[0] & 0xff) << 0;
 		return n;
 	}
 
+	/**
+	 * Converts a byte array to an integer value
+	 * @param bytes a byte array
+	 * @return an integer value
+	 */
 	public static int byteArrayToInt(byte[] bytes) {
 		int n = 0;
 		n += ((int) bytes[0] & 0xff) << 24;
@@ -24,6 +34,11 @@ public class Binary {
 		return n;
 	}
 
+	/**
+	 * Converts a byte array to a string
+	 * @param bytes a byte array
+	 * @return a string
+	 */
 	private static String byteArrayToString(byte[] bytes) {
 		String result = null;
 		try {
@@ -34,6 +49,11 @@ public class Binary {
 		return result;
 	}
 
+	/**
+	 * Converts a byte array to a double value
+	 * @param bytes a byte array
+	 * @return a double value
+	 */
 	private static double byteArrayToDouble(byte[] bytes) {
 		long n = 0;
 		n += ((long) bytes[0] & 0xff) << 56;
@@ -47,6 +67,11 @@ public class Binary {
 		return Double.longBitsToDouble(n);
 	}
 
+	/**
+	 * Converts a byte array to a long value
+	 * @param bytes a byte array
+	 * @return a long value
+	 */
 	private static long byteArrayToLong(byte[] bytes) {
 		long n = 0;
 		n += ((long) bytes[0] & 0xff) << 24;
@@ -56,6 +81,11 @@ public class Binary {
 		return n;
 	}
 
+	/**
+	 * Converts a byte array to a time format string
+	 * @param bytes a byte array
+	 * @return a time format string
+	 */
 	private static String byteArrayToTime(byte[] bytes) {
 		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+1"),
 				Locale.FRENCH);
@@ -69,6 +99,11 @@ public class Binary {
 		return result.toString();
 	}
 
+	/**
+	 * Converts a byte array to a date format string
+	 * @param bytes a byte array
+	 * @return a date format string
+	 */
 	private static String byteArrayToDate(byte[] bytes) {
 		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+1"),
 				Locale.FRENCH);
@@ -82,6 +117,11 @@ public class Binary {
 		return result.toString();
 	}
 
+	/**
+	 * Converts a byte array to date and time format string
+	 * @param bytes a byte array
+	 * @return date and time format string
+	 */
 	private static String byteArrayToDateTime(byte[] bytes) {
 		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+1"),
 				Locale.FRENCH);
@@ -101,12 +141,23 @@ public class Binary {
 		return result.toString();
 	}
 
+	/**
+	 * Converts a byte array to a boolean value
+	 * @param bytes a byte array
+	 * @return boolean value
+	 */
 	private static int byteArrayToBool(byte[] bytes) {
 		int n = 0;
 		n += ((int) bytes[0] & 0xff) << 0;
 		return n;
 	}
 
+	/**
+	 * Converts a byte array to a given type's value
+	 * @param bytes a byte array
+	 * @param type object's type
+	 * @return object's value
+	 */
 	public static Object byteArrayToObject(byte[] bytes, String type) {
 		Object result = null;
 		if ((type.equals("VARCHAR")) || (type.equals("KEY"))
@@ -129,6 +180,11 @@ public class Binary {
 		return result;
 	}
 
+	/**
+	 * Converts an integer value to a byte array
+	 * @param n an integer value
+	 * @return a byte array
+	 */
 	public static byte[] intToByteArray(int n) {
 		byte[] bytes = new byte[4];
 		bytes[0] = (byte) ((n >> 24) & 0xff);
@@ -138,6 +194,11 @@ public class Binary {
 		return bytes;
 	}
 
+	/**
+	 * Converts a double value to a byte array
+	 * @param d a double value
+	 * @return a byte array
+	 */
 	private static byte[] doubleToByteArray(double d) {
 		long n = Double.doubleToLongBits(d);
 		byte[] bytes = new byte[8];
@@ -152,22 +213,42 @@ public class Binary {
 		return bytes;
 	}
 
+	/**
+	 * Converts a string value to a byte array
+	 * @param s a string
+	 * @return a byte array
+	 */
 	public static byte[] stringToByteArray(String s) {
 		return s.getBytes();
 	}
 
+	/**
+	 * Converts a boolean value to a byte array
+	 * @param n a boolean value
+	 * @return a byte array
+	 */
 	private static byte[] boolToByteArray(int n) {
 		byte[] bytes = new byte[1];
 		bytes[0] = (byte) (n & 0xff);
 		return bytes;
 	}
 
+	/**
+	 * Converts synchronize type to a byte array
+	 * @param n synchronize type
+	 * @return a byte array
+	 */
 	public static byte[] typeToByteArray(int n) {
 		byte[] bytes = new byte[1];
 		bytes[0] = (byte) (n & 0xff);
 		return bytes;
 	}
 
+	/**
+	 * Converts a long value to a byte array
+	 * @param n a long value
+	 * @return a byte array
+	 */
 	private static byte[] longToByteArray(long n) {
 		byte[] bytes = new byte[4];
 		bytes[0] = (byte) ((n >> 24) & 0xff);
@@ -177,6 +258,11 @@ public class Binary {
 		return bytes;
 	}
 
+	/**
+	 * Converts a date and time format string to a byte array
+	 * @param d a date and time format string
+	 * @return a byte array
+	 */
 	private static byte[] dateTimeToByteArray(String d) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.DAY_OF_MONTH, Integer.valueOf(d.split(" ")[0]
@@ -195,6 +281,11 @@ public class Binary {
 		return longToByteArray(calendar.getTimeInMillis() / 1000);
 	}
 
+	/**
+	 * Converts a date format string to a byte array
+	 * @param d a date format string
+	 * @return a byte array
+	 */
 	private static byte[] dateToByteArray(String d) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.DAY_OF_MONTH, Integer.valueOf(d.split("/")[0]));
@@ -203,6 +294,11 @@ public class Binary {
 		return longToByteArray(calendar.getTimeInMillis() / 1000);
 	}
 
+	/**
+	 * Converts a time format string to a byte array
+	 * @param d a time format string
+	 * @return a byte array
+	 */
 	private static byte[] timeToByteArray(String d) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.HOUR_OF_DAY, Integer.valueOf(d.split(":")[0]));
@@ -210,6 +306,12 @@ public class Binary {
 		return longToByteArray(calendar.getTimeInMillis() / 1000);
 	}
 
+	/**
+	 * Converts a given type's value to a byte array
+	 * @param value object's value
+	 * @param type a given type
+	 * @return a byte array
+	 */
 	public static byte[] objectToByteArray(Object value, String type) {
 		byte[] result = null;
 		if ((type.equals("VARCHAR")) || (type.equals("KEY"))

@@ -45,6 +45,11 @@ public class Form extends ScrollView {
 		addView(mLayout);
 	}
 	
+	/**
+	 * Sets form's dimension
+	 * @param width dimension's width
+	 * @param height dimension's height
+	 */
 	public void setDimension(int width, int height) {
 		mWidth = width;
 		mHeight = height;
@@ -56,14 +61,25 @@ public class Form extends ScrollView {
 		setMeasuredDimension(mWidth, mHeight);
 	}
 
+	/**
+	 * Adds sub view
+	 * @param view a sub view
+	 */
 	public void addSubView(View view) {
 		mLayout.addView(view);
 	}
 	
+	/**
+	 * Sets modal form
+	 * @param modal boolean value
+	 */
 	public void setModal(String modal) {
 		mIsModal = Boolean.parseBoolean(modal);
 	}
 	
+	/**
+	 * @return if form is modal
+	 */
 	public boolean isModal() {
 		return mIsModal;
 	}
@@ -126,8 +142,8 @@ public class Form extends ScrollView {
 	}
 	
 	/**
-	 * Binds a record to its subviews
-	 * @param formId
+	 * Binds a record to its subviews by form id
+	 * @param formId identification of form
 	 * @param record An HashMap {column name = value}
 	 */
 	public void setRecordByForm(String formId, HashMap<Object, Object> record) {
@@ -146,6 +162,11 @@ public class Form extends ScrollView {
 		}
 	}
 	
+	/**
+	 * Binds a record to its subviews by table id
+	 * @param tableId identification of table
+	 * @param record An HashMap {column name = value}
+	 */
 	public void setRecordByTable(String tableId, HashMap<Object, Object> record) {
 		if (record != null) {
 			int viewCount = mLayout.getChildCount();
@@ -176,7 +197,7 @@ public class Form extends ScrollView {
 	
 	/**
 	 * Refreshes subview's value with a given record
-	 * @param record
+	 * @param record An HashMap {column name = value}
 	 */
 	public void refresh(HashMap<Object, Object> record) {
 		if (record.size() > 0) {
@@ -238,6 +259,11 @@ public class Form extends ScrollView {
 		}
 	}
 	
+	/**
+	 * Validates form's new record by saving subview's value 
+	 * @param tableId identification of table
+	 * @return An HashMap {field id = value}
+	 */
 	public HashMap<String, String> validateNewRecord(String tableId) {
 		HashMap<String, String> values = new HashMap<String, String>();
 		int viewCount = mLayout.getChildCount();
@@ -275,6 +301,11 @@ public class Form extends ScrollView {
 		return values;	
 	}
 	
+	/**
+	 * Saves subview's value in a ContentValue
+	 * @param tableId identification of table
+	 * @return a ContentValue
+	 */
 	public ContentValues validateEditRecord(String tableId) {
 		ContentValues values = new ContentValues();
 		int viewCount = mLayout.getChildCount();

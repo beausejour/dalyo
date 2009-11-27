@@ -26,6 +26,14 @@ public class Gps {
 		mLocation = mLocationManager.getLastKnownLocation(sProviderName);
 	}
 
+	/**
+	 * Creates a Locations object
+	 * @param latitude value
+	 * @param longitude value
+	 * @param altitude value
+	 * @param speed value
+	 * @return a Location object
+	 */
 	public static Location createLocation(double latitude, double longitude,
 			double altitude, double speed) {
 		Location result = new Location(sProviderName);
@@ -36,19 +44,31 @@ public class Gps {
 		return result;
 	}
 
+	/**
+	 * @return Gps signal status
+	 */
 	public int getStatus() {
 		return mStatus;
 	}
 
+	/**
+	 * @return current Location
+	 */
 	public Location getLocation() {
 		return mLocation;
 	}
 
+	/**
+	 * Stops Location services
+	 */
 	public void stop() {
 		mLocationManager.removeUpdates(mLocationListener);
 		mStatus = LocationProvider.OUT_OF_SERVICE;
 	}
 
+	/**
+	 * A listener received notifications from LocationManager
+	 */
 	private class MyLocationListener implements LocationListener {
 		public void onLocationChanged(Location loc) {
 			// Called when the location has changed.
