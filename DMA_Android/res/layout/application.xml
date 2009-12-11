@@ -1,17 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:gravity="center">
-    <ImageView android:id="@+id/appicon"
-		android:layout_width="60px"
-    	android:layout_height="60px"
-    	/>
-   	<TextView android:id="@+id/appname"
-   		android:layout_width="60px"
-    	android:layout_height="30px" 
-    	android:textSize="11px"
-    	android:textColor="#FF000000"
-    	android:gravity="center_horizontal"/>
+	android:orientation="vertical" android:layout_width="wrap_content"
+	android:layout_height="wrap_content" android:gravity="center">
+	<ImageView android:id="@+id/appicon" android:layout_width="60px"
+		android:layout_height="60px" />
+	<TextView android:id="@+id/appname" android:layout_width="60px"
+		android:layout_height="30px" android:textSize="11px"
+		android:textColor="#FF000000" android:gravity="center_horizontal" />
 </LinearLayout>
