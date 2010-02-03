@@ -101,7 +101,7 @@ public class NS_DatabaseTable {
 				ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
 		Object filter = Function.getValue(element, ScriptTag.PARAMETER,
 				ScriptAttribute.FILTER, ScriptAttribute.FILTER);
-		ArrayList<HashMap<Object, Object>> records = getRecords(tableId, filter);
+		ArrayList<HashMap<Object, Object>> records = getRecords(tableId, filter, null);
 		if (records.size() > 0) {
 			for (HashMap<Object, Object> record : records) {
 				Record.deleteRecord(tableId, record);
@@ -233,8 +233,11 @@ public class NS_DatabaseTable {
 				ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
 		Object filter = Function.getValue(element, ScriptTag.PARAMETER,
 				ScriptAttribute.FILTER, ScriptAttribute.FILTER);
-		if (getRecords(tableId, filter).size() > 0) {
-			return getRecords(tableId, filter).get(0);
+		Object order = Function.getValue(element, ScriptTag.PARAMETER,
+				ScriptAttribute.ORDER, ScriptAttribute.ORDER);
+		ArrayList<HashMap<Object, Object>> records = getRecords(tableId, filter, order);
+		if (records.size() > 0) {
+			return records.get(0);
 		} else {
 			return null;
 		}
@@ -246,7 +249,9 @@ public class NS_DatabaseTable {
 				ScriptAttribute.TABLE, ScriptAttribute.TABLE).toString();
 		Object filter = Function.getValue(element, ScriptTag.PARAMETER,
 				ScriptAttribute.FILTER, ScriptAttribute.FILTER);
-		return getRecords(tableId, filter);
+		Object order = Function.getValue(element, ScriptTag.PARAMETER,
+				ScriptAttribute.ORDER, ScriptAttribute.ORDER);
+		return getRecords(tableId, filter, order);
 	}
 
 	public static HashMap<Object, Object> GetRecord(Element element) {
@@ -452,11 +457,11 @@ public class NS_DatabaseTable {
 	}
 
 	private static ArrayList<HashMap<Object, Object>> getRecords(
-			String tableId, Object filter) {
+			String tableId, Object filter, Object order) {
 		ArrayList<HashMap<Object, Object>> records = new ArrayList<HashMap<Object, Object>>();
 		ArrayList<String> tables = new ArrayList<String>();
 		tables.add(tableId);
-		Cursor cursor = DatabaseAdapter.selectQuery(tables, null, filter, null,
+		Cursor cursor = DatabaseAdapter.selectQuery(tables, null, filter, order,
 				null);
 		while (cursor.moveToNext()) {
 			HashMap<Object, Object> record = new HashMap<Object, Object>();
