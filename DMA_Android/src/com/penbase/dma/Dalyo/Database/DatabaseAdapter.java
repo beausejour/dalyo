@@ -154,6 +154,9 @@ public class DatabaseAdapter {
 		return result;
 	}
 
+	/**
+	 * Parses xml and create table
+	 */
 	private void createTable() {
 		NodeList tableList = mDbDocument
 				.getElementsByTagName(DatabaseTag.TABLE);
@@ -287,6 +290,11 @@ public class DatabaseAdapter {
 		}
 	}
 
+	/**
+	 * Reads imported data
+	 * @param bytes
+	 * @return confirm data
+	 */
 	public byte[] syncImportTable(byte[] bytes) {
 		if (sBlobRecords.size() > 0) {
 			sBlobRecords.clear();
@@ -392,6 +400,11 @@ public class DatabaseAdapter {
 		return result;
 	}
 
+	/**
+	 * Saves blob data in database
+	 * @param fileName
+	 * @param file
+	 */
 	public void saveBlobData(String fileName, File file) {
 		ContentValues values = new ContentValues();
 		values.put(Constant.BLOBFILE, fileName);
@@ -403,6 +416,11 @@ public class DatabaseAdapter {
 		sSqlite.insert(Constant.BLOBTABLE, null, values);
 	}
 
+	/**
+	 * Saves blob data in database
+	 * @param data
+	 * @param index
+	 */
 	public void saveBlobData(byte[] data, int index) {
 		ContentValues values = new ContentValues();
 		values
@@ -412,6 +430,11 @@ public class DatabaseAdapter {
 		sSqlite.insert(Constant.BLOBTABLE, null, values);
 	}
 
+	/**
+	 * Gets blob data by given file name
+	 * @param fileName
+	 * @return
+	 */
 	public byte[] getBlobdata(String fileName) {
 		byte[] result = null;
 		StringBuffer selection = new StringBuffer("File = \"");
@@ -420,12 +443,19 @@ public class DatabaseAdapter {
 		Cursor cursor = sSqlite.query(Constant.BLOBTABLE,
 				new String[] { Constant.BLOBDATA }, selection.toString(), null,
 				null, null, null);
-		cursor.moveToFirst();
-		result = cursor.getBlob(0);
+		if (cursor.moveToFirst()) {
+			result = cursor.getBlob(0);
+		}
 		cursor.close();
 		return result;
 	}
 
+	/**
+	 * Prepares export data to server
+	 * @param tables
+	 * @param filters
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public byte[] syncExportTable(ArrayList<String> tables, Object filters) {
 		if (sBlobRecords.size() > 0) {
@@ -585,6 +615,10 @@ public class DatabaseAdapter {
 		return result;
 	}
 
+	/**
+	 * Reads server's response to update data id
+	 * @param bytes server's response
+	 */
 	public static void updateIds(byte[] bytes) {
 		ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
 		byte[] tableNb = new byte[Constant.INTBYTE];
@@ -617,6 +651,12 @@ public class DatabaseAdapter {
 		}
 	}
 
+	/**
+	 * Updates data id
+	 * @param tableId
+	 * @param lid
+	 * @param gid
+	 */
 	private static void updateGid(int tableId, int lid, int gid) {
 		String table = DatabaseAttribute.TABLE + tableId;
 		ContentValues values = new ContentValues();
@@ -638,6 +678,13 @@ public class DatabaseAdapter {
 		sSqlite.update(table, values, whereClause.toString(), null);
 	}
 
+	/**
+	 * Update table with imported data
+	 * @param tableId
+	 * @param fields
+	 * @param syncTypeList
+	 * @param records
+	 */
 	private void updateTable(int tableId, ArrayList<Integer> fields,
 			ArrayList<Integer> syncTypeList,
 			ArrayList<ArrayList<Object>> records) {
@@ -684,6 +731,12 @@ public class DatabaseAdapter {
 		sSqlite.insert(tableName, null, values);
 	}
 
+	/**
+	 * Update values
+	 * @param tableId
+	 * @param fieldsList
+	 * @param record
+	 */
 	private void updateValues(int tableId, ArrayList<Integer> fieldsList,
 			ArrayList<Object> record) {
 		int fieldsNb = fieldsList.size();
@@ -710,6 +763,12 @@ public class DatabaseAdapter {
 		sSqlite.execSQL(update.toString());
 	}
 
+	/**
+	 * Deletes values
+	 * @param tableId
+	 * @param fieldsList
+	 * @param record
+	 */
 	private void deleteValues(int tableId, ArrayList<Integer> fieldsList,
 			ArrayList<Object> record) {
 		StringBuffer selectionString = new StringBuffer(DatabaseAttribute.GID);
@@ -743,6 +802,11 @@ public class DatabaseAdapter {
 		return result;
 	}
 
+	/**
+	 * Clears table's data with a given filter
+	 * @param tableId
+	 * @param filters
+	 */
 	@SuppressWarnings("unchecked")
 	public static void clearTable(String tableId, Object filters) {
 		StringBuffer selectionString = new StringBuffer();
@@ -775,6 +839,11 @@ public class DatabaseAdapter {
 		}
 	}
 
+	/**
+	 * Deletes blob'f file
+	 * @param tableId
+	 * @param selectionString
+	 */
 	private static void deleteBlobFiles(String tableId, String selectionString) {
 		Cursor cursor = sSqlite.query(DatabaseAttribute.TABLE + tableId, null,
 				selectionString, null, null, null, null);
@@ -808,6 +877,13 @@ public class DatabaseAdapter {
 		DatabaseAdapter.closeCursor(cursor);
 	}
 
+	/**
+	 * Gets select query result with given conditions
+	 * @param tableId
+	 * @param fieldList
+	 * @param valueList
+	 * @return
+	 */
 	public static Cursor selectQuery(String tableId,
 			ArrayList<Integer> fieldList, ArrayList<Object> valueList) {
 		String table = DatabaseAttribute.TABLE + tableId;
@@ -815,6 +891,14 @@ public class DatabaseAdapter {
 		return sSqlite.query(table, null, selection, null, null, null, null);
 	}
 
+	/**
+	 * Gets select query result with given conditions
+	 * @param tableId
+	 * @param fieldId
+	 * @param filter
+	 * @param type
+	 * @return
+	 */
 	public static Cursor selectQuery(String tableId, String fieldId,
 			Object filter, String type) {
 		StringBuffer projectionIn = new StringBuffer(type);
@@ -830,6 +914,15 @@ public class DatabaseAdapter {
 				null, null, null);
 	}
 
+	/**
+	 * Gets select query result with given conditions
+	 * @param tables
+	 * @param columns
+	 * @param filter
+	 * @param order
+	 * @param distinct
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public static Cursor selectQuery(ArrayList<String> tables,
 			ArrayList<ArrayList<String>> columns, Object filter, Object order,
@@ -866,8 +959,10 @@ public class DatabaseAdapter {
 	 */
 	public static void addQuery(int tableId, ArrayList<Integer> fieldsList,
 			ArrayList<Object> record) {
-		// record has 1 more element than fieldsList, the first element of
-		// record is the new ID
+		/**
+		 * record has 1 more element than fieldsList, the first element of
+		 * record is the new ID
+		 * */
 		int fieldsNb = fieldsList.size();
 		String id = DatabaseAttribute.ID + tableId;
 		String gid = DatabaseAttribute.GID + tableId;
@@ -916,6 +1011,13 @@ public class DatabaseAdapter {
 		sSqlite.execSQL(insert.toString());
 	}
 
+	/**
+	 * Updates values with given data
+	 * @param tableId
+	 * @param fieldList
+	 * @param valueList
+	 * @param record
+	 */
 	public static void updateQuery(String tableId,
 			ArrayList<Integer> fieldList, ArrayList<Object> valueList,
 			HashMap<Object, Object> record) {
@@ -942,12 +1044,23 @@ public class DatabaseAdapter {
 		sSqlite.update(table, values, whereClause, null);
 	}
 
+	/**
+	 * Updates values with given data
+	 * @param tableId
+	 * @param values
+	 * @param whereClause
+	 */
 	public static void updateRecord(String tableId, ContentValues values,
 			String whereClause) {
 		sSqlite.update(DatabaseAttribute.TABLE + tableId, values, whereClause,
 				null);
 	}
 
+	/**
+	 * Deletes values with given data
+	 * @param tableId
+	 * @param record
+	 */
 	public static void deleteQuery(String tableId,
 			HashMap<Object, Object> record) {
 		if (record.containsKey(DatabaseAttribute.STATE)) {
@@ -964,6 +1077,10 @@ public class DatabaseAdapter {
 		}
 	}
 
+	/**
+	 * Gets a list of tables need to be imported
+	 * @return
+	 */
 	public static ArrayList<Integer> getImportTableId() {
 		ArrayList<Integer> result = new ArrayList<Integer>();
 		HashMap<String, String> tablesSyncMap = sTablesSyncMap;
@@ -977,6 +1094,10 @@ public class DatabaseAdapter {
 		return result;
 	}
 
+	/**
+	 * Gets a list of tables need to be exported
+	 * @return
+	 */
 	private ArrayList<String> getExportTableId() {
 		ArrayList<String> result = new ArrayList<String>();
 		HashMap<String, String> tablesSyncMap = sTablesSyncMap;
@@ -1037,6 +1158,9 @@ public class DatabaseAdapter {
 		}
 	}
 
+	/**
+	 * Clears all tables data
+	 */
 	public static void cleanTables() {
 		Set<String> keys = sTablesMap.keySet();
 		SQLiteDatabase sqlite = sSqlite;
@@ -1060,6 +1184,12 @@ public class DatabaseAdapter {
 		}
 	}
 
+	/**
+	 * Gets field's value by column's type
+	 * @param cursor
+	 * @param field
+	 * @return
+	 */
 	public static Object getCursorValue(Cursor cursor, String field) {
 		if (cursor.getCount() > 0) {
 			if (field.indexOf(DatabaseAttribute.FIELD) != -1) {
@@ -1099,6 +1229,12 @@ public class DatabaseAdapter {
 		}
 	}
 
+	/**
+	 * Generates where clause string by given conditions
+	 * @param tableId
+	 * @param record
+	 * @return
+	 */
 	private static String createWhereClause(String tableId,
 			HashMap<Object, Object> record) {
 		StringBuffer result = new StringBuffer("");
@@ -1110,6 +1246,11 @@ public class DatabaseAdapter {
 		return result.toString();
 	}
 
+	/**
+	 * Generates tables string by given conditions
+	 * @param tables
+	 * @return
+	 */
 	private static String createTableString(ArrayList<String> tables) {
 		StringBuffer result = new StringBuffer("");
 		int size = tables.size();
@@ -1124,6 +1265,11 @@ public class DatabaseAdapter {
 		return result.toString();
 	}
 
+	/**
+	 * Generates projection string by given conditions
+	 * @param columns
+	 * @return
+	 */
 	private static String[] createProjectionStrings(
 			ArrayList<ArrayList<String>> columns) {
 		if (columns == null) {
@@ -1142,6 +1288,12 @@ public class DatabaseAdapter {
 		}
 	}
 
+	/**
+	 * Generates selection string by given conditions
+	 * @param tables
+	 * @param filters
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	private static String createSelectionString(ArrayList<String> tables,
 			Object filters) {
@@ -1161,7 +1313,8 @@ public class DatabaseAdapter {
 			ArrayList<Object> filtersList = (ArrayList<Object>) filters;
 			int filtersNb = filtersList.size();
 			for (int i = 0; i < filtersNb; i++) {
-				ArrayList<Object> filter = (ArrayList<Object>)filtersList.get(i);
+				ArrayList<Object> filter = (ArrayList<Object>) filtersList
+						.get(i);
 				if (i == 0) {
 					result.append(" AND ");
 				} else {
@@ -1176,6 +1329,12 @@ public class DatabaseAdapter {
 		return result.toString();
 	}
 
+	/**
+	 * Generates selection string by given conditions
+	 * @param fieldList
+	 * @param valueList
+	 * @return
+	 */
 	private static String createSelectionString(ArrayList<Integer> fieldList,
 			ArrayList<Object> valueList) {
 		if ((fieldList == null) && (valueList == null)) {
@@ -1201,6 +1360,11 @@ public class DatabaseAdapter {
 		}
 	}
 
+	/**
+	 * Generates selection string by given conditions with foreign keys
+	 * @param tables
+	 * @return
+	 */
 	private static String createSelectionFKString(ArrayList<String> tables) {
 		StringBuffer result = new StringBuffer("");
 		ArrayList<ArrayList<String>> foreignKeyList = sForeignKeyList;
@@ -1232,6 +1396,9 @@ public class DatabaseAdapter {
 		return 1;
 	}
 
+	/**
+	 * Closes database
+	 */
 	public void closeDatabase() {
 		if ((sSqlite != null) && (sSqlite.isOpen())) {
 			if (sSqlite.inTransaction()) {

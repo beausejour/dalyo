@@ -7,6 +7,9 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
 
+/**
+ * Image object
+ */
 public class DalyoImage extends ImageView implements DalyoComponent {
 	private String mImagePath;
 

@@ -14,6 +14,9 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.TextView;
 
+/**
+ * Label object
+ */
 public class DalyoLabel extends TextView implements DalyoComponent {
 	private String mLabel;
 	private String mTableId = null;

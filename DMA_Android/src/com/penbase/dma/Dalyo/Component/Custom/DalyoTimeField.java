@@ -11,6 +11,9 @@ import android.widget.Button;
 
 import com.penbase.dma.Dalyo.Component.DalyoComponent;
 
+/**
+ * Timefield object
+ */
 public class DalyoTimeField extends Button implements DalyoComponent, OnClickListener {
 	private DalyoDateTimePickerDialog mDateTimeDialog;
 	private String mDefaultValue;

@@ -8,6 +8,9 @@ import android.widget.RadioButton;
 import com.penbase.dma.Dalyo.Component.DalyoComponent;
 import com.penbase.dma.Dalyo.Function.Function;
 
+/**
+ * Radio button object
+ */
 public class DalyoRadiobutton extends RadioButton implements DalyoComponent {
 	private boolean mInitialState;
 

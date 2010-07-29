@@ -54,7 +54,6 @@ public class ConfirmDialog extends Thread{
 		builder = new AlertDialog.Builder(context);
 		builder.setTitle(title);
 		builder.setMessage(message);		
-		//.setIcon(R.drawable.star_big_on)
 		builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int whichButton) {
 				value = true;

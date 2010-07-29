@@ -365,6 +365,13 @@ public class ApplicationListView extends Activity implements
 		sortApplicationsList(applicationMap);
 	}
 
+	/**
+	 * Checks application's icon
+	 * @param application
+	 * @param iconId
+	 * @param hashcode
+	 * @param ext
+	 */
 	private void checkApplicationIcon(Application application, String iconId,
 			String hashcode, String ext) {
 		boolean willDownload = true;

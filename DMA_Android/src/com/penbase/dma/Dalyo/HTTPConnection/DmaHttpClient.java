@@ -94,6 +94,11 @@ public class DmaHttpClient {
 		mContext = context;
 	}
 
+	/**
+	 * Creates directories if necessary
+	 * @param login
+	 * @param id
+	 */
 	private void createFilesPath(String login, String id) {
 		if (id != null) {
 			sDirectory = new StringBuffer(Constant.APPPACKAGE);
@@ -133,6 +138,12 @@ public class DmaHttpClient {
 		return mLastError;
 	}
 
+	/**
+	 * Authenticate process
+	 * @param login
+	 * @param password
+	 * @return
+	 */
 	public String Authentication(String login, String password) {
 		StringBuffer loginAction = new StringBuffer(
 				"act=login&from=runtime&login=");
@@ -162,6 +173,11 @@ public class DmaHttpClient {
 		return sResourceFilePath.toString();
 	}
 
+	/**
+	 * Manages post services
+	 * @param parameters
+	 * @return
+	 */
 	public byte[] sendPost(String parameters) {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		HttpClient httpClient = new DefaultHttpClient();
@@ -328,6 +344,9 @@ public class DmaHttpClient {
 		}
 	}
 
+	/**
+	 * Sax handler to parse xml files
+	 */
 	private class EventsHandler extends DefaultHandler {
 		private String mUrlRequest;
 		private boolean mWillDownload;
@@ -552,6 +571,11 @@ public class DmaHttpClient {
 		}
 	}
 
+	/**
+	 * Encodes a given string
+	 * @param s
+	 * @return
+	 */
 	private String urlEncode(String s) {
 		String result = "";
 		try {
@@ -562,6 +586,14 @@ public class DmaHttpClient {
 		return result;
 	}
 
+	/**
+	 * Generates synchronization url request
+	 * @param AppId
+	 * @param DbId
+	 * @param login
+	 * @param pwd
+	 * @return
+	 */
 	private String generateSyncUrlRequest(String AppId, String DbId,
 			String login, String pwd) {
 		StringBuffer result = new StringBuffer("&from=runtime&appid=");
@@ -579,6 +611,16 @@ public class DmaHttpClient {
 		return result.toString();
 	}
 
+	/**
+	 * Generates regular url request
+	 * @param AppId
+	 * @param AppVer
+	 * @param AppBuild
+	 * @param SubId
+	 * @param login
+	 * @param pwd
+	 * @return
+	 */
 	public String generateRegularUrlRequest(String AppId, String AppVer,
 			String AppBuild, String SubId, String login, String pwd) {
 		StringBuffer result = new StringBuffer("&from=runtime&appid=");

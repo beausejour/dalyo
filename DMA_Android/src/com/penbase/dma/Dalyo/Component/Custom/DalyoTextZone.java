@@ -19,6 +19,9 @@ import com.penbase.dma.Dalyo.Function.Function;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Textzone object
+ */
 public class DalyoTextZone extends EditText implements DalyoComponent {
 	private String mTableId = null;
 	private String mFieldId = null;
