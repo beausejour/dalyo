@@ -13,6 +13,9 @@ import android.widget.LinearLayout;
 import com.penbase.dma.R;
 import com.penbase.dma.Dalyo.Component.DalyoComponent;
 
+/**
+ * Number box object
+ */
 public class DalyoNumberBox extends LinearLayout implements DalyoComponent {
 	private AutoCompleteTextView mAct;
 	private ImageView mView_up;

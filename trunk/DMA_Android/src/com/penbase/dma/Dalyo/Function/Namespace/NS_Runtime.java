@@ -148,24 +148,6 @@ public class NS_Runtime {
 			// showProgress = true; ProgressDialog has not done yet.
 		}
 
-		/*
-		 * Context context = Function.getContext(); syncProgressDialog =
-		 * ProgressDialog.show(context, context .getText(R.string.waiting),
-		 * context .getText(R.string.synchronisation), true, false); new
-		 * Thread(new Runnable() {
-		 * 
-		 * @Override public void run() { boolean importResult =
-		 * ApplicationView.getCurrentClient()
-		 * .importData(applicationInfos.get("AppId"),
-		 * applicationInfos.get("DbId"), applicationInfos.get("Username"),
-		 * applicationInfos.get("Userpassword"), null, null); if (importResult)
-		 * { syncResult = ApplicationView.getCurrentClient().exportData(
-		 * applicationInfos.get("AppId"), applicationInfos.get("DbId"),
-		 * applicationInfos.get("Username"),
-		 * applicationInfos.get("Userpassword"), null, null); }
-		 * syncProgressDialog.dismiss(); } }).start();
-		 */
-
 		ApplicationView.getCurrentView().runOnUiThread(new Runnable() {
 			@Override
 			public void run() {

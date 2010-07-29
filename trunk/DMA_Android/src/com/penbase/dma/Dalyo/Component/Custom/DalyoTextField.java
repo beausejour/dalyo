@@ -20,6 +20,9 @@ import com.penbase.dma.Dalyo.Function.Function;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Textfield object
+ */
 public class DalyoTextField extends AutoCompleteTextView implements
 		DalyoComponent {
 	private String mTableId = null;

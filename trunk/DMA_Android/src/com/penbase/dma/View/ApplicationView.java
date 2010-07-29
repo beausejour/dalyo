@@ -358,6 +358,9 @@ public class ApplicationView extends Activity {
 		return sUsername;
 	}
 
+	/**
+	 * Sax handler to parse application design xml
+	 */
 	private class EventsHandler extends DefaultHandler {
 		boolean isInSystemNode = false;
 		boolean isInFormNode = false;

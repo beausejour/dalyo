@@ -67,7 +67,6 @@ public class Function {
 	}
 
 	public static Object createFunction(String name) {
-		// Log.i("info", "create function name "+name);
 		Object result = null;
 		HashMap<String, ArrayList<String>> functionsMap = sFuncsMap;
 		NodeList funcList = sBehaviorDocument
@@ -312,14 +311,11 @@ public class Function {
 			}
 			break;
 		}
-		// Log.i("info",
-		// "left "+left+" operator "+operator+" right "+right+" result "+result);
 		return result;
 	}
 
 	private static Object ifCondition(Element element) {
 		Object result = "";
-		// Log.i("info", "if called");
 
 		Node child = element.getFirstChild();
 		boolean conditionCheck = false;
@@ -350,7 +346,6 @@ public class Function {
 				conditionCheck = checkConditions(checkList);
 			} else if (childName.equals(ScriptTag.THEN)) {
 				if (conditionCheck) {
-					// Log.i("info", "pass to then");
 					Node thenChild = child.getFirstChild();
 					while (thenChild != null) {
 						result = distributeAction((Element) thenChild);
@@ -363,7 +358,6 @@ public class Function {
 				}
 			} else if (childName.equals(ScriptTag.ELSE)) {
 				if (!conditionCheck) {
-					// Log.i("info", "pass to else");
 					Node elseChild = child.getFirstChild();
 					while (elseChild != null) {
 						result = distributeAction((Element) elseChild);
@@ -428,10 +422,7 @@ public class Function {
 	 */
 	private static Object distributeCall(Element element) {
 		Object result = null;
-		if (!sIsFirstTime) {
-			// Log.i("info",
-			// "namespace "+element.getAttribute(ScriptTag.NAMESPACE)+" function name "+element.getAttribute(ScriptTag.FUNCTION));
-		}
+
 		String namespace = element.getAttribute(ScriptTag.NAMESPACE);
 		String function = element.getAttribute(ScriptTag.FUNCTION);
 		if (namespace.equals(ScriptAttribute.COMPONENT)) {

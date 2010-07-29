@@ -30,8 +30,8 @@
     <string name="clear">Clear</string>
     <string name="addwidth">Add width</string>
     <string name="changecolor">Change color</string>
-    <string name="importdata">Importing application's data...</string>
-    <string name="exportdata">Exporting application's data...</string>
+    <string name="importdata">Importing application\'s data...</string>
+    <string name="exportdata">Exporting application\'s data...</string>
     <string name="checkdataview">Check your dataview setting</string>
     <string name="synchronisation">Synchronizing your data...</string>
 </resources>

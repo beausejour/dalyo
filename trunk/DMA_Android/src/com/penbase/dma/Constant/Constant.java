@@ -39,7 +39,7 @@ public class Constant {
 	//public static final String SECUREDSERVER = "https://my.dalyo.com/server/com.penbase.arbiter.Arbiter?";
 	
 	//Local server
-	public static final String SERVER = "http://192.168.0.1/server/com.penbase.arbiter.Arbiter?";
+	public static final String SERVER = "http://192.168.0.1/server/arbiter?";
 	//public static final String SECUREDSERVER = "http://192.168.0.1/server/com.penbase.arbiter.Arbiter?";
 	
 	public static final String FALSE = "false";

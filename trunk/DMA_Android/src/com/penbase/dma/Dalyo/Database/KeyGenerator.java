@@ -2,6 +2,9 @@ package com.penbase.dma.Dalyo.Database;
 
 import java.util.Random;
 
+/**
+ * Generates random value for database type key
+ */
 public class KeyGenerator {
 	private static Random sRandom = new Random();
 	

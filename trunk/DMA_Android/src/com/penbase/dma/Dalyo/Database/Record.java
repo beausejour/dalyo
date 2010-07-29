@@ -5,6 +5,9 @@ import android.database.Cursor;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Record object
+ */
 public class Record {
 	private HashMap<Object, Object> mCurrentRecord = null;
 	

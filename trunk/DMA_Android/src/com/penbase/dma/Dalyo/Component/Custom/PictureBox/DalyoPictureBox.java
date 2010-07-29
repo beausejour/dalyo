@@ -8,6 +8,9 @@ import android.widget.ImageButton;
 import com.penbase.dma.R;
 import com.penbase.dma.Dalyo.Component.DalyoComponent;
 
+/**
+ * Picturebox object
+ */
 public class DalyoPictureBox extends ImageButton implements DalyoComponent {
 	private Context mContext;
 	private String mId;
